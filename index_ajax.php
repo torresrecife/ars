@@ -146,6 +146,14 @@ td{
 .cls_bk2{
 	background:#F2F3C5;
 }
+
+.cls_red {
+    background: #ffdede;
+}
+
+.cls_red2 {
+    background: #f5d5d5;
+}
 </style>";
 
 $table .= $html_0;
@@ -614,6 +622,7 @@ if($Wrow_2>0){
 					}
 				}
 			}
+            $html_2 .= "<tr height='5px'>";
 			$html_2 .= "</tr>";
 
 			$sel_prej  = " SELECT * ";
@@ -637,11 +646,11 @@ if($Wrow_2>0){
 				for($m=1;$m<=($ncol);$m++){
 					if($m==1){
 						$html_2 .= "<td style='border: 0px'></td>";
-						$html_2 .= "<td class='cls_vals2 cls_bk'><b>PREJU&Iacute;ZOS</b></td>";
+						$html_2 .= "<td class='cls_vals2 cls_red'><b>PREJU&Iacute;ZOS</b></td>";
 					}else{
 						if( (($m==2 || $m==5 || $m==8 || $m==11) && $ncol==14) || 
 							(($m==2 || $m==5 || $m==8 || $m==11 || $m==14)  && $ncol==17)){
-							$html_2 .= "<td align='center' class='cls_vals2 cls_bk' style='background:#F2F5A9'><b>0,00</b></td>";
+							$html_2 .= "<td align='center' class='cls_vals2 cls_red2' style='background:#f5d5d5'><b>0,00</b></td>";
 						}elseif( (($m==3 || $m==6 || $m==9 || $m==12 ) && $ncol==14) ||
 							(($m==3 || $m==6 || $m==9 || $m==12 || $m==15)  && $ncol==17) ){
 							$c_prej++;
@@ -670,15 +679,15 @@ if($Wrow_2>0){
 								$codig_uni_prej[] = $Wbanc_prej['CodigoLancamento'];
 							}
 							$tt_prej += $Wprej_qtd;
-							$html_2 .= "<td align='center' class='cls_vals2 cls_real cls_bk' onclick='send_form(\"" . implode(',',$codig_uni_prej)."\",\"" . $Wb['banco_name'] . "\",\"fat\");'><b>".number_format(($Wprej_qtd?$Wprej_qtd:0),2,',','.')."</b></td>";
+							$html_2 .= "<td align='center' class='cls_vals2 cls_real cls_red' onclick='send_form(\"" . implode(',',$codig_uni_prej)."\",\"" . $Wb['banco_name'] . "\",\"fat\");'><b>".number_format(($Wprej_qtd?$Wprej_qtd:0),2,',','.')."</b></td>";
 							$codig_uni_prej=array();
 						}else if( (($m==4 || $m==7 || $m==10 || $m==13) && $ncol==14) || 
 							(($m==4 || $m==7 || $m==10 || $m==13 || $m==16)  && $ncol==17)){
-							$html_2 .= "<td align='center' class='cls_vals2 cls_bk'><b>-</b></td>";
+							$html_2 .= "<td align='center' class='cls_vals2 cls_red'><b>-</b></td>";
 						}else if($m==$ncol){
-							$html_2 .= "<td align='center' class='cls_vals2 cls_bk' style='background:#F2F5A9'><b>0,00</b></td>";
-							$html_2 .= "<td align='center' class='cls_vals2 cls_real cls_bk' onclick='send_form(\"" . implode(',',$codig_lnc_prej) ."\",\"" . $Wb['banco_name'] . "\",\"fat\");'><b>".number_format($tt_prej,2,',','.')."</b></td>";
-							$html_2 .= "<td align='center' class='cls_vals2 cls_bk'><b>-</b></td>";
+							$html_2 .= "<td align='center' class='cls_vals2 cls_red' style='background:#ffdede'><b>0,00</b></td>";
+							$html_2 .= "<td align='center' class='cls_vals2 cls_real cls_red' onclick='send_form(\"" . implode(',',$codig_lnc_prej) ."\",\"" . $Wb['banco_name'] . "\",\"fat\");'><b>".number_format($tt_prej,2,',','.')."</b></td>";
+							$html_2 .= "<td align='center' class='cls_vals2 cls_red'><b>-</b></td>";
 						}
 					}
 				}
