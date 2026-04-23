@@ -5,3 +5,6 @@ Thumbs.db
 # IDEs / editores
 .vscode/
 .idea/
+
+# security
+inc/seguranca.php
