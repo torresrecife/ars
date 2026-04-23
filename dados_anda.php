@@ -1,0 +1,139 @@
+<html height="100%">
+<script type='text/javascript' src='js/jquery-1.8.0.min.js'></script>
+<script type='text/javascript' src='js/jFilterXCel2003.js'></script>
+<script type='text/javascript' src='js/functions.js'></script>
+<script type='text/javascript'>
+	$(document).ready(function(){
+		carregarFiltros('tbf1');
+		$("tr").dblclick(function(){
+			$(this).css("background","#ffffff");
+		});
+		$("tr").click(function(){
+			$(this).css("background","yellow");
+		});
+	});
+	function enviar_neo(valor){
+		window.open("http://192.168.81.200/Modulos/ElementosProcessuais/ProcessoFichaGeral.aspx?idProcesso="+valor);
+	}
+</script>
+<style>
+	.cls_real:hover{
+		background:#ebebeb;
+		cursor:pointer;
+	}
+</style>
+<body>
+<?php
+
+include('../php2/conexao3.php');
+include('../php2/functions.php');
+
+$codig_and = $_POST['codig_and'];
+$banco_and = $_POST['banco_and'];
+
+$querys  = "";
+$querys .= "SELECT ";
+$html_camp = "";
+
+if($codig_and!=""){	
+	$querys .= " a.DataHoraEvento,";
+	$querys .= " a.CodigoAndamento,";
+	$querys .= " p.CodigoProcesso as 'Codigo', ";
+	$querys .= " p.Comarca as 'comarca',";
+	$querys .= " p.UFComarca as 'estado', ";
+	$querys .= " p.NumeroProcessoCNJ as 'Processo', ";
+	$querys .= " p.ContaContratoNeoCobranca as 'ContaContratoNeoCobranca', ";
+	$querys .= " a.TipoAndamentoProcesso as 'Andamento', ";
+	$querys .= " FORMAT(a.DataHoraEvento, 'dd/MM/yyyy', 'en-US') as 'Data_Evento', ";
+	$querys .= " FORMAT(a.DataHora, 'dd/MM/yyyy', 'en-US')  as 'Data_Cadastro', ";
+	$querys .= " (select top 1 pp.Pessoa from v_Parte_Processo as pp WITH (NOLOCK) WHERE pp.TipoPessoa='".('Réu') . "' and pp.CodigoProcesso=p.CodigoProcesso) as 'Adverso' ";
+	
+	$querys .= " FROM v_Processo AS p WITH (NOLOCK) ";
+	$querys .= " JOIN v_Andamento_Processo AS a WITH (NOLOCK) ON a.CodigoProcesso=p.CodigoProcesso ";
+	$querys .= " WHERE a.CodigoAndamento in (".$codig_and.") ";	
+	$querys .= " GROUP BY 
+					a.DataHoraEvento, 
+					a.CodigoAndamento,
+					p.CodigoProcesso, 
+					p.Comarca, 
+					p.UFComarca,
+					p.NumeroProcessoCNJ,
+					p.ContaContratoNeoCobranca,
+					a.TipoAndamentoProcesso,
+					FORMAT(a.DataHoraEvento, 'dd/MM/yyyy', 'en-US'),
+					FORMAT(a.DataHora, 'dd/MM/yyyy', 'en-US')";
+	
+	$querys .= " ORDER BY a.DataHoraEvento ASC";
+}
+
+$html_camp .= "<table align='center' width='80%' id='tbf1' border='1' cellspacing='5' cellpadding='5' bordercolor='#ccc' style='border-collapse:collapse;font-size:10pt;color:#333;font-family:arial;margin-top:20px' >";
+$html_camp .= "<tr bgcolor='#ebebeb' >";
+$html_camp .= "<th align='center' class='comFiltro'><b>N.</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>".('Código')."</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>Adverso</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>Ajuizamento</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>Processo</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>Conta</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>Comarca</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>UF</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>Andamento</b></td>";
+//$html_camp .= "<th align='center' class='comFiltro'><b>Valor</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>D.Evento</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>D.Cadastro</b></td>";
+$html_camp .= "</tr>";
+
+
+$n=1;
+$a=0;
+$vtotal=0;
+$qr = sqlsrv_query($conexao1,$querys);
+
+while($wr = sqlsrv_fetch_array($qr, SQLSRV_FETCH_ASSOC)){
+	//include('../php2/mylinktj.php');
+	//$linktj
+	
+	$Qdis = sqlsrv_query($conexao1,"
+			SELECT FORMAT(a.DataHoraEvento, 'dd/MM/yyyy', 'en-US') as 'Data_Evento' FROM v_Andamento_Processo as a WITH (NOLOCK) where a.CodigoProcesso='". $wr['Codigo'] . "' and a.TipoAndamentoProcesso='".('Ação distribuída')."' 
+			UNION ALL
+			SELECT FORMAT(a.DataHoraEvento, 'dd/MM/yyyy', 'en-US') as 'Data_Evento' FROM v_Andamento_Processo_Historico as a WITH (NOLOCK) where a.CodigoProcesso='". $wr['Codigo'] . "' and a.TipoAndamentoProcesso='".('Ação distribuída')."' 
+			ORDER BY FORMAT(a.DataHoraEvento, 'dd/MM/yyyy', 'en-US') DESC ");
+	$Wdis = sqlsrv_fetch_array($Qdis,SQLSRV_FETCH_ASSOC);
+	
+	$a++;
+	$estado		= converte_uf($wr['estado']);
+	$comarca 	= htmlentities(remove_uf($wr['comarca']));
+	$pasta 		= $wr['Codigo'];
+	$processo	= $wr['Processo'];
+	$html_camp .= "<tr>";
+	$html_camp .= "<td align='center' class='cls_td'>" . $n++ . "</td>";
+	$html_camp .= "<td align='center' class='cls_real' onclick='enviar_neo(" . $wr['Codigo'] . ")'>" . $wr['Codigo'] . "</td>";
+	$html_camp .= "<td align='center'>" . $wr['Adverso'] . "</td>";
+	$html_camp .= "<td align='center'>" . $Wdis['Data_Evento'] . "</td>";
+	$html_camp .= "<td align='center'>" . ($processo==""?"-":$processo) . "</td>";
+	$html_camp .= "<td align='center'>" . $wr['ContaContratoNeoCobranca'] . "</td>";
+	$html_camp .= "<td align='center'>" . $comarca . "</td>";
+	$html_camp .= "<td align='center'>" . $estado . "</td>";
+	$html_camp .= "<td align='center'>" . $wr['Andamento'] . "</td>";
+	//$html_camp .= "<td align='right' class='cls_rs'> " . number_format($wr['valores'],2,",",".") . " </td>";
+	$vtotal += $wr['valores']; 
+	$html_camp .= "<td align='right'> " . $wr['Data_Evento'] . " </td>";
+	$html_camp .= "<td align='right'> " . $wr['Data_Cadastro'] . " </td>";
+	$html_camp .= "</tr>";
+}
+
+$html_camp .= "</table>"; 
+echo $html_camp;
+echo "<table align='center' width='80%' border='0' cellspacing='2' cellpadding='2' style='border-collapse:collapse;font-size:10pt;color:#333;font-family:arial; font-weight:bold;margin-top:20px' >";
+echo "<td align='left'>Banco: " . $banco_and ."</td>";
+echo "<td align='left'><span class='titulo_r' id='id_sel' >Total Selecionado: $a</span></td>";
+//echo "<td align='right'><div id='id_crs' >Valor Total: <b>" . number_format($vtotal,2,',','.') . "</b></div></td>";
+echo "<td align='right'>Andamentos</td>";
+echo "</table>"; 
+echo "<br>"; 
+
+$table=$html_camp;
+include("../php2/exportar.php");
+
+?>
+</body>
+</html>
