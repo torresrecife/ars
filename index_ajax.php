@@ -415,6 +415,7 @@ if($Wrow>0){
 	$col_2=0;
 	$sum_mt_2=0;
 	$sum_tt_2=0;
+	$sum_prej_2=0;
 	
 if($Wrow_2>0){
 	if($Wrow>0){
@@ -691,6 +692,7 @@ if($Wrow_2>0){
 						}
 					}
 				}
+				$sum_prej_2 += $tt_prej;
 				$html_2 .= "</tr>";
 			}
 		}
@@ -703,7 +705,8 @@ if($Wrow_2>0){
 	
 	$html_3 .= "<br>";
 	$html_3 .= "<table align='center' height='6%' width='25%' border='1' cellspacing='3' cellpadding='3' id='tb_tot' style='font-family:arial;font-size:8pt; border-collapse: collapse;'>";
-		$tot_3 = number_format(($sum_tt_2/$sum_mt_2)*100,1,',','');
+		$sum_tt_3 = ($sum_tt_2-$sum_prej_2);
+		$tot_3 = number_format(($sum_tt_3/$sum_mt_2)*100,1,',','');
 		if($tot_3>=100 && $tot_3<110){
 			$cor_3 = "circle_green.png";
 		}elseif($tot_3<100 && $tot_3>=80){
@@ -718,7 +721,7 @@ if($Wrow_2>0){
 		$html_3 .= number_format($sum_mt_2,2,',','.') . "<br>";
 		$html_3 .= "</td>";
 		$html_3 .= "<td align='center' style='background:#ffffff'>R$ ";
-		$html_3 .= number_format($sum_tt_2,2,',','.') . "<br>";
+		$html_3 .= number_format($sum_tt_3,2,',','.') . "<br>";
 		$html_3 .= "</td>";
 		$html_3 .= "<td align='center' style='background:#ffffff'><img src='http://10.81.11.202/img/$cor_3' class='box' />";
 		$html_3 .= $tot_3 . "%";
