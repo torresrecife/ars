@@ -383,12 +383,18 @@ if($Wrow>0){
 
 	$table .= $html_1;
 
+	$prejuizo_lancamento = "CUSTAS POR FALHA OPERACIONAL";
+	$prejuizo_lancamento_sql = mysqli_real_escape_string($conexao4,$prejuizo_lancamento);
+
 	$sel_2  = " SELECT * ";
 	$sel_2 .= " FROM andamentos AS a ";
   //$sel_2 .= " JOIN banco_andamentos AS b ON a.anda_id=b.anda_id ";
 	$sel_2 .= " JOIN metas_andamentos AS b ON a.anda_id=b.anda_id ";
 	$sel_2 .= " WHERE b.banco_id=" . $Wb['banco_id'] . " ";
 	$sel_2 .= " AND a.especie=2 ";
+	$sel_2 .= " AND a.nome<>'".$prejuizo_lancamento_sql."' ";
+	$sel_2 .= " AND a.chave<>'".$prejuizo_lancamento_sql."' ";
+	$sel_2 .= " AND a.anda_neo<>'".$prejuizo_lancamento_sql."' ";
   //$sel_2 .= " AND b.stt='Y' ";
 	$sel_2 .= " AND b.meta_mes=$mes ";
 	$sel_2 .= " AND b.meta_ano=$ano ";
@@ -609,6 +615,75 @@ if($Wrow_2>0){
 				}
 			}
 			$html_2 .= "</tr>";
+
+			$sel_prej  = " SELECT * ";
+			$sel_prej .= " FROM andamentos AS a ";
+			$sel_prej .= " JOIN metas_andamentos AS b ON a.anda_id=b.anda_id ";
+			$sel_prej .= " WHERE b.banco_id=" . $Wb['banco_id'] . " ";
+			$sel_prej .= " AND a.especie=2 ";
+			$sel_prej .= " AND (a.nome='".$prejuizo_lancamento_sql."' OR a.chave='".$prejuizo_lancamento_sql."' OR a.anda_neo='".$prejuizo_lancamento_sql."') ";
+			$sel_prej .= " AND b.meta_mes=$mes ";
+			$sel_prej .= " AND b.meta_ano=$ano ";
+			$sel_prej .= " GROUP BY b.banco_id,b.anda_id ";
+			$sel_prej .= " ORDER BY a.especie asc, a.ordem asc ";
+			$Qprej = mysqli_query($conexao4,$sel_prej);
+			while($Wprej = mysqli_fetch_array($Qprej)){
+				$lancamentos_prej = str_replace(",","','",$Wprej['anda_neo']);
+				$c_prej=0;
+				$tt_prej=0;
+				$codig_lnc_prej = array();
+				$codig_uni_prej = array();
+				$html_2 .= "<tr>";
+				for($m=1;$m<=($ncol);$m++){
+					if($m==1){
+						$html_2 .= "<td style='border: 0px'></td>";
+						$html_2 .= "<td class='cls_vals2 cls_bk'><b>PREJU&Iacute;ZOS</b></td>";
+					}else{
+						if( (($m==2 || $m==5 || $m==8 || $m==11) && $ncol==14) || 
+							(($m==2 || $m==5 || $m==8 || $m==11 || $m==14)  && $ncol==17)){
+							$html_2 .= "<td align='center' class='cls_vals2 cls_bk' style='background:#F2F5A9'><b>0,00</b></td>";
+						}elseif( (($m==3 || $m==6 || $m==9 || $m==12 ) && $ncol==14) ||
+							(($m==3 || $m==6 || $m==9 || $m==12 || $m==15)  && $ncol==17) ){
+							$c_prej++;
+							$qntd_prej  = " SELECT l.CodigoLancamento, l.Valor as 'qtd2'";
+							$qntd_prej .= " FROM v_Processo AS p WITH (NOLOCK) ";
+							$qntd_prej .= " JOIN v_Lancamento_Processo AS l ON l.CodigoProcesso=p.CodigoProcesso ";
+							$qntd_prej .= " WHERE l.TipoLancamento IN ('".$lancamentos_prej."') ";
+							if($carteira_vinc_2=="LIKE"){
+								$qntd_prej .= " AND p.Carteira LIKE '%".str_replace("'","",$condicao_2)."%' ";
+							}else{
+								$qntd_prej .= " AND p.Carteira IN (".$condicao_2.") ";
+							}
+							if( $Wsem['ini_'.$c_prej] != "" && $Wsem['fim_'.$c_prej] !=""){
+								$qntd_prej .= " AND (day(l.DataHora_Evento)>=" . $Wsem['ini_'.$c_prej] . " AND day(l.DataHora_Evento)<=" . $Wsem['fim_'.$c_prej] . ")";
+							}else{
+								$qntd_prej .= " AND (day(l.DataHora_Evento)>=" . date('d', strtotime(P_semana($mes,$ano,$c_prej,"ini"))) . " AND day(l.DataHora_Evento)<=" . date('d', strtotime(P_semana($mes,$ano,$c_prej,"fim"))) . ")";
+							}
+							$qntd_prej .= " AND MONTH(l.DataHora_Evento)=$mes ";
+							$qntd_prej .= " AND YEAR(l.DataHora_Evento)=$ano ";
+							$qntd_prej .= " GROUP BY l.CodigoLancamento, l.Valor ";
+							$Qqntd_prej = sqlsrv_query($conexao1,$qntd_prej);
+							$Wprej_qtd = 0;
+							while($Wbanc_prej = sqlsrv_fetch_array($Qqntd_prej, SQLSRV_FETCH_ASSOC)){
+								$Wprej_qtd += $Wbanc_prej['qtd2'];
+								$codig_lnc_prej[] = $Wbanc_prej['CodigoLancamento'];
+								$codig_uni_prej[] = $Wbanc_prej['CodigoLancamento'];
+							}
+							$tt_prej += $Wprej_qtd;
+							$html_2 .= "<td align='center' class='cls_vals2 cls_real cls_bk' onclick='send_form(\"" . implode(',',$codig_uni_prej)."\",\"" . $Wb['banco_name'] . "\",\"fat\");'><b>".number_format(($Wprej_qtd?$Wprej_qtd:0),2,',','.')."</b></td>";
+							$codig_uni_prej=array();
+						}else if( (($m==4 || $m==7 || $m==10 || $m==13) && $ncol==14) || 
+							(($m==4 || $m==7 || $m==10 || $m==13 || $m==16)  && $ncol==17)){
+							$html_2 .= "<td align='center' class='cls_vals2 cls_bk'><b>-</b></td>";
+						}else if($m==$ncol){
+							$html_2 .= "<td align='center' class='cls_vals2 cls_bk' style='background:#F2F5A9'><b>0,00</b></td>";
+							$html_2 .= "<td align='center' class='cls_vals2 cls_real cls_bk' onclick='send_form(\"" . implode(',',$codig_lnc_prej) ."\",\"" . $Wb['banco_name'] . "\",\"fat\");'><b>".number_format($tt_prej,2,',','.')."</b></td>";
+							$html_2 .= "<td align='center' class='cls_vals2 cls_bk'><b>-</b></td>";
+						}
+					}
+				}
+				$html_2 .= "</tr>";
+			}
 		}
 	}
 	$html_2 .= "<input type='hidden' name='codig_lnc' id='codig_lnc' />";
