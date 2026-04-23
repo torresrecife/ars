@@ -1,0 +1,21 @@
+p {
+	margin:0px; 
+	font-size: 11pt; 
+	font-family:Tahoma;
+}
+p.recuo{
+	margin-left:120px;
+	text-align:justify;
+} 
+.titulos{
+	width:99%;
+	border:1px solid #000000;
+	font-weight:bold;
+	font-family:Tahoma;
+	font-size: 11pt;
+	text-align:center;
+	position:relative;
+}
+span.tabs{
+	margin-left:60px
+}
