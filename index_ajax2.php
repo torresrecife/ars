@@ -106,7 +106,6 @@ $sel .= " AND a.especie=1 ";
 //$sel .= " AND b.stt='Y' ";
 $sel .= " AND b.meta_mes=$mes ";
 $sel .= " AND b.meta_ano=$ano ";
-$sel .= " GROUP BY b.banco_id,b.anda_id ";
 $sel .= " ORDER BY a.especie asc ";
 $Qsel = mysqli_query($conexao4,$sel);
 $Wrow = mysqli_num_rows($Qsel);
@@ -389,7 +388,6 @@ if($Wrow>0){
   //$sel_2 .= " AND b.stt='Y' ";
 	$sel_2 .= " AND b.meta_mes=$mes ";
 	$sel_2 .= " AND b.meta_ano=$ano ";
-	$sel_2 .= " GROUP BY b.banco_id,b.anda_id ";
 	$sel_2 .= " ORDER BY a.especie asc ";
 	$Qsel_2 = mysqli_query($conexao4,$sel_2);
 	$Wrow_2 = mysqli_num_rows($Qsel_2);

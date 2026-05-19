@@ -1,4 +1,10 @@
 <?php
+if (defined('ARS_LEGACY_FUNCTIONS_LOADED')) {
+	return;
+}
+
+define('ARS_LEGACY_FUNCTIONS_LOADED', true);
+
 function formata_data_extenso($strDate){
 	$arrMonthsOfYear = array(1 => 'janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro');
 	$intDayOfMonth = date("d");

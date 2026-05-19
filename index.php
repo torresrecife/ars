@@ -327,9 +327,12 @@
 		<p class="copyright" style="color:#ccc">@Torres.</p>
 	</div-->
 </form>
-<?php 
+<?php
 
-include("../php2/exportar.php");
+$exportarPath = __DIR__ . '/../php2/exportar.php';
+if (is_file($exportarPath)) {
+	include $exportarPath;
+}
 
 ?>
 </body>

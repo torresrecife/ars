@@ -244,7 +244,7 @@ while($Wsel = mysqli_fetch_array($Qsel)){
 	$html_1 .= "<tr style='height:30px'>";
 	$html_1 .= "<td class='cls_indic' style='padding-left:5px'>" . $Wsel['banco_name'] . " (" . $Wsel['banco_class'] . ") </td>";
 	
-	$Qand = mysqli_query($conexao4,"SELECT * FROM metas_andamentos AS m JOIN andamentos AS a ON m.anda_id=a.anda_id WHERE m.banco_id='".$Wsel['banco_id']."' AND m.meta_mes=" . $mes . " AND m.meta_ano=" . $ano . " AND a.especie=2 GROUP BY a.anda_id, m.meta_valor ");
+	$Qand = mysqli_query($conexao4,"SELECT * FROM metas_andamentos AS m JOIN andamentos AS a ON m.anda_id=a.anda_id WHERE m.banco_id='".$Wsel['banco_id']."' AND m.meta_mes=" . $mes . " AND m.meta_ano=" . $ano . " AND a.especie=2 ");
 	
 	$lancamentos="";
 	$sem_1 = 0;
@@ -272,7 +272,7 @@ while($Wsel = mysqli_fetch_array($Qsel)){
 		if( (($m==1 || $m==4 || $m==7 || $m==10) && $ncol==12) ||
 			(($m==1 || $m==4 || $m==7 || $m==10 || $m==13) && $ncol==15) ){			
 			$col_2++;
-			$Qsemn = mysqli_query($conexao4,"SELECT * FROM metas_andamentos AS m JOIN andamentos AS a ON m.anda_id=a.anda_id WHERE m.banco_id='".$Wsel['banco_id']."' AND m.meta_mes=" . $mes . " AND m.meta_ano=" . $ano . " AND a.especie=2 GROUP BY a.anda_id, m.meta_valor ");
+			$Qsemn = mysqli_query($conexao4,"SELECT * FROM metas_andamentos AS m JOIN andamentos AS a ON m.anda_id=a.anda_id WHERE m.banco_id='".$Wsel['banco_id']."' AND m.meta_mes=" . $mes . " AND m.meta_ano=" . $ano . " AND a.especie=2 ");
 			if(mysqli_num_rows($Qsemn)>0){
 				$Wsemn = mysqli_fetch_array($Qsemn);
 				if($Wsemn['def_sem']=="N"){

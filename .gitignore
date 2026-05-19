@@ -1,10 +1,8 @@
-# Sistema
-.DS_Store
 Thumbs.db
-
-# IDEs / editores
+.DS_Store
 .vscode/
 .idea/
-
-# security
-inc/seguranca.php
+vendor/
+.env
+.env.*
+storage/logs/*.log
