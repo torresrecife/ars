@@ -51,6 +51,10 @@ if (!defined('ARS_BOOTSTRAP_LOADED')) {
 
 	$conexao1 = null;
 	if (function_exists('sqlsrv_connect')) {
-		$conexao1 = $app->db()->sqlsrv();
+		try {
+			$conexao1 = $app->db()->sqlsrv();
+		} catch (\RuntimeException $exception) {
+			$conexao1 = null;
+		}
 	}
 }

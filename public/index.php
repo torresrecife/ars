@@ -19,6 +19,13 @@ $controllerClass = $route['controller'];
 $action = $route['action'];
 $connection = $app->db()->mysql();
 $view = new \App\Support\View($app->basePath());
+$sqlsrvConnection = null;
+
+try {
+	$sqlsrvConnection = $app->db()->sqlsrv();
+} catch (\RuntimeException $exception) {
+	$sqlsrvConnection = null;
+}
 
 if ($controllerClass === \App\Http\Controllers\MetaController::class) {
 	$controller = new $controllerClass(
@@ -45,7 +52,7 @@ if ($controllerClass === \App\Http\Controllers\WeekController::class) {
 
 if ($controllerClass === \App\Http\Controllers\FinancialDetailController::class) {
 	$controller = new $controllerClass(
-		new \App\Services\NeoDetailService(new \App\Repositories\NeoDetailRepository($app->db()->sqlsrv())),
+		new \App\Services\NeoDetailService(new \App\Repositories\NeoDetailRepository($sqlsrvConnection)),
 		$view
 	);
 	echo $controller->$action($_REQUEST);
@@ -54,7 +61,7 @@ if ($controllerClass === \App\Http\Controllers\FinancialDetailController::class)
 
 if ($controllerClass === \App\Http\Controllers\AndamentoDetailController::class) {
 	$controller = new $controllerClass(
-		new \App\Services\NeoDetailService(new \App\Repositories\NeoDetailRepository($app->db()->sqlsrv())),
+		new \App\Services\NeoDetailService(new \App\Repositories\NeoDetailRepository($sqlsrvConnection)),
 		$view
 	);
 	echo $controller->$action($_REQUEST);
@@ -63,9 +70,11 @@ if ($controllerClass === \App\Http\Controllers\AndamentoDetailController::class)
 
 if ($controllerClass === \App\Http\Controllers\DashboardPanelController::class) {
 	$controller = new $controllerClass(
-		$connection,
-		$app->db()->sqlsrv(),
-		$arrMonths
+		new \App\Services\DashboardPanelService(
+			new \App\Repositories\DashboardRepository($connection),
+			new \App\Repositories\NeoPanelRepository($sqlsrvConnection),
+			$arrMonths
+		)
 	);
 	echo $controller->$action($_REQUEST);
 	exit;
