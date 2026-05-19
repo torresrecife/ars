@@ -31,16 +31,19 @@ require_once $basePath . '/app/Repositories/WeekRepository.php';
 require_once $basePath . '/app/Repositories/NeoDetailRepository.php';
 require_once $basePath . '/app/Repositories/DashboardRepository.php';
 require_once $basePath . '/app/Repositories/NeoPanelRepository.php';
+require_once $basePath . '/app/Repositories/MainPageRepository.php';
 require_once $basePath . '/app/Services/AuthService.php';
 require_once $basePath . '/app/Services/MetaService.php';
 require_once $basePath . '/app/Services/WeekService.php';
 require_once $basePath . '/app/Services/NeoDetailService.php';
 require_once $basePath . '/app/Services/DashboardPanelService.php';
+require_once $basePath . '/app/Services/MainPageService.php';
 require_once $basePath . '/app/Http/Controllers/MetaController.php';
 require_once $basePath . '/app/Http/Controllers/WeekController.php';
 require_once $basePath . '/app/Http/Controllers/FinancialDetailController.php';
 require_once $basePath . '/app/Http/Controllers/AndamentoDetailController.php';
 require_once $basePath . '/app/Http/Controllers/DashboardPanelController.php';
+require_once $basePath . '/app/Http/Controllers/HomeController.php';
 
 \App\Support\Env::load($basePath . '/.env');
 
