@@ -4,30 +4,21 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Services\DashboardPanelService;
+
 class DashboardPanelController
 {
-	/** @var mysqli */
-	private $mysqlConnection;
+	/** @var DashboardPanelService */
+	private $service;
 
-	/** @var mixed */
-	private $sqlsrvConnection;
-
-	/** @var array */
-	private $months;
-
-	public function __construct($mysqlConnection, $sqlsrvConnection, array $months)
+	public function __construct(DashboardPanelService $service)
 	{
-		$this->mysqlConnection = $mysqlConnection;
-		$this->sqlsrvConnection = $sqlsrvConnection;
-		$this->months = $months;
+		$this->service = $service;
 	}
 
 	public function index(array $input = array())
 	{
-		$conexao4 = $this->mysqlConnection;
-		$conexao1 = $this->sqlsrvConnection;
-		$arrMonths = $this->months;
-		$_POST = $input;
+		$viewData = $this->service->build($input);
 
 		ob_start();
 		include base_path('views/dashboard/panel.php');
