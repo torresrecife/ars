@@ -181,7 +181,7 @@ while($Wsel = mysqli_fetch_array($Qsel)){
 	$lin++;
 	$html_1 .= "<tr style='height:30px'>";
 	$html_1 .= "<td class='cls_body' style='padding-left:5px'>" . $Wsel['banco_name'] . "</td>";
-	$Qand = mysqli_query($conexao4,"SELECT a.anda_id, m.meta_valor, anda_neo FROM metas_andamentos AS m JOIN andamentos AS a ON m.anda_id=a.anda_id WHERE m.banco_id='".$Wsel['banco_id']."' AND m.meta_mes=" . $mes . " AND m.meta_ano=" . $ano . " AND a.especie=2 GROUP BY a.anda_id, m.meta_valor ");
+	$Qand = mysqli_query($conexao4,"SELECT a.anda_id, m.meta_valor, anda_neo FROM metas_andamentos AS m JOIN andamentos AS a ON m.anda_id=a.anda_id WHERE m.banco_id='".$Wsel['banco_id']."' AND m.meta_mes=" . $mes . " AND m.meta_ano=" . $ano . " AND a.especie=2 ");
 	$lancamentos="";
 	while($Wand = mysqli_fetch_array($Qand)){
 		$mt_mes += $Wand['meta_valor'];

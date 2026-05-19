@@ -58,22 +58,20 @@ function new_pass(){
 error_reporting(0);
 ini_set("display_errors", 0 );
 
-session_start();
 include("seguranca.php");
 	
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 	$usuario = (isset($_POST['username'])) ? $_POST['username'] : '';
 	$senha2  = (isset($_POST['passwd'])) ? $_POST['passwd'] : '';
-	$senha   = md5($senha2);
-	if (validaUsuario($usuario, $senha, $conexao4) == true){
+	if (validaUsuario($usuario, $senha2, $conexao4) == true){
 		$qpass = mysqli_query($conexao4,"SELECT acesso_usu FROM usuarios where id_usu = " . $_SESSION['usuarioID'] . " ");
 		$wpass = mysqli_fetch_assoc($qpass);
 		//echo $wpass['acesso_usu'];
 		if($wpass['acesso_usu']=="" || $wpass['acesso_usu']=="0000-00-00 00:00:00"){
 			echo "	<script> $(function() {	new_pass(); }); </script> ";
 		}else{
-			mysqli_query($conexao4,"UPDATE usuarios SET acesso_usu = '" . date("Y-m-d H:i:s") . "' where id_usu = " . $_SESSION['usuarioID'] . " ");
-			header("Location: ../index.php");
+			ars_refresh_user_access($_SESSION['usuarioID'], $conexao4);
+			exit('<script>window.location="../index.php";</script>');
 		}
 	}else{
 		expulsaVisitante(1);
