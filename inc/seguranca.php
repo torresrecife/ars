@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+if (defined('ARS_SEGURANCA_LOADED')) {
+	return;
+}
+
+define('ARS_SEGURANCA_LOADED', true);
+
 require_once __DIR__ . '/bootstrap.php';
 
 function ars_auth_service() {

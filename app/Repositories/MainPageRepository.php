@@ -127,7 +127,7 @@ class MainPageRepository
 		$ids = array();
 		foreach (explode(',', (string) $value) as $item) {
 			$item = trim($item);
-			if ($item !== '' && ctype_digit($item)) {
+			if ($item !== '' && ctype_digit($item) && (int) $item > 0) {
 				$ids[(int) $item] = (int) $item;
 			}
 		}
