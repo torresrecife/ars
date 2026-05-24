@@ -32,7 +32,16 @@ if (!defined('ARS_BOOTSTRAP_LOADED')) {
 
 	$conexao4 = null;
 	if ($_SG['conectaServidor'] == true) {
-		$conexao4 = $app->db()->mysql();
+		try {
+			$conexao4 = $app->db()->mysql();
+		} catch (\RuntimeException $exception) {
+			echo "<div style='margin:40px;font-family:Arial,sans-serif;font-size:14px'>";
+			echo "<b>Erro de configuracao do banco MySQL.</b><br><br>";
+			echo htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8');
+			echo "</div>";
+			exit;
+		}
+
 		if (!$conexao4) {
 			die("MySQL: Nao foi possivel conectar-se ao servidor [" . $arsConfig['db']['mysql']['host'] . "].");
 		}
@@ -50,11 +59,26 @@ if (!defined('ARS_BOOTSTRAP_LOADED')) {
 	}
 
 	$conexao1 = null;
-	if (function_exists('sqlsrv_connect')) {
+}
+
+if (!function_exists('ars_sqlsrv_connection')) {
+	function ars_sqlsrv_connection() {
+		global $app, $conexao1;
+
+		if ($conexao1 !== null) {
+			return $conexao1;
+		}
+
+		if (!function_exists('sqlsrv_connect')) {
+			return null;
+		}
+
 		try {
 			$conexao1 = $app->db()->sqlsrv();
 		} catch (\RuntimeException $exception) {
 			$conexao1 = null;
 		}
+
+		return $conexao1;
 	}
 }

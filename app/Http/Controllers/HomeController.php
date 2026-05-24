@@ -59,6 +59,11 @@ class HomeController
 		$originalRequest = $_REQUEST;
 		$_POST = array_merge($_POST, $input);
 		$_REQUEST = array_merge($_REQUEST, $input);
+		$app = isset($GLOBALS['app']) ? $GLOBALS['app'] : null;
+		$conexao4 = isset($GLOBALS['conexao4']) ? $GLOBALS['conexao4'] : null;
+		$conexao1 = isset($GLOBALS['conexao1']) ? $GLOBALS['conexao1'] : null;
+		$arrMonths = isset($GLOBALS['arrMonths']) ? $GLOBALS['arrMonths'] : array();
+		$_SG = isset($GLOBALS['_SG']) ? $GLOBALS['_SG'] : array();
 		$usu_setor = isset($_SESSION['usuarioSetor']) ? $_SESSION['usuarioSetor'] : 0;
 		$usu_Cliente = isset($_SESSION['usuarioCliente']) ? $_SESSION['usuarioCliente'] : 0;
 		$usu_nivel = isset($_SESSION['usuarioNivel']) ? $_SESSION['usuarioNivel'] : '';
@@ -69,8 +74,16 @@ class HomeController
 		$mesano = isset($GLOBALS['arrMonths']) ? $GLOBALS['arrMonths'][(int) date('m')] . ' / ' . date('Y') : date('m') . ' / ' . date('Y');
 
 		ob_start();
-		include $fullPath;
-		$output = (string) ob_get_clean();
+		try {
+			include $fullPath;
+			$output = (string) ob_get_clean();
+		} catch (\Throwable $exception) {
+			ob_end_clean();
+			$output = "<div style='margin:40px;font-family:Arial,sans-serif;font-size:14px'>"
+				. "<b>Erro ao carregar o modulo legado.</b><br><br>"
+				. htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8')
+				. "</div>";
+		}
 
 		$_POST = $originalPost;
 		$_REQUEST = $originalRequest;
