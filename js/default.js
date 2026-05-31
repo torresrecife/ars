@@ -331,6 +331,82 @@ function EnviarDados(frm,hid,are,fla){
 			tt="Novo Cliente";
 			tu="criado";
 			$(".validateTips").text("Crie Um " + tt);
+			clienteCarteirasReset();
+			$('.cls_cliente').each(function() {
+				$(this).val("");
+			});
+			$("#dados_name_pool").val("");
+			$("#dialog-edit-cliente" ).dialog({
+				title: tt,
+				modal: true,
+				autoOpen: true,
+				height: 400,
+				width: 600,
+				buttons: {
+					Salvar: function() {
+						var mdados="";
+						$('.cls_cliente').each(function(){
+							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
+								alert("O campo " + $(this).attr("title") + " Ã© obrigatÃ³rio ");
+								$(this).focus();
+								return false;
+							}
+							mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
+						});
+						var carteiraPendente = $("#dados_name_pool").val();
+						if(carteiraPendente){
+							clienteCarteirasAdicionarValor(carteiraPendente, true);
+							$("#dados_name_pool").val("");
+						}
+						if($('.cls_cliente_carteira_input').length==0){
+							alert("Selecione ao menos uma carteira para o cliente.");
+							$("#dados_name_pool").focus();
+							return false;
+						}
+						var cartei="";
+						var totalCarteiras = 0;
+						var carteirasLista = [];
+						$('.cliente-carteiras-item').each(function(index){
+							var numero = index + 1;
+							var valorCarteira = $(this).attr("data-carteira");
+							totalCarteiras = numero;
+							carteirasLista.push(valorCarteira);
+							cartei += "dados_name_" + numero + "=" + escape(valorCarteira) + "&";
+						});
+						$.ajax({
+						   type: "POST",
+						   url:  "inc/ajax_cliente.php",
+						   data: "flag=" + valor2 + "&" + mdados + "&cartei_num=" + totalCarteiras + "&dados_json=" + encodeURIComponent(JSON.stringify(carteirasLista)) + "&" + cartei,
+						   success: function(retorno_ajax){
+								if(retorno_ajax==1){
+									$( "#dialog-edit-cliente" ).dialog( "close" );
+									msgbox("<br><table align='center'><tr><td>Cliente " + tu + " com sucesso !</td></tr></table><br>", {
+										Fechar: function(){
+											$( this ).dialog( "close" );
+											EnviarDados('index.php','11','');
+										}
+									});
+								}else if(retorno_ajax==2){
+									alert("Servidor jÃ¡ cadastrado!");
+								}else{
+									alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao administrador)");
+								}
+							}
+						});
+					},
+					Sair: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				close: function(){ 
+					$('.cls_cliente').each(function() {
+						$(this).val("");
+					});
+					clienteCarteirasReset();
+					$("#dados_name_pool").val("");
+				}
+			});
+			return;
 		}else if(valor2=="U"){
 			tt="Editar Cliente";
 			tu="editado";
@@ -343,6 +419,7 @@ function EnviarDados(frm,hid,are,fla){
 			data: "flag=E&banco_id=" + valor1,
 			success: function(retorno_ajax){
 				var ret = retorno_ajax.split("-|-");
+				clienteCarteirasReset();
 				$("#banco_id").val(ret[0]);
 				$("#banco_name").val(ret[1]);
 				$("#banco_cod").val(ret[2]);
@@ -351,6 +428,14 @@ function EnviarDados(frm,hid,are,fla){
 				$("#banco_class").val(ret[6]);
 				$("#simulador").val(ret[7]);
 				$("#banco_curto").val(ret[8]);
+				var dadosSalvos = ret[9] ? ret[9].split("|||") : [];
+				if(dadosSalvos.length>0 && dadosSalvos[0]!=""){
+					for(var i=0;i<dadosSalvos.length;i++){
+						if(dadosSalvos[i]!=""){
+							clienteCarteirasAdicionarValor(dadosSalvos[i], true);
+						}
+					}
+				}
 				
 				$("#dialog-edit-cliente" ).dialog({
 					title: tt,
@@ -370,16 +455,30 @@ function EnviarDados(frm,hid,are,fla){
 								mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
 							});
 							/////pega as carteiras///////////
+							var carteiraPendente = $("#dados_name_pool").val();
+							if(carteiraPendente){
+								clienteCarteirasAdicionarValor(carteiraPendente, true);
+								$("#dados_name_pool").val("");
+							}
+							if($('.cls_cliente_carteira_input').length==0){
+								alert("Selecione ao menos uma carteira para o cliente.");
+								$("#dados_name_pool").focus();
+								return false;
+							}
 							var cartei="";
-							var numes=0;
-							$('.cls_cliente2').each(function(){
-								numes++;
-								cartei += $(this).attr("name")+"="+escape($(this).val())+"&";
+							var totalCarteiras = 0;
+							var carteirasLista = [];
+							$('.cliente-carteiras-item').each(function(index){
+								var numero = index + 1;
+								var valorCarteira = $(this).attr("data-carteira");
+								totalCarteiras = numero;
+								carteirasLista.push(valorCarteira);
+								cartei += "dados_name_" + numero + "=" + escape(valorCarteira) + "&";
 							});
 							$.ajax({
 							   type: "POST",
 							   url:  "inc/ajax_cliente.php",
-							   data: "flag=" + valor2 + "&" + mdados + "&cartei_num="+$('#cartei_num').val()+"&"+cartei,
+							   data: "flag=" + valor2 + "&" + mdados + "&cartei_num=" + totalCarteiras + "&dados_json=" + encodeURIComponent(JSON.stringify(carteirasLista)) + "&" + cartei,
 							   success: function(retorno_ajax){
 									if(retorno_ajax==1){
 										$( "#dialog-edit-cliente" ).dialog( "close" );
@@ -406,10 +505,82 @@ function EnviarDados(frm,hid,are,fla){
 						$('.cls_cliente').each(function() {
 							$(this).val("");
 						});
+						clienteCarteirasReset();
+						$("#dados_name_pool").val("");
 					}
 				});
 			}
 		});
+	}
+	function clienteCarteirasReset(){
+		$("#cliente-carteiras-vinculadas").html("");
+		$("#cliente-carteiras-inputs").html("");
+		$("#cliente-carteiras-vazio").show();
+		$("#cartei_num").val(0);
+	}
+	function clienteCarteirasEscape(valor){
+		return String(valor)
+			.replace(/&/g, "&amp;")
+			.replace(/"/g, "&quot;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;");
+	}
+	function clienteCarteirasAtualizarInputs(){
+		var html = "";
+		$(".cliente-carteiras-item").each(function(index){
+			var valor = $(this).attr("data-carteira");
+			var numero = index + 1;
+			html += "<input type='hidden' class='cls_cliente_carteira_input' name='dados_name_" + numero + "' value=\"" + clienteCarteirasEscape(valor) + "\" />";
+		});
+		$("#cliente-carteiras-inputs").html(html);
+		$("#cartei_num").val($(".cliente-carteiras-item").length);
+		if($(".cliente-carteiras-item").length>0){
+			$("#cliente-carteiras-vazio").hide();
+		}else{
+			$("#cliente-carteiras-vazio").show();
+		}
+	}
+	function clienteCarteirasAdicionar(){
+		var valor = $("#dados_name_pool").val();
+		if(!valor){
+			alert("Selecione uma carteira para adicionar.");
+			return false;
+		}
+		return clienteCarteirasAdicionarValor(valor, false);
+	}
+	function clienteCarteirasAdicionarValor(valor, silencioso){
+		var carteira = $.trim(valor);
+		var existe = false;
+		if(carteira==""){
+			return false;
+		}
+		$(".cliente-carteiras-item").each(function(){
+			if($(this).attr("data-carteira")===carteira){
+				existe = true;
+			}
+		});
+		if(existe){
+			if(!silencioso){
+				alert("Essa carteira ja esta vinculada ao cliente.");
+			}
+			return false;
+		}
+		$("#cliente-carteiras-vinculadas").append(
+			"<div class='cliente-carteiras-item' data-carteira=\"" + clienteCarteirasEscape(carteira) + "\">"
+			+ "<span class='cliente-carteiras-nome'>" + clienteCarteirasEscape(carteira) + "</span>"
+			+ "<button type='button' class='cliente-carteiras-remover' onclick='clienteCarteirasRemover(this);'>Remover</button>"
+			+ "</div>"
+		);
+		clienteCarteirasAtualizarInputs();
+		if(!silencioso){
+			$("#dados_name_pool").val("");
+		}
+		return false;
+	}
+	function clienteCarteirasRemover(botao){
+		$(botao).closest(".cliente-carteiras-item").remove();
+		clienteCarteirasAtualizarInputs();
+		return false;
 	}
 	function fc_edit_andamento(valor1,valor2){
 		
@@ -883,23 +1054,7 @@ function addMes(data,mes){
 	return moment(minhaData).format('DD/MM/YYYY');
 }
 function inserir_cli(valor,stt){
-	var crt = parseFloat($("#cartei_num").val());
-	if(stt==1){
-		crt = crt+1;
-		$("#dados_"+(crt-1)).html(
-		"<select class='cls_cliente input-default' name='dados_name_"+crt+"' style='width:360px;height:22px'>"+valor+"</select>" +
-		"<button id='bt1_"+crt+"' class='bts' onclick='inserir_cli($(\"#dados_name_1\").html(),1);'>+</button>" +
-		"<button id='bt0_"+crt+"' class='bts' onclick='inserir_cli($(\"#dados_name_1\").html(),0);'>-</button>" + 
-		"<div id='dados_"+crt+"'></div>");
-		$("#bt1_"+(crt-1)).hide();
-		$("#bt0_"+(crt-1)).hide();	
-	}else if(stt==0){
-		crt = crt-1;
-		$("#dados_"+crt).html(" ");
-		$("#bt1_"+crt).show();
-		$("#bt0_"+crt).show();
-	}
-	$("#cartei_num").val(crt);
+	return clienteCarteirasAdicionar();
 }
 function inserir_anda(valor,stt){
 	var crt = parseFloat($("#andam_num").val());
