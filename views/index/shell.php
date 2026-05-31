@@ -9,7 +9,8 @@
 	<script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.8.23.custom.min.js"></script>
 	<script type="text/javascript" src="js/jquery.meio.mask.js"></script>
-	<script type="text/javascript" src="js/default.js"></script>
+	<?php $defaultJsVersion = is_file(base_path('js/default.js')) ? filemtime(base_path('js/default.js')) : time(); ?>
+	<script type="text/javascript" src="js/default.js?v=<?php echo $defaultJsVersion; ?>"></script>
 </head>
 <body id="minwidth-body">
 <form name="form_ars" action="index.php" method="POST" id="form_ars">
