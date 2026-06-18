@@ -39,6 +39,8 @@ if($codig_lnc!=""){
 	$querys .= " p.CodigoProcesso as 'Codigo', ";
 	$querys .= " p.Comarca as 'comarca',";
 	$querys .= " p.UFComarca as 'estado', ";
+	$querys .= " p.Cartorio as 'Cartorio', ";
+	$querys .= " l.CodigoLancamento as 'CodigoLancamento', ";
 	$querys .= " (select top 1 pp.Pessoa from v_Parte_Processo as pp WITH (NOLOCK) where pp.TipoPessoa='Réu' and pp.CodigoProcesso=p.CodigoProcesso) as 'Adverso', ";
 	$querys .= " (select top 1 pp.Pessoa from v_Parte_Processo as pp WITH (NOLOCK) where pp.TipoPessoa='Autor' and pp.CodigoProcesso=p.CodigoProcesso) as 'Adverso2', ";
 	$querys .= " p.Area, ";
@@ -64,6 +66,8 @@ $html_camp .= "<th align='center' class='comFiltro'><b>Processo</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Conta</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Comarca</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>UF</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>Cartório</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>Cod Lancamento</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Andamento</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Valor</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>D.Evento</b></td>";
@@ -100,6 +104,8 @@ while($wr = sqlsrv_fetch_array($qr, SQLSRV_FETCH_ASSOC)){
 	$html_camp .= "<td align='center'>" . $wr['ContaContratoNeoCobranca']. "</td>";
 	$html_camp .= "<td align='center'>" . $comarca. "</td>";
 	$html_camp .= "<td align='center'>" . $estado . "</td>";
+	$html_camp .= "<td align='center'>" . $wr['Cartorio'] . "</td>";
+	$html_camp .= "<td align='center'>" . $wr['CodigoLancamento'] . "</td>";
 	$html_camp .= "<td align='center'>" . $wr['Andamento'] . "</td>";
 	$html_camp .= "<td align='right' class='cls_rs'> " . number_format($wr['valores'],2,",",".") . " </td>";
 	$vtotal += $wr['valores']; 
