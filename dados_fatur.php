@@ -61,7 +61,8 @@ $html_camp .= "<table align='center' width='70%' id='tbf1' border='1' cellspacin
 $html_camp .= "<tr bgcolor='#ebebeb' >";
 $html_camp .= "<th align='center' class='comFiltro'><b>N.</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Código</b></td>";
-$html_camp .= "<th align='center' class='comFiltro'><b>Adverso</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>Autor</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>Réu</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Processo</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Conta</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Comarca</b></td>";
@@ -97,6 +98,7 @@ while($wr = sqlsrv_fetch_array($qr, SQLSRV_FETCH_ASSOC)){
 	$html_camp .= "<td align='center' class='cls_real' onclick='enviar_neo(" . $wr['Codigo'] . ")'>" . $wr['Codigo'] . "</td>";
 	if($wr['Area'] === 'PASSIVAS') {
 		$html_camp .= "<td align='center'>" . $wr['Adverso2'] . "</td>";
+		$html_camp .= "<td align='center'>" . $wr['Adverso'] . "</td>";
 	} else {
 		$html_camp .= "<td align='center'>" . $wr['Adverso'] . "</td>";	
 	}
