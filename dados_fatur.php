@@ -45,7 +45,8 @@ if($codig_lnc!=""){
 	$querys .= " (select top 1 pp.Pessoa from v_Parte_Processo as pp WITH (NOLOCK) where pp.TipoPessoa='Réu' and pp.CodigoProcesso=p.CodigoProcesso) as 'Adverso', ";
 	$querys .= " (select top 1 pp.Pessoa from v_Parte_Processo as pp WITH (NOLOCK) where pp.TipoPessoa='Autor' and pp.CodigoProcesso=p.CodigoProcesso) as 'Adverso2', ";
 	$querys .= " p.Area, ";
-	$querys .= " p.NumeroProcessoCNJ as 'Processo', ";
+	$querys .= " p.NumeroProcesso as 'Processo', ";
+	$querys .= " p.NumeroProcessoCNJ as 'ProcessoCNJ', ";
 	$querys .= " p.ContaContratoNeoCobranca as 'ContaContratoNeoCobranca', ";
 	$querys .= " l.TipoLancamento as 'Andamento', ";
 	$querys .= " l.valor as 'valores', ";
@@ -65,6 +66,7 @@ $html_camp .= "<th align='center' class='comFiltro'><b>Código</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Autor</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Réu</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Processo</b></td>";
+$html_camp .= "<th align='center' class='comFiltro'><b>Processo CNJ</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Conta</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>Comarca</b></td>";
 $html_camp .= "<th align='center' class='comFiltro'><b>UF</b></td>";
@@ -95,6 +97,7 @@ while($wr = sqlsrv_fetch_array($qr, SQLSRV_FETCH_ASSOC)){
 	$comarca 	= htmlentities(remove_uf($wr['comarca']));
 	$pasta 		= $wr['Codigo'];
 	$processo	= $wr['Processo'];
+	$processoCNJ = $wr['ProcessoCNJ'];
 	$html_camp .= "<tr>";
 	$html_camp .= "<td align='center' class='cls_td'>" . $n++ . "</td>";
 	$html_camp .= "<td align='center' class='cls_real' onclick='enviar_neo(" . $wr['Codigo'] . ")'>" . $wr['Codigo'] . "</td>";
@@ -104,7 +107,8 @@ while($wr = sqlsrv_fetch_array($qr, SQLSRV_FETCH_ASSOC)){
 	} else {
 		$html_camp .= "<td align='center'>" . $wr['Adverso'] . "</td>";	
 	}
-	$html_camp .= "<td align='center'>" . ($processo==""?"-":$processo) . "</td>";
+	$html_camp .= "<td align='center'>" . ($processo==""?"-":formatarProcesso($processo)) . "</td>";
+	$html_camp .= "<td align='center'>" . ($processoCNJ==""?"-":formatarProcesso($processoCNJ)) . "</td>";
 	$html_camp .= "<td align='center'>" . $wr['ContaContratoNeoCobranca']. "</td>";
 	$html_camp .= "<td align='center'>" . $comarca. "</td>";
 	$html_camp .= "<td align='center'>" . $estado . "</td>";
