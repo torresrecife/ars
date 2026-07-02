@@ -90,6 +90,34 @@ class UserAdminRepository
 		return $rows;
 	}
 
+	public function listClientsByIds(array $ids)
+	{
+		$cleanIds = array();
+		foreach ($ids as $id) {
+			$id = (int) $id;
+			if ($id > 0) {
+				$cleanIds[$id] = $id;
+			}
+		}
+
+		if (empty($cleanIds)) {
+			return array();
+		}
+
+		$sql = "SELECT banco_id, banco_name FROM bancos WHERE banco_id IN (" . implode(',', $cleanIds) . ") ORDER BY banco_name";
+		$result = mysqli_query($this->connection, $sql);
+		if (!$result) {
+			return array();
+		}
+
+		$rows = array();
+		while ($row = mysqli_fetch_assoc($result)) {
+			$rows[] = $row;
+		}
+
+		return $rows;
+	}
+
 	public function insert(array $data)
 	{
 		$sql = "INSERT INTO usuarios (

@@ -1,17 +1,17 @@
 <div style="margin-top:80px">
-<label><h2><u>Usuários</u></h2></label>
+<label><h2><u>Usu&aacute;rios</u></h2></label>
 <div>
 <table class="adminlist">
 	<tr height="30">
-		<td class="order"><b>Código</b></td>
+		<td class="order"><b>C&oacute;digo</b></td>
 		<td class="order"><b>Nome</b></td>
-		<td class="order"><b>Usuário</b></td>
-		<td class="order"><b>Nível</b></td>
-		<td class="order"><b>Último Acesso</b></td>
+		<td class="order"><b>Usu&aacute;rio</b></td>
+		<td class="order"><b>N&iacute;vel</b></td>
+		<td class="order"><b>&Uacute;ltimo Acesso</b></td>
 		<td class="order"><b>Data Cadastro</b></td>
 		<td class="order"><b>E-mail</b></td>
 		<td class="order"><b>Status</b></td>
-		<td class="order"><b>Opções</b></td>
+		<td class="order"><b>Op&ccedil;&otilde;es</b></td>
 	</tr>
 <?php foreach ($users as $user): ?>
 	<?php $acesso = $user['acesso_usu'] === '0000-00-00 00:00:00' ? '' : strftime('%d/%m/%Y %H:%M:%S', strtotime($user['acesso_usu'])); ?>
@@ -28,31 +28,31 @@
 	</tr>
 <?php endforeach; ?>
 </table>
-<div id="dialog-edit-usu" title="Editar Usuário" style="display:none;text-align:left;overflow-y: scroll;">
-	<p class="validateTips">Edite o Usuário Abaixo</p>
+<div id="dialog-edit-usu" title="Editar Usu&aacute;rio" style="display:none;text-align:left;overflow-y: scroll;">
+	<p class="validateTips">Edite o Usu&aacute;rio Abaixo</p>
 	<fieldset>
 		<div>
-			<table style="width:400px">
+			<table style="width:460px">
 				<tr>
 					<td width="25%"><label>Nome:</label></td>
 					<td width="75%"><input type="text" class="cls_usu" name="nome_usu" id="nome_usu" value="" obrigatorio="1" title="Nome e Sobrenome"/></td>
 				</tr>
 				<tr>
-					<td><label>Usuário:</label></td>
-					<td><input type="text" class="cls_usu" name="login_usu" id="login_usu" value="" obrigatorio="1" title="Usuário"/></td>
+					<td><label>Usu&aacute;rio:</label></td>
+					<td><input type="text" class="cls_usu" name="login_usu" id="login_usu" value="" obrigatorio="1" title="Usu&aacute;rio"/></td>
 				</tr>
 				<tr>
 					<td><label>E-mail:</label></td>
 					<td><input type="text" class="cls_usu" name="email_usu" id="email_usu" value="" obrigatorio="1" title="E-mail"/></td>
 				</tr>
 				<tr>
-					<td><label>Nível:</label></td>
+					<td><label>N&iacute;vel:</label></td>
 					<td>
 						<select class="cls_usu" name="nivel_usu" id="nivel_usu" obrigatorio="1" title="Nivel">
 							<option value=""></option>
 							<option value="ADM">Admin</option>
 							<option value="GER">Gerente</option>
-							<option value="USU">Usuário</option>
+							<option value="USU">Usu&aacute;rio</option>
 						</select>
 					</td>
 				</tr>
@@ -68,13 +68,17 @@
 					</td>
 				</tr>
 				<tr>
-					<td><label id="sel_banco">Cliente:</label></td>
+					<td><label id="sel_banco">Clientes:</label></td>
 					<td>
-						<div id="banco_0">
-							<select class="cls_usu input-default cls_usu2" name="banco_usu_1" id="banco_usu_1" obrigatorio="1" title="Cliente"></select>
-							<button id="inp1_1" class="bts" onclick="inserir_banco($('#banco_usu_1').html(),1);">+</button>
+						<div class="usuario-clientes-box">
+							<div id="usuario-clientes-vinculados" class="usuario-clientes-lista"></div>
+							<div id="usuario-clientes-inputs"></div>
+							<div id="usuario-clientes-vazio" class="usuario-clientes-vazio">Nenhum cliente vinculado.</div>
 						</div>
-						<div id="banco_1"></div>
+						<div class="usuario-clientes-adicionar">
+							<select class="input-default" name="banco_usu_pool" id="banco_usu_pool" title="Cliente"></select>
+							<button id="bt-add-cliente-usu" class="bts" type="button" onclick="usuarioClientesAdicionar();">+</button>
+						</div>
 					</td>
 				</tr>
 				<tr>
@@ -97,9 +101,47 @@
 				</tr>
 			</table>
 			<input type="hidden" class="cls_usu" name="id_usu" id="id_usu" value="" />
-			<input type="hidden" name="banco_num" id="banco_num" value="1" />
 		</div>
 	</fieldset>
 </div>
 </div>
 </div>
+<style>
+.usuario-clientes-box{
+	margin-bottom:8px;
+}
+.usuario-clientes-lista{
+	display:flex;
+	flex-direction:column;
+	gap:6px;
+}
+.usuario-clientes-item{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	border:1px solid #ccc;
+	padding:6px 8px;
+	background:#f8f8f8;
+}
+.usuario-clientes-nome{
+	flex:1;
+	padding-right:10px;
+}
+.usuario-clientes-vazio{
+	color:#666;
+	font-size:11px;
+	padding:4px 0;
+}
+.usuario-clientes-remover{
+	margin-left:8px;
+}
+.usuario-clientes-adicionar{
+	display:flex;
+	align-items:center;
+	gap:6px;
+}
+.usuario-clientes-adicionar select{
+	width:320px;
+	height:22px;
+}
+</style>
