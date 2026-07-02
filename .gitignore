@@ -4,5 +4,4 @@ Thumbs.db
 .idea/
 vendor/
 .env
-.env.*
 storage/logs/*.log

@@ -46,11 +46,6 @@ class NeoDetailRepository
 			FROM v_Processo AS p WITH (NOLOCK)
 			JOIN v_Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
 			WHERE l.CodigoLancamento IN (" . $codeList . ")
-			AND p.NumeroContratoNeoCobranca = (
-				SELECT MIN(p2.NumeroContratoNeoCobranca)
-				FROM v_Processo AS p2 WITH (NOLOCK)
-				WHERE p2.CodigoProcesso = p.CodigoProcesso
-			)
 			ORDER BY l.DataHora_Evento ASC
 		";
 
