@@ -22,8 +22,8 @@ $(function() {
             $("#ano").val(parseInt(year));
         }
     });
-	
-	$('input[type="text"]').setMask(); 
+
+	$('input[type="text"]').setMask();
 });
 function msgbox(msg, bts){
 	var $dialog = $('<div></div>')
@@ -33,7 +33,7 @@ function msgbox(msg, bts){
 			autoOpen: true,
 			buttons: bts,
 			title: 'Alerta'
-		});	
+		});
 }
 function EnviarDados(frm,hid,are,fla){
 	if($("#startDate").val()=="" && (hid==2 || hid==4 || hid==14)){
@@ -43,17 +43,17 @@ function EnviarDados(frm,hid,are,fla){
 		setTimeout(function(){
 			$("#startDate").css("border","1px solid #ccc");
 			$("#obg_date").fadeOut();
-		}, 3000);		
+		}, 3000);
 	}else{
 		$("#hid_send").val(hid);
-		$("#hid_area").val(are);		
-		$("#hid_flag").val(fla);		
+		$("#hid_area").val(are);
+		$("#hid_flag").val(fla);
 		$("#form_ars").attr("action",frm);
 		$("#form_ars").attr("target","");
 		$("#form_ars").submit();
 	}
 }
-	
+
 	//função editar usuário
 	function fc_edit_usu(valor1,valor2){
 		var tt = "";
@@ -142,7 +142,7 @@ function EnviarDados(frm,hid,are,fla){
 						$( this ).dialog( "close" );
 					}
 				},
-				close: function(){ 
+				close: function(){
 					$('.cls_usu').each(function() {
 						$(this).val("");
 					});
@@ -189,7 +189,7 @@ function EnviarDados(frm,hid,are,fla){
 	}
 	//função editar semana
 	function fc_edit_sem(valor1,valor2){
-		
+
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
@@ -201,34 +201,34 @@ function EnviarDados(frm,hid,are,fla){
 			tu="editada";
 			$(".validateTips").text("Edite o Usuário Abaixo");
 		}
-	
+
 		$.ajax({
 			type: "POST",
 			url:  "inc/ajax_sem.php",
 			data: "flag="+(valor2=="U"?"E":"")+"&id_sem=" + valor1,
 			success: function(retorno_ajax){
 				var ret = retorno_ajax.split("-|-");
-				
+
 				$("#id_sem").val(ret[0]);
-				
+
 				$("#mes_sem").val(ret[1]);
 				$("#ano_sem").val(ret[2]);
-				
+
 				$("#ini1_sem").val(ret[3]);
 				$("#fim1_sem").val(ret[4]);
-				
+
 				$("#ini2_sem").val(ret[5]);
 				$("#fim2_sem").val(ret[6]);
-				
+
 				$("#ini3_sem").val(ret[7]);
 				$("#fim3_sem").val(ret[8]);
-				
+
 				$("#ini4_sem").val(ret[9]);
 				$("#fim4_sem").val(ret[10]);
-				
+
 				$("#ini5_sem").val(ret[11]);
 				$("#fim5_sem").val(ret[12]);
-				
+
 				$("#dialog-edit-sem").dialog({
 					title: tt,
 					modal: true,
@@ -267,7 +267,7 @@ function EnviarDados(frm,hid,are,fla){
 							$( this ).dialog( "close" );
 						}
 					},
-					close: function(){ 
+					close: function(){
 						$('.cls_sem').each(function() {
 							$(this).val("");
 						});
@@ -276,10 +276,10 @@ function EnviarDados(frm,hid,are,fla){
 			}
 		});
 	}
-	
+
 	//função editar setores
 	function fc_edit_setor(valor1,valor2){
-		
+
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
@@ -291,7 +291,7 @@ function EnviarDados(frm,hid,are,fla){
 			tu="editado";
 			$(".validateTips").text("Edite o Setor Abaixo");
 		}
-	
+
 		$.ajax({
 			type: "POST",
 			url:  "inc/ajax_setor.php",
@@ -301,7 +301,7 @@ function EnviarDados(frm,hid,are,fla){
 				//alert(ret[1]);
 				$("#id_setor").val(ret[0]);
 				$("#nome_setor").val(ret[1]);
-				
+
 				$( "#dialog-edit-setor" ).dialog({
 					title: tt,
 					modal: true,
@@ -319,7 +319,7 @@ function EnviarDados(frm,hid,are,fla){
 								}
 								mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
 							});
-							
+
 							$.ajax({
 							   type: "POST",
 							   url:  "inc/ajax_setor.php",
@@ -340,13 +340,13 @@ function EnviarDados(frm,hid,are,fla){
 									}
 								}
 							});
-							
+
 						},
 						Sair: function() {
 							$( this ).dialog( "close" );
 						}
 					},
-					close: function(){ 
+					close: function(){
 						$('.cls_setor').each(function() {
 							$(this).val("");
 						});
@@ -429,7 +429,7 @@ function EnviarDados(frm,hid,are,fla){
 						$( this ).dialog( "close" );
 					}
 				},
-				close: function(){ 
+				close: function(){
 					$('.cls_cliente').each(function() {
 						$(this).val("");
 					});
@@ -443,7 +443,7 @@ function EnviarDados(frm,hid,are,fla){
 			tu="editado";
 			$(".validateTips").text("Edite o Cliente Abaixo");
 		}
-	
+
 		$.ajax({
 			type: "POST",
 			url:  "inc/ajax_cliente.php",
@@ -467,7 +467,7 @@ function EnviarDados(frm,hid,are,fla){
 						}
 					}
 				}
-				
+
 				$("#dialog-edit-cliente" ).dialog({
 					title: tt,
 					modal: true,
@@ -526,13 +526,13 @@ function EnviarDados(frm,hid,are,fla){
 									}
 								}
 							});
-							
+
 						},
 						Sair: function() {
 							$( this ).dialog( "close" );
 						}
 					},
-					close: function(){ 
+					close: function(){
 						$('.cls_cliente').each(function() {
 							$(this).val("");
 						});
@@ -703,98 +703,209 @@ function usuarioClientesRemover(botao){
 	usuarioClientesAtualizarInputs();
 	return false;
 }
-function fc_edit_andamento(valor1,valor2){
-		
-		var tt = "";
-		var tu = "";
-		if(valor2=="I"){
-			tt="Novo Andamento";
-			tu="criado";
-			$(".validateTips").text("Crie Um " + tt);
-		}else if(valor2=="U"){
-			tt="Editar Andamento";
-			tu="editado";
-			$(".validateTips").text("Edite o Andamento Abaixo");
-		}
-	
-		$.ajax({
-			type: "POST",
-			url:  "inc/ajax_andamento.php",
-			data: "flag=E&anda_id=" + valor1,
-			success: function(retorno_ajax){
-				var ret = retorno_ajax.split("-|-");
-				//alert(ret[1]);
-				$("#anda_id").val(ret[0]);
-				$("#nome").val(ret[1]);
-				$("#chave").val(ret[2]);
-				$("#anda_neo").val(ret[3]);
-				$("#especie").val(ret[4]);
-				$("#painel option[value="+ret[5]+"]").attr("selected","selected");
-				$("#titulo").val(ret[6]);
-				
-				$( "#dialog-edit-andamento" ).dialog({
-					title: tt,
-					modal: true,
-					autoOpen: true,
-					height: 400,
-					width: 600,
-					buttons:{
-						Salvar: function(){
-							var mdados="";
-							$('.cls_andamento').each(function(){
-								if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-									alert("O campo " + $(this).attr("title") + " é obrigatório ");
-									$(this).focus();
-									return false;
-								}
-								mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
-							});
-							///pega os andamentos///////////
-							var mandam="";
-							var numes=0;
-							$('.cls_andam').each(function(){
-								if((numes++)>0){
-									mandam += ",";
-								}
-								mandam += escape($(this).val());
-							});
-							$.ajax({
-							   type: "POST",
-							   url:  "inc/ajax_andamento.php",
-							   data: "flag=" + valor2 + "&" + mdados + "&anda_neo=" + mandam,
-							   success: function(retorno_ajax){
-									if(retorno_ajax==1){
-										$( "#dialog-edit-andamento" ).dialog( "close" );
-										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Andamento " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
-											Fechar: function(){
-												$( this ).dialog( "close" );
-												EnviarDados('index.php','12','');
-											}
-										});
-									}else if(retorno_ajax==2){
-										alert("Andamento já cadastrado!");
-									}else{
-										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao administrador)");
-									}
-								}
-							});
-							
-						},
-						Sair: function() {
-							$( this ).dialog( "close" );
-						}
-					},
-					close: function(){
-						$('.cls_andamento').each(function(){
-							$(this).val("");
-						});
-					}
-				});
-			}
-		});
+function andamentoTiposReset(mensagemVazio){
+	$("#andamento-tipos-vinculados").html("");
+	$("#andamento-tipos-inputs").html("");
+	$("#andamento-tipos-vazio").show();
+	$("#andamento-tipos-vazio").text(mensagemVazio || "Nenhum andamento vinculado.");
+	andamentoTiposAtualizarPool();
+}
+function andamentoTiposEscape(valor){
+	return String(valor)
+		.replace(/&/g, "&amp;")
+		.replace(/"/g, "&quot;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;");
+}
+function andamentoTiposAtualizarInputs(){
+	var html = "";
+	$(".andamento-tipos-item").each(function(index){
+		var tipo = $(this).attr("data-tipo");
+		var numero = index + 1;
+		html += "<input type='hidden' class='cls_andam_input' name='andam_name_" + numero + "' value=\"" + andamentoTiposEscape(tipo) + "\" />";
+	});
+	$("#andamento-tipos-inputs").html(html);
+	if($(".andamento-tipos-item").length>0){
+		$("#andamento-tipos-vazio").hide();
+	}else{
+		$("#andamento-tipos-vazio").text("Nenhum andamento vinculado.");
+		$("#andamento-tipos-vazio").show();
 	}
-	function fc_edit_metas(valor1,valor2){
-		
+	andamentoTiposAtualizarPool();
+}
+function andamentoTiposAtualizarPool(){
+	var select = $("#andam_name_pool");
+	if(select.length===0){
+		return;
+	}
+	var htmlBase = select.data("optionsHtml");
+	if(typeof htmlBase !== "string"){
+		htmlBase = select.html();
+		select.data("optionsHtml", htmlBase);
+	}
+	select.html(htmlBase);
+	$(".andamento-tipos-item").each(function(){
+		var tipo = $(this).attr("data-tipo");
+		select.find("option").filter(function(){
+			return $.trim($(this).val()) === tipo;
+		}).remove();
+	});
+	if(select.find("option").length>0){
+		select.prop("selectedIndex", 0);
+	}
+}
+function andamentoTiposAdicionar(){
+	var tipo = $("#andam_name_pool").val();
+	if(!tipo){
+		alert("Selecione um andamento para adicionar.");
+		return false;
+	}
+	return andamentoTiposAdicionarValor(tipo, false);
+}
+function andamentoTiposAdicionarValor(tipo, silencioso){
+	var valor = $.trim(String(tipo));
+	if(valor===""){
+		return false;
+	}
+	var existe = false;
+	$(".andamento-tipos-item").each(function(){
+		if($(this).attr("data-tipo")===valor){
+			existe = true;
+		}
+	});
+	if(existe){
+		if(!silencioso){
+			alert("Esse andamento já está vinculado.");
+		}
+		return false;
+	}
+	$("#andamento-tipos-vinculados").append(
+		"<div class='andamento-tipos-item' data-tipo=\"" + andamentoTiposEscape(valor) + "\">"
+		+ "<span class='andamento-tipos-nome'>" + andamentoTiposEscape(valor) + "</span>"
+		+ "<button type='button' class='andamento-tipos-remover' onclick='andamentoTiposRemover(this);'>Remover</button>"
+		+ "</div>"
+	);
+	andamentoTiposAtualizarInputs();
+	if(!silencioso){
+		$("#andam_name_pool").val("");
+	}
+	return false;
+}
+function andamentoTiposRemover(botao){
+	$(botao).closest(".andamento-tipos-item").remove();
+	andamentoTiposAtualizarInputs();
+	return false;
+}
+function fc_edit_andamento(valor1,valor2){
+	var tt = "";
+	var tu = "";
+	if(valor2=="I"){
+		tt="Novo Andamento";
+		tu="criado";
+		$(".validateTips").text("Crie Um " + tt);
+	}else if(valor2=="U"){
+		tt="Editar Andamento";
+		tu="editado";
+		$(".validateTips").text("Edite o Andamento Abaixo");
+	}
+
+	$.ajax({
+		type: "POST",
+		url:  "inc/ajax_andamento.php",
+		dataType: "json",
+		data: "flag=E&anda_id=" + valor1,
+		success: function(ret){
+			ret = ret || {};
+			$("#anda_id").val(ret.anda_id || "");
+			$("#nome").val(ret.nome || "");
+			$("#chave").val(ret.chave || "");
+			$("#especie").val(ret.especie || "");
+			$("#painel").val(ret.painel || "");
+			$("#titulo").val(ret.titulo || "");
+			andamentoTiposReset(valor2=="I" ? "Nenhum andamento vinculado." : "Carregando andamentos vinculados...");
+			sel_tipo(0, ret.especie || "", function(){
+				if($.isArray(ret.tipos)){
+					$.each(ret.tipos, function(_, tipo){
+						andamentoTiposAdicionarValor(tipo, true);
+					});
+				}
+			});
+
+			$( "#dialog-edit-andamento" ).dialog({
+				title: tt,
+				modal: true,
+				autoOpen: true,
+				height: 400,
+				width: 600,
+				buttons:{
+					Salvar: function(){
+						var mdados = {};
+						var invalido = false;
+						$(".cls_andamento").each(function(){
+							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
+								alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
+								$(this).focus();
+								invalido = true;
+								return false;
+							}
+							mdados[$(this).attr("name")] = $(this).val();
+						});
+						if(invalido){
+							return false;
+						}
+						var mandam = [];
+						$(".andamento-tipos-item").each(function(){
+							var tipo = $.trim($(this).attr("data-tipo"));
+							if(tipo!==""){
+								mandam.push(tipo);
+							}
+						});
+						if(mandam.length===0){
+							alert("Selecione ao menos um andamento vinculado.");
+							$("#andam_name_pool").focus();
+							return false;
+						}
+						$.ajax({
+							type: "POST",
+							url:  "inc/ajax_andamento.php",
+							data: $.extend({}, mdados, {
+								flag: valor2,
+								anda_neo: mandam.join(",")
+							}),
+							success: function(retorno_ajax){
+								if(retorno_ajax==1){
+									$( "#dialog-edit-andamento" ).dialog( "close" );
+									msgbox(valor2=="I"?"<br><table align='center'><tr><td>Andamento " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
+										Fechar: function(){
+											$( this ).dialog( "close" );
+											EnviarDados('index.php','12','');
+										}
+									});
+								}else if(retorno_ajax==2){
+									alert("Andamento j� cadastrado!");
+								}else{
+									alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao administrador)");
+								}
+							}
+						});
+					},
+					Sair: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				close: function(){
+					$(".cls_andamento").each(function(){
+						$(this).val("");
+					});
+					andamentoTiposReset("Nenhum andamento vinculado.");
+					$("#andam_name_pool").html("").data("optionsHtml", "");
+				}
+			});
+		}
+	});
+}
+function fc_edit_metas(valor1,valor2){
+
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
@@ -814,7 +925,7 @@ function fc_edit_andamento(valor1,valor2){
 				//alert(retorno_ajax);
 				var ret = retorno_ajax.split("-|-");
 				if(valor2!="I"){
-					
+
 					///verifica se as semanas foram definidas individualmente
 					if(ret[6]=="Y"){
 						$("#def_sem_1").attr("checked",true);
@@ -825,19 +936,19 @@ function fc_edit_andamento(valor1,valor2){
 						$(".sem_1").hide();
 						$("#meta_valor_1").attr("readonly",false);
 					}
-					
+
 					$("#meta_id").val(ret[0]);
 					$("#banco_id").val(ret[1]);
 					$("#meta_mes").val(ret[2]);
 					$("#meta_ano").val(ret[3]);
-					$("#meta_name_1").val(ret[4]);					
+					$("#meta_name_1").val(ret[4]);
 					$("#meta_valor_1").val(ret[5]);
 					$("#sem1_valor_1").val(ret[7]);
 					$("#sem2_valor_1").val(ret[8]);
 					$("#sem3_valor_1").val(ret[9]);
 					$("#sem4_valor_1").val(ret[10]);
 					$("#sem5_valor_1").val(ret[11]);
-					
+
 					var espe = $("#meta_name_1 option:selected").attr("especie");
 					if(espe==2){
 						$("#meta_valor_1").setMask("decimal");
@@ -850,9 +961,9 @@ function fc_edit_andamento(valor1,valor2){
 						$("#sem3_valor_1").val(parseInt(ret[9]));
 						$("#sem4_valor_1").val(parseInt(ret[10]));
 						$("#sem5_valor_1").val(parseInt(ret[11]));
-						
+
 						$("#meta_valor_1").setMask("integer");
-						$(".sem_1").setMask("integer");						
+						$(".sem_1").setMask("integer");
 					}
 				}
 				$( "#dialog-edit-metas" ).dialog({
@@ -911,7 +1022,7 @@ function fc_edit_andamento(valor1,valor2){
 									}
 								}
 							});
-							
+
 						},
 						Sair: function() {
 							$( this ).dialog( "close" );
@@ -1013,7 +1124,7 @@ function fc_edit_andamento(valor1,valor2){
 			}
 		});
 	}
-	
+
 	function fc_del_usu(valor1,valor2){
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuário <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
@@ -1070,7 +1181,7 @@ function fc_edit_andamento(valor1,valor2){
 			}
 		});
 	}
-	
+
 	function fc_del_setor(valor1,valor2){
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o setor <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
@@ -1099,12 +1210,12 @@ function fc_edit_andamento(valor1,valor2){
 			}
 		});
 	}
-	
+
 	function cpfcnpj(valor){
 		$("#"+valor).attr("alt",$("input[@TIPOPES=radioGroup]:checked").val());
 		$('input:text').setMask();
 	}
-	
+
 	function validaCaractaer(pEvent){
 		if(navigator.appName.indexOf('Internet Explorer')>0){
 			if ((pEvent.keyCode<97 || pEvent.keyCode>122)&&(pEvent.keyCode<48 || pEvent.keyCode>57)){
@@ -1112,14 +1223,14 @@ function fc_edit_andamento(valor1,valor2){
 				pEvent.keyCode = 0;
 			}
 		}else{
-			if ((pEvent.which<97 || pEvent.which>122)&&(pEvent.which<48 || pEvent.which>57)) {	
+			if ((pEvent.which<97 || pEvent.which>122)&&(pEvent.which<48 || pEvent.which>57)) {
 				alert("Caractere não aceito para esse campo");
 				pEvent.which = 0;
 			}
 		}
 	}
 
-function diasemana(valor){ 
+function diasemana(valor){
 	if(valor.value.length==10){
 		var semana = ["domingo", "segunda-feira", "terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
 		var data = $(valor).val();
@@ -1130,7 +1241,7 @@ function diasemana(valor){
 	}
 }
 function fc_teste_senha(valor1,valor2,valor3){
-	
+
 	if(valor1!=valor2){
 		$("#senha_usu1").css("border","1px solid red");
 		$("#senha_usu2").css("border","1px solid red");
@@ -1185,10 +1296,10 @@ function inserir_anda(valor,stt){
 		$("#andam_"+(crt-1)).html(
 		"<select class='cls_andam input-default' name='andam_name_"+crt+"' style='width:360px;height:22px'>"+valor+"</select>" +
 		"<button id='inp1_"+crt+"' class='bts' onclick='inserir_anda($(\"#andam_name_1\").html(),1);'>+</button>" +
-		"<button id='inp0_"+crt+"' class='bts' onclick='inserir_anda($(\"#andam_name_1\").html(),0);'>-</button>" + 
+		"<button id='inp0_"+crt+"' class='bts' onclick='inserir_anda($(\"#andam_name_1\").html(),0);'>-</button>" +
 		"<div id='andam_"+crt+"'></div>");
 		$("#inp1_"+(crt-1)).hide();
-		$("#inp0_"+(crt-1)).hide();	
+		$("#inp0_"+(crt-1)).hide();
 	}else if(stt==0){
 		crt = crt-1;
 		$("#andam_"+crt).html(" ");
@@ -1205,7 +1316,7 @@ function inserir_metas(valor,stt){
 	if(stt==1){
 		crt = crt+1;
 		$("#metas_"+(crt-1)).html(
-		"<div style='float:left'>" + 
+		"<div style='float:left'>" +
 		"<select class='cls_metas2 input-default' name='meta_name_"+crt+"' onchange='my_especie("+crt+");' style='width:260px;height:22px;float:left'>"+valor+"</select>" +
 		"<input type='text' class='cls_meta' name='meta_valor_"+crt+"' id='meta_valor_"+crt+"' value='' obrigatorio='1' style='width:120px;float:left'/>" +
 		"<input type='checkbox' class='cls_meta' name='def_sem_"+crt+"' id='def_sem_"+crt+"' onclick='definir_sem(this,"+crt+");' value='' title='Definir manualmente' style='width:20px;'>" +
@@ -1215,11 +1326,11 @@ function inserir_metas(valor,stt){
 		"<input type='text' class='cls_meta sem_"+crt+"' name='sem4_valor_"+crt+"' id='sem4_valor_"+crt+"' value='' onkeypress='somarMeta("+crt+")' onblur='somarMeta("+crt+")' style='display:none;width:70px;float:left'/>" +
 		"<input type='text' class='cls_meta sem_"+crt+"' name='sem5_valor_"+crt+"' id='sem5_valor_"+crt+"' value='' onkeypress='somarMeta("+crt+")' onblur='somarMeta("+crt+")' style='display:none;width:70px;float:left'/>" +
 		"<button id='inp1_"+crt+"' class='bts' onclick='inserir_metas($(\"#meta_name_1\").html(),1);' style='float:left'>+</button>" +
-		"<button id='inp0_"+crt+"' class='bts' onclick='inserir_metas($(\"#meta_name_1\").html(),0);' style='float:left'>-</button>" + 
+		"<button id='inp0_"+crt+"' class='bts' onclick='inserir_metas($(\"#meta_name_1\").html(),0);' style='float:left'>-</button>" +
 		"</div>" +
 		"<div id='metas_"+crt+"'></div>");
 		$("#inp1_"+(crt-1)).hide();
-		$("#inp0_"+(crt-1)).hide();	
+		$("#inp0_"+(crt-1)).hide();
 	}else if(stt==0){
 		crt = crt-1;
 		$("#metas_"+crt).html(" ");
@@ -1237,10 +1348,10 @@ function inserir_banco(valor,stt){
 		$("#banco_"+(crt-1)).html(
 		"<select class='cls_usu input-default cls_usu2' name='banco_usu_"+crt+"' style='height:22px'>"+valor+"</select>" +
 		"<button id='inp1_"+crt+"' class='bts' onclick='inserir_banco($(\"#banco_usu_1\").html(),1);'>+</button>" +
-		"<button id='inp0_"+crt+"' class='bts' onclick='inserir_banco($(\"#banco_usu_1\").html(),0);'>-</button>" + 
+		"<button id='inp0_"+crt+"' class='bts' onclick='inserir_banco($(\"#banco_usu_1\").html(),0);'>-</button>" +
 		"<div id='banco_"+crt+"'></div>");
 		$("#inp1_"+(crt-1)).hide();
-		$("#inp0_"+(crt-1)).hide();	
+		$("#inp0_"+(crt-1)).hide();
 	}else if(stt==0){
 		crt = crt-1;
 		$("#banco_"+crt).html(" ");
@@ -1251,19 +1362,21 @@ function inserir_banco(valor,stt){
 	$("#banco_num").val(crt);
 }
 function sel_tipo(valor1,valor2,callback){
-	
+
 	$.ajax({
 		type: "POST",
 		url:  "inc/ajax_select.php",
 		data: "flag=" + valor2 + "&dados=" + valor1,
 		success: function(retorno_ajax){
 			if(valor1==0){
-				$(".cls_andam").html(retorno_ajax);
+				$("#andam_name_pool").html(retorno_ajax);
+				$("#andam_name_pool").data("optionsHtml", retorno_ajax);
 				if(valor2==1){
 					$("#sel_anda").html("Selecionar Andamentos:");
 				}else if(valor2==2){
 					$("#sel_anda").html("Selecionar Lançamentos:");
-				}	
+				}
+				andamentoTiposAtualizarPool();
 			}else if(valor1==1){
 				$("#banco_usu_pool").html(retorno_ajax);
 				$("#banco_usu_pool").data("optionsHtml", retorno_ajax);
@@ -1289,19 +1402,19 @@ function definir_sem(valor1,valor2){
 
 function somarMeta(valor2){
 	var espe = $("#meta_name_"+valor2+" option:selected").attr("especie");
-	
+
 	var sem1 = $("#sem1_valor_"+valor2).val();
 	var sem2 = $("#sem2_valor_"+valor2).val();
 	var sem3 = $("#sem3_valor_"+valor2).val();
 	var sem4 = $("#sem4_valor_"+valor2).val();
 	var sem5 = $("#sem5_valor_"+valor2).val();
-	
+
 	if(espe==2){
 		var mval = parseFloat((sem1?sem1.replace(".","").replace(",","."):0));
 		var mva2 = parseFloat((sem2?sem2.replace(".","").replace(",","."):0));
 		var mva3 = parseFloat((sem3?sem3.replace(".","").replace(",","."):0));
 		var mva4 = parseFloat((sem4?sem4.replace(".","").replace(",","."):0));
-		var mva5 = parseFloat((sem5?sem5.replace(".","").replace(",","."):0));	
+		var mva5 = parseFloat((sem5?sem5.replace(".","").replace(",","."):0));
 		var mvat = mval+mva2+mva3+mva4+mva5;
 		var formatter = new Intl.NumberFormat("pt-BR", {style: "currency",currency: "BRL"});
 		$("#meta_valor_"+valor2).val(formatter.format(mvat).replace("R$",""));
@@ -1312,7 +1425,7 @@ function somarMeta(valor2){
 		var mva4 = parseFloat((sem4?sem4:0));
 		var mva5 = parseFloat((sem5?sem5:0));
 		var mvat = mval+mva2+mva3+mva4+mva5;
-		$("#meta_valor_"+valor2).val(mvat);	
+		$("#meta_valor_"+valor2).val(mvat);
 	}
 }
 
