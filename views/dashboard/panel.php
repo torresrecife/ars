@@ -22,14 +22,17 @@ $weekColumnWidth = (count($weeks) === 5 ? '4%' : '5%');
 <input type='hidden' name='mes' id='mes' class='date-picker' value='<?php echo $month; ?>'/>
 <input type='hidden' name='ano' id='ano' class='date-picker' value='<?php echo $year; ?>'/>
 <script>
-	function send_form(valor1,valor2,valor3){
-		if(valor3=='and'){
-			$('#codig_and').val(valor1);
-			$('#banco_and').val(valor2);
+	function send_form(andaId,bankId,bankName,month,year,weekKey,detailType){
+		$('#detail_bank_id').val(bankId);
+		$('#detail_anda_id').val(andaId);
+		$('#detail_month').val(month);
+		$('#detail_year').val(year);
+		$('#detail_week').val(weekKey);
+		$('#banco_and').val(bankName);
+		$('#banco_lnc').val(bankName);
+		if(detailType=='and'){
 			$('#form_ars').attr('action','dados_anda.php');
-		}else if(valor3=='fat'){
-			$('#codig_lnc').val(valor1);
-			$('#banco_lnc').val(valor2);
+		}else if(detailType=='fat'){
 			$('#form_ars').attr('action','dados_fatur.php');
 		}
 		$('#form_ars').attr('target','_blank');
@@ -144,13 +147,13 @@ td{
 			<td align='center' rowspan='<?php echo count($productionRows); ?>' class='cls_colun'><div style='color:#FFF;transform: rotate(270deg);width:20px'><b>OPERACAO</b></div></td>
 		<?php endif; ?>
 		<td class='cls_indic'><?php echo $row['name']; ?></td>
-		<?php foreach ($row['weekData'] as $weekData): ?>
+		<?php foreach ($row['weekData'] as $weekIndex => $weekData): ?>
 			<td align='center' class='cls_vals' style='background:#F0F0F0'><?php echo number_format($weekData['meta'], 0, ',', '.'); ?></td>
-			<td align='center' class='cls_vals cls_real' onclick='send_form("<?php echo implode(',', $weekData['codes']); ?>","<?php echo addslashes($bank['banco_name']); ?>","and");'><?php echo $weekData['real']; ?></td>
+			<td align='center' class='cls_vals cls_real' onclick='send_form("<?php echo (int) $row['andaId']; ?>","<?php echo (int) $bank['banco_id']; ?>","<?php echo addslashes($bank['banco_name']); ?>","<?php echo (int) $month; ?>","<?php echo (int) $year; ?>","<?php echo (int) $weekIndex; ?>","and");'><?php echo $weekData['real']; ?></td>
 			<td align='center' class='cls_vals'><img src='http://***REMOVED***/img/<?php echo $weekData['icon']; ?>' class='box' /><?php echo number_format($weekData['percent'], 0, ',', ''); ?>%</td>
 		<?php endforeach; ?>
 		<td align='center' class='cls_vals cls_real cls_bk' style='background:#F2F5A9'><b><?php echo number_format($row['totalMeta'], 0, ',', '.'); ?></b></td>
-		<td align='center' class='cls_vals cls_real cls_bk' onclick='send_form("<?php echo implode(',', $row['totalCodes']); ?>","<?php echo addslashes($bank['banco_name']); ?>","and");'><b><?php echo $row['totalReal']; ?></b></td>
+		<td align='center' class='cls_vals cls_real cls_bk' onclick='send_form("<?php echo (int) $row['andaId']; ?>","<?php echo (int) $bank['banco_id']; ?>","<?php echo addslashes($bank['banco_name']); ?>","<?php echo (int) $month; ?>","<?php echo (int) $year; ?>","total","and");'><b><?php echo $row['totalReal']; ?></b></td>
 		<td align='center' class='cls_vals cls_bk'><img src='http://***REMOVED***/img/<?php echo $row['totalIcon']; ?>' class='box' /><?php echo number_format($row['totalPercent'], 0, ',', ''); ?>%</td>
 	</tr>
 	<?php endforeach; ?>
@@ -165,13 +168,13 @@ td{
 			<td align='center' rowspan='<?php echo count($financialRows); ?>' class='cls_colun_2'><div style='color:#FFF;transform:rotate(270deg);width:20px;margin-top:20px'><b>FINANCEIRO</b></div></td>
 		<?php endif; ?>
 		<td class='cls_indic'><?php echo $row['name']; ?></td>
-		<?php foreach ($row['weekData'] as $weekData): ?>
+		<?php foreach ($row['weekData'] as $weekIndex => $weekData): ?>
 			<td align='center' class='cls_vals' style='background:#F0F0F0'><?php echo number_format($weekData['meta'], 2, ',', '.'); ?></td>
-			<td align='center' class='cls_vals cls_real' onclick='send_form("<?php echo implode(',', $weekData['codes']); ?>","<?php echo addslashes($bank['banco_name']); ?>","fat");'><?php echo number_format($weekData['real'], 2, ',', '.'); ?></td>
+			<td align='center' class='cls_vals cls_real' onclick='send_form("<?php echo (int) $row['andaId']; ?>","<?php echo (int) $bank['banco_id']; ?>","<?php echo addslashes($bank['banco_name']); ?>","<?php echo (int) $month; ?>","<?php echo (int) $year; ?>","<?php echo (int) $weekIndex; ?>","fat");'><?php echo number_format($weekData['real'], 2, ',', '.'); ?></td>
 			<td align='center' class='cls_vals'><img src='http://***REMOVED***/img/<?php echo $weekData['icon']; ?>' class='box' /><?php echo number_format($weekData['percent'], 0, ',', ''); ?>%</td>
 		<?php endforeach; ?>
 		<td align='center' class='cls_vals cls_real cls_bk' style='background:#F2F5A9'><b><?php echo number_format($row['totalMeta'], 2, ',', '.'); ?></b></td>
-		<td align='center' class='cls_vals cls_real cls_bk' onclick='send_form("<?php echo implode(',', $row['totalCodes']); ?>","<?php echo addslashes($bank['banco_name']); ?>","fat");'><b><?php echo number_format($row['totalReal'], 2, ',', '.'); ?></b></td>
+		<td align='center' class='cls_vals cls_real cls_bk' onclick='send_form("<?php echo (int) $row['andaId']; ?>","<?php echo (int) $bank['banco_id']; ?>","<?php echo addslashes($bank['banco_name']); ?>","<?php echo (int) $month; ?>","<?php echo (int) $year; ?>","total","fat");'><b><?php echo number_format($row['totalReal'], 2, ',', '.'); ?></b></td>
 		<td align='center' class='cls_vals cls_bk'><img src='http://***REMOVED***/img/<?php echo $row['totalIcon']; ?>' class='box' /><?php echo number_format($row['totalPercent'], 0, ',', ''); ?>%</td>
 	</tr>
 	<?php endforeach; ?>
@@ -193,18 +196,23 @@ td{
 	<tr>
 		<td style='border: 0px'></td>
 		<td class='cls_vals2 cls_red'><b>PREJUIZOS</b></td>
-		<?php foreach ($row['weekData'] as $weekData): ?>
+		<?php foreach ($row['weekData'] as $weekIndex => $weekData): ?>
 			<td align='center' class='cls_vals2 cls_red2' style='background:#f5d5d5'><b>0,00</b></td>
-			<td align='center' class='cls_vals2 cls_real cls_red' onclick='send_form("<?php echo implode(',', $weekData['codes']); ?>","<?php echo addslashes($bank['banco_name']); ?>","fat");'><b><?php echo number_format($weekData['real'], 2, ',', '.'); ?></b></td>
+			<td align='center' class='cls_vals2 cls_real cls_red' onclick='send_form("<?php echo (int) $row['andaId']; ?>","<?php echo (int) $bank['banco_id']; ?>","<?php echo addslashes($bank['banco_name']); ?>","<?php echo (int) $month; ?>","<?php echo (int) $year; ?>","<?php echo (int) $weekIndex; ?>","fat");'><b><?php echo number_format($weekData['real'], 2, ',', '.'); ?></b></td>
 			<td align='center' class='cls_vals2 cls_red'><b>-</b></td>
 		<?php endforeach; ?>
 		<td align='center' class='cls_vals2 cls_red' style='background:#ffdede'><b>0,00</b></td>
-		<td align='center' class='cls_vals2 cls_real cls_red' onclick='send_form("<?php echo implode(',', $row['totalCodes']); ?>","<?php echo addslashes($bank['banco_name']); ?>","fat");'><b><?php echo number_format($row['totalReal'], 2, ',', '.'); ?></b></td>
+		<td align='center' class='cls_vals2 cls_real cls_red' onclick='send_form("<?php echo (int) $row['andaId']; ?>","<?php echo (int) $bank['banco_id']; ?>","<?php echo addslashes($bank['banco_name']); ?>","<?php echo (int) $month; ?>","<?php echo (int) $year; ?>","total","fat");'><b><?php echo number_format($row['totalReal'], 2, ',', '.'); ?></b></td>
 		<td align='center' class='cls_vals2 cls_red'><b>-</b></td>
 	</tr>
 	<?php endforeach; ?>
 	<input type='hidden' name='codig_lnc' id='codig_lnc' />
 	<input type='hidden' name='banco_lnc' id='banco_lnc' />
+	<input type='hidden' name='detail_bank_id' id='detail_bank_id' />
+	<input type='hidden' name='detail_anda_id' id='detail_anda_id' />
+	<input type='hidden' name='detail_month' id='detail_month' />
+	<input type='hidden' name='detail_year' id='detail_year' />
+	<input type='hidden' name='detail_week' id='detail_week' />
 </table>
 <br>
 <table align='center' height='6%' width='25%' border='1' cellspacing='3' cellpadding='3' id='tb_tot' style='font-family:arial;font-size:8pt; border-collapse: collapse;'>

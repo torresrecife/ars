@@ -101,6 +101,7 @@ class DashboardPanelService
 			}
 
 			$built[] = array(
+				'andaId' => (int) $row['anda_id'],
 				'name' => $row['nome'],
 				'weekData' => $weekData,
 				'totalMeta' => $totalMeta,
@@ -149,6 +150,7 @@ class DashboardPanelService
 			}
 
 			$built[] = array(
+				'andaId' => (int) $row['anda_id'],
 				'name' => $row['nome'],
 				'weekData' => $weekData,
 				'totalMeta' => $totalMeta,
@@ -193,6 +195,7 @@ class DashboardPanelService
 			}
 
 			$built[] = array(
+				'andaId' => (int) $row['anda_id'],
 				'name' => $row['nome'],
 				'weekData' => $weekData,
 				'totalReal' => $totalReal,

@@ -126,6 +126,55 @@ class DashboardRepository
 		return $rows;
 	}
 
+	public function findMetaRowByBankMonthYearAndAndaId($bankId, $month, $year, $andaId)
+	{
+		$bankId = (int) $bankId;
+		$month = (int) $month;
+		$year = (int) $year;
+		$andaId = (int) $andaId;
+
+		$sql = "
+			SELECT
+				m.meta_id,
+				m.banco_id,
+				m.meta_mes,
+				m.meta_ano,
+				m.anda_id,
+				m.meta_valor,
+				m.def_sem,
+				m.sem_1,
+				m.sem_2,
+				m.sem_3,
+				m.sem_4,
+				m.sem_5,
+				a.nome,
+				a.especie,
+				a.anda_neo,
+				a.ordem,
+				a.chave
+			FROM metas_andamentos AS m
+			JOIN andamentos AS a ON a.anda_id = m.anda_id
+			WHERE m.banco_id = ?
+			AND m.meta_mes = ?
+			AND m.meta_ano = ?
+			AND m.anda_id = ?
+			LIMIT 1
+		";
+
+		$stmt = mysqli_prepare($this->connection, $sql);
+		if (!$stmt) {
+			return false;
+		}
+
+		mysqli_stmt_bind_param($stmt, 'iiii', $bankId, $month, $year, $andaId);
+		mysqli_stmt_execute($stmt);
+		$result = mysqli_stmt_get_result($stmt);
+		$row = $result ? mysqli_fetch_assoc($result) : false;
+		mysqli_stmt_close($stmt);
+
+		return $row;
+	}
+
 	public function findCarteiraConditionByBankId($bankId)
 	{
 		$bankId = (int) $bankId;
