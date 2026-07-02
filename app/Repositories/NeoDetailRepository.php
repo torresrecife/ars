@@ -26,18 +26,22 @@ class NeoDetailRepository
 				p.CodigoProcesso as Codigo,
 				p.Comarca as comarca,
 				p.UFComarca as estado,
+				p.Cartorio as Cartorio,
+				l.CodigoLancamento as CodigoLancamento,
+				p.IdentificadorContratante as IdentificadorContratante,
 				(
 					select top 1 pp.Pessoa
 					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa='RÃ©u' and pp.CodigoProcesso=p.CodigoProcesso
+					where pp.TipoPessoa = 'RÃ©u' and pp.CodigoProcesso = p.CodigoProcesso
 				) as Adverso,
 				(
 					select top 1 pp.Pessoa
 					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa='Autor' and pp.CodigoProcesso=p.CodigoProcesso
+					where pp.TipoPessoa = 'Autor' and pp.CodigoProcesso = p.CodigoProcesso
 				) as Adverso2,
 				p.Area,
-				p.NumeroProcessoCNJ as Processo,
+				p.NumeroProcesso as Processo,
+				p.NumeroProcessoCNJ as ProcessoCNJ,
 				p.ContaContratoNeoCobranca as ContaContratoNeoCobranca,
 				l.TipoLancamento as Andamento,
 				l.Valor as valores,
@@ -74,7 +78,7 @@ class NeoDetailRepository
 				(
 					select top 1 pp.Pessoa
 					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa='RÃ©u' and pp.CodigoProcesso=p.CodigoProcesso
+					where pp.TipoPessoa = 'RÃ©u' and pp.CodigoProcesso = p.CodigoProcesso
 				) as Adverso,
 				dist.DataAjuizamento as Ajuizamento
 			FROM v_Processo AS p WITH (NOLOCK)
@@ -118,18 +122,22 @@ class NeoDetailRepository
 				p.CodigoProcesso as Codigo,
 				p.Comarca as comarca,
 				p.UFComarca as estado,
+				p.Cartorio as Cartorio,
+				l.CodigoLancamento as CodigoLancamento,
+				p.IdentificadorContratante as IdentificadorContratante,
 				(
 					select top 1 pp.Pessoa
 					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa='RÃ©u' and pp.CodigoProcesso=p.CodigoProcesso
+					where pp.TipoPessoa = 'RÃ©u' and pp.CodigoProcesso = p.CodigoProcesso
 				) as Adverso,
 				(
 					select top 1 pp.Pessoa
 					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa='Autor' and pp.CodigoProcesso=p.CodigoProcesso
+					where pp.TipoPessoa = 'Autor' and pp.CodigoProcesso = p.CodigoProcesso
 				) as Adverso2,
 				p.Area,
-				p.NumeroProcessoCNJ as Processo,
+				p.NumeroProcesso as Processo,
+				p.NumeroProcessoCNJ as ProcessoCNJ,
 				p.ContaContratoNeoCobranca as ContaContratoNeoCobranca,
 				l.TipoLancamento as Andamento,
 				l.Valor as valores,
@@ -169,7 +177,7 @@ class NeoDetailRepository
 				(
 					select top 1 pp.Pessoa
 					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa='RÃ©u' and pp.CodigoProcesso=p.CodigoProcesso
+					where pp.TipoPessoa = 'RÃ©u' and pp.CodigoProcesso = p.CodigoProcesso
 				) as Adverso,
 				dist.DataAjuizamento as Ajuizamento
 			FROM v_Processo AS p WITH (NOLOCK)

@@ -27,12 +27,17 @@ function enviar_neo(valor){
 <table align='center' width='70%' id='tbf1' border='1' cellspacing='5' cellpadding='5' bordercolor='#ccc' style='border-collapse:collapse;font-size:10pt;color:#333;font-family:arial;margin-top:20px'>
 <tr bgcolor='#ebebeb'>
 <th align='center' class='comFiltro'><b>N.</b></th>
-<th align='center' class='comFiltro'><b>Código</b></th>
-<th align='center' class='comFiltro'><b>Adverso</b></th>
+<th align='center' class='comFiltro'><b>CÃ³digo</b></th>
+<th align='center' class='comFiltro'><b>Autor</b></th>
+<th align='center' class='comFiltro'><b>RÃ©u</b></th>
 <th align='center' class='comFiltro'><b>Processo</b></th>
+<th align='center' class='comFiltro'><b>Processo CNJ</b></th>
 <th align='center' class='comFiltro'><b>Conta</b></th>
 <th align='center' class='comFiltro'><b>Comarca</b></th>
 <th align='center' class='comFiltro'><b>UF</b></th>
+<th align='center' class='comFiltro'><b>CartÃ³rio</b></th>
+<th align='center' class='comFiltro'><b>Cod Lancamento</b></th>
+<th align='center' class='comFiltro'><b>N. Contratante</b></th>
 <th align='center' class='comFiltro'><b>Andamento</b></th>
 <th align='center' class='comFiltro'><b>Valor</b></th>
 <th align='center' class='comFiltro'><b>D.Evento</b></th>
@@ -42,11 +47,16 @@ function enviar_neo(valor){
 <tr>
 <td align='center' class='cls_td'><?php echo $index++; ?></td>
 <td align='center' class='cls_real' onclick='enviar_neo(<?php echo (int) $row['Codigo']; ?>)'><?php echo $row['Codigo']; ?></td>
-<td align='center'><?php echo ($row['Area'] === 'PASSIVAS' ? $row['Adverso2'] : $row['Adverso']); ?></td>
-<td align='center'><?php echo ($row['Processo'] === '' ? '-' : $row['Processo']); ?></td>
+<td align='center'><?php echo $row['Adverso2']; ?></td>
+<td align='center'><?php echo $row['Adverso']; ?></td>
+<td align='center'><?php echo $row['processo_exibicao']; ?></td>
+<td align='center'><?php echo $row['processo_cnj_exibicao']; ?></td>
 <td align='center'><?php echo $row['ContaContratoNeoCobranca']; ?></td>
 <td align='center'><?php echo $row['comarca_exibicao']; ?></td>
 <td align='center'><?php echo $row['estado_exibicao']; ?></td>
+<td align='center'><?php echo $row['Cartorio']; ?></td>
+<td align='center'><?php echo $row['CodigoLancamento']; ?></td>
+<td align='center'><?php echo $row['IdentificadorContratante']; ?></td>
 <td align='center'><?php echo $row['Andamento']; ?></td>
 <td align='right' class='cls_rs'><?php echo number_format((float) $row['valores'], 2, ',', '.'); ?></td>
 <td align='right'><?php echo $row['DataEvento']; ?></td>
