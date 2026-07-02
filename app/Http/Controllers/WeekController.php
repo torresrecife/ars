@@ -28,7 +28,7 @@ class WeekController
 			'months' => array(
 				1 => 'Janeiro',
 				2 => 'Fevereiro',
-				3 => 'MarÃ§o',
+				3 => 'Março',
 				4 => 'Abril',
 				5 => 'Maio',
 				6 => 'Junho',
