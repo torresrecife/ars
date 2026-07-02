@@ -56,103 +56,134 @@ function EnviarDados(frm,hid,are,fla){
 	
 	//função editar usuário
 	function fc_edit_usu(valor1,valor2){
-		//alert(1);
-		
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
 			tt="Novo Usuário";
 			tu="criado";
 			$(".validateTips").text("Crie Um " + tt);
+			usuarioClientesReset();
+			$('.cls_usu').each(function() {
+				$(this).val("");
+			});
+			$("#setor_usu").val("0");
+			sel_tipo(1, $("#setor_usu").val());
 		}else if(valor2=="U"){
 			tt="Editar Usuário";
 			tu="editado";
 			$(".validateTips").text("Edite o Usuário Abaixo");
 		}
-	
+
+		var abrirDialogUsuario = function(){
+			$("#dialog-edit-usu").dialog({
+				title: tt,
+				modal: true,
+				autoOpen: true,
+				height: 470,
+				width: 520,
+				buttons: {
+					Salvar: function() {
+						var mdados="";
+						var invalido = false;
+						$('.cls_usu').each(function(){
+							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
+								alert("O campo " + $(this).attr("title") + " é obrigatório ");
+								$(this).focus();
+								invalido = true;
+								return false;
+							}
+							mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
+						});
+						if(invalido){
+							return false;
+						}
+						if($('.cls_usuario_cliente_input').length==0){
+							alert("Selecione ao menos um cliente para o usuário.");
+							$("#banco_usu_pool").focus();
+							return false;
+						}
+						var usus = [];
+						$('.usuario-clientes-item').each(function(){
+							var clienteId = $(this).attr("data-cliente-id");
+							if(clienteId){
+								usus.push(clienteId);
+							}
+						});
+						var dado_email = validaEmail($("#email_usu").val());
+						var dado_senha = fc_teste_senha($("#senha_usu1").val(),$("#senha_usu2").val(),valor2);
+						if(dado_email!=""){
+							alert(dado_email);
+						}else if(dado_senha!=""){
+							alert(dado_senha);
+						}else{
+							$.ajax({
+							   type: "POST",
+							   url:  "inc/ajax_usu.php",
+							   data: "flag=" + valor2 + "&" + mdados + "&banco_neo=" + usus.join(","),
+							   success: function(retorno_ajax){
+									if(retorno_ajax==1){
+										$( "#dialog-edit-usu" ).dialog( "close" );
+										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Usuário " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
+											Fechar: function(){
+												$( this ).dialog( "close" );
+												EnviarDados('index.php','8','');
+											}
+										});
+									}else if(retorno_ajax==2){
+										alert("Usuário já cadastrado!");
+									}else{
+										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
+									}
+								}
+							});
+						}
+					},
+					Sair: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				close: function(){ 
+					$('.cls_usu').each(function() {
+						$(this).val("");
+					});
+					usuarioClientesReset();
+					$("#banco_usu_pool").html("");
+				}
+			});
+		};
+
+		if(valor2=="I"){
+			abrirDialogUsuario();
+			return;
+		}
+
 		$.ajax({
 			type: "POST",
 			url:  "inc/ajax_usu.php",
 			data: "flag=E&id_usu=" + valor1,
 			success: function(retorno_ajax){
-				var ret = retorno_ajax.split("-|-");
-				
-				$("#id_usu").val(ret[0]);
-				$("#nome_usu").val(ret[2]);
-				$("#login_usu").val(ret[3]);
-				$("#email_usu").val(ret[5]);
-				$("#nivel_usu").val(ret[6]);
-				$("#nivel_usu").val(ret[6]);
-				$("#setor_usu option[value="+ret[9]+"]").attr("selected","selected");
-				if(valor2=="U"){
-					sel_tipo(1,ret[9]);
+				var ret = {};
+				try{
+					ret = JSON.parse(retorno_ajax);
+				}catch(e){
+					alert("Erro ao carregar os dados do usuário.");
+					return;
 				}
-				$("#status_usu").val(ret[11]);
-				$("#dialog-edit-usu").dialog({
-					title: tt,
-					modal: true,
-					autoOpen: true,
-					height: 470,
-					width: 450,
-					buttons: {
-						Salvar: function() {
-							var mdados="";
-							$('.cls_usu').each(function(){
-								if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-									alert("O campo " + $(this).attr("title") + " é obrigatório ");
-									$(this).focus();
-									return false;
-								}
-								mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
-							});
-							///pega os clientes///////////
-							var usus="";
-							var numes=0;
-							$('.cls_usu2').each(function(){
-								if((numes++)>0){
-									usus += ",";
-								}
-								usus += escape($(this).val());
-							});
-							var dado_email = validaEmail($("#email_usu").val());
-							var dado_senha = fc_teste_senha($("#senha_usu1").val(),$("#senha_usu2").val(),valor2);
-							if(dado_email!=""){
-								alert(dado_email);
-							}else if(dado_senha!=""){
-								alert(dado_senha);
-							}else{
-								$.ajax({
-								   type: "POST",
-								   url:  "inc/ajax_usu.php",
-								   data: "flag=" + valor2 + "&" + mdados + "&banco_neo=" + usus,
-								   success: function(retorno_ajax){
-										if(retorno_ajax==1){
-											$( "#dialog-edit-usu" ).dialog( "close" );
-											msgbox(valor2=="I"?"<br><table align='center'><tr><td>Usuário " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
-												Fechar: function(){
-													$( this ).dialog( "close" );
-													EnviarDados('index.php','8','');
-												}
-											});
-										}else if(retorno_ajax==2){
-											alert("Usuário já cadastrado!");
-										}else{
-											alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
-										}
-									}
-								});
-							}
-						},
-						Sair: function() {
-							$( this ).dialog( "close" );
-						}
-					},
-					close: function(){ 
-						$('.cls_usu').each(function() {
-							$(this).val("");
-						});
+				usuarioClientesReset();
+				$("#id_usu").val(ret.id_usu || "");
+				$("#nome_usu").val(ret.nome_usu || "");
+				$("#login_usu").val(ret.login_usu || "");
+				$("#email_usu").val(ret.email_usu || "");
+				$("#nivel_usu").val(ret.nivel_usu || "");
+				$("#setor_usu").val(ret.id_setor || "0");
+				$("#status_usu").val(ret.status_usu || "");
+				sel_tipo(1, ret.id_setor || 0, function(){
+					var clients = ret.clients || [];
+					for(var i=0;i<clients.length;i++){
+						usuarioClientesAdicionarValor(String(clients[i].id), clients[i].name, true);
 					}
 				});
+				abrirDialogUsuario();
 			}
 		});
 	}
@@ -577,12 +608,102 @@ function EnviarDados(frm,hid,are,fla){
 		}
 		return false;
 	}
-	function clienteCarteirasRemover(botao){
-		$(botao).closest(".cliente-carteiras-item").remove();
-		clienteCarteirasAtualizarInputs();
+function clienteCarteirasRemover(botao){
+	$(botao).closest(".cliente-carteiras-item").remove();
+	clienteCarteirasAtualizarInputs();
+	return false;
+}
+function usuarioClientesReset(){
+	$("#usuario-clientes-vinculados").html("");
+	$("#usuario-clientes-inputs").html("");
+	$("#usuario-clientes-vazio").show();
+	usuarioClientesAtualizarPool();
+}
+function usuarioClientesEscape(valor){
+	return String(valor)
+		.replace(/&/g, "&amp;")
+		.replace(/"/g, "&quot;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;");
+}
+function usuarioClientesAtualizarInputs(){
+	var html = "";
+	$(".usuario-clientes-item").each(function(index){
+		var clienteId = $(this).attr("data-cliente-id");
+		var numero = index + 1;
+		html += "<input type='hidden' class='cls_usuario_cliente_input' name='banco_usu_" + numero + "' value=\"" + usuarioClientesEscape(clienteId) + "\" />";
+	});
+	$("#usuario-clientes-inputs").html(html);
+	if($(".usuario-clientes-item").length>0){
+		$("#usuario-clientes-vazio").hide();
+	}else{
+		$("#usuario-clientes-vazio").show();
+	}
+	usuarioClientesAtualizarPool();
+}
+function usuarioClientesAtualizarPool(){
+	var select = $("#banco_usu_pool");
+	if(select.length===0){
+		return;
+	}
+	var htmlBase = select.data("optionsHtml");
+	if(typeof htmlBase !== "string"){
+		htmlBase = select.html();
+		select.data("optionsHtml", htmlBase);
+	}
+	select.html(htmlBase);
+	$(".usuario-clientes-item").each(function(){
+		var clienteId = $(this).attr("data-cliente-id");
+		select.find("option[value='" + clienteId + "']").remove();
+	});
+	if(select.find("option").length>0){
+		select.prop("selectedIndex", 0);
+	}
+}
+function usuarioClientesAdicionar(){
+	var clienteId = $("#banco_usu_pool").val();
+	if(!clienteId){
+		alert("Selecione um cliente para adicionar.");
 		return false;
 	}
-	function fc_edit_andamento(valor1,valor2){
+	var clienteNome = $.trim($("#banco_usu_pool option:selected").text());
+	return usuarioClientesAdicionarValor(clienteId, clienteNome, false);
+}
+function usuarioClientesAdicionarValor(clienteId, clienteNome, silencioso){
+	var id = $.trim(String(clienteId));
+	if(id===""){
+		return false;
+	}
+	var existe = false;
+	$(".usuario-clientes-item").each(function(){
+		if($(this).attr("data-cliente-id")===id){
+			existe = true;
+		}
+	});
+	if(existe){
+		if(!silencioso){
+			alert("Esse cliente já está vinculado ao usuário.");
+		}
+		return false;
+	}
+	$("#usuario-clientes-vinculados").append(
+		"<div class='usuario-clientes-item' data-cliente-id=\"" + usuarioClientesEscape(id) + "\">"
+		+ "<span class='usuario-clientes-nome'>" + usuarioClientesEscape(clienteNome) + "</span>"
+		+ "<button type='button' class='usuario-clientes-remover' onclick='usuarioClientesRemover(this);'>Remover</button>"
+		+ "</div>"
+	);
+	usuarioClientesAtualizarInputs();
+	if(!silencioso){
+		$("#banco_usu_pool").val("");
+	}
+	return false;
+}
+function usuarioClientesRemover(botao){
+	$(botao).closest(".usuario-clientes-item").remove();
+	usuarioClientesAtualizarInputs();
+	return false;
+}
+function fc_edit_andamento(valor1,valor2){
 		
 		var tt = "";
 		var tu = "";
@@ -1129,7 +1250,7 @@ function inserir_banco(valor,stt){
 	$("#tb_dialog").css("height",atr+"px");
 	$("#banco_num").val(crt);
 }
-function sel_tipo(valor1,valor2){
+function sel_tipo(valor1,valor2,callback){
 	
 	$.ajax({
 		type: "POST",
@@ -1144,8 +1265,13 @@ function sel_tipo(valor1,valor2){
 					$("#sel_anda").html("Selecionar Lançamentos:");
 				}	
 			}else if(valor1==1){
-				$(".cls_usu2").html(retorno_ajax);
+				$("#banco_usu_pool").html(retorno_ajax);
+				$("#banco_usu_pool").data("optionsHtml", retorno_ajax);
 				$("#sel_banco").html("Clientes:");
+				usuarioClientesAtualizarPool();
+			}
+			if(typeof callback === "function"){
+				callback(retorno_ajax);
 			}
 		}
 	});

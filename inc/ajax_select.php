@@ -29,7 +29,7 @@
 		$qcli = mysqli_query($conexao4,$scli);
 		while($wcli = mysqli_fetch_array($qcli)){
 			?>
-			<option value="<?php echo $wcli['banco_id']; ?>"> <?php echo utf8_encode($wcli['banco_name']); ?></option>
+			<option value="<?php echo $wcli['banco_id']; ?>"> <?php echo htmlspecialchars($wcli['banco_name'], ENT_QUOTES, 'UTF-8'); ?></option>
 			<?php 
 		}
 	}

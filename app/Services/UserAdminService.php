@@ -31,7 +31,34 @@ class UserAdminService
 			return '';
 		}
 
-		return implode('-|-', array_values($row)) . '-|-';
+		$clientIds = array();
+		foreach (explode(',', isset($row['id_cliente']) ? (string) $row['id_cliente'] : '') as $clientId) {
+			$clientId = trim($clientId);
+			if ($clientId !== '' && ctype_digit($clientId) && (int) $clientId > 0) {
+				$clientIds[] = (int) $clientId;
+			}
+		}
+
+		$clients = array();
+		foreach ($this->repository->listClientsByIds($clientIds) as $client) {
+			$clients[] = array(
+				'id' => (int) $client['banco_id'],
+				'name' => (string) $client['banco_name'],
+			);
+		}
+
+		return json_encode(array(
+			'id_usu' => (int) $row['id_usu'],
+			'nome_usu' => (string) $row['nome_usu'],
+			'login_usu' => (string) $row['login_usu'],
+			'email_usu' => (string) $row['email_usu'],
+			'nivel_usu' => (string) $row['nivel_usu'],
+			'id_setor' => (int) $row['id_setor'],
+			'id_cliente' => isset($row['id_cliente']) ? (string) $row['id_cliente'] : '',
+			'client_ids' => $clientIds,
+			'clients' => $clients,
+			'status_usu' => (string) $row['status_usu'],
+		));
 	}
 
 	public function create(array $input)
