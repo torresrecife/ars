@@ -42,7 +42,7 @@ class MetaController
 			'andamentos' => $andamentos,
 			'totalFinanceiro' => $this->metaService->totalFinancialMeta($metas),
 			'lin' => count($metas),
-			'metaTipos' => array(1 => 'ProduÃ§Ã£o', 2 => 'Financeira'),
+			'metaTipos' => array(1 => 'Produção', 2 => 'Financeira'),
 		));
 	}
 
