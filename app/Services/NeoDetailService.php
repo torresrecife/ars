@@ -30,6 +30,8 @@ class NeoDetailService
 		foreach ($rows as &$row) {
 			$row['comarca_exibicao'] = $this->formatComarca(isset($row['comarca']) ? $row['comarca'] : '');
 			$row['estado_exibicao'] = isset($row['estado']) ? trim((string) $row['estado']) : '';
+			$row['processo_exibicao'] = $this->formatProcesso(isset($row['Processo']) ? $row['Processo'] : '');
+			$row['processo_cnj_exibicao'] = $this->formatProcesso(isset($row['ProcessoCNJ']) ? $row['ProcessoCNJ'] : '');
 			$total += isset($row['valores']) ? (float) $row['valores'] : 0.0;
 			$count++;
 		}
@@ -244,5 +246,19 @@ class NeoDetailService
 		}
 
 		return htmlentities($value, ENT_QUOTES, 'UTF-8');
+	}
+
+	private function formatProcesso($value)
+	{
+		$value = trim((string) $value);
+		if ($value === '') {
+			return '-';
+		}
+
+		if (function_exists('formatarProcesso')) {
+			return formatarProcesso($value);
+		}
+
+		return $value;
 	}
 }
