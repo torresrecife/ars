@@ -82,6 +82,35 @@
 					</td>
 				</tr>
 				<tr>
+					<td><label>Modo Regi&atilde;o:</label></td>
+					<td>
+						<select class="cls_usu" name="regiao_modo" id="regiao_modo" title="Modo Regiao">
+							<option value="N">Sem filtro regional</option>
+							<option value="R">Regi&otilde;es vinculadas</option>
+							<option value="T">Todas as regi&otilde;es</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="usuario-regioes-row">
+					<td><label>Regi&otilde;es:</label></td>
+					<td>
+						<div class="usuario-regioes-box">
+							<div id="usuario-regioes-vinculadas" class="usuario-regioes-lista"></div>
+							<div id="usuario-regioes-inputs"></div>
+							<div id="usuario-regioes-vazio" class="usuario-regioes-vazio">Nenhuma regi&atilde;o vinculada.</div>
+						</div>
+						<div class="usuario-regioes-adicionar">
+							<select class="input-default" name="regiao_usu_pool" id="regiao_usu_pool" title="Regiao">
+								<option value=""></option>
+								<?php foreach ($regions as $region): ?>
+									<option value="<?php echo $region['regiao_id']; ?>"><?php echo htmlspecialchars($region['regiao_nome'], ENT_QUOTES, 'UTF-8'); ?></option>
+								<?php endforeach; ?>
+							</select>
+							<button id="bt-add-regiao-usu" class="bts" type="button" onclick="usuarioRegioesAdicionar();">+</button>
+						</div>
+					</td>
+				</tr>
+				<tr>
 					<td><label>Status</label></td>
 					<td>
 						<select class="cls_usu" name="status_usu" id="status_usu" obrigatorio="1" title="Status">
@@ -141,6 +170,44 @@
 	gap:6px;
 }
 .usuario-clientes-adicionar select{
+	width:320px;
+	height:22px;
+}
+.usuario-regioes-box{
+	margin-bottom:8px;
+}
+.usuario-regioes-lista{
+	display:flex;
+	flex-direction:column;
+	gap:6px;
+}
+.usuario-regioes-item{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	border:1px solid #ccc;
+	padding:6px 8px;
+	background:#f8f8f8;
+}
+.usuario-regioes-nome{
+	flex:1;
+	padding-right:10px;
+	text-align:left;
+}
+.usuario-regioes-vazio{
+	color:#666;
+	font-size:11px;
+	padding:4px 0;
+}
+.usuario-regioes-remover{
+	margin-left:8px;
+}
+.usuario-regioes-adicionar{
+	display:flex;
+	align-items:center;
+	gap:6px;
+}
+.usuario-regioes-adicionar select{
 	width:320px;
 	height:22px;
 }

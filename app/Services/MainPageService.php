@@ -11,12 +11,16 @@ class MainPageService
 	/** @var MainPageRepository */
 	private $repository;
 
+	/** @var RegionService */
+	private $regionService;
+
 	/** @var array */
 	private $months;
 
-	public function __construct(MainPageRepository $repository, array $months)
+	public function __construct(MainPageRepository $repository, RegionService $regionService, array $months)
 	{
 		$this->repository = $repository;
+		$this->regionService = $regionService;
 		$this->months = $months;
 	}
 
@@ -38,11 +42,24 @@ class MainPageService
 
 	private function buildUserContext(array $session)
 	{
+		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
+		$regionMode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
+		$regions = $userId > 0 ? $this->regionService->listUserRegions($userId) : array();
+
 		return array(
 			'sectorId' => isset($session['usuarioSetor']) ? (int) $session['usuarioSetor'] : 0,
 			'clientIds' => isset($session['usuarioCliente']) ? (string) $session['usuarioCliente'] : '',
+			'regionMode' => $regionMode,
+			'regionIds' => isset($session['usuarioRegiaoIds']) ? (string) $session['usuarioRegiaoIds'] : '',
+			'regionUfs' => isset($session['usuarioRegiaoUfs']) ? (string) $session['usuarioRegiaoUfs'] : '',
 			'level' => isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '',
-			'id' => isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0,
+			'id' => $userId,
+			'regions' => $regions,
+			'showRegionSelector' => $this->shouldShowRegionSelector(
+				isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '',
+				$regionMode,
+				$regions
+			),
 		);
 	}
 
@@ -53,6 +70,7 @@ class MainPageService
 			'hid_area' => isset($input['hid_area']) ? (string) $input['hid_area'] : '',
 			'hid_flag' => isset($input['hid_flag']) ? (string) $input['hid_flag'] : '',
 			'geral' => isset($input['geral']) ? (int) $input['geral'] : 0,
+			'regiao_id' => isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0,
 		);
 	}
 
@@ -65,6 +83,7 @@ class MainPageService
 			12 => array('class' => 'newsetor', 'label' => 'Novo Andamento', 'js' => 'fc_edit_andamento("", "I");'),
 			14 => array('class' => 'newsetor', 'label' => 'Nova Meta', 'js' => 'fc_edit_metas("", "I");'),
 			15 => array('class' => 'newsetor', 'label' => 'Nova Semana', 'js' => 'fc_edit_sem("", "I");'),
+			16 => array('class' => 'newsetor', 'label' => 'Nova Região', 'js' => 'fc_edit_regiao("", "I");'),
 		);
 
 		return isset($actions[$hidSend]) ? $actions[$hidSend] : null;
@@ -81,6 +100,9 @@ class MainPageService
 						'banks' => $this->repository->listBanksByArea($state['hid_area'], $user['clientIds']),
 						'hidArea' => $state['hid_area'],
 						'monthYearLabel' => $monthYearLabel,
+						'regions' => $user['regions'],
+						'showRegionSelector' => $user['showRegionSelector'],
+						'selectedRegionId' => $state['regiao_id'],
 					),
 				);
 			case 2:
@@ -92,6 +114,10 @@ class MainPageService
 					'data' => array(
 						'areas' => $this->repository->listAreasForProduction($user['level'], $user['sectorId']),
 						'monthYearLabel' => $monthYearLabel,
+						'regions' => $user['regions'],
+						'showRegionSelector' => $user['showRegionSelector'],
+						'selectedRegionId' => $state['regiao_id'],
+						'userLevel' => $user['level'],
 					),
 				);
 			case 4:
@@ -123,6 +149,8 @@ class MainPageService
 				return array('type' => 'legacy', 'file' => 'metas.php');
 			case 15:
 				return array('type' => 'legacy', 'file' => 'semanas.php');
+			case 16:
+				return array('type' => 'legacy', 'file' => 'regioes.php');
 			default:
 				return array(
 					'type' => 'view',
@@ -132,5 +160,18 @@ class MainPageService
 					),
 				);
 		}
+	}
+
+	private function shouldShowRegionSelector($level, $regionMode, array $regions)
+	{
+		if ((string) $level !== 'GER') {
+			return false;
+		}
+
+		if (empty($regions)) {
+			return false;
+		}
+
+		return in_array((string) $regionMode, array('R', 'T'), true);
 	}
 }

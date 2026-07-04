@@ -122,8 +122,8 @@ class UserAdminRepository
 	{
 		$sql = "INSERT INTO usuarios (
 			nome_usu, login_usu, senha_usu, email_usu, nivel_usu,
-			id_setor, id_cliente, acesso_usu, data_cad, status_usu
-		) VALUES (?, ?, ?, ?, ?, ?, ?, '0000-00-00 00:00:00', ?, ?)";
+			id_setor, id_cliente, regiao_modo, acesso_usu, data_cad, status_usu
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, '0000-00-00 00:00:00', ?, ?)";
 
 		$stmt = mysqli_prepare($this->connection, $sql);
 		if (!$stmt) {
@@ -137,10 +137,11 @@ class UserAdminRepository
 		$nivel = (string) $data['nivel_usu'];
 		$setor = (int) $data['id_setor'];
 		$cliente = (string) $data['id_cliente'];
+		$regiaoModo = (string) $data['regiao_modo'];
 		$dataCad = (string) $data['data_cad'];
 		$status = (string) $data['status_usu'];
 
-		mysqli_stmt_bind_param($stmt, 'sssssisss', $nome, $login, $senha, $email, $nivel, $setor, $cliente, $dataCad, $status);
+		mysqli_stmt_bind_param($stmt, 'sssssissss', $nome, $login, $senha, $email, $nivel, $setor, $cliente, $regiaoModo, $dataCad, $status);
 		$ok = mysqli_stmt_execute($stmt);
 		mysqli_stmt_close($stmt);
 
@@ -156,8 +157,9 @@ class UserAdminRepository
 			nivel_usu = ?,
 			id_setor = ?,
 			id_cliente = ?,
+			regiao_modo = ?,
 			status_usu = ?";
-		$types = 'ssssiss';
+		$types = 'ssssisss';
 		$params = array(
 			(string) $data['nome_usu'],
 			(string) $data['login_usu'],
@@ -165,6 +167,7 @@ class UserAdminRepository
 			(string) $data['nivel_usu'],
 			(int) $data['id_setor'],
 			(string) $data['id_cliente'],
+			(string) $data['regiao_modo'],
 			(string) $data['status_usu'],
 		);
 
@@ -188,6 +191,11 @@ class UserAdminRepository
 		mysqli_stmt_close($stmt);
 
 		return $ok;
+	}
+
+	public function lastInsertId()
+	{
+		return (int) mysqli_insert_id($this->connection);
 	}
 
 	public function delete($id)

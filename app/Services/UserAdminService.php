@@ -11,9 +11,13 @@ class UserAdminService
 	/** @var UserAdminRepository */
 	private $repository;
 
-	public function __construct(UserAdminRepository $repository)
+	/** @var RegionService */
+	private $regionService;
+
+	public function __construct(UserAdminRepository $repository, RegionService $regionService)
 	{
 		$this->repository = $repository;
+		$this->regionService = $regionService;
 	}
 
 	public function indexData()
@@ -21,6 +25,7 @@ class UserAdminService
 		return array(
 			'users' => $this->repository->all(),
 			'areas' => $this->repository->listAreas(),
+			'regions' => $this->regionService->listActive(),
 		);
 	}
 
@@ -47,6 +52,15 @@ class UserAdminService
 			);
 		}
 
+		$regions = array();
+		$regionIds = $this->regionService->listUserRegionIds((int) $row['id_usu']);
+		foreach ($this->regionService->listUserRegions((int) $row['id_usu']) as $region) {
+			$regions[] = array(
+				'id' => (int) $region['regiao_id'],
+				'name' => (string) $region['regiao_nome'],
+			);
+		}
+
 		return json_encode(array(
 			'id_usu' => (int) $row['id_usu'],
 			'nome_usu' => (string) $row['nome_usu'],
@@ -57,6 +71,9 @@ class UserAdminService
 			'id_cliente' => isset($row['id_cliente']) ? (string) $row['id_cliente'] : '',
 			'client_ids' => $clientIds,
 			'clients' => $clients,
+			'regiao_modo' => isset($row['regiao_modo']) ? (string) $row['regiao_modo'] : 'N',
+			'region_ids' => $regionIds,
+			'regions' => $regions,
 			'status_usu' => (string) $row['status_usu'],
 		));
 	}
@@ -72,7 +89,16 @@ class UserAdminService
 			return '2';
 		}
 
-		return $this->repository->insert($payload) ? '1' : '0';
+		if (!$this->repository->insert($payload)) {
+			return '0';
+		}
+
+		$userId = $this->repository->lastInsertId();
+		if ($userId > 0 && !$this->regionService->syncUserRegions($userId, $payload['region_ids'])) {
+			return '0';
+		}
+
+		return '1';
 	}
 
 	public function update(array $input)
@@ -86,7 +112,11 @@ class UserAdminService
 			return '2';
 		}
 
-		return $this->repository->update($payload) ? '1' : '0';
+		if (!$this->repository->update($payload)) {
+			return '0';
+		}
+
+		return $this->regionService->syncUserRegions($payload['id_usu'], $payload['region_ids']) ? '1' : '0';
 	}
 
 	public function delete($id)
@@ -103,17 +133,67 @@ class UserAdminService
 		}
 
 		$senha = isset($input['senha_usu1']) ? (string) $input['senha_usu1'] : '';
+		$nivel = isset($input['nivel_usu']) ? (string) $input['nivel_usu'] : '';
+		$regionIds = $this->parseIdList(isset($input['regiao_neo']) ? (string) $input['regiao_neo'] : '');
+		$regionMode = isset($input['regiao_modo']) ? strtoupper(trim((string) $input['regiao_modo'])) : 'N';
+		$regionConfig = $this->normalizeRegionConfig($nivel, $regionMode, $regionIds);
+
 		return array(
 			'id_usu' => isset($input['id_usu']) ? (int) $input['id_usu'] : 0,
 			'nome_usu' => $nome,
 			'login_usu' => $login,
 			'senha_usu' => $senha !== '' ? $this->hashPassword($senha) : '',
 			'email_usu' => isset($input['email_usu']) ? trim((string) $input['email_usu']) : '',
-			'nivel_usu' => isset($input['nivel_usu']) ? (string) $input['nivel_usu'] : '',
+			'nivel_usu' => $nivel,
 			'id_setor' => isset($input['setor_usu']) ? (int) $input['setor_usu'] : 0,
 			'id_cliente' => isset($input['banco_neo']) ? trim((string) $input['banco_neo']) : '0',
+			'regiao_modo' => $regionConfig['mode'],
+			'region_ids' => $regionConfig['ids'],
 			'status_usu' => isset($input['status_usu']) ? (string) $input['status_usu'] : '',
 			'data_cad' => date('Y-m-d H:i:s'),
+		);
+	}
+
+	private function parseIdList($value)
+	{
+		$ids = array();
+		foreach (explode(',', (string) $value) as $item) {
+			$item = trim($item);
+			if ($item !== '' && ctype_digit($item) && (int) $item > 0) {
+				$ids[(int) $item] = (int) $item;
+			}
+		}
+
+		return array_values($ids);
+	}
+
+	private function normalizeRegionConfig($level, $mode, array $regionIds)
+	{
+		$level = strtoupper(trim((string) $level));
+		$mode = strtoupper(trim((string) $mode));
+		if (!in_array($mode, array('N', 'R', 'T'), true)) {
+			$mode = 'N';
+		}
+
+		if ($level === 'USU') {
+			$regionIds = empty($regionIds) ? array() : array((int) reset($regionIds));
+			return array(
+				'mode' => empty($regionIds) ? 'N' : 'R',
+				'ids' => $regionIds,
+			);
+		}
+
+		if ($mode === 'R' && empty($regionIds)) {
+			$mode = 'N';
+		}
+
+		if ($mode === 'T') {
+			$regionIds = array_values($regionIds);
+		}
+
+		return array(
+			'mode' => $mode,
+			'ids' => array_values($regionIds),
 		);
 	}
 

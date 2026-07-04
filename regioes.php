@@ -11,13 +11,9 @@ if (!defined('ARS_LEGACY_FUNCTIONS_LOADED')) {
 protegePagina(0);
 
 $view = new \App\Support\View($app->basePath());
-$regionService = new \App\Services\RegionService(
-	new \App\Repositories\RegionRepository($conexao4)
-);
-$controller = new \App\Http\Controllers\UserAdminController(
-	new \App\Services\UserAdminService(
-		new \App\Repositories\UserAdminRepository($conexao4),
-		$regionService
+$controller = new \App\Http\Controllers\RegionAdminController(
+	new \App\Services\RegionAdminService(
+		new \App\Repositories\RegionAdminRepository($conexao4)
 	),
 	$view
 );

@@ -15,15 +15,19 @@ class NeoDetailService
 	/** @var DashboardRepository */
 	private $dashboardRepository;
 
-	public function __construct(NeoDetailRepository $repository, DashboardRepository $dashboardRepository)
+	/** @var RegionService */
+	private $regionService;
+
+	public function __construct(NeoDetailRepository $repository, DashboardRepository $dashboardRepository, RegionService $regionService)
 	{
 		$this->repository = $repository;
 		$this->dashboardRepository = $dashboardRepository;
+		$this->regionService = $regionService;
 	}
 
-	public function financialDetailViewData(array $input)
+	public function financialDetailViewData(array $input, array $session = array())
 	{
-		$rows = $this->resolveFinancialRows($input);
+		$rows = $this->resolveFinancialRows($input, $session);
 		$total = 0.0;
 		$count = 0;
 
@@ -45,9 +49,9 @@ class NeoDetailService
 		);
 	}
 
-	public function andamentoDetailViewData(array $input)
+	public function andamentoDetailViewData(array $input, array $session = array())
 	{
-		$rows = $this->resolveAndamentoRows($input);
+		$rows = $this->resolveAndamentoRows($input, $session);
 		$count = 0;
 
 		foreach ($rows as &$row) {
@@ -64,10 +68,10 @@ class NeoDetailService
 		);
 	}
 
-	private function resolveFinancialRows(array $input)
+	private function resolveFinancialRows(array $input, array $session = array())
 	{
 		if ($this->hasContextRequest($input)) {
-			$context = $this->buildContext($input);
+			$context = $this->buildContext($input, $session);
 			if ($context !== null) {
 				return $this->repository->financialDetailsByContext(
 					$context['typeNames'],
@@ -75,7 +79,8 @@ class NeoDetailService
 					$context['carteiraMode'],
 					$context['month'],
 					$context['year'],
-					$context['week']
+					$context['week'],
+					$context['ufCodes']
 				);
 			}
 		}
@@ -84,10 +89,10 @@ class NeoDetailService
 		return $this->repository->financialDetails($codes);
 	}
 
-	private function resolveAndamentoRows(array $input)
+	private function resolveAndamentoRows(array $input, array $session = array())
 	{
 		if ($this->hasContextRequest($input)) {
-			$context = $this->buildContext($input);
+			$context = $this->buildContext($input, $session);
 			if ($context !== null) {
 				return $this->repository->andamentoDetailsByContext(
 					$context['typeNames'],
@@ -95,7 +100,8 @@ class NeoDetailService
 					$context['carteiraMode'],
 					$context['month'],
 					$context['year'],
-					$context['week']
+					$context['week'],
+					$context['ufCodes']
 				);
 			}
 		}
@@ -109,7 +115,7 @@ class NeoDetailService
 		return isset($input['detail_bank_id'], $input['detail_anda_id'], $input['detail_month'], $input['detail_year']);
 	}
 
-	private function buildContext(array $input)
+	private function buildContext(array $input, array $session = array())
 	{
 		$bankId = isset($input['detail_bank_id']) ? (int) $input['detail_bank_id'] : 0;
 		$andaId = isset($input['detail_anda_id']) ? (int) $input['detail_anda_id'] : 0;
@@ -137,7 +143,45 @@ class NeoDetailService
 			'month' => $month,
 			'year' => $year,
 			'week' => $week,
+			'ufCodes' => $this->resolveRegionFilter($input, $session),
 		);
+	}
+
+	private function resolveRegionFilter(array $input, array $session)
+	{
+		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
+		if ($userId <= 0) {
+			return array();
+		}
+
+		$userRegions = $this->regionService->listUserRegions($userId);
+		$regionIds = array();
+		foreach ($userRegions as $region) {
+			$regionIds[] = (int) $region['regiao_id'];
+		}
+		if (empty($regionIds)) {
+			return array();
+		}
+
+		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
+		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
+		$selectedRegionId = isset($input['detail_region_id']) ? (int) $input['detail_region_id'] : 0;
+
+		if ($level === 'USU' && $mode === 'R') {
+			return $this->regionService->listUfsByRegionIds(array((int) $regionIds[0]));
+		}
+
+		if ($level === 'GER' && in_array($mode, array('R', 'T'), true)) {
+			if ($selectedRegionId > 0 && in_array($selectedRegionId, $regionIds, true)) {
+				return $this->regionService->listUfsByRegionIds(array($selectedRegionId));
+			}
+
+			if ($mode === 'R') {
+				return $this->regionService->listUfsByRegionIds($regionIds);
+			}
+		}
+
+		return array();
 	}
 
 	private function resolveWeek($month, $year, $weekKey)

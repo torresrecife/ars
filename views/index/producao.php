@@ -9,6 +9,17 @@
 					<option value="<?php echo $area['area_id']; ?>"><?php echo htmlspecialchars($area['area_nome'], ENT_QUOTES, 'UTF-8'); ?></option>
 				<?php endforeach; ?>
 			</select>
+			<?php if (!empty($showRegionSelector)): ?>
+				<label for="regiao_id">&nbsp;Regi&atilde;o:</label>
+				<select name="regiao_id" id="regiao_id" class="input-default" style="height:20px;width:200px;">
+					<option value="0">Todas as Regi&otilde;es</option>
+					<?php foreach ($regions as $region): ?>
+						<option value="<?php echo (int) $region['regiao_id']; ?>"<?php echo ((int) $selectedRegionId === (int) $region['regiao_id']) ? ' selected="selected"' : ''; ?>><?php echo htmlspecialchars($region['regiao_nome'], ENT_QUOTES, 'UTF-8'); ?></option>
+					<?php endforeach; ?>
+				</select>
+			<?php else: ?>
+				<input type="hidden" name="regiao_id" id="regiao_id" value="<?php echo (int) $selectedRegionId; ?>"/>
+			<?php endif; ?>
 			<label for="startDate">&nbsp;M&ecirc;s / Ano:</label>
 			<input type="text" name="startDate" id="startDate" class="date-picker" readonly="readonly" value="<?php echo htmlspecialchars($monthYearLabel, ENT_QUOTES, 'UTF-8'); ?>"/>
 			<span id="obg_date"></span>

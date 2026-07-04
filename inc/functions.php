@@ -163,6 +163,12 @@ function fc_botoes_setor($id_setor,$displ,$nome=""){
 				<span class='excluir'><a href='javascript:fc_del_setor(\"$id_setor\",\"".utf8_encode($nome)."\");' class='button_del' title='Excluir Setor'>Excluir</a></span>
 			</div>";
 }
+function fc_botoes_regiao($id_regiao,$displ,$nome=""){
+	return "<div id='module-status' style='display:" . $displ . ";'>
+				<span class='editar'><a href='javascript:fc_edit_regiao(\"$id_regiao\",\"U\");' class='button_del' title='Editar Regiao'>Editar</a></span>
+				<span class='excluir'><a href='javascript:fc_del_regiao(\"$id_regiao\",\"".utf8_encode($nome)."\");' class='button_del' title='Excluir Regiao'>Excluir</a></span>
+			</div>";
+}
 
 function diasemana($data) {
 	$ano =  substr("$data",0,4);

@@ -110,7 +110,7 @@ class NeoDetailRepository
 		return $this->fetchAll($query);
 	}
 
-	public function financialDetailsByContext(array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $week = array())
+	public function financialDetailsByContext(array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $week = array(), array $ufCodes = array())
 	{
 		$typeList = $this->buildQuotedList($typeNames);
 		if ($typeList === '') {
@@ -149,13 +149,14 @@ class NeoDetailRepository
 		";
 
 		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
+		$query .= $this->buildUfCondition($ufCodes);
 		$query .= $this->buildWeekCondition('l.DataHora_Evento', $month, $year, $week);
 		$query .= " ORDER BY l.DataHora_Evento ASC";
 
 		return $this->fetchAll($query);
 	}
 
-	public function andamentoDetailsByContext(array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $week = array())
+	public function andamentoDetailsByContext(array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $week = array(), array $ufCodes = array())
 	{
 		$typeList = $this->buildQuotedList($typeNames);
 		if ($typeList === '') {
@@ -202,6 +203,7 @@ class NeoDetailRepository
 		";
 
 		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
+		$query .= $this->buildUfCondition($ufCodes);
 		$query .= $this->buildWeekCondition('a.DataHoraEvento', $month, $year, $week);
 		$query .= " AND p.TipoDesdobramento IS NULL AND a.Invalido = 'False'";
 		$query .= " ORDER BY a.DataHoraEvento ASC";
@@ -246,6 +248,16 @@ class NeoDetailRepository
 		}
 
 		return $query;
+	}
+
+	private function buildUfCondition(array $ufCodes)
+	{
+		$quoted = $this->buildQuotedList($ufCodes);
+		if ($quoted === '') {
+			return '';
+		}
+
+		return " AND p.UFComarca IN (" . $quoted . ")";
 	}
 
 	private function buildQuotedList(array $values)

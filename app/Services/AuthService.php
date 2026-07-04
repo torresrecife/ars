@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Repositories\RegionRepository;
 use App\Repositories\UserRepository;
 
 class AuthService
@@ -11,9 +12,13 @@ class AuthService
 	/** @var UserRepository */
 	private $users;
 
-	public function __construct(UserRepository $users)
+	/** @var RegionRepository|null */
+	private $regions;
+
+	public function __construct(UserRepository $users, RegionRepository $regions = null)
 	{
 		$this->users = $users;
+		$this->regions = $regions;
 	}
 
 	public function hashPassword($password)
@@ -95,6 +100,16 @@ class AuthService
 		$_SESSION['usuarioST'] = $user['status_usu'];
 		$_SESSION['usuarioSetor'] = $user['id_setor'];
 		$_SESSION['usuarioCliente'] = $user['id_cliente'];
+		$_SESSION['usuarioRegiaoModo'] = isset($user['regiao_modo']) ? (string) $user['regiao_modo'] : 'N';
+		$_SESSION['usuarioRegiaoIds'] = '';
+		$_SESSION['usuarioRegiaoUfs'] = '';
+
+		if ($this->regions !== null && isset($user['id_usu'])) {
+			$regionIds = $this->regions->listRegionIdsByUserId((int) $user['id_usu']);
+			$ufs = $this->regions->listUfCodesByUserId((int) $user['id_usu']);
+			$_SESSION['usuarioRegiaoIds'] = implode(',', $regionIds);
+			$_SESSION['usuarioRegiaoUfs'] = implode(',', $ufs);
+		}
 	}
 
 	public function clearUserSession()
@@ -106,6 +121,9 @@ class AuthService
 			$_SESSION['usuarioST'],
 			$_SESSION['usuarioSetor'],
 			$_SESSION['usuarioCliente'],
+			$_SESSION['usuarioRegiaoModo'],
+			$_SESSION['usuarioRegiaoIds'],
+			$_SESSION['usuarioRegiaoUfs'],
 			$_SESSION['usuarioLogin'],
 			$_SESSION['usuarioSenha']
 		);

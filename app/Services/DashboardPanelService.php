@@ -18,14 +18,18 @@ class DashboardPanelService
 	/** @var array */
 	private $months;
 
-	public function __construct(DashboardRepository $dashboardRepository, NeoPanelRepository $neoRepository, array $months)
+	/** @var RegionService */
+	private $regionService;
+
+	public function __construct(DashboardRepository $dashboardRepository, NeoPanelRepository $neoRepository, RegionService $regionService, array $months)
 	{
 		$this->dashboardRepository = $dashboardRepository;
 		$this->neoRepository = $neoRepository;
+		$this->regionService = $regionService;
 		$this->months = $months;
 	}
 
-	public function build(array $input)
+	public function build(array $input, array $session = array())
 	{
 		$bankId = isset($input['hid_flag']) ? (int) $input['hid_flag'] : 0;
 		if ($bankId <= 0) {
@@ -46,9 +50,10 @@ class DashboardPanelService
 		$weeks = $this->resolveWeeks($month, $year, $weekConfig);
 		$carteiraMode = $this->dashboardRepository->findCarteiraConditionByBankId($bankId);
 		$carteiraCodes = $this->dashboardRepository->listCarteiraCodesByBankId($bankId);
-		$productionRows = $this->buildProductionRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode);
-		$financialRows = $this->buildFinancialRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode);
-		$prejudiceRows = $this->buildPrejudiceRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode);
+		$regionFilter = $this->resolveRegionFilter($input, $session);
+		$productionRows = $this->buildProductionRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs']);
+		$financialRows = $this->buildFinancialRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs']);
+		$prejudiceRows = $this->buildPrejudiceRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs']);
 		$summary = $this->buildFinancialSummary($financialRows, $prejudiceRows, $weeks);
 
 		return array(
@@ -56,6 +61,8 @@ class DashboardPanelService
 			'bank' => $bank,
 			'month' => $month,
 			'year' => $year,
+			'regionId' => $regionFilter['selectedRegionId'],
+			'regionLabel' => $regionFilter['label'],
 			'startDate' => $this->months[$month] . ' / ' . $year,
 			'weeks' => $weeks,
 			'productionRows' => $productionRows,
@@ -67,7 +74,7 @@ class DashboardPanelService
 		);
 	}
 
-	private function buildProductionRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode)
+	private function buildProductionRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array())
 	{
 		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 1);
 		$built = array();
@@ -86,7 +93,8 @@ class DashboardPanelService
 					$carteiraMode,
 					$week,
 					$month,
-					$year
+					$year,
+					$ufCodes
 				);
 				$realValue = (int) $queryResult['count'];
 				$weekData[] = array(
@@ -115,7 +123,7 @@ class DashboardPanelService
 		return $built;
 	}
 
-	private function buildFinancialRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode)
+	private function buildFinancialRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array())
 	{
 		$exclude = array('CUSTAS POR FALHA OPERACIONAL');
 		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, $exclude);
@@ -135,7 +143,8 @@ class DashboardPanelService
 					$carteiraMode,
 					$week,
 					$month,
-					$year
+					$year,
+					$ufCodes
 				);
 				$realValue = (float) $queryResult['total'];
 				$weekData[] = array(
@@ -164,7 +173,7 @@ class DashboardPanelService
 		return $built;
 	}
 
-	private function buildPrejudiceRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode)
+	private function buildPrejudiceRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array())
 	{
 		$include = array('CUSTAS POR FALHA OPERACIONAL');
 		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, array(), $include);
@@ -182,7 +191,8 @@ class DashboardPanelService
 					$carteiraMode,
 					$week,
 					$month,
-					$year
+					$year,
+					$ufCodes
 				);
 				$realValue = (float) $queryResult['total'];
 				$weekData[] = array(
@@ -246,6 +256,67 @@ class DashboardPanelService
 			'netPercent' => $this->percent($netRealTotal, $metaTotal, 1),
 			'netIcon' => $this->percentIcon($netRealTotal, $metaTotal),
 		);
+	}
+
+	private function resolveRegionFilter(array $input, array $session)
+	{
+		$default = array(
+			'selectedRegionId' => 0,
+			'ufs' => array(),
+			'label' => '',
+		);
+
+		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
+		if ($userId <= 0) {
+			return $default;
+		}
+
+		$userRegions = $this->regionService->listUserRegions($userId);
+		$regionIds = array();
+		foreach ($userRegions as $region) {
+			$regionIds[] = (int) $region['regiao_id'];
+		}
+
+		if (empty($regionIds)) {
+			return $default;
+		}
+
+		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
+		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
+		$selectedRegionId = isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0;
+
+		if ($level === 'USU' && $mode === 'R') {
+			$selectedRegionId = (int) $regionIds[0];
+			$region = $this->regionService->findUserRegion($userId, $selectedRegionId);
+
+			return array(
+				'selectedRegionId' => $selectedRegionId,
+				'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+				'label' => $region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+			);
+		}
+
+		if ($level === 'GER' && in_array($mode, array('R', 'T'), true)) {
+			if ($selectedRegionId > 0 && in_array($selectedRegionId, $regionIds, true)) {
+				$region = $this->regionService->findUserRegion($userId, $selectedRegionId);
+
+				return array(
+					'selectedRegionId' => $selectedRegionId,
+					'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+					'label' => $region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+				);
+			}
+
+			if ($mode === 'R') {
+				return array(
+					'selectedRegionId' => 0,
+					'ufs' => $this->regionService->listUfsByRegionIds($regionIds),
+					'label' => ' | Regi&otilde;es: <b>Todas as vinculadas</b>',
+				);
+			}
+		}
+
+		return $default;
 	}
 
 	private function resolveWeeks($month, $year, $weekConfig)

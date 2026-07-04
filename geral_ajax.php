@@ -10,7 +10,10 @@ $view = new \App\Support\View(__DIR__);
 $controller = new \App\Http\Controllers\GeneralProductionController(
 	new \App\Services\GeneralProductionService(
 		new \App\Repositories\GeneralProductionRepository($conexao4),
-		new \App\Repositories\GeneralProductionNeoRepository(ars_sqlsrv_connection())
+		new \App\Repositories\GeneralProductionNeoRepository(ars_sqlsrv_connection()),
+		new \App\Services\RegionService(
+			new \App\Repositories\RegionRepository($conexao4)
+		)
 	),
 	$view
 );

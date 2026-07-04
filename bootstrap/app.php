@@ -36,6 +36,8 @@ require_once $basePath . '/app/Repositories/GeneralProductionRepository.php';
 require_once $basePath . '/app/Repositories/GeneralProductionNeoRepository.php';
 require_once $basePath . '/app/Repositories/UserAdminRepository.php';
 require_once $basePath . '/app/Repositories/ClientAdminRepository.php';
+require_once $basePath . '/app/Repositories/RegionRepository.php';
+require_once $basePath . '/app/Repositories/RegionAdminRepository.php';
 require_once $basePath . '/app/Services/AuthService.php';
 require_once $basePath . '/app/Services/MetaService.php';
 require_once $basePath . '/app/Services/WeekService.php';
@@ -45,6 +47,8 @@ require_once $basePath . '/app/Services/MainPageService.php';
 require_once $basePath . '/app/Services/GeneralProductionService.php';
 require_once $basePath . '/app/Services/UserAdminService.php';
 require_once $basePath . '/app/Services/ClientAdminService.php';
+require_once $basePath . '/app/Services/RegionService.php';
+require_once $basePath . '/app/Services/RegionAdminService.php';
 require_once $basePath . '/app/Http/Controllers/MetaController.php';
 require_once $basePath . '/app/Http/Controllers/WeekController.php';
 require_once $basePath . '/app/Http/Controllers/FinancialDetailController.php';
@@ -54,6 +58,7 @@ require_once $basePath . '/app/Http/Controllers/HomeController.php';
 require_once $basePath . '/app/Http/Controllers/GeneralProductionController.php';
 require_once $basePath . '/app/Http/Controllers/UserAdminController.php';
 require_once $basePath . '/app/Http/Controllers/ClientAdminController.php';
+require_once $basePath . '/app/Http/Controllers/RegionAdminController.php';
 
 \App\Support\Env::load($basePath . '/.env');
 

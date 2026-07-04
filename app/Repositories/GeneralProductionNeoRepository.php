@@ -14,7 +14,7 @@ class GeneralProductionNeoRepository
 		$this->connection = $connection;
 	}
 
-	public function sumFinancialByMonth(array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year)
+	public function sumFinancialByMonth(array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $ufCodes = array())
 	{
 		if ($this->connection === null) {
 			return array('total' => 0.0, 'codes' => array());
@@ -32,6 +32,7 @@ class GeneralProductionNeoRepository
 			WHERE l.TipoLancamento IN (" . $typeList . ")
 		";
 		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode, 'p.Carteira');
+		$query .= $this->buildUfCondition($ufCodes, 'p.UFComarca');
 		$query .= " AND l.StatusLancamento IN ('Pago pela Assessoria','Pendente na Assessoria','Enviado ao Contratante','Aprovado pelo Contratante','Pago pelo Contratante')";
 		$query .= " AND MONTH(l.DataHora_Evento) = " . (int) $month;
 		$query .= " AND YEAR(l.DataHora_Evento) = " . (int) $year;
@@ -40,7 +41,7 @@ class GeneralProductionNeoRepository
 		return $this->sumQuery($query, 'Valor', 'CodigoLancamento');
 	}
 
-	public function sumFinancialByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year)
+	public function sumFinancialByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
 	{
 		if ($this->connection === null) {
 			return array('total' => 0.0, 'codes' => array());
@@ -58,6 +59,7 @@ class GeneralProductionNeoRepository
 			WHERE l.TipoLancamento IN (" . $typeList . ")
 		";
 		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode, 'p.Carteira');
+		$query .= $this->buildUfCondition($ufCodes, 'p.UFComarca');
 		$query .= " AND DAY(l.DataHora_Evento) >= " . (int) $week['start'];
 		$query .= " AND DAY(l.DataHora_Evento) <= " . (int) $week['end'];
 		$query .= " AND MONTH(l.DataHora_Evento) = " . (int) $month;
@@ -97,6 +99,16 @@ class GeneralProductionNeoRepository
 		}
 
 		return " AND " . $field . " IN (" . $this->buildQuotedList($carteiraCodes) . ")";
+	}
+
+	private function buildUfCondition(array $ufCodes, $field)
+	{
+		$quoted = $this->buildQuotedList($ufCodes);
+		if ($quoted === '') {
+			return '';
+		}
+
+		return " AND " . $field . " IN (" . $quoted . ")";
 	}
 
 	private function buildQuotedList(array $values)

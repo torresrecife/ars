@@ -21,7 +21,8 @@ function ars_auth_service() {
 	$connection = $app->db()->mysql();
 	$table = isset($_SG['tabela']) ? $_SG['tabela'] : 'usuarios';
 	$repository = new \App\Repositories\UserRepository($connection, $table);
-	$service = new \App\Services\AuthService($repository);
+	$regionRepository = new \App\Repositories\RegionRepository($connection);
+	$service = new \App\Services\AuthService($repository, $regionRepository);
 
 	return $service;
 }
@@ -74,6 +75,11 @@ function protegePagina($valor = 0){
 	$_SESSION['usuarioST'] = $usuarioAtual['status_usu'];
 	$_SESSION['usuarioSetor'] = $usuarioAtual['id_setor'];
 	$_SESSION['usuarioCliente'] = $usuarioAtual['id_cliente'];
+	$_SESSION['usuarioRegiaoModo'] = isset($usuarioAtual['regiao_modo']) ? (string) $usuarioAtual['regiao_modo'] : 'N';
+
+	$regionRepository = new \App\Repositories\RegionRepository($conexao4);
+	$_SESSION['usuarioRegiaoIds'] = implode(',', $regionRepository->listRegionIdsByUserId((int) $usuarioAtual['id_usu']));
+	$_SESSION['usuarioRegiaoUfs'] = implode(',', $regionRepository->listUfCodesByUserId((int) $usuarioAtual['id_usu']));
 }
 
 function expulsaVisitante($valor) {
