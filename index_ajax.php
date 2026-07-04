@@ -17,8 +17,11 @@ $controller = new \App\Http\Controllers\DashboardPanelController(
 	new \App\Services\DashboardPanelService(
 		new \App\Repositories\DashboardRepository($connectionMysql),
 		new \App\Repositories\NeoPanelRepository(ars_sqlsrv_connection()),
+		new \App\Services\RegionService(
+			new \App\Repositories\RegionRepository($connectionMysql)
+		),
 		$months
 	)
 );
 
-echo $controller->index($_POST);
+echo $controller->index($_POST, $_SESSION);

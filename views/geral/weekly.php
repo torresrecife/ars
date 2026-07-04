@@ -1,6 +1,6 @@
 <meta http-equiv='content-type' content='text/html; charset=utf-8'>
 <button name='geral' value='0' style='float:right;margin-right:50px;border:1px dotted #999;'>Semanal</button>
-<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'><?php echo $titleArea; ?> | Mês / Ano: <b><?php echo htmlspecialchars($startDate, ENT_QUOTES, 'UTF-8'); ?></b> </div><br>
+<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'><?php echo $titleArea; ?><?php echo isset($regionLabel) ? $regionLabel : ''; ?> | M&ecirc;s / Ano: <b><?php echo htmlspecialchars($startDate, ENT_QUOTES, 'UTF-8'); ?></b> </div><br>
 <script>
 	function send_form(valor1,valor2){
 		$("#codig_lnc").val(valor1);
@@ -57,6 +57,7 @@ td.cls_body{border-left-width:1px;border:1px dotted #999;height:30px;}
 	<input type='hidden' name='startDate' value='<?php echo htmlspecialchars($startDate, ENT_QUOTES, 'UTF-8'); ?>' />
 	<input type='hidden' name='mes' value='<?php echo (int) $month; ?>' />
 	<input type='hidden' name='ano' value='<?php echo (int) $year; ?>' />
+	<input type='hidden' name='regiao_id' value='<?php echo isset($regionId) ? (int) $regionId : 0; ?>' />
 	<tr><td colspan='8'></td></tr>
 	<tr class='cls_dados'>
 		<td align='center' class='cls_body'><b>TOTAIS</b></td>

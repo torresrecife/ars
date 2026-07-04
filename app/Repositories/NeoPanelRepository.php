@@ -19,13 +19,13 @@ class NeoPanelRepository
 		return $this->connection !== null;
 	}
 
-	public function countProductionByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year)
+	public function countProductionByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
 	{
 		if (!$this->isAvailable()) {
 			return array('count' => 0, 'codes' => array());
 		}
 
-		$queryBase = $this->buildProductionBaseQuery($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year);
+		$queryBase = $this->buildProductionBaseQuery($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
 		if ($queryBase === '') {
 			return array('count' => 0, 'codes' => array());
 		}
@@ -48,7 +48,7 @@ class NeoPanelRepository
 		);
 	}
 
-	public function sumFinancialByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year)
+	public function sumFinancialByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
 	{
 		if (!$this->isAvailable()) {
 			return array('total' => 0.0, 'codes' => array());
@@ -60,7 +60,7 @@ class NeoPanelRepository
 			JOIN v_Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
 		";
 
-		$where = $this->buildFinancialWhere($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year);
+		$where = $this->buildFinancialWhere($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
 		if ($where === '') {
 			return array('total' => 0.0, 'codes' => array());
 		}
@@ -82,7 +82,7 @@ class NeoPanelRepository
 		);
 	}
 
-	private function buildProductionBaseQuery(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year)
+	private function buildProductionBaseQuery(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
 	{
 		$typeList = $this->buildQuotedList($typeNames);
 		if ($typeList === '') {
@@ -96,6 +96,7 @@ class NeoPanelRepository
 			AND p.TipoProcesso NOT IN (N'CARTA PRECATÓRIA')
 		";
 		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
+		$query .= $this->buildUfCondition($ufCodes);
 		$query .= " AND (DAY(a.DataHoraEvento) >= " . (int) $week['start'] . " AND DAY(a.DataHoraEvento) <= " . (int) $week['end'] . ")";
 		$query .= " AND MONTH(a.DataHoraEvento) = " . (int) $month;
 		$query .= " AND YEAR(a.DataHoraEvento) = " . (int) $year;
@@ -105,7 +106,7 @@ class NeoPanelRepository
 		return $query;
 	}
 
-	private function buildFinancialWhere(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year)
+	private function buildFinancialWhere(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
 	{
 		$typeList = $this->buildQuotedList($typeNames);
 		if ($typeList === '') {
@@ -114,6 +115,7 @@ class NeoPanelRepository
 
 		$query = " WHERE l.TipoLancamento IN (" . $typeList . ")";
 		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
+		$query .= $this->buildUfCondition($ufCodes);
 		$query .= " AND (DAY(l.DataHora_Evento) >= " . (int) $week['start'] . " AND DAY(l.DataHora_Evento) <= " . (int) $week['end'] . ")";
 		$query .= " AND MONTH(l.DataHora_Evento) = " . (int) $month;
 		$query .= " AND YEAR(l.DataHora_Evento) = " . (int) $year;
@@ -133,6 +135,16 @@ class NeoPanelRepository
 		}
 
 		return " AND p.Carteira IN (" . $quotedCodes . ")";
+	}
+
+	private function buildUfCondition(array $ufCodes)
+	{
+		$quotedCodes = $this->buildQuotedList($ufCodes);
+		if ($quotedCodes === '') {
+			return '';
+		}
+
+		return " AND p.UFComarca IN (" . $quotedCodes . ")";
 	}
 
 	private function buildQuotedList(array $values)

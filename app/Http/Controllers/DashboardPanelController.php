@@ -16,9 +16,9 @@ class DashboardPanelController
 		$this->service = $service;
 	}
 
-	public function index(array $input = array())
+	public function index(array $input = array(), array $session = array())
 	{
-		$viewData = $this->service->build($input);
+		$viewData = $this->service->build($input, $session);
 
 		ob_start();
 		include base_path('views/dashboard/panel.php');

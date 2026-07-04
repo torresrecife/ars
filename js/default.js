@@ -63,10 +63,13 @@ function EnviarDados(frm,hid,are,fla){
 			tu="criado";
 			$(".validateTips").text("Crie Um " + tt);
 			usuarioClientesReset();
+			usuarioRegioesReset();
 			$('.cls_usu').each(function() {
 				$(this).val("");
 			});
 			$("#setor_usu").val("0");
+			$("#regiao_modo").val("N");
+			usuarioRegioesAtualizarModo();
 			sel_tipo(1, $("#setor_usu").val());
 		}else if(valor2=="U"){
 			tt="Editar Usuário";
@@ -103,10 +106,17 @@ function EnviarDados(frm,hid,are,fla){
 							return false;
 						}
 						var usus = [];
+						var regioes = [];
 						$('.usuario-clientes-item').each(function(){
 							var clienteId = $(this).attr("data-cliente-id");
 							if(clienteId){
 								usus.push(clienteId);
+							}
+						});
+						$('.usuario-regioes-item').each(function(){
+							var regiaoId = $(this).attr("data-regiao-id");
+							if(regiaoId){
+								regioes.push(regiaoId);
 							}
 						});
 						var dado_email = validaEmail($("#email_usu").val());
@@ -119,7 +129,7 @@ function EnviarDados(frm,hid,are,fla){
 							$.ajax({
 							   type: "POST",
 							   url:  "inc/ajax_usu.php",
-							   data: "flag=" + valor2 + "&" + mdados + "&banco_neo=" + usus.join(","),
+							   data: "flag=" + valor2 + "&" + mdados + "&banco_neo=" + usus.join(",") + "&regiao_neo=" + regioes.join(","),
 							   success: function(retorno_ajax){
 									if(retorno_ajax==1){
 										$( "#dialog-edit-usu" ).dialog( "close" );
@@ -147,9 +157,13 @@ function EnviarDados(frm,hid,are,fla){
 						$(this).val("");
 					});
 					usuarioClientesReset();
+					usuarioRegioesReset();
 					$("#banco_usu_pool").html("");
 				}
 			});
+			$("#nivel_usu").off("change.usuarioRegioes").on("change.usuarioRegioes", usuarioRegioesAtualizarModo);
+			$("#regiao_modo").off("change.usuarioRegioes").on("change.usuarioRegioes", usuarioRegioesAtualizarModo);
+			usuarioRegioesAtualizarModo();
 		};
 
 		if(valor2=="I"){
@@ -170,13 +184,20 @@ function EnviarDados(frm,hid,are,fla){
 					return;
 				}
 				usuarioClientesReset();
+				usuarioRegioesReset();
 				$("#id_usu").val(ret.id_usu || "");
 				$("#nome_usu").val(ret.nome_usu || "");
 				$("#login_usu").val(ret.login_usu || "");
 				$("#email_usu").val(ret.email_usu || "");
 				$("#nivel_usu").val(ret.nivel_usu || "");
 				$("#setor_usu").val(ret.id_setor || "0");
+				$("#regiao_modo").val(ret.regiao_modo || "N");
 				$("#status_usu").val(ret.status_usu || "");
+				var regions = ret.regions || [];
+				for(var j=0;j<regions.length;j++){
+					usuarioRegioesAdicionarValor(String(regions[j].id), regions[j].name, true);
+				}
+				usuarioRegioesAtualizarModo();
 				sel_tipo(1, ret.id_setor || 0, function(){
 					var clients = ret.clients || [];
 					for(var i=0;i<clients.length;i++){
@@ -703,6 +724,216 @@ function usuarioClientesRemover(botao){
 	usuarioClientesAtualizarInputs();
 	return false;
 }
+function usuarioRegioesReset(){
+	$("#usuario-regioes-vinculadas").html("");
+	$("#usuario-regioes-inputs").html("");
+	$("#usuario-regioes-vazio").show();
+	usuarioRegioesAtualizarPool();
+}
+function usuarioRegioesEscape(valor){
+	return String(valor)
+		.replace(/&/g, "&amp;")
+		.replace(/"/g, "&quot;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;");
+}
+function usuarioRegioesAtualizarInputs(){
+	var html = "";
+	$(".usuario-regioes-item").each(function(index){
+		var regiaoId = $(this).attr("data-regiao-id");
+		var numero = index + 1;
+		html += "<input type='hidden' class='cls_usuario_regiao_input' name='regiao_usu_" + numero + "' value=\"" + usuarioRegioesEscape(regiaoId) + "\" />";
+	});
+	$("#usuario-regioes-inputs").html(html);
+	if($(".usuario-regioes-item").length>0){
+		$("#usuario-regioes-vazio").hide();
+	}else{
+		$("#usuario-regioes-vazio").show();
+	}
+	usuarioRegioesAtualizarPool();
+}
+function usuarioRegioesAtualizarPool(){
+	var select = $("#regiao_usu_pool");
+	if(select.length===0){
+		return;
+	}
+	var htmlBase = select.data("optionsHtml");
+	if(typeof htmlBase !== "string"){
+		htmlBase = select.html();
+		select.data("optionsHtml", htmlBase);
+	}
+	select.html(htmlBase);
+	$(".usuario-regioes-item").each(function(){
+		var regiaoId = $(this).attr("data-regiao-id");
+		select.find("option[value='" + regiaoId + "']").remove();
+	});
+	if(select.find("option").length>0){
+		select.prop("selectedIndex", 0);
+	}
+}
+function usuarioRegioesAtualizarModo(){
+	var nivel = $("#nivel_usu").val();
+	var modo = $("#regiao_modo").val();
+	$("#regiao_modo option[value='T']").show();
+	if(nivel==="USU"){
+		$("#regiao_modo option[value='T']").hide();
+		if(modo==="T"){
+			modo = $(".usuario-regioes-item").length>0 ? "R" : "N";
+			$("#regiao_modo").val(modo);
+		}
+		if($(".usuario-regioes-item").length>1){
+			$(".usuario-regioes-item:gt(0)").remove();
+			usuarioRegioesAtualizarInputs();
+		}
+	}
+	if(modo==="R" || nivel==="USU"){
+		$("#usuario-regioes-row").show();
+	}else{
+		$("#usuario-regioes-row").hide();
+	}
+}
+function usuarioRegioesAdicionar(){
+	var regiaoId = $("#regiao_usu_pool").val();
+	if(!regiaoId){
+		alert("Selecione uma regiao para adicionar.");
+		return false;
+	}
+	var regiaoNome = $.trim($("#regiao_usu_pool option:selected").text());
+	return usuarioRegioesAdicionarValor(regiaoId, regiaoNome, false);
+}
+function usuarioRegioesAdicionarValor(regiaoId, regiaoNome, silencioso){
+	var id = $.trim(String(regiaoId));
+	if(id===""){
+		return false;
+	}
+	var nivel = $("#nivel_usu").val();
+	if(nivel==="USU" && $(".usuario-regioes-item").length>0){
+		if(!silencioso){
+			alert("Usuario comum pode ter apenas uma regiao vinculada.");
+		}
+		return false;
+	}
+	var existe = false;
+	$(".usuario-regioes-item").each(function(){
+		if($(this).attr("data-regiao-id")===id){
+			existe = true;
+		}
+	});
+	if(existe){
+		if(!silencioso){
+			alert("Essa regiao ja esta vinculada ao usuario.");
+		}
+		return false;
+	}
+	$("#usuario-regioes-vinculadas").append(
+		"<div class='usuario-regioes-item' data-regiao-id=\"" + usuarioRegioesEscape(id) + "\">"
+		+ "<span class='usuario-regioes-nome'>" + usuarioRegioesEscape(regiaoNome) + "</span>"
+		+ "<button type='button' class='usuario-regioes-remover' onclick='usuarioRegioesRemover(this);'>Remover</button>"
+		+ "</div>"
+	);
+	usuarioRegioesAtualizarInputs();
+	usuarioRegioesAtualizarModo();
+	if(!silencioso){
+		$("#regiao_usu_pool").val("");
+	}
+	return false;
+}
+function usuarioRegioesRemover(botao){
+	$(botao).closest(".usuario-regioes-item").remove();
+	usuarioRegioesAtualizarInputs();
+	usuarioRegioesAtualizarModo();
+	return false;
+}
+function regiaoUfsReset(){
+	$("#regiao-ufs-vinculadas").html("");
+	$("#regiao-ufs-vazio").show();
+	$("#regiao_ufs").val("");
+	regiaoUfsAtualizarPool();
+}
+function regiaoUfsEscape(valor){
+	return String(valor)
+		.replace(/&/g, "&amp;")
+		.replace(/"/g, "&quot;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;");
+}
+function regiaoUfsAtualizarValor(){
+	var ufs = [];
+	$(".regiao-ufs-item").each(function(){
+		var uf = $(this).attr("data-uf");
+		if(uf){
+			ufs.push(uf);
+		}
+	});
+	$("#regiao_ufs").val(ufs.join(","));
+	if(ufs.length>0){
+		$("#regiao-ufs-vazio").hide();
+	}else{
+		$("#regiao-ufs-vazio").show();
+	}
+	regiaoUfsAtualizarPool();
+}
+function regiaoUfsAtualizarPool(){
+	var select = $("#regiao_uf_pool");
+	if(select.length===0){
+		return;
+	}
+	var htmlBase = select.data("optionsHtml");
+	if(typeof htmlBase !== "string"){
+		htmlBase = select.html();
+		select.data("optionsHtml", htmlBase);
+	}
+	select.html(htmlBase);
+	$(".regiao-ufs-item").each(function(){
+		var uf = $(this).attr("data-uf");
+		select.find("option[value='" + uf + "']").remove();
+	});
+	if(select.find("option").length>0){
+		select.prop("selectedIndex", 0);
+	}
+}
+function regiaoUfsAdicionar(){
+	var uf = $("#regiao_uf_pool").val();
+	if(!uf){
+		alert("Selecione uma UF para adicionar.");
+		return false;
+	}
+	return regiaoUfsAdicionarValor(uf, false);
+}
+function regiaoUfsAdicionarValor(uf, silencioso){
+	var valor = $.trim(String(uf)).toUpperCase();
+	if(valor===""){
+		return false;
+	}
+	var existe = false;
+	$(".regiao-ufs-item").each(function(){
+		if($(this).attr("data-uf")===valor){
+			existe = true;
+		}
+	});
+	if(existe){
+		if(!silencioso){
+			alert("Essa UF ja esta vinculada a regiao.");
+		}
+		return false;
+	}
+	$("#regiao-ufs-vinculadas").append(
+		"<div class='regiao-ufs-item' data-uf=\"" + regiaoUfsEscape(valor) + "\">"
+		+ "<span class='regiao-ufs-nome'>" + regiaoUfsEscape(valor) + "</span>"
+		+ "<button type='button' class='regiao-ufs-remover' onclick='regiaoUfsRemover(this);'>Remover</button>"
+		+ "</div>"
+	);
+	regiaoUfsAtualizarValor();
+	if(!silencioso){
+		$("#regiao_uf_pool").val("");
+	}
+	return false;
+}
+function regiaoUfsRemover(botao){
+	$(botao).closest(".regiao-ufs-item").remove();
+	regiaoUfsAtualizarValor();
+	return false;
+}
 function andamentoTiposReset(mensagemVazio){
 	$("#andamento-tipos-vinculados").html("");
 	$("#andamento-tipos-inputs").html("");
@@ -1120,6 +1351,143 @@ function fc_edit_metas(valor1,valor2){
 				});
 			},
 			"Não": function(){
+				$( this ).dialog( "close" );
+			}
+		});
+	}
+	function fc_edit_regiao(valor1,valor2){
+		var tt = "";
+		var tu = "";
+		if(valor2=="I"){
+			tt="Nova Regiao";
+			tu="criada";
+			$(".validateRegiao").text("Crie uma nova regiao");
+			regiaoUfsReset();
+			$('.cls_regiao').each(function() {
+				$(this).val("");
+			});
+			$("#regiao_status").val("Y");
+		}else if(valor2=="U"){
+			tt="Editar Regiao";
+			tu="editada";
+			$(".validateRegiao").text("Edite a regiao abaixo");
+		}
+
+		var abrirDialogRegiao = function(){
+			$("#dialog-edit-regiao").dialog({
+				title: tt,
+				modal: true,
+				autoOpen: true,
+				height: 420,
+				width: 580,
+				buttons: {
+					Salvar: function() {
+						var mdados = "";
+						var invalido = false;
+						$('.cls_regiao').each(function(){
+							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
+								alert("O campo " + $(this).attr("title") + " e obrigatorio ");
+								$(this).focus();
+								invalido = true;
+								return false;
+							}
+							mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
+						});
+						if(invalido){
+							return false;
+						}
+						if($(".regiao-ufs-item").length===0){
+							alert("Selecione ao menos uma UF para a regiao.");
+							$("#regiao_uf_pool").focus();
+							return false;
+						}
+						$.ajax({
+						   type: "POST",
+						   url:  "inc/ajax_regioes.php",
+						   data: "flag=" + valor2 + "&" + mdados,
+						   success: function(retorno_ajax){
+								if(retorno_ajax==1){
+									$( "#dialog-edit-regiao" ).dialog( "close" );
+									msgbox("<br><table align='center'><tr><td>Regiao " + tu + " com sucesso !</td></tr></table><br>", {
+										Fechar: function(){
+											$( this ).dialog( "close" );
+											EnviarDados('index.php','16','');
+										}
+									});
+								}else if(retorno_ajax==2){
+									alert("Slug de regiao ja cadastrado!");
+								}else{
+									alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
+								}
+							}
+						});
+					},
+					Sair: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				close: function(){
+					$('.cls_regiao').each(function() {
+						$(this).val("");
+					});
+					regiaoUfsReset();
+				}
+			});
+		};
+
+		if(valor2=="I"){
+			abrirDialogRegiao();
+			return;
+		}
+
+		$.ajax({
+			type: "POST",
+			url:  "inc/ajax_regioes.php",
+			data: "flag=E&regiao_id=" + valor1,
+			success: function(retorno_ajax){
+				var ret = {};
+				try{
+					ret = JSON.parse(retorno_ajax);
+				}catch(e){
+					alert("Erro ao carregar os dados da regiao.");
+					return;
+				}
+				regiaoUfsReset();
+				$("#regiao_id_edit").val(ret.regiao_id || "");
+				$("#regiao_nome").val(ret.regiao_nome || "");
+				$("#regiao_slug").val(ret.regiao_slug || "");
+				$("#regiao_status").val(ret.regiao_status || "Y");
+				var ufs = ret.ufs || [];
+				for(var i=0;i<ufs.length;i++){
+					regiaoUfsAdicionarValor(ufs[i], true);
+				}
+				abrirDialogRegiao();
+			}
+		});
+	}
+	function fc_del_regiao(valor1,valor2){
+		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a regiao <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+			"Sim": function(){
+				$.ajax({
+					type: "POST",
+					url:  "inc/ajax_regioes.php",
+					data: "flag=D&regiao_id=" + valor1,
+					success: function(retorno_ajax){
+						$( this ).dialog( "close" );
+						if(retorno_ajax==1){
+							msgbox("<br><table align='center'><tr><td>Regiao deletada com sucesso !</td></tr></table><br>",{
+								Fechar: function(){
+									$( this ).dialog( "close" );
+									EnviarDados('index.php','16','');
+								}
+							});
+						}else{
+							alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
+						}
+					}
+				});
+			},
+			"Nao": function(){
 				$( this ).dialog( "close" );
 			}
 		});

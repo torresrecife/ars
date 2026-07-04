@@ -14,9 +14,13 @@ require_once __DIR__ . '/inc/somadias.php';
 protegePagina(0);
 
 $view = new \App\Support\View(__DIR__);
+$regionService = new \App\Services\RegionService(
+	new \App\Repositories\RegionRepository($conexao4)
+);
 $controller = new \App\Http\Controllers\HomeController(
 	new \App\Services\MainPageService(
 		new \App\Repositories\MainPageRepository($conexao4),
+		$regionService,
 		$arrMonths
 	),
 	$view

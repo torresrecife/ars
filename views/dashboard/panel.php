@@ -15,12 +15,15 @@ $summary = $viewData['summary'];
 $month = $viewData['month'];
 $year = $viewData['year'];
 $startDate = $viewData['startDate'];
+$regionLabel = isset($viewData['regionLabel']) ? $viewData['regionLabel'] : '';
+$regionId = isset($viewData['regionId']) ? (int) $viewData['regionId'] : 0;
 $contentHeight = $viewData['contentHeight'];
 $weekColumnWidth = (count($weeks) === 5 ? '4%' : '5%');
 ?>
-<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Cliente: <b><?php echo $bank['banco_cod']; ?></b> | M&ecirc;s / Ano: <b><?php echo $startDate; ?></b> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","p")'>&lt;</a> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","n")'>&gt;</a></div><br>
+<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Cliente: <b><?php echo $bank['banco_cod']; ?></b><?php echo $regionLabel; ?> | M&ecirc;s / Ano: <b><?php echo $startDate; ?></b> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","p")'>&lt;</a> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","n")'>&gt;</a></div><br>
 <input type='hidden' name='mes' id='mes' class='date-picker' value='<?php echo $month; ?>'/>
 <input type='hidden' name='ano' id='ano' class='date-picker' value='<?php echo $year; ?>'/>
+<input type='hidden' name='regiao_id' id='regiao_id' value='<?php echo $regionId; ?>'/>
 <script>
 	function send_form(andaId,bankId,bankName,month,year,weekKey,detailType){
 		$('#detail_bank_id').val(bankId);
@@ -28,6 +31,7 @@ $weekColumnWidth = (count($weeks) === 5 ? '4%' : '5%');
 		$('#detail_month').val(month);
 		$('#detail_year').val(year);
 		$('#detail_week').val(weekKey);
+		$('#detail_region_id').val($('#regiao_id').val() || '<?php echo $regionId; ?>');
 		$('#banco_and').val(bankName);
 		$('#banco_lnc').val(bankName);
 		if(detailType=='and'){
@@ -213,6 +217,7 @@ td{
 	<input type='hidden' name='detail_month' id='detail_month' />
 	<input type='hidden' name='detail_year' id='detail_year' />
 	<input type='hidden' name='detail_week' id='detail_week' />
+	<input type='hidden' name='detail_region_id' id='detail_region_id' value='<?php echo $regionId; ?>' />
 </table>
 <br>
 <table align='center' height='6%' width='25%' border='1' cellspacing='3' cellpadding='3' id='tb_tot' style='font-family:arial;font-size:8pt; border-collapse: collapse;'>

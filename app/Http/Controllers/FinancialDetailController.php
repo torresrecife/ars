@@ -21,8 +21,8 @@ class FinancialDetailController
 		$this->view = $view;
 	}
 
-	public function index(array $input = array())
+	public function index(array $input = array(), array $session = array())
 	{
-		return $this->view->render('dados_fatur/index', $this->service->financialDetailViewData($input));
+		return $this->view->render('dados_fatur/index', $this->service->financialDetailViewData($input, $session));
 	}
 }

@@ -7,9 +7,12 @@ $view = new \App\Support\View($app->basePath());
 $controller = new \App\Http\Controllers\AndamentoDetailController(
 	new \App\Services\NeoDetailService(
 		new \App\Repositories\NeoDetailRepository(ars_sqlsrv_connection()),
-		new \App\Repositories\DashboardRepository($conexao4)
+		new \App\Repositories\DashboardRepository($conexao4),
+		new \App\Services\RegionService(
+			new \App\Repositories\RegionRepository($conexao4)
+		)
 	),
 	$view
 );
 
-echo $controller->index($_POST);
+echo $controller->index($_POST, $_SESSION);

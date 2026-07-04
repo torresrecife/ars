@@ -36,11 +36,6 @@ $bankCode = isset($bank['banco_cod']) ? $bank['banco_cod'] : '';
 		}
 	}
 </script>
-<style>
-/*#content-box{*/
-/*	/*height:*/*/<?php ////echo ($lin * 30) + 300; ?>/*/*px;*/*/
-/*}*/
-</style>
 <?php echo "<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Total da meta financeira: <b>R$ " . number_format($totalFinanceiro, 2, ',', '.') . "</b></div><br>"; ?>
 <div id="dialog-edit-metas" title="Editar Meta" style="display:none; text-align:left;">
 	<p class="validateMetas">Edite a Meta Abaixo</p>

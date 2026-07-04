@@ -6,7 +6,7 @@
 	</div>
 	<div class="cpanel-right">
 		<div class="cpanel">
-			<?php 
+			<?php
 			if($_SESSION['usuarioNivel']=="ADM"){
 				?>
 				<div class="icon-wrapper">
@@ -46,6 +46,13 @@
 				</div>
 				<div class="icon-wrapper">
 					<div class="icon">
+						<a href="#" onclick="EnviarDados('index.php','16','','')">
+							<img src="css/images/header/icon-48-regiao.png" alt="" /><span>Regi&otilde;es</span>
+						</a>
+					</div>
+				</div>
+				<div class="icon-wrapper">
+					<div class="icon">
 						<a href="#" onclick="EnviarDados('index.php','15','','')">
 							<img src="css/images/header/icon-48-calendar.png" alt="" /><span>Semanas</span>
 						</a>
@@ -65,7 +72,7 @@
 						</a>
 					</div>
 				</div>
-				<?php 
+				<?php
 			}elseif($_SESSION['usuarioNivel']=="GER"){
 				?>
 				<div class="icon-wrapper">
@@ -82,7 +89,7 @@
 						</a>
 					</div>
 				</div>
-				<?php 
+				<?php
 			}
 			?>
 		</div>
@@ -95,7 +102,7 @@
 						<img src="css/images/header/icon-48-themes.png" alt=""  /><span>Formulário</span>
 					</a>
 				</div>
-			</div>	
+			</div>
 			<div class="icon-wrapper">
 				<div class="icon">
 					<a href="#" id="prg" onclick="mark_edit(6,0)">
@@ -109,7 +116,7 @@
 						<img src="css/images/header/icon-48-deny.png" alt=""  /><span>Excluir</span>
 					</a>
 				</div>
-			</div>		
+			</div>
 		</div>
-	</div-->	
+	</div-->
 </div>

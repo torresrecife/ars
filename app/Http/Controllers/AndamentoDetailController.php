@@ -21,8 +21,8 @@ class AndamentoDetailController
 		$this->view = $view;
 	}
 
-	public function index(array $input = array())
+	public function index(array $input = array(), array $session = array())
 	{
-		return $this->view->render('dados_anda/index', $this->service->andamentoDetailViewData($input));
+		return $this->view->render('dados_anda/index', $this->service->andamentoDetailViewData($input, $session));
 	}
 }
