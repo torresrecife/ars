@@ -1184,6 +1184,9 @@ function fc_edit_metas(valor1,valor2){
 					if(espe==2){
 						$("#meta_valor_1").setMask("decimal");
 						$(".sem_1").setMask("decimal");
+						if(ret[6]=="Y"){
+							somarMeta(1);
+						}
 					}else{
 						//defini os valores se estes não forem dinheiro
 						$("#meta_valor_1").val(parseInt(ret[5]));
@@ -1195,6 +1198,9 @@ function fc_edit_metas(valor1,valor2){
 
 						$("#meta_valor_1").setMask("integer");
 						$(".sem_1").setMask("integer");
+						if(ret[6]=="Y"){
+							somarMeta(1);
+						}
 					}
 				}
 				$( "#dialog-edit-metas" ).dialog({
@@ -1762,6 +1768,7 @@ function definir_sem(valor1,valor2){
 	if($(valor1).prop("checked")==true){
 		$(".sem_"+valor2).show();
 		$("#meta_valor_"+valor2).attr("readonly",true);
+		somarMeta(valor2);
 	}else if($(valor1).prop("checked")==false){
 		$(".sem_"+valor2).hide();
 		$("#meta_valor_"+valor2).attr("readonly",false);

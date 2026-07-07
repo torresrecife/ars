@@ -83,18 +83,30 @@ class MetaService
 
 	private function extractMetaPayload(array $input, $index)
 	{
+		$defSem = !empty($input['def_sem_' . $index]) ? 'Y' : 'N';
+		$sem1 = $this->parseNullableDecimal(isset($input['sem1_valor_' . $index]) ? $input['sem1_valor_' . $index] : null);
+		$sem2 = $this->parseNullableDecimal(isset($input['sem2_valor_' . $index]) ? $input['sem2_valor_' . $index] : null);
+		$sem3 = $this->parseNullableDecimal(isset($input['sem3_valor_' . $index]) ? $input['sem3_valor_' . $index] : null);
+		$sem4 = $this->parseNullableDecimal(isset($input['sem4_valor_' . $index]) ? $input['sem4_valor_' . $index] : null);
+		$sem5 = $this->parseNullableDecimal(isset($input['sem5_valor_' . $index]) ? $input['sem5_valor_' . $index] : null);
+		$metaValor = (float) $this->parseDecimal(isset($input['meta_valor_' . $index]) ? $input['meta_valor_' . $index] : 0);
+
+		if ($defSem === 'Y') {
+			$metaValor = $this->sumWeekValues(array($sem1, $sem2, $sem3, $sem4, $sem5));
+		}
+
 		return array(
 			'banco_id' => isset($input['banco_id']) ? (int) $input['banco_id'] : 0,
 			'meta_mes' => isset($input['meta_mes']) ? (int) $input['meta_mes'] : 0,
 			'meta_ano' => isset($input['meta_ano']) ? (int) $input['meta_ano'] : 0,
 			'anda_id' => isset($input['meta_name_' . $index]) ? (int) $input['meta_name_' . $index] : 0,
-			'def_sem' => !empty($input['def_sem_' . $index]) ? 'Y' : 'N',
-			'sem_1' => $this->parseNullableDecimal(isset($input['sem1_valor_' . $index]) ? $input['sem1_valor_' . $index] : null),
-			'sem_2' => $this->parseNullableDecimal(isset($input['sem2_valor_' . $index]) ? $input['sem2_valor_' . $index] : null),
-			'sem_3' => $this->parseNullableDecimal(isset($input['sem3_valor_' . $index]) ? $input['sem3_valor_' . $index] : null),
-			'sem_4' => $this->parseNullableDecimal(isset($input['sem4_valor_' . $index]) ? $input['sem4_valor_' . $index] : null),
-			'sem_5' => $this->parseNullableDecimal(isset($input['sem5_valor_' . $index]) ? $input['sem5_valor_' . $index] : null),
-			'meta_valor' => (float) $this->parseDecimal(isset($input['meta_valor_' . $index]) ? $input['meta_valor_' . $index] : 0),
+			'def_sem' => $defSem,
+			'sem_1' => $sem1,
+			'sem_2' => $sem2,
+			'sem_3' => $sem3,
+			'sem_4' => $sem4,
+			'sem_5' => $sem5,
+			'meta_valor' => $metaValor,
 		);
 	}
 
@@ -111,5 +123,15 @@ class MetaService
 		}
 
 		return (float) $this->parseDecimal($value);
+	}
+
+	private function sumWeekValues(array $values)
+	{
+		$total = 0.0;
+		foreach ($values as $value) {
+			$total += ($value === null) ? 0.0 : (float) $value;
+		}
+
+		return (float) number_format($total, 2, '.', '');
 	}
 }
