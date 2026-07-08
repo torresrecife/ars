@@ -24,9 +24,11 @@
 			}
 		}
 	}elseif($_POST['dados']==1){
-		$area_id  = $_POST['flag'];
+		$area_id  = (int) $_POST['flag'];
 		$scli  = " SELECT * FROM bancos";
-		$scli .= " where banco_area = $area_id";
+		if($area_id > 0){
+			$scli .= " where banco_area = $area_id";
+		}
 		$scli .= " order by banco_name";
 		$qcli = mysqli_query($conexao4,$scli);
 		while($wcli = mysqli_fetch_array($qcli)){
