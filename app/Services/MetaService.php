@@ -49,29 +49,41 @@ class MetaService
 	public function createManyFromRequest(array $input)
 	{
 		$total = isset($input['numes']) ? (int) $input['numes'] : 0;
+		$seen = array();
 		for ($index = 1; $index <= $total; $index++) {
 			$data = $this->extractMetaPayload($input, $index);
+			$key = $this->duplicateKey($data);
+			if (isset($seen[$key]) || $this->repository->existsDuplicate($data)) {
+				return '2';
+			}
+			$seen[$key] = true;
 			if (!$this->repository->insert($data)) {
-				return false;
+				return '0';
 			}
 		}
 
-		return true;
+		return '1';
 	}
 
 	public function updateManyFromRequest(array $input)
 	{
 		$total = isset($input['numes']) ? (int) $input['numes'] : 0;
 		$metaId = isset($input['meta_id']) ? (int) $input['meta_id'] : 0;
+		$seen = array();
 
 		for ($index = 1; $index <= $total; $index++) {
 			$data = $this->extractMetaPayload($input, $index);
+			$key = $this->duplicateKey($data);
+			if (isset($seen[$key]) || $this->repository->existsDuplicate($data, $metaId)) {
+				return '2';
+			}
+			$seen[$key] = true;
 			if (!$this->repository->update($metaId, $data)) {
-				return false;
+				return '0';
 			}
 		}
 
-		return true;
+		return '1';
 	}
 
 	public function delete($metaId)
@@ -144,5 +156,16 @@ class MetaService
 		}
 
 		return (float) number_format($total, 2, '.', '');
+	}
+
+	private function duplicateKey(array $data)
+	{
+		return implode(':', array(
+			(int) $data['banco_id'],
+			(int) $data['meta_mes'],
+			(int) $data['meta_ano'],
+			(int) $data['anda_id'],
+			isset($data['regiao_id']) && (int) $data['regiao_id'] > 0 ? (int) $data['regiao_id'] : 0,
+		));
 	}
 }
