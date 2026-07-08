@@ -1139,10 +1139,27 @@ function fc_edit_metas(valor1,valor2){
 
 		var tt = "";
 		var tu = "";
+		var resetMetaDialog = function(){
+			$("#meta_id").val("");
+			$("#meta_name_1").val("");
+			$("#regiao_id_1").val("");
+			$("#meta_valor_1").val("");
+			$("#meta_valor_1").attr("readonly",false);
+			$("#def_sem_1").attr("checked",false);
+			$("#sem1_valor_1").val("").hide();
+			$("#sem2_valor_1").val("").hide();
+			$("#sem3_valor_1").val("").hide();
+			$("#sem4_valor_1").val("").hide();
+			$("#sem5_valor_1").val("").hide();
+			$("#metas_1").html("");
+			$("#metas_num").val("1");
+			$("#inp1_1").show();
+		};
 		if(valor2=="I"){
 			tt="Nova Meta";
 			tu="criada(s)";
 			$(".validateMetas").text("Crie Um " + tt);
+			resetMetaDialog();
 		}else if(valor2=="U"){
 			tt="Editar Meta";
 			tu="editada(s)";
@@ -1268,17 +1285,7 @@ function fc_edit_metas(valor1,valor2){
 						}
 					},
 					close: function( event, ui ) {
-						$(".sem_1").hide();
-						$("#def_sem_1").attr("checked",false);
-						//$('.cls_meta').each(function() {
-						//	$(this).val("");
-						//});
-						$('.cls_metas2').each(function(){
-							$(this).val("");
-						});
-						$('.cls_meta_regiao').each(function(){
-							$(this).val("");
-						});
+						resetMetaDialog();
 					}
 				});
 				//alert($("#nivel_usu").find("option[value='USU']").attr("selected","selected"));
