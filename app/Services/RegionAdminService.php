@@ -85,7 +85,12 @@ class RegionAdminService
 
 	public function delete($id)
 	{
-		return $this->repository->delete($id) ? '1' : '0';
+		$result = $this->repository->delete($id);
+		if ($result === 'LINKED_USERS') {
+			return '3';
+		}
+
+		return $result ? '1' : '0';
 	}
 
 	private function normalizePayload(array $input, $isUpdate)

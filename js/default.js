@@ -1373,6 +1373,7 @@ function fc_edit_metas(valor1,valor2){
 				$(this).val("");
 			});
 			$("#regiao_status").val("Y");
+			$("#regiao_slug").data("manual", false);
 		}else if(valor2=="U"){
 			tt="Editar Regiao";
 			tu="editada";
@@ -1436,6 +1437,7 @@ function fc_edit_metas(valor1,valor2){
 					$('.cls_regiao').each(function() {
 						$(this).val("");
 					});
+					$("#regiao_slug").data("manual", false);
 					regiaoUfsReset();
 				}
 			});
@@ -1462,6 +1464,7 @@ function fc_edit_metas(valor1,valor2){
 				$("#regiao_id_edit").val(ret.regiao_id || "");
 				$("#regiao_nome").val(ret.regiao_nome || "");
 				$("#regiao_slug").val(ret.regiao_slug || "");
+				$("#regiao_slug").data("manual", true);
 				$("#regiao_status").val(ret.regiao_status || "Y");
 				var ufs = ret.ufs || [];
 				for(var i=0;i<ufs.length;i++){
@@ -1487,6 +1490,8 @@ function fc_edit_metas(valor1,valor2){
 									EnviarDados('index.php','16','');
 								}
 							});
+						}else if(retorno_ajax==3){
+							alert("Nao e possivel excluir a regiao porque existem usuarios vinculados a ela.");
 						}else{
 							alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao administrador)");
 						}
@@ -1659,6 +1664,34 @@ function addMes(data,mes){
 	var minhaData = moment(data,"D/M/YYYY").add('months', mes);
 	return moment(minhaData).format('DD/MM/YYYY');
 }
+
+function regiaoSlugify(valor){
+	return String(valor || "")
+		.toLowerCase()
+		.replace(/[áàãâä]/g, "a")
+		.replace(/[éèêë]/g, "e")
+		.replace(/[íìîï]/g, "i")
+		.replace(/[óòõôö]/g, "o")
+		.replace(/[úùûü]/g, "u")
+		.replace(/ç/g, "c")
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-+|-+$/g, "");
+}
+
+$(function(){
+	$("#regiao_nome").on("input", function(){
+		if($("#regiao_slug").data("manual")){
+			return;
+		}
+		$("#regiao_slug").val(regiaoSlugify($(this).val()));
+	});
+
+	$("#regiao_slug").on("input", function(){
+		var valor = $(this).val();
+		$(this).data("manual", $.trim(valor) !== "");
+	});
+});
+
 function inserir_cli(valor,stt){
 	return clienteCarteirasAdicionar();
 }
