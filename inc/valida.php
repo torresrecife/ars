@@ -15,7 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$qpass = mysqli_query($conexao4, "SELECT acesso_usu FROM usuarios WHERE id_usu = " . (int) $_SESSION['usuarioID']);
 		$wpass = $qpass ? mysqli_fetch_assoc($qpass) : false;
 
-		if (!$wpass || $wpass['acesso_usu'] === '' || $wpass['acesso_usu'] === '0000-00-00 00:00:00') {
+		if (
+			!$wpass ||
+			!isset($wpass['acesso_usu']) ||
+			$wpass['acesso_usu'] === null ||
+			$wpass['acesso_usu'] === '' ||
+			$wpass['acesso_usu'] === '0000-00-00 00:00:00'
+		) {
 			$forcePasswordChange = true;
 		} else {
 			ars_refresh_user_access($_SESSION['usuarioID'], $conexao4);
