@@ -19,9 +19,11 @@ class RegionAdminRepository
 	public function all()
 	{
 		$sql = "SELECT r.regiao_id, r.regiao_nome, r.regiao_slug, r.regiao_status,
-			COALESCE(GROUP_CONCAT(ru.uf ORDER BY ru.uf SEPARATOR ', '), '') AS ufs
+			COALESCE(GROUP_CONCAT(DISTINCT ru.uf ORDER BY ru.uf SEPARATOR ', '), '') AS ufs,
+			COUNT(DISTINCT ur.usuario_id) AS total_usuarios
 			FROM regioes AS r
 			LEFT JOIN regioes_ufs AS ru ON ru.regiao_id = r.regiao_id
+			LEFT JOIN usuarios_regioes AS ur ON ur.regiao_id = r.regiao_id
 			GROUP BY r.regiao_id, r.regiao_nome, r.regiao_slug, r.regiao_status
 			ORDER BY r.regiao_nome";
 		$result = mysqli_query($this->connection, $sql);
@@ -141,6 +143,10 @@ class RegionAdminRepository
 
 	public function delete($id)
 	{
+		if ($this->countUsersByRegionId($id) > 0) {
+			return 'LINKED_USERS';
+		}
+
 		$stmt = mysqli_prepare($this->connection, "DELETE FROM regioes WHERE regiao_id = ? LIMIT 1");
 		if (!$stmt) {
 			return false;
@@ -152,6 +158,23 @@ class RegionAdminRepository
 		mysqli_stmt_close($stmt);
 
 		return $ok;
+	}
+
+	public function countUsersByRegionId($regionId)
+	{
+		$stmt = mysqli_prepare($this->connection, "SELECT COUNT(*) AS total FROM usuarios_regioes WHERE regiao_id = ?");
+		if (!$stmt) {
+			return 0;
+		}
+
+		$regionId = (int) $regionId;
+		mysqli_stmt_bind_param($stmt, 'i', $regionId);
+		mysqli_stmt_execute($stmt);
+		$result = mysqli_stmt_get_result($stmt);
+		$row = $result ? mysqli_fetch_assoc($result) : false;
+		mysqli_stmt_close($stmt);
+
+		return $row ? (int) $row['total'] : 0;
 	}
 
 	public function replaceUfs($regionId, array $ufs)

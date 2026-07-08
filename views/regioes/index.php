@@ -7,6 +7,7 @@
 		<td class="order"><b>Nome</b></td>
 		<td class="order"><b>Slug</b></td>
 		<td class="order"><b>UFs</b></td>
+		<td class="order"><b>Usuários</b></td>
 		<td class="order"><b>Status</b></td>
 		<td class="order"><b>Op&ccedil;&otilde;es</b></td>
 	</tr>
@@ -16,6 +17,7 @@
 		<td class="order"><?php echo htmlspecialchars($region['regiao_nome'], ENT_QUOTES, 'UTF-8'); ?></td>
 		<td class="order"><?php echo htmlspecialchars($region['regiao_slug'], ENT_QUOTES, 'UTF-8'); ?></td>
 		<td class="order"><?php echo htmlspecialchars($region['ufs'], ENT_QUOTES, 'UTF-8'); ?></td>
+		<td class="order"><?php echo (int) $region['total_usuarios']; ?></td>
 		<td class="order"><?php echo ((string) $region['regiao_status'] === 'Y') ? 'Ativa' : 'Inativa'; ?></td>
 		<td class="order" style="width:130px"><?php echo fc_botoes_regiao($region['regiao_id'], 'block', $region['regiao_nome']); ?></td>
 	</tr>
