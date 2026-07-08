@@ -160,7 +160,7 @@ class MetaRepository
 		$row = $result ? mysqli_fetch_assoc($result) : false;
 		mysqli_stmt_close($stmt);
 
-		return $row !== false;
+		return is_array($row);
 	}
 
 	public function insert(array $data)
