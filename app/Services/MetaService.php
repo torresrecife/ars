@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\MetaRepository;
+use App\Services\RegionService;
 
 class MetaService
 {
 	/** @var MetaRepository */
 	private $repository;
 
-	public function __construct(MetaRepository $repository)
+	/** @var RegionService */
+	private $regionService;
+
+	public function __construct(MetaRepository $repository, RegionService $regionService)
 	{
 		$this->repository = $repository;
+		$this->regionService = $regionService;
 	}
 
 	public function getBank($bankId)
@@ -34,6 +39,11 @@ class MetaService
 	public function findById($metaId)
 	{
 		return $this->repository->findById($metaId);
+	}
+
+	public function listRegions()
+	{
+		return $this->regionService->listActive();
 	}
 
 	public function createManyFromRequest(array $input)
@@ -100,6 +110,7 @@ class MetaService
 			'meta_mes' => isset($input['meta_mes']) ? (int) $input['meta_mes'] : 0,
 			'meta_ano' => isset($input['meta_ano']) ? (int) $input['meta_ano'] : 0,
 			'anda_id' => isset($input['meta_name_' . $index]) ? (int) $input['meta_name_' . $index] : 0,
+			'regiao_id' => isset($input['regiao_id_' . $index]) && (int) $input['regiao_id_' . $index] > 0 ? (int) $input['regiao_id_' . $index] : null,
 			'def_sem' => $defSem,
 			'sem_1' => $sem1,
 			'sem_2' => $sem2,

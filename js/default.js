@@ -1153,7 +1153,6 @@ function fc_edit_metas(valor1,valor2){
 			url:  "inc/ajax_metas.php",
 			data: "flag=E&meta_id=" + valor1,
 			success: function(retorno_ajax){
-				//alert(retorno_ajax);
 				var ret = retorno_ajax.split("-|-");
 				if(valor2!="I"){
 
@@ -1173,6 +1172,7 @@ function fc_edit_metas(valor1,valor2){
 					$("#meta_mes").val(ret[2]);
 					$("#meta_ano").val(ret[3]);
 					$("#meta_name_1").val(ret[4]);
+					$("#regiao_id_1").val(ret[12]);
 					$("#meta_valor_1").val(ret[5]);
 					$("#sem1_valor_1").val(ret[7]);
 					$("#sem2_valor_1").val(ret[8]);
@@ -1189,12 +1189,12 @@ function fc_edit_metas(valor1,valor2){
 						}
 					}else{
 						//defini os valores se estes não forem dinheiro
-						$("#meta_valor_1").val(parseInt(ret[5]));
-						$("#sem1_valor_1").val(parseInt(ret[7]));
-						$("#sem2_valor_1").val(parseInt(ret[8]));
-						$("#sem3_valor_1").val(parseInt(ret[9]));
-						$("#sem4_valor_1").val(parseInt(ret[10]));
-						$("#sem5_valor_1").val(parseInt(ret[11]));
+						$("#meta_valor_1").val(parseInt(ret[5],10) || 0);
+						$("#sem1_valor_1").val(parseInt(ret[7],10) || 0);
+						$("#sem2_valor_1").val(parseInt(ret[8],10) || 0);
+						$("#sem3_valor_1").val(parseInt(ret[9],10) || 0);
+						$("#sem4_valor_1").val(parseInt(ret[10],10) || 0);
+						$("#sem5_valor_1").val(parseInt(ret[11],10) || 0);
 
 						$("#meta_valor_1").setMask("integer");
 						$(".sem_1").setMask("integer");
@@ -1202,13 +1202,15 @@ function fc_edit_metas(valor1,valor2){
 							somarMeta(1);
 						}
 					}
+				}else{
+					$("#regiao_id_1").val("");
 				}
 				$( "#dialog-edit-metas" ).dialog({
 					title: tt,
 					modal: true,
 					autoOpen: true,
 					height: 400,
-					width: 920,
+					width: 1080,
 					buttons: {
 						Salvar: function() {
 							var mdados="";
@@ -1227,7 +1229,7 @@ function fc_edit_metas(valor1,valor2){
 							var numes=0;
 							$('.cls_metas2').each(function(){
 								numes++;
-								metam += $(this).attr("name")+"="+escape($(this).val())+"&"+"meta_valor_"+numes+"="+escape($("#meta_valor_"+numes).val())+"&";
+								metam += $(this).attr("name")+"="+escape($(this).val())+"&"+"regiao_id_"+numes+"="+escape($("#regiao_id_"+numes).val())+"&"+"meta_valor_"+numes+"="+escape($("#meta_valor_"+numes).val())+"&";
 								if($("#def_sem_"+numes).prop("checked")==true){
 									defse += "def_sem_"+numes+"=Y&";
 								}else{
@@ -1272,6 +1274,9 @@ function fc_edit_metas(valor1,valor2){
 						//	$(this).val("");
 						//});
 						$('.cls_metas2').each(function(){
+							$(this).val("");
+						});
+						$('.cls_meta_regiao').each(function(){
 							$(this).val("");
 						});
 					}
@@ -1725,6 +1730,7 @@ function inserir_metas(valor,stt){
 		$("#metas_"+(crt-1)).html(
 		"<div style='float:left'>" +
 		"<select class='cls_metas2 input-default' name='meta_name_"+crt+"' onchange='my_especie("+crt+");' style='width:260px;height:22px;float:left'>"+valor+"</select>" +
+		"<select class='cls_meta_regiao input-default' name='regiao_id_"+crt+"' id='regiao_id_"+crt+"' style='width:160px;height:22px;float:left'>"+$("#regiao_id_1").html()+"</select>" +
 		"<input type='text' class='cls_meta' name='meta_valor_"+crt+"' id='meta_valor_"+crt+"' value='' obrigatorio='1' style='width:120px;float:left'/>" +
 		"<input type='checkbox' class='cls_meta' name='def_sem_"+crt+"' id='def_sem_"+crt+"' onclick='definir_sem(this,"+crt+");' value='' title='Definir manualmente' style='width:20px;'>" +
 		"<input type='text' class='cls_meta sem_"+crt+"' name='sem1_valor_"+crt+"' id='sem1_valor_"+crt+"' value='' onkeypress='somarMeta("+crt+")' onblur='somarMeta("+crt+")' style='display:none;width:70px;float:left'/>" +

@@ -40,6 +40,7 @@ class MetaController
 			'bank' => $bank,
 			'metas' => $metas,
 			'andamentos' => $andamentos,
+			'regions' => $this->metaService->listRegions(),
 			'totalFinanceiro' => $this->metaService->totalFinancialMeta($metas),
 			'lin' => count($metas),
 			'metaTipos' => array(1 => 'Produção', 2 => 'Financeira'),
@@ -56,7 +57,23 @@ class MetaController
 				return '';
 			}
 
-			return implode('-|-', array_values($row)) . '-|-';
+			$ordered = array(
+				isset($row['meta_id']) ? $row['meta_id'] : '',
+				isset($row['banco_id']) ? $row['banco_id'] : '',
+				isset($row['meta_mes']) ? $row['meta_mes'] : '',
+				isset($row['meta_ano']) ? $row['meta_ano'] : '',
+				isset($row['anda_id']) ? $row['anda_id'] : '',
+				isset($row['meta_valor']) ? $row['meta_valor'] : '',
+				isset($row['def_sem']) ? $row['def_sem'] : '',
+				isset($row['sem_1']) ? $row['sem_1'] : '',
+				isset($row['sem_2']) ? $row['sem_2'] : '',
+				isset($row['sem_3']) ? $row['sem_3'] : '',
+				isset($row['sem_4']) ? $row['sem_4'] : '',
+				isset($row['sem_5']) ? $row['sem_5'] : '',
+				isset($row['regiao_id']) ? $row['regiao_id'] : '',
+			);
+
+			return implode('-|-', $ordered) . '-|-';
 		}
 
 		if ($flag === 'I') {

@@ -54,16 +54,19 @@ class MetaRepository
 				m.sem_3,
 				m.sem_4,
 				m.sem_5,
+				m.regiao_id,
 				a.nome,
 				a.especie,
-				b.banco_name
+				b.banco_name,
+				r.regiao_nome
 			FROM metas_andamentos AS m
 			JOIN andamentos AS a ON a.anda_id = m.anda_id
 			JOIN bancos AS b ON b.banco_id = m.banco_id
+			LEFT JOIN regioes AS r ON r.regiao_id = m.regiao_id
 			WHERE m.banco_id = ?
 			AND m.meta_mes = ?
 			AND m.meta_ano = ?
-			ORDER BY a.especie ASC, a.nome ASC, m.meta_id ASC
+			ORDER BY a.especie ASC, a.nome ASC, r.regiao_nome ASC, m.meta_id ASC
 		";
 		$stmt = mysqli_prepare($this->connection, $sql);
 		if (!$stmt) {
@@ -116,8 +119,8 @@ class MetaRepository
 		$sql = "
 			INSERT INTO metas_andamentos (
 				banco_id, meta_mes, meta_ano, anda_id, def_sem,
-				sem_1, sem_2, sem_3, sem_4, sem_5, meta_valor
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				sem_1, sem_2, sem_3, sem_4, sem_5, meta_valor, regiao_id
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		";
 		$stmt = mysqli_prepare($this->connection, $sql);
 		if (!$stmt) {
@@ -135,8 +138,9 @@ class MetaRepository
 		$sem4 = $data['sem_4'];
 		$sem5 = $data['sem_5'];
 		$metaValor = $data['meta_valor'];
+		$regiaoId = isset($data['regiao_id']) && (int) $data['regiao_id'] > 0 ? (int) $data['regiao_id'] : null;
 
-		mysqli_stmt_bind_param($stmt, 'iiiisdddddd', $bancoId, $metaMes, $metaAno, $andaId, $defSem, $sem1, $sem2, $sem3, $sem4, $sem5, $metaValor);
+		mysqli_stmt_bind_param($stmt, 'iiiisddddddi', $bancoId, $metaMes, $metaAno, $andaId, $defSem, $sem1, $sem2, $sem3, $sem4, $sem5, $metaValor, $regiaoId);
 		$inserted = mysqli_stmt_execute($stmt);
 		mysqli_stmt_close($stmt);
 
@@ -148,7 +152,7 @@ class MetaRepository
 		$sql = "
 			UPDATE metas_andamentos SET
 				banco_id = ?, meta_mes = ?, meta_ano = ?, anda_id = ?, def_sem = ?,
-				sem_1 = ?, sem_2 = ?, sem_3 = ?, sem_4 = ?, sem_5 = ?, meta_valor = ?
+				sem_1 = ?, sem_2 = ?, sem_3 = ?, sem_4 = ?, sem_5 = ?, meta_valor = ?, regiao_id = ?
 			WHERE meta_id = ? LIMIT 1
 		";
 		$stmt = mysqli_prepare($this->connection, $sql);
@@ -167,9 +171,10 @@ class MetaRepository
 		$sem4 = $data['sem_4'];
 		$sem5 = $data['sem_5'];
 		$metaValor = $data['meta_valor'];
+		$regiaoId = isset($data['regiao_id']) && (int) $data['regiao_id'] > 0 ? (int) $data['regiao_id'] : null;
 		$metaId = (int) $metaId;
 
-		mysqli_stmt_bind_param($stmt, 'iiiisddddddi', $bancoId, $metaMes, $metaAno, $andaId, $defSem, $sem1, $sem2, $sem3, $sem4, $sem5, $metaValor, $metaId);
+		mysqli_stmt_bind_param($stmt, 'iiiisddddddii', $bancoId, $metaMes, $metaAno, $andaId, $defSem, $sem1, $sem2, $sem3, $sem4, $sem5, $metaValor, $regiaoId, $metaId);
 		$updated = mysqli_stmt_execute($stmt);
 		mysqli_stmt_close($stmt);
 

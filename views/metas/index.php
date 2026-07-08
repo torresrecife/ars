@@ -2,23 +2,25 @@
 <?php
 $bankCode = isset($bank['banco_cod']) ? $bank['banco_cod'] : '';
 ?>
-<?php echo "<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Cliente: <b>" . $bankCode . "</b> | Mês / Ano: <b>$startDate</b></div><br>"; ?>
+<?php echo "<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Cliente: <b>" . htmlspecialchars((string) $bankCode, ENT_QUOTES, 'UTF-8') . "</b> | Mês / Ano: <b>" . htmlspecialchars((string) $startDate, ENT_QUOTES, 'UTF-8') . "</b></div><br>"; ?>
 <label><h2><u>Metas</u></h2></label>
 <div>
-<table class="adminlist" style="width:60%">
+<table class="adminlist" style="width:72%">
 	<tr height="30">
 		<td class="order"><b>Cliente</b></td>
+		<td class="order"><b>Região</b></td>
 		<td class="order"><b>Andamento</b></td>
 		<td class="order"><b>Tipo</b></td>
 		<td class="order"><b>Qtd/Valor</b></td>
 		<td class="order"><b>Opções</b></td>
 	</tr>
 <?php foreach ($metas as $arr): ?>
-	<?php $metaValor = ((int) $arr['especie'] === 2) ? number_format($arr['meta_valor'], 2, ',', '.') : number_format($arr['meta_valor'], 0, '', ''); ?>
+	<?php $metaValor = ((int) $arr['especie'] === 2) ? number_format((float) $arr['meta_valor'], 2, ',', '.') : number_format((float) $arr['meta_valor'], 0, '', ''); ?>
 	<tr>
-		<td class="order"><?php echo htmlspecialchars($arr['banco_name'], ENT_QUOTES, 'UTF-8'); ?></td>
-		<td class="order"><?php echo htmlspecialchars($arr['nome'], ENT_QUOTES, 'UTF-8'); ?></td>
-		<td class="order" style="color:#ffffff;background:<?php echo ((int) $arr['especie'] === 1 ? '#1C86EE' : '#FFB90F'); ?>"><?php echo htmlspecialchars($metaTipos[$arr['especie']], ENT_QUOTES, 'UTF-8'); ?></td>
+		<td class="order"><?php echo htmlspecialchars((string) $arr['banco_name'], ENT_QUOTES, 'UTF-8'); ?></td>
+		<td class="order"><?php echo htmlspecialchars(isset($arr['regiao_nome']) && $arr['regiao_nome'] !== '' ? (string) $arr['regiao_nome'] : 'Todas as Regiões', ENT_QUOTES, 'UTF-8'); ?></td>
+		<td class="order"><?php echo htmlspecialchars((string) $arr['nome'], ENT_QUOTES, 'UTF-8'); ?></td>
+		<td class="order" style="color:#ffffff;background:<?php echo ((int) $arr['especie'] === 1 ? '#1C86EE' : '#FFB90F'); ?>"><?php echo htmlspecialchars((string) $metaTipos[$arr['especie']], ENT_QUOTES, 'UTF-8'); ?></td>
 		<td class="order"><?php echo $metaValor; ?></td>
 		<td class="order" style="width:130px"><?php echo fc_botoes_metas($arr['meta_id'], 'block', $arr['nome']); ?></td>
 	</tr>
@@ -26,7 +28,7 @@ $bankCode = isset($bank['banco_cod']) ? $bank['banco_cod'] : '';
 </table>
 <script>
 	function my_especie(valor){
-		var espe = $("#meta_name_1 option:selected").attr("especie");
+		var espe = $("#meta_name_" + valor + " option:selected").attr("especie");
 		if(espe==2){
 			$("#meta_valor_"+valor).setMask("decimal");
 			$(".sem_"+valor).setMask("decimal");
@@ -36,16 +38,17 @@ $bankCode = isset($bank['banco_cod']) ? $bank['banco_cod'] : '';
 		}
 	}
 </script>
-<?php echo "<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Total da meta financeira: <b>R$ " . number_format($totalFinanceiro, 2, ',', '.') . "</b></div><br>"; ?>
+<?php echo "<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Total da meta financeira: <b>R$ " . number_format((float) $totalFinanceiro, 2, ',', '.') . "</b></div><br>"; ?>
 <div id="dialog-edit-metas" title="Editar Meta" style="display:none; text-align:left;">
 	<p class="validateMetas">Edite a Meta Abaixo</p>
 	<fieldset>
-		<div id="tb_dialog" style="min-height:70px; width:790px;">
-			<table align="left" style="width:890px">
+		<div id="tb_dialog" style="min-height:70px; width:1030px;">
+			<table align="left" style="width:1030px">
 				<tr>
 					<td>
 						<div style="width:250px;float:left">Selecionar as metas</div>
-						<div style="width:70px;float:left">Valor Total</div>
+						<div style="width:170px;float:left">Região</div>
+						<div style="width:80px;float:left">Valor Total</div>
 						<div style="width:90px;float:left">Def. manual |.</div>
 						<div style="width:80px;float:left">Sem 1</div>
 						<div style="width:80px;float:left">Sem 2</div>
@@ -58,10 +61,16 @@ $bankCode = isset($bank['banco_cod']) ? $bank['banco_cod'] : '';
 					<td>
 						<div id="metas_0">
 							<div style="float:left">
-								<select class="cls_metas2 input-default" name="meta_name_1" id="meta_name_1" obrigatorio="1" title="Setor" onchange="my_especie(1);" style="width:250px;height:22px;">
+								<select class="cls_metas2 input-default" name="meta_name_1" id="meta_name_1" obrigatorio="1" title="Meta" onchange="my_especie(1);" style="width:250px;height:22px;">
 									<option value=""></option>
 									<?php foreach ($andamentos as $andamento): ?>
-										<option value="<?php echo $andamento['anda_id']; ?>" especie="<?php echo $andamento['especie']; ?>"><?php echo htmlspecialchars($andamento['nome'] . ' (' . $metaTipos[$andamento['especie']] . ')', ENT_QUOTES, 'UTF-8'); ?></option>
+										<option value="<?php echo (int) $andamento['anda_id']; ?>" especie="<?php echo (int) $andamento['especie']; ?>"><?php echo htmlspecialchars((string) $andamento['nome'] . ' (' . $metaTipos[$andamento['especie']] . ')', ENT_QUOTES, 'UTF-8'); ?></option>
+									<?php endforeach; ?>
+								</select>
+								<select class="cls_meta_regiao input-default" name="regiao_id_1" id="regiao_id_1" style="width:160px;height:22px;">
+									<option value="">Todas as Regiões</option>
+									<?php foreach ($regions as $region): ?>
+										<option value="<?php echo (int) $region['regiao_id']; ?>"><?php echo htmlspecialchars((string) $region['regiao_nome'], ENT_QUOTES, 'UTF-8'); ?></option>
 									<?php endforeach; ?>
 								</select>
 								<input type="text" class="cls_meta" name="meta_valor_1" id="meta_valor_1" value="" obrigatorio="1" title="Meta total" style="width:120px;" alt=""/>
@@ -83,6 +92,8 @@ $bankCode = isset($bank['banco_cod']) ? $bank['banco_cod'] : '';
 </div>
 <input type="hidden" name="metas_num" id="metas_num" value="1" />
 <input type="hidden" class="cls_meta" name="meta_id" id="meta_id" value="" />
-<input type="hidden" class="cls_meta" name="banco_id" id="banco_id" value="<?php echo $startBanco; ?>" />
-<input type="hidden" class="cls_meta" name="meta_mes" id="meta_mes" value="<?php echo $mes; ?>" />
-<input type="hidden" class="cls_meta" name="meta_ano" id="meta_ano" value="<?php echo $ano; ?>" />
+<input type="hidden" class="cls_meta" name="banco_id" id="banco_id" value="<?php echo htmlspecialchars((string) $startBanco, ENT_QUOTES, 'UTF-8'); ?>" />
+<input type="hidden" class="cls_meta" name="meta_mes" id="meta_mes" value="<?php echo htmlspecialchars((string) $mes, ENT_QUOTES, 'UTF-8'); ?>" />
+<input type="hidden" class="cls_meta" name="meta_ano" id="meta_ano" value="<?php echo htmlspecialchars((string) $ano, ENT_QUOTES, 'UTF-8'); ?>" />
+</div>
+</div>

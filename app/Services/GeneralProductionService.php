@@ -40,7 +40,7 @@ class GeneralProductionService
 		);
 
 		foreach ($banks as $bank) {
-			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context['month'], $context['year']);
+			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context['month'], $context['year'], $regionFilter['selectedRegionId']);
 			$aggregate = $this->aggregateFinancialMetas($metaRows);
 			$carteiraCodes = $this->repository->listCarteiraCodesByBankId($bank['banco_id']);
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);
@@ -95,7 +95,7 @@ class GeneralProductionService
 		$grandReal = 0.0;
 
 		foreach ($banks as $bank) {
-			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context['month'], $context['year']);
+			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context['month'], $context['year'], $regionFilter['selectedRegionId']);
 			$aggregate = $this->aggregateFinancialMetas($metaRows);
 			$carteiraCodes = $this->repository->listCarteiraCodesByBankId($bank['banco_id']);
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);

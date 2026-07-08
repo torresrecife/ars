@@ -81,7 +81,7 @@ class GeneralProductionRepository
 		return $this->fetchAll($sql, $types, $params);
 	}
 
-	public function listFinancialMetasByBankMonthYear($bankId, $month, $year)
+	public function listFinancialMetasByBankMonthYear($bankId, $month, $year, $regionId = 0)
 	{
 		$sql = "
 			SELECT
@@ -93,6 +93,7 @@ class GeneralProductionRepository
 				m.sem_3,
 				m.sem_4,
 				m.sem_5,
+				m.regiao_id,
 				a.anda_neo
 			FROM metas_andamentos AS m
 			JOIN andamentos AS a ON a.anda_id = m.anda_id
@@ -100,10 +101,22 @@ class GeneralProductionRepository
 			AND m.meta_mes = ?
 			AND m.meta_ano = ?
 			AND a.especie = 2
-			ORDER BY m.meta_id ASC
 		";
 
-		return $this->fetchAll($sql, 'iii', array((int) $bankId, (int) $month, (int) $year));
+		$params = array((int) $bankId, (int) $month, (int) $year);
+		$types = 'iii';
+
+		if ((int) $regionId > 0) {
+			$sql .= " AND m.regiao_id = ?";
+			$params[] = (int) $regionId;
+			$types .= 'i';
+		} else {
+			$sql .= " AND m.regiao_id IS NULL";
+		}
+
+		$sql .= " ORDER BY m.meta_id ASC";
+
+		return $this->fetchAll($sql, $types, $params);
 	}
 
 	public function findCarteiraModeByBankId($bankId)
