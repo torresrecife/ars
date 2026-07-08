@@ -51,9 +51,9 @@ class DashboardPanelService
 		$carteiraMode = $this->dashboardRepository->findCarteiraConditionByBankId($bankId);
 		$carteiraCodes = $this->dashboardRepository->listCarteiraCodesByBankId($bankId);
 		$regionFilter = $this->resolveRegionFilter($input, $session);
-		$productionRows = $this->buildProductionRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs']);
-		$financialRows = $this->buildFinancialRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs']);
-		$prejudiceRows = $this->buildPrejudiceRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs']);
+		$productionRows = $this->buildProductionRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId']);
+		$financialRows = $this->buildFinancialRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId']);
+		$prejudiceRows = $this->buildPrejudiceRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId']);
 		$summary = $this->buildFinancialSummary($financialRows, $prejudiceRows, $weeks);
 
 		return array(
@@ -74,9 +74,9 @@ class DashboardPanelService
 		);
 	}
 
-	private function buildProductionRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array())
+	private function buildProductionRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0)
 	{
-		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 1);
+		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 1, array(), array(), $regionId);
 		$built = array();
 
 		foreach ($rows as $row) {
@@ -123,10 +123,10 @@ class DashboardPanelService
 		return $built;
 	}
 
-	private function buildFinancialRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array())
+	private function buildFinancialRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0)
 	{
 		$exclude = array('CUSTAS POR FALHA OPERACIONAL');
-		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, $exclude);
+		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, $exclude, array(), $regionId);
 		$built = array();
 
 		foreach ($rows as $row) {
@@ -173,10 +173,10 @@ class DashboardPanelService
 		return $built;
 	}
 
-	private function buildPrejudiceRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array())
+	private function buildPrejudiceRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0)
 	{
 		$include = array('CUSTAS POR FALHA OPERACIONAL');
-		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, array(), $include);
+		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, array(), $include, $regionId);
 		$built = array();
 
 		foreach ($rows as $row) {

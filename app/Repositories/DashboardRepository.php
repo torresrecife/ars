@@ -51,12 +51,13 @@ class DashboardRepository
 		return $row;
 	}
 
-	public function listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, $species, $excludeNames = array(), $includeNames = array())
+	public function listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, $species, $excludeNames = array(), $includeNames = array(), $regionId = 0)
 	{
 		$bankId = (int) $bankId;
 		$month = (int) $month;
 		$year = (int) $year;
 		$species = (int) $species;
+		$regionId = (int) $regionId;
 
 		$sql = "
 			SELECT
@@ -72,6 +73,7 @@ class DashboardRepository
 				m.sem_3,
 				m.sem_4,
 				m.sem_5,
+				m.regiao_id,
 				a.nome,
 				a.especie,
 				a.anda_neo,
@@ -87,6 +89,14 @@ class DashboardRepository
 
 		$params = array($bankId, $month, $year, $species);
 		$types = 'iiii';
+
+		if ($regionId > 0) {
+			$sql .= " AND m.regiao_id = ?";
+			$params[] = $regionId;
+			$types .= 'i';
+		} else {
+			$sql .= " AND m.regiao_id IS NULL";
+		}
 
 		if (!empty($excludeNames)) {
 			foreach ($excludeNames as $excludeName) {
@@ -126,12 +136,13 @@ class DashboardRepository
 		return $rows;
 	}
 
-	public function findMetaRowByBankMonthYearAndAndaId($bankId, $month, $year, $andaId)
+	public function findMetaRowByBankMonthYearAndAndaId($bankId, $month, $year, $andaId, $regionId = 0)
 	{
 		$bankId = (int) $bankId;
 		$month = (int) $month;
 		$year = (int) $year;
 		$andaId = (int) $andaId;
+		$regionId = (int) $regionId;
 
 		$sql = "
 			SELECT
@@ -147,6 +158,7 @@ class DashboardRepository
 				m.sem_3,
 				m.sem_4,
 				m.sem_5,
+				m.regiao_id,
 				a.nome,
 				a.especie,
 				a.anda_neo,
@@ -158,15 +170,26 @@ class DashboardRepository
 			AND m.meta_mes = ?
 			AND m.meta_ano = ?
 			AND m.anda_id = ?
-			LIMIT 1
 		";
+
+		if ($regionId > 0) {
+			$sql .= " AND m.regiao_id = ?";
+		} else {
+			$sql .= " AND m.regiao_id IS NULL";
+		}
+
+		$sql .= " LIMIT 1";
 
 		$stmt = mysqli_prepare($this->connection, $sql);
 		if (!$stmt) {
 			return false;
 		}
 
-		mysqli_stmt_bind_param($stmt, 'iiii', $bankId, $month, $year, $andaId);
+		if ($regionId > 0) {
+			mysqli_stmt_bind_param($stmt, 'iiiii', $bankId, $month, $year, $andaId, $regionId);
+		} else {
+			mysqli_stmt_bind_param($stmt, 'iiii', $bankId, $month, $year, $andaId);
+		}
 		mysqli_stmt_execute($stmt);
 		$result = mysqli_stmt_get_result($stmt);
 		$row = $result ? mysqli_fetch_assoc($result) : false;
