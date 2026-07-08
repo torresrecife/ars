@@ -19,6 +19,7 @@ $regionLabel = isset($viewData['regionLabel']) ? $viewData['regionLabel'] : '';
 $regionId = isset($viewData['regionId']) ? (int) $viewData['regionId'] : 0;
 $contentHeight = $viewData['contentHeight'];
 $weekColumnWidth = (count($weeks) === 5 ? '4%' : '5%');
+$singleTableLayout = empty($productionRows);
 ?>
 <br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Cliente: <b><?php echo $bank['banco_cod']; ?></b><?php echo $regionLabel; ?> | M&ecirc;s / Ano: <b><?php echo $startDate; ?></b> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","p")'>&lt;</a> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","n")'>&gt;</a></div><br>
 <input type='hidden' name='mes' id='mes' class='date-picker' value='<?php echo $month; ?>'/>
@@ -161,11 +162,15 @@ td{
 		<td align='center' class='cls_vals cls_bk'><img src='http://***REMOVED***/img/<?php echo $row['totalIcon']; ?>' class='box' /><?php echo number_format($row['totalPercent'], 0, ',', ''); ?>%</td>
 	</tr>
 	<?php endforeach; ?>
-	<input type='hidden' name='codig_and' id='codig_and' />
-	<input type='hidden' name='banco_and' id='banco_and' />
+<?php if (!$singleTableLayout): ?>
 </table>
+<?php endif; ?>
+<input type='hidden' name='codig_and' id='codig_and' />
+<input type='hidden' name='banco_and' id='banco_and' />
+<?php if (!$singleTableLayout): ?>
 <br><br>
 <table align='center' height='20%' width='100%' border='0' cellspacing='1' cellpadding='1' id='tb_fim' style='font-family:Tahoma;font-size:8pt; border-collapse: collapse;'>
+<?php endif; ?>
 	<?php foreach ($financialRows as $rowIndex => $row): ?>
 	<tr style='height:30px'>
 		<?php if ($rowIndex === 0): ?>
@@ -210,15 +215,19 @@ td{
 		<td align='center' class='cls_vals2 cls_red'><b>-</b></td>
 	</tr>
 	<?php endforeach; ?>
-	<input type='hidden' name='codig_lnc' id='codig_lnc' />
-	<input type='hidden' name='banco_lnc' id='banco_lnc' />
-	<input type='hidden' name='detail_bank_id' id='detail_bank_id' />
-	<input type='hidden' name='detail_anda_id' id='detail_anda_id' />
-	<input type='hidden' name='detail_month' id='detail_month' />
-	<input type='hidden' name='detail_year' id='detail_year' />
-	<input type='hidden' name='detail_week' id='detail_week' />
-	<input type='hidden' name='detail_region_id' id='detail_region_id' value='<?php echo $regionId; ?>' />
+<?php if ($singleTableLayout): ?>
 </table>
+<?php else: ?>
+</table>
+<?php endif; ?>
+<input type='hidden' name='codig_lnc' id='codig_lnc' />
+<input type='hidden' name='banco_lnc' id='banco_lnc' />
+<input type='hidden' name='detail_bank_id' id='detail_bank_id' />
+<input type='hidden' name='detail_anda_id' id='detail_anda_id' />
+<input type='hidden' name='detail_month' id='detail_month' />
+<input type='hidden' name='detail_year' id='detail_year' />
+<input type='hidden' name='detail_week' id='detail_week' />
+<input type='hidden' name='detail_region_id' id='detail_region_id' value='<?php echo $regionId; ?>' />
 <br>
 <table align='center' height='6%' width='25%' border='1' cellspacing='3' cellpadding='3' id='tb_tot' style='font-family:arial;font-size:8pt; border-collapse: collapse;'>
 	<tr>
