@@ -14,7 +14,7 @@
 		<td class="order"><b>Op&ccedil;&otilde;es</b></td>
 	</tr>
 <?php foreach ($users as $user): ?>
-	<?php $acesso = $user['acesso_usu'] === '0000-00-00 00:00:00' ? '' : strftime('%d/%m/%Y %H:%M:%S', strtotime($user['acesso_usu'])); ?>
+	<?php $acesso = empty($user['acesso_usu']) || $user['acesso_usu'] === '0000-00-00 00:00:00' ? '' : strftime('%d/%m/%Y %H:%M:%S', strtotime($user['acesso_usu'])); ?>
 	<tr>
 		<td class="order"><?php echo $user['id_usu']; ?></td>
 		<td class="order"><?php echo htmlspecialchars($user['nome_usu'], ENT_QUOTES, 'UTF-8'); ?></td>

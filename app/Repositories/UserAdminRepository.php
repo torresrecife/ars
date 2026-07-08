@@ -123,7 +123,7 @@ class UserAdminRepository
 		$sql = "INSERT INTO usuarios (
 			nome_usu, login_usu, senha_usu, email_usu, nivel_usu,
 			id_setor, id_cliente, regiao_modo, acesso_usu, data_cad, status_usu
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, '0000-00-00 00:00:00', ?, ?)";
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)";
 
 		$stmt = mysqli_prepare($this->connection, $sql);
 		if (!$stmt) {
