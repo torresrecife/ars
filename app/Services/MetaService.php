@@ -105,7 +105,8 @@ class MetaService
 
 	private function extractMetaPayload(array $input, $index)
 	{
-		$defSem = !empty($input['def_sem_' . $index]) ? 'Y' : 'N';
+		$defSemValue = isset($input['def_sem_' . $index]) ? strtoupper(trim((string) $input['def_sem_' . $index])) : 'N';
+		$defSem = ($defSemValue === 'Y') ? 'Y' : 'N';
 		$sem1 = $this->parseNullableDecimal(isset($input['sem1_valor_' . $index]) ? $input['sem1_valor_' . $index] : null);
 		$sem2 = $this->parseNullableDecimal(isset($input['sem2_valor_' . $index]) ? $input['sem2_valor_' . $index] : null);
 		$sem3 = $this->parseNullableDecimal(isset($input['sem3_valor_' . $index]) ? $input['sem3_valor_' . $index] : null);
@@ -115,6 +116,12 @@ class MetaService
 
 		if ($defSem === 'Y') {
 			$metaValor = $this->sumWeekValues(array($sem1, $sem2, $sem3, $sem4, $sem5));
+		} elseif ($metaValor > 0 && $this->weeksAreEmpty(array($sem1, $sem2, $sem3, $sem4, $sem5))) {
+			$sem1 = $metaValor;
+			$sem2 = null;
+			$sem3 = null;
+			$sem4 = null;
+			$sem5 = null;
 		}
 
 		return array(
@@ -156,6 +163,17 @@ class MetaService
 		}
 
 		return (float) number_format($total, 2, '.', '');
+	}
+
+	private function weeksAreEmpty(array $values)
+	{
+		foreach ($values as $value) {
+			if ($value !== null && (float) $value != 0.0) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private function duplicateKey(array $data)
