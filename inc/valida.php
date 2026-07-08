@@ -36,6 +36,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script type="text/javascript" src="../js/jquery-ui-1.8.23.custom.min.js"></script>
 <link rel="stylesheet" href="../css/template.css" type="text/css" />
 <link rel="stylesheet" href="../css/custom-theme/jquery-ui-1.8.23.custom.css">
+<style type="text/css">
+#dialog-new-pass table {
+	width: 100%;
+}
+
+#dialog-new-pass td {
+	padding: 4px 6px;
+	vertical-align: middle;
+}
+
+#dialog-new-pass .cls_usu {
+	width: 180px;
+}
+</style>
 <script language="JavaScript">
 function new_pass(){
 	var tt = "Nova senha";
@@ -44,7 +58,7 @@ function new_pass(){
 		modal: true,
 		autoOpen: true,
 		height: 240,
-		width: 220,
+		width: 360,
 		close: function(){
 			location.href="../login.php";
 		},
@@ -53,7 +67,7 @@ function new_pass(){
 				if($("#senha_usu1").val()!=$("#senha_usu2").val()){
 					alert("As senhas não conferem!");
 				}else if($("#senha_usu1").val()==""){
-					alert("Preencha o campo sennha!");
+					alert("Preencha o campo senha!");
 				}else{
 					$.ajax({
 						type: "POST",
@@ -91,17 +105,17 @@ function new_pass(){
 $(function() { new_pass(); });
 </script>
 <?php endif; ?>
-<div id="dialog-new-pass" title="Editar Usuário" style="display:none; text-align:left;">
-	<p class="validateTips"><?php echo utf8_decode("Alteração de senha obrigatória!"); ?></p>
+<div id="dialog-new-pass" title="Nova senha" style="display:none; text-align:left;">
+	<p class="validateTips">Alteração de senha obrigatória!</p>
 	<fieldset>
 		<div>
 			<table>
 				<tr>
-					<td><label>Nova Senha </label></td>
+					<td><label>Nova senha</label></td>
 					<td><input type="password" class="cls_usu" name="senha_usu1" id="senha_usu1" value="" /></td>
 				</tr>
 				<tr>
-					<td><label>Repete a Senha</label></td>
+					<td><label>Repete a senha</label></td>
 					<td><input type="password" class="cls_usu" name="senha_usu2" id="senha_usu2" value="" /></td>
 				</tr>
 			</table>
