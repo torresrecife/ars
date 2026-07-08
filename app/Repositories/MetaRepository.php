@@ -114,6 +114,55 @@ class MetaRepository
 		return $rows;
 	}
 
+	public function existsDuplicate(array $data, $excludeMetaId = 0)
+	{
+		$sql = "
+			SELECT meta_id
+			FROM metas_andamentos
+			WHERE banco_id = ?
+			AND meta_mes = ?
+			AND meta_ano = ?
+			AND anda_id = ?
+		";
+
+		$params = array(
+			(int) $data['banco_id'],
+			(int) $data['meta_mes'],
+			(int) $data['meta_ano'],
+			(int) $data['anda_id'],
+		);
+		$types = 'iiii';
+		$regionId = isset($data['regiao_id']) && (int) $data['regiao_id'] > 0 ? (int) $data['regiao_id'] : 0;
+
+		if ($regionId > 0) {
+			$sql .= " AND regiao_id = ?";
+			$params[] = $regionId;
+			$types .= 'i';
+		} else {
+			$sql .= " AND regiao_id IS NULL";
+		}
+
+		if ((int) $excludeMetaId > 0) {
+			$sql .= " AND meta_id <> ?";
+			$params[] = (int) $excludeMetaId;
+			$types .= 'i';
+		}
+
+		$sql .= " LIMIT 1";
+		$stmt = mysqli_prepare($this->connection, $sql);
+		if (!$stmt) {
+			return false;
+		}
+
+		$this->bindParams($stmt, $types, $params);
+		mysqli_stmt_execute($stmt);
+		$result = mysqli_stmt_get_result($stmt);
+		$row = $result ? mysqli_fetch_assoc($result) : false;
+		mysqli_stmt_close($stmt);
+
+		return $row !== false;
+	}
+
 	public function insert(array $data)
 	{
 		$sql = "
@@ -194,5 +243,15 @@ class MetaRepository
 		mysqli_stmt_close($stmt);
 
 		return $deleted;
+	}
+
+	private function bindParams($stmt, $types, array $params)
+	{
+		$references = array($types);
+		foreach ($params as $index => $value) {
+			$references[] = &$params[$index];
+		}
+
+		call_user_func_array('mysqli_stmt_bind_param', array_merge(array($stmt), $references));
 	}
 }

@@ -438,9 +438,9 @@ function EnviarDados(frm,hid,are,fla){
 											EnviarDados('index.php','11','');
 										}
 									});
-								}else if(retorno_ajax==2){
-									alert("Servidor jÃ¡ cadastrado!");
-								}else{
+									}else if(retorno_ajax==2){
+										alert("JÃ¡ existe uma meta cadastrada para este cliente, mÃªs/ano, andamento e regiÃ£o.");
+									}else{
 									alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 								}
 							}

@@ -77,11 +77,11 @@ class MetaController
 		}
 
 		if ($flag === 'I') {
-			return $this->metaService->createManyFromRequest($input) ? '1' : '0';
+			return $this->metaService->createManyFromRequest($input);
 		}
 
 		if ($flag === 'U') {
-			return $this->metaService->updateManyFromRequest($input) ? '1' : '0';
+			return $this->metaService->updateManyFromRequest($input);
 		}
 
 		if ($flag === 'D') {
