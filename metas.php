@@ -9,4 +9,4 @@ $controller = new \App\Http\Controllers\MetaController(
 	$view
 );
 
-echo $controller->index($_POST);
+echo $controller->index($_POST, $_SESSION);

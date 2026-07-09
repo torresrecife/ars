@@ -46,6 +46,35 @@ class MetaService
 		return $this->regionService->listActive();
 	}
 
+	public function regionSelectionData(array $session = array())
+	{
+		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
+		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
+		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
+
+		if ($level === 'ADM') {
+			return array(
+				'regions' => $this->regionService->listActive(),
+				'allowGlobal' => true,
+			);
+		}
+
+		if ($userId > 0 && in_array($level, array('GER', 'USU'), true)) {
+			$userRegions = $this->regionService->listUserRegions($userId);
+			if (!empty($userRegions)) {
+				return array(
+					'regions' => $userRegions,
+					'allowGlobal' => ($level === 'GER' && $mode === 'T'),
+				);
+			}
+		}
+
+		return array(
+			'regions' => $this->regionService->listActive(),
+			'allowGlobal' => true,
+		);
+	}
+
 	public function createManyFromRequest(array $input)
 	{
 		$total = isset($input['numes']) ? (int) $input['numes'] : 0;

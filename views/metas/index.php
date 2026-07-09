@@ -1,6 +1,7 @@
 <div style="margin-top:80px">
 <?php
 $bankCode = isset($bank['banco_cod']) ? $bank['banco_cod'] : '';
+$allowGlobalRegion = !empty($allowGlobalRegion);
 ?>
 <?php echo "<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Cliente: <b>" . htmlspecialchars((string) $bankCode, ENT_QUOTES, 'UTF-8') . "</b> | Mês / Ano: <b>" . htmlspecialchars((string) $startDate, ENT_QUOTES, 'UTF-8') . "</b></div><br>"; ?>
 <label><h2><u>Metas</u></h2></label>
@@ -68,7 +69,9 @@ $bankCode = isset($bank['banco_cod']) ? $bank['banco_cod'] : '';
 									<?php endforeach; ?>
 								</select>
 								<select class="cls_meta_regiao input-default" name="regiao_id_1" id="regiao_id_1" style="width:160px;height:22px;">
-									<option value="">Todas as Regiões</option>
+									<?php if ($allowGlobalRegion): ?>
+										<option value="">Todas as Regiões</option>
+									<?php endif; ?>
 									<?php foreach ($regions as $region): ?>
 										<option value="<?php echo (int) $region['regiao_id']; ?>"><?php echo htmlspecialchars((string) $region['regiao_nome'], ENT_QUOTES, 'UTF-8'); ?></option>
 									<?php endforeach; ?>

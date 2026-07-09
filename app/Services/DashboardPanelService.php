@@ -50,8 +50,9 @@ class DashboardPanelService
 		$weeks = $this->resolveWeeks($month, $year, $weekConfig);
 		$carteiraMode = $this->dashboardRepository->findCarteiraConditionByBankId($bankId);
 		$carteiraCodes = $this->dashboardRepository->listCarteiraCodesByBankId($bankId);
-		$regionFilter = $this->resolveRegionFilter($input, $session);
-		$regionTabs = $this->resolveRegionTabs($session, $regionFilter['selectedRegionId']);
+		$visibleRegionIds = $this->resolveVisibleRegionIds($session, $bankId, $month, $year);
+		$regionFilter = $this->resolveRegionFilter($input, $session, $visibleRegionIds);
+		$regionTabs = $this->resolveRegionTabs($session, $regionFilter['selectedRegionId'], $visibleRegionIds);
 		$productionRows = $this->buildProductionRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId'], $regionFilter['metaRegionIds']);
 		$financialRows = $this->buildFinancialRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId'], $regionFilter['metaRegionIds']);
 		$prejudiceRows = $this->buildPrejudiceRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId'], $regionFilter['metaRegionIds']);
@@ -264,7 +265,7 @@ class DashboardPanelService
 		);
 	}
 
-	private function resolveRegionFilter(array $input, array $session)
+	private function resolveRegionFilter(array $input, array $session, array $visibleRegionIds = array())
 	{
 		$default = array(
 			'selectedRegionId' => 0,
@@ -283,6 +284,9 @@ class DashboardPanelService
 		foreach ($userRegions as $region) {
 			$regionIds[] = (int) $region['regiao_id'];
 		}
+		if (!empty($visibleRegionIds)) {
+			$regionIds = array_values(array_intersect($regionIds, $visibleRegionIds));
+		}
 
 		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
 		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
@@ -296,7 +300,11 @@ class DashboardPanelService
 
 			$allRegionIds = array();
 			foreach ($allRegions as $region) {
-				$allRegionIds[] = (int) $region['regiao_id'];
+				$regionId = (int) $region['regiao_id'];
+				if (!empty($visibleRegionIds) && !in_array($regionId, $visibleRegionIds, true)) {
+					continue;
+				}
+				$allRegionIds[] = $regionId;
 				if ($selectedRegionId > 0 && (int) $region['regiao_id'] === $selectedRegionId) {
 					return array(
 						'selectedRegionId' => $selectedRegionId,
@@ -316,7 +324,10 @@ class DashboardPanelService
 		}
 
 		if ($level === 'USU' && $mode === 'R') {
-			$selectedRegionId = (int) $regionIds[0];
+			$selectedRegionId = !empty($regionIds) ? (int) $regionIds[0] : 0;
+			if ($selectedRegionId <= 0) {
+				return $default;
+			}
 			$region = $this->regionService->findUserRegion($userId, $selectedRegionId);
 
 			return array(
@@ -340,11 +351,17 @@ class DashboardPanelService
 			}
 
 			if ($mode === 'R') {
+				$selectedRegionId = !empty($regionIds) ? (int) $regionIds[0] : 0;
+				if ($selectedRegionId <= 0) {
+					return $default;
+				}
+				$region = $this->regionService->findUserRegion($userId, $selectedRegionId);
+
 				return array(
-					'selectedRegionId' => 0,
-					'ufs' => $this->regionService->listUfsByRegionIds($regionIds),
-					'label' => ' | Regi&otilde;es: <b>Todas as vinculadas</b>',
-					'metaRegionIds' => $regionIds,
+					'selectedRegionId' => $selectedRegionId,
+					'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+					'label' => $region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+					'metaRegionIds' => array($selectedRegionId),
 				);
 			}
 
@@ -359,7 +376,7 @@ class DashboardPanelService
 		return $default;
 	}
 
-	private function resolveRegionTabs(array $session, $selectedRegionId)
+	private function resolveRegionTabs(array $session, $selectedRegionId, array $visibleRegionIds = array())
 	{
 		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
 		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
@@ -390,16 +407,20 @@ class DashboardPanelService
 			);
 		}
 
-		$tabs = array(
-			array(
+		$tabs = array();
+		if ($level === 'ADM' || ($level === 'GER' && $mode === 'T')) {
+			$tabs[] = array(
 				'id' => 0,
 				'label' => 'Todas as Regi&otilde;es',
 				'active' => (int) $selectedRegionId === 0,
-			),
-		);
+			);
+		}
 
 		foreach ($userRegions as $region) {
 			$regionId = (int) $region['regiao_id'];
+			if (!empty($visibleRegionIds) && !in_array($regionId, $visibleRegionIds, true)) {
+				continue;
+			}
 			$tabs[] = array(
 				'id' => $regionId,
 				'label' => (string) $region['regiao_nome'],
@@ -411,6 +432,33 @@ class DashboardPanelService
 			'show' => true,
 			'tabs' => $tabs,
 		);
+	}
+
+	private function resolveVisibleRegionIds(array $session, $bankId, $month, $year)
+	{
+		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
+		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
+		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
+		$metaRegionIds = $this->dashboardRepository->listRegionIdsWithMetaRowsByBankMonthYear($bankId, $month, $year);
+
+		if (empty($metaRegionIds)) {
+			return array();
+		}
+
+		if ($level === 'ADM') {
+			return $metaRegionIds;
+		}
+
+		if ($userId > 0 && in_array($level, array('GER', 'USU'), true) && in_array($mode, array('R', 'T'), true)) {
+			$userRegionIds = array();
+			foreach ($this->regionService->listUserRegions($userId) as $region) {
+				$userRegionIds[] = (int) $region['regiao_id'];
+			}
+
+			return array_values(array_intersect($userRegionIds, $metaRegionIds));
+		}
+
+		return array();
 	}
 
 	private function groupMetaRowsByAnda(array $rows, array $weeks)
