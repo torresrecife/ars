@@ -252,12 +252,61 @@ class NeoDetailRepository
 
 	private function buildUfCondition(array $ufCodes)
 	{
-		$quoted = $this->buildQuotedList($ufCodes);
+		$quoted = $this->buildQuotedList($this->expandUfCodes($ufCodes));
 		if ($quoted === '') {
 			return '';
 		}
 
 		return " AND p.UFComarca IN (" . $quoted . ")";
+	}
+
+	private function expandUfCodes(array $ufCodes)
+	{
+		$map = array(
+			'AC' => 'Acre',
+			'AL' => 'Alagoas',
+			'AP' => 'Amapá',
+			'AM' => 'Amazonas',
+			'BA' => 'Bahia',
+			'CE' => 'Ceará',
+			'DF' => 'Distrito Federal',
+			'ES' => 'Espírito Santo',
+			'GO' => 'Goiás',
+			'MA' => 'Maranhão',
+			'MT' => 'Mato Grosso',
+			'MS' => 'Mato Grosso do Sul',
+			'MG' => 'Minas Gerais',
+			'PA' => 'Pará',
+			'PB' => 'Paraíba',
+			'PR' => 'Paraná',
+			'PE' => 'Pernambuco',
+			'PI' => 'Piauí',
+			'RJ' => 'Rio de Janeiro',
+			'RN' => 'Rio Grande do Norte',
+			'RS' => 'Rio Grande do Sul',
+			'RO' => 'Rondônia',
+			'RR' => 'Roraima',
+			'SC' => 'Santa Catarina',
+			'SP' => 'São Paulo',
+			'SE' => 'Sergipe',
+			'TO' => 'Tocantins',
+		);
+
+		$values = array();
+		foreach ($ufCodes as $code) {
+			$code = trim((string) $code);
+			if ($code === '') {
+				continue;
+			}
+
+			$upperCode = strtoupper($code);
+			$values[$upperCode] = $upperCode;
+			if (isset($map[$upperCode])) {
+				$values[$map[$upperCode]] = $map[$upperCode];
+			}
+		}
+
+		return array_values($values);
 	}
 
 	private function buildQuotedList(array $values)

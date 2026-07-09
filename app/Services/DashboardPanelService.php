@@ -51,9 +51,10 @@ class DashboardPanelService
 		$carteiraMode = $this->dashboardRepository->findCarteiraConditionByBankId($bankId);
 		$carteiraCodes = $this->dashboardRepository->listCarteiraCodesByBankId($bankId);
 		$regionFilter = $this->resolveRegionFilter($input, $session);
-		$productionRows = $this->buildProductionRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId']);
-		$financialRows = $this->buildFinancialRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId']);
-		$prejudiceRows = $this->buildPrejudiceRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId']);
+		$regionTabs = $this->resolveRegionTabs($session, $regionFilter['selectedRegionId']);
+		$productionRows = $this->buildProductionRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId'], $regionFilter['metaRegionIds']);
+		$financialRows = $this->buildFinancialRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId'], $regionFilter['metaRegionIds']);
+		$prejudiceRows = $this->buildPrejudiceRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId'], $regionFilter['metaRegionIds']);
 		$summary = $this->buildFinancialSummary($financialRows, $prejudiceRows, $weeks);
 
 		return array(
@@ -61,6 +62,8 @@ class DashboardPanelService
 			'bank' => $bank,
 			'month' => $month,
 			'year' => $year,
+			'showRegionTabs' => $regionTabs['show'],
+			'regionTabs' => $regionTabs['tabs'],
 			'regionId' => $regionFilter['selectedRegionId'],
 			'regionLabel' => $regionFilter['label'],
 			'startDate' => $this->months[$month] . ' / ' . $year,
@@ -74,19 +77,20 @@ class DashboardPanelService
 		);
 	}
 
-	private function buildProductionRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0)
+	private function buildProductionRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0, array $metaRegionIds = array())
 	{
-		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 1, array(), array(), $regionId);
+		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 1, array(), array(), $regionId, $metaRegionIds);
+		$rows = $this->groupMetaRowsByAnda($rows, $weeks);
 		$built = array();
 
 		foreach ($rows as $row) {
 			$weekData = array();
 			$totalReal = 0;
 			$totalCodes = array();
-			$totalMeta = (int) round((float) $row['meta_valor']);
+			$totalMeta = (int) round(isset($row['totalMeta']) ? (float) $row['totalMeta'] : (float) $row['meta_valor']);
 
 			foreach ($weeks as $index => $week) {
-				$metaValue = $this->resolveWeekMeta($row, $index, $weeks);
+				$metaValue = isset($row['weekMeta'][$index]) ? (float) $row['weekMeta'][$index] : $this->resolveWeekMeta($row, $index, $weeks);
 				$queryResult = $this->neoRepository->countProductionByWeek(
 					$this->splitNeoTypes(isset($row['anda_neo']) ? $row['anda_neo'] : ''),
 					$carteiraCodes,
@@ -123,20 +127,21 @@ class DashboardPanelService
 		return $built;
 	}
 
-	private function buildFinancialRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0)
+	private function buildFinancialRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0, array $metaRegionIds = array())
 	{
 		$exclude = array('CUSTAS POR FALHA OPERACIONAL');
-		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, $exclude, array(), $regionId);
+		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, $exclude, array(), $regionId, $metaRegionIds);
+		$rows = $this->groupMetaRowsByAnda($rows, $weeks);
 		$built = array();
 
 		foreach ($rows as $row) {
 			$weekData = array();
 			$totalReal = 0.0;
 			$totalCodes = array();
-			$totalMeta = (float) $row['meta_valor'];
+			$totalMeta = isset($row['totalMeta']) ? (float) $row['totalMeta'] : (float) $row['meta_valor'];
 
 			foreach ($weeks as $index => $week) {
-				$metaValue = $this->resolveWeekMeta($row, $index, $weeks);
+				$metaValue = isset($row['weekMeta'][$index]) ? (float) $row['weekMeta'][$index] : $this->resolveWeekMeta($row, $index, $weeks);
 				$queryResult = $this->neoRepository->sumFinancialByWeek(
 					$this->splitNeoTypes(isset($row['anda_neo']) ? $row['anda_neo'] : ''),
 					$carteiraCodes,
@@ -173,10 +178,11 @@ class DashboardPanelService
 		return $built;
 	}
 
-	private function buildPrejudiceRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0)
+	private function buildPrejudiceRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0, array $metaRegionIds = array())
 	{
 		$include = array('CUSTAS POR FALHA OPERACIONAL');
-		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, array(), $include, $regionId);
+		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, array(), $include, $regionId, $metaRegionIds);
+		$rows = $this->groupMetaRowsByAnda($rows, $weeks);
 		$built = array();
 
 		foreach ($rows as $row) {
@@ -264,6 +270,7 @@ class DashboardPanelService
 			'selectedRegionId' => 0,
 			'ufs' => array(),
 			'label' => '',
+			'metaRegionIds' => array(),
 		);
 
 		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
@@ -277,13 +284,36 @@ class DashboardPanelService
 			$regionIds[] = (int) $region['regiao_id'];
 		}
 
-		if (empty($regionIds)) {
-			return $default;
-		}
-
 		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
 		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
 		$selectedRegionId = isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0;
+
+		if ($level === 'ADM') {
+			$allRegions = $this->regionService->listActive();
+			if (empty($allRegions)) {
+				return $default;
+			}
+
+			$allRegionIds = array();
+			foreach ($allRegions as $region) {
+				$allRegionIds[] = (int) $region['regiao_id'];
+				if ($selectedRegionId > 0 && (int) $region['regiao_id'] === $selectedRegionId) {
+					return array(
+						'selectedRegionId' => $selectedRegionId,
+						'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+						'label' => ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>',
+						'metaRegionIds' => array($selectedRegionId),
+					);
+				}
+			}
+
+			$default['metaRegionIds'] = $allRegionIds;
+			return $default;
+		}
+
+		if (empty($regionIds)) {
+			return $default;
+		}
 
 		if ($level === 'USU' && $mode === 'R') {
 			$selectedRegionId = (int) $regionIds[0];
@@ -293,6 +323,7 @@ class DashboardPanelService
 				'selectedRegionId' => $selectedRegionId,
 				'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
 				'label' => $region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+				'metaRegionIds' => array($selectedRegionId),
 			);
 		}
 
@@ -304,6 +335,7 @@ class DashboardPanelService
 					'selectedRegionId' => $selectedRegionId,
 					'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
 					'label' => $region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+					'metaRegionIds' => array($selectedRegionId),
 				);
 			}
 
@@ -312,11 +344,99 @@ class DashboardPanelService
 					'selectedRegionId' => 0,
 					'ufs' => $this->regionService->listUfsByRegionIds($regionIds),
 					'label' => ' | Regi&otilde;es: <b>Todas as vinculadas</b>',
+					'metaRegionIds' => $regionIds,
 				);
 			}
+
+			return array(
+				'selectedRegionId' => 0,
+				'ufs' => array(),
+				'label' => '',
+				'metaRegionIds' => $regionIds,
+			);
 		}
 
 		return $default;
+	}
+
+	private function resolveRegionTabs(array $session, $selectedRegionId)
+	{
+		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
+		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
+		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
+
+		if ($userId <= 0) {
+			return array(
+				'show' => false,
+				'tabs' => array(),
+			);
+		}
+
+		if ($level === 'ADM') {
+			$userRegions = $this->regionService->listActive();
+		} elseif ($level === 'GER' && in_array($mode, array('R', 'T'), true)) {
+			$userRegions = $this->regionService->listUserRegions($userId);
+		} else {
+			return array(
+				'show' => false,
+				'tabs' => array(),
+			);
+		}
+
+		if (empty($userRegions)) {
+			return array(
+				'show' => false,
+				'tabs' => array(),
+			);
+		}
+
+		$tabs = array(
+			array(
+				'id' => 0,
+				'label' => 'Todas as Regi&otilde;es',
+				'active' => (int) $selectedRegionId === 0,
+			),
+		);
+
+		foreach ($userRegions as $region) {
+			$regionId = (int) $region['regiao_id'];
+			$tabs[] = array(
+				'id' => $regionId,
+				'label' => (string) $region['regiao_nome'],
+				'active' => $regionId === (int) $selectedRegionId,
+			);
+		}
+
+		return array(
+			'show' => true,
+			'tabs' => $tabs,
+		);
+	}
+
+	private function groupMetaRowsByAnda(array $rows, array $weeks)
+	{
+		$grouped = array();
+
+		foreach ($rows as $row) {
+			$andaId = isset($row['anda_id']) ? (int) $row['anda_id'] : 0;
+			if ($andaId <= 0) {
+				continue;
+			}
+
+			if (!isset($grouped[$andaId])) {
+				$row['weekMeta'] = array_fill(0, count($weeks), 0.0);
+				$row['totalMeta'] = 0.0;
+				$grouped[$andaId] = $row;
+			}
+
+			foreach ($weeks as $index => $week) {
+				$grouped[$andaId]['weekMeta'][$index] += $this->resolveWeekMeta($row, $index, $weeks);
+			}
+
+			$grouped[$andaId]['totalMeta'] += (float) $row['meta_valor'];
+		}
+
+		return array_values($grouped);
 	}
 
 	private function resolveWeeks($month, $year, $weekConfig)
