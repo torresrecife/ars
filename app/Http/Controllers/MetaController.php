@@ -21,7 +21,7 @@ class MetaController
 		$this->view = $view;
 	}
 
-	public function index(array $input = array())
+	public function index(array $input = array(), array $session = array())
 	{
 		$startDate = isset($input['startDate']) ? $input['startDate'] : date('M');
 		$startBanco = isset($input['startBanco']) ? $input['startBanco'] : (isset($input['banco_id']) ? $input['banco_id'] : '');
@@ -31,6 +31,7 @@ class MetaController
 		$bank = $this->metaService->getBank($startBanco);
 		$metas = $this->metaService->listByBankMonthYear($startBanco, $mes, $ano);
 		$andamentos = $this->metaService->listAndamentos();
+		$regionSelection = $this->metaService->regionSelectionData($session);
 
 		return $this->view->render('metas/index', array(
 			'startDate' => $startDate,
@@ -40,7 +41,8 @@ class MetaController
 			'bank' => $bank,
 			'metas' => $metas,
 			'andamentos' => $andamentos,
-			'regions' => $this->metaService->listRegions(),
+			'regions' => $regionSelection['regions'],
+			'allowGlobalRegion' => $regionSelection['allowGlobal'],
 			'totalFinanceiro' => $this->metaService->totalFinancialMeta($metas),
 			'lin' => count($metas),
 			'metaTipos' => array(1 => 'Produção', 2 => 'Financeira'),

@@ -217,6 +217,31 @@ class DashboardRepository
 		return $row ? (string) $row['carteira_vinc'] : '';
 	}
 
+	public function listRegionIdsWithMetaRowsByBankMonthYear($bankId, $month, $year)
+	{
+		$bankId = (int) $bankId;
+		$month = (int) $month;
+		$year = (int) $year;
+		$stmt = mysqli_prepare($this->connection, "SELECT DISTINCT regiao_id FROM metas_andamentos WHERE banco_id = ? AND meta_mes = ? AND meta_ano = ? AND regiao_id IS NOT NULL ORDER BY regiao_id");
+		if (!$stmt) {
+			return array();
+		}
+
+		mysqli_stmt_bind_param($stmt, 'iii', $bankId, $month, $year);
+		mysqli_stmt_execute($stmt);
+		$result = mysqli_stmt_get_result($stmt);
+		$ids = array();
+		while ($result && ($row = mysqli_fetch_assoc($result))) {
+			$regionId = isset($row['regiao_id']) ? (int) $row['regiao_id'] : 0;
+			if ($regionId > 0) {
+				$ids[$regionId] = $regionId;
+			}
+		}
+		mysqli_stmt_close($stmt);
+
+		return array_values($ids);
+	}
+
 	public function listCarteiraCodesByBankId($bankId)
 	{
 		$bankId = (int) $bankId;
