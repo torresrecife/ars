@@ -1268,6 +1268,9 @@ li#jform_access_label {
 
 div .adminform{
 	height:95%;
+    &:has(table#tb_pro), &:has(table#tb_fin) {
+      margin-top: 64px;
+    }
 }
 
 fieldset.adminform fieldset.radio,

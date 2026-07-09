@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Services\DashboardPanelService;
+use Illuminate\Http\Request;
 
 class DashboardPanelController
 {
@@ -23,5 +24,14 @@ class DashboardPanelController
 		ob_start();
 		include base_path('views/dashboard/panel.php');
 		return (string) ob_get_clean();
+	}
+
+	public function webIndex(Request $request)
+	{
+		if (session_status() !== PHP_SESSION_ACTIVE) {
+			session_start();
+		}
+
+		return response($this->index($request->all(), $_SESSION));
 	}
 }

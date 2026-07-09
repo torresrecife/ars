@@ -1,21 +1,30 @@
 <?php
 
-include 'inc/seguranca.php';
-require_once __DIR__ . '/inc/functions.php';
-require_once __DIR__ . '/inc/somadias.php';
+define('LARAVEL_START', microtime(true));
 
-protegePagina(0);
+require __DIR__ . '/vendor/autoload.php';
 
-$view = new \App\Support\View(__DIR__);
-$controller = new \App\Http\Controllers\GeneralProductionController(
-	new \App\Services\GeneralProductionService(
-		new \App\Repositories\GeneralProductionRepository($conexao4),
-		new \App\Repositories\GeneralProductionNeoRepository(ars_sqlsrv_connection()),
-		new \App\Services\RegionService(
-			new \App\Repositories\RegionRepository($conexao4)
-		)
-	),
-	$view
-);
+$app = require_once __DIR__ . '/bootstrap/app.php';
 
-echo $controller->monthly($_POST, $_SESSION);
+$request = Illuminate\Http\Request::capture();
+$app->instance('request', $request);
+
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+$kernel->bootstrap();
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+if (!isset($_SESSION['usuarioID']) || !isset($_SESSION['usuarioNome'])) {
+    http_response_code(302);
+    header('Location: /ars/login.php');
+    exit;
+}
+
+$controller = $app->make(App\Http\Controllers\GeneralProductionController::class);
+$response = $controller->webMonthly($request);
+
+$response->send();
+
+$kernel->terminate($request, $response);

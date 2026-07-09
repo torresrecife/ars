@@ -1,25 +1,24 @@
 <?php
 
-include("seguranca.php");
+include 'seguranca.php';
 protegePagina(0);
 
-if($_POST['flag']=="U")
-{
-	$i  = " UPDATE usuarios SET";
-	if($_POST['senha_usu1']!="")
-	{
-		$i .= " senha_usu = '" . md5($_POST['senha_usu1']) . "' " ;
-	}
-	$i .= " WHERE id_usu = " . $_POST['id_usu'] . " " ;
-	$query = mysqli_query($conexao4,$i);
-	if($query){
-		mysqli_query($conexao4,"UPDATE usuarios SET acesso_usu = '" . date("Y-m-d H:i:s") . "' where id_usu = " . $_POST['id_usu'] . " ");
-	}
-	echo 1;
-}
-else
-{
+if (!isset($_POST['flag']) || $_POST['flag'] !== 'U') {
 	echo 2;
+	exit;
 }
 
-?>
+$idUsuario = isset($_POST['id_usu']) ? (int) $_POST['id_usu'] : 0;
+$novaSenha = isset($_POST['senha_usu1']) ? (string) $_POST['senha_usu1'] : '';
+
+if ($idUsuario <= 0 || $novaSenha === '') {
+	echo 2;
+	exit;
+}
+
+if ((int) $_SESSION['usuarioID'] !== $idUsuario) {
+	echo 2;
+	exit;
+}
+
+echo ars_auth_service()->updatePasswordAndAccess($idUsuario, $novaSenha) ? 1 : 2;

@@ -11,8 +11,9 @@ if (!defined('ARS_BOOTSTRAP_LOADED')) {
 		session_start();
 	}
 
-	$app = require __DIR__ . '/../bootstrap/app.php';
+	$app = require __DIR__ . '/../bootstrap/legacy_app.php';
 	$arsConfig = LegacyConfig::build($app->config()->all());
+	$GLOBALS['app'] = $app;
 
 	date_default_timezone_set($arsConfig['app']['timezone']);
 	ini_set('display_errors', $arsConfig['app']['display_errors'] ? '1' : '0');
@@ -29,6 +30,7 @@ if (!defined('ARS_BOOTSTRAP_LOADED')) {
 		'senha' => $arsConfig['db']['mysql']['pass'],
 		'banco' => $arsConfig['db']['mysql']['name'],
 	);
+	$GLOBALS['_SG'] = $_SG;
 
 	$conexao4 = null;
 	if ($_SG['conectaServidor'] == true) {
@@ -46,6 +48,7 @@ if (!defined('ARS_BOOTSTRAP_LOADED')) {
 			die("MySQL: Nao foi possivel conectar-se ao servidor [" . $arsConfig['db']['mysql']['host'] . "].");
 		}
 	}
+	$GLOBALS['conexao4'] = $conexao4;
 
 	$waitStartMinute = (int) $arsConfig['maintenance']['neo_replica_wait_start_minute'];
 	$waitEndMinute = (int) $arsConfig['maintenance']['neo_replica_wait_end_minute'];
@@ -59,11 +62,12 @@ if (!defined('ARS_BOOTSTRAP_LOADED')) {
 	}
 
 	$conexao1 = null;
+	$GLOBALS['conexao1'] = $conexao1;
 }
 
 if (!function_exists('ars_sqlsrv_connection')) {
 	function ars_sqlsrv_connection() {
-		global $app, $conexao1;
+		global $conexao1;
 
 		if ($conexao1 !== null) {
 			return $conexao1;
@@ -73,8 +77,13 @@ if (!function_exists('ars_sqlsrv_connection')) {
 			return null;
 		}
 
+		$legacyApp = isset($GLOBALS['app']) ? $GLOBALS['app'] : null;
+		if (!$legacyApp || !method_exists($legacyApp, 'db')) {
+			return null;
+		}
+
 		try {
-			$conexao1 = $app->db()->sqlsrv();
+			$conexao1 = $legacyApp->db()->sqlsrv();
 		} catch (\RuntimeException $exception) {
 			$conexao1 = null;
 		}

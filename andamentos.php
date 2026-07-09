@@ -1,4 +1,7 @@
 <div style="margin-top:80px" >
+<script>
+window.arsAndamentoAjaxUrl = "/ars/ajax_andamento.php";
+</script>
 <label><h2><u>Andamentos</u></h2></label>
 <div>
 <table class="adminlist" style="width:100%">

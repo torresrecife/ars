@@ -11,20 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$usuario = isset($_POST['username']) ? $_POST['username'] : '';
 	$senha = isset($_POST['passwd']) ? $_POST['passwd'] : '';
 
-	if (validaUsuario($usuario, $senha, $conexao4) == true) {
-		$qpass = mysqli_query($conexao4, "SELECT acesso_usu FROM usuarios WHERE id_usu = " . (int) $_SESSION['usuarioID']);
-		$wpass = $qpass ? mysqli_fetch_assoc($qpass) : false;
+	$authResult = ars_auth_service()->attempt($usuario, $senha);
 
-		if (
-			!$wpass ||
-			!isset($wpass['acesso_usu']) ||
-			$wpass['acesso_usu'] === null ||
-			$wpass['acesso_usu'] === '' ||
-			$wpass['acesso_usu'] === '0000-00-00 00:00:00'
-		) {
+	if ($authResult !== false) {
+		if (ars_auth_service()->requiresPasswordChange($authResult)) {
 			$forcePasswordChange = true;
 		} else {
-			ars_refresh_user_access($_SESSION['usuarioID'], $conexao4);
+			ars_refresh_user_access($authResult['id_usu'], $conexao4);
 			if (!headers_sent()) {
 				header('Location: ../index.php');
 				exit;

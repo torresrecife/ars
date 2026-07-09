@@ -1,93 +1,60 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Laravel - A PHP Framework For Web Artisans
+ *
+ * @package  Laravel
+ * @author   Taylor Otwell <taylor@laravel.com>
+ */
 
-$app = require dirname(__DIR__) . '/bootstrap/app.php';
-require_once $app->basePath('inc/functions.php');
-$routes = require $app->basePath('routes/web.php');
-$path = isset($_GET['page']) ? '/' . ltrim((string) $_GET['page'], '/') : '/';
+define('LARAVEL_START', microtime(true));
 
-if (!isset($routes[$path])) {
-	header('Content-Type: text/plain; charset=utf-8');
-	echo "ARS foundation bootstrap loaded.\n";
-	echo "Base path: " . $app->basePath() . "\n";
-	exit;
-}
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader for
+| our application. We just need to utilize it! We'll simply require it
+| into the script here so that we don't have to worry about manual
+| loading any of our classes later on. It feels great to relax.
+|
+*/
 
-$route = $routes[$path];
-$controllerClass = $route['controller'];
-$action = $route['action'];
-$connection = $app->db()->mysql();
-$view = new \App\Support\View($app->basePath());
-$sqlsrvConnection = null;
-$regionService = new \App\Services\RegionService(
-	new \App\Repositories\RegionRepository($connection)
+require __DIR__.'/../vendor/autoload.php';
+
+/*
+|--------------------------------------------------------------------------
+| Turn On The Lights
+|--------------------------------------------------------------------------
+|
+| We need to illuminate PHP development, so let us turn on the lights.
+| This bootstraps the framework and gets it ready for use, then it
+| will load up this application so that we can run it and send
+| the responses back to the browser and delight our users.
+|
+*/
+
+$app = require_once __DIR__.'/../bootstrap/app.php';
+
+/*
+|--------------------------------------------------------------------------
+| Run The Application
+|--------------------------------------------------------------------------
+|
+| Once we have the application, we can handle the incoming request
+| through the kernel, and send the associated response back to
+| the client's browser allowing them to enjoy the creative
+| and wonderful application we have prepared for them.
+|
+*/
+
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+
+$response = $kernel->handle(
+    $request = Illuminate\Http\Request::capture()
 );
 
-try {
-	$sqlsrvConnection = $app->db()->sqlsrv();
-} catch (\RuntimeException $exception) {
-	$sqlsrvConnection = null;
-}
+$response->send();
 
-if ($controllerClass === \App\Http\Controllers\MetaController::class) {
-	$controller = new $controllerClass(
-		new \App\Services\MetaService(new \App\Repositories\MetaRepository($connection)),
-		$view
-	);
-	echo $controller->$action($_REQUEST);
-	exit;
-}
-
-if ($controllerClass === \App\Http\Controllers\WeekController::class) {
-	$controller = new $controllerClass(
-		new \App\Services\WeekService(new \App\Repositories\WeekRepository($connection)),
-		$view
-	);
-	if ($action === 'ajax') {
-		echo $controller->$action($_REQUEST);
-		exit;
-	}
-
-	echo $controller->$action();
-	exit;
-}
-
-if ($controllerClass === \App\Http\Controllers\FinancialDetailController::class) {
-	$controller = new $controllerClass(
-		new \App\Services\NeoDetailService(
-			new \App\Repositories\NeoDetailRepository($sqlsrvConnection),
-			new \App\Repositories\DashboardRepository($connection),
-			$regionService
-		),
-		$view
-	);
-	echo $controller->$action($_REQUEST, $_SESSION);
-	exit;
-}
-
-if ($controllerClass === \App\Http\Controllers\AndamentoDetailController::class) {
-	$controller = new $controllerClass(
-		new \App\Services\NeoDetailService(
-			new \App\Repositories\NeoDetailRepository($sqlsrvConnection),
-			new \App\Repositories\DashboardRepository($connection),
-			$regionService
-		),
-		$view
-	);
-	echo $controller->$action($_REQUEST, $_SESSION);
-	exit;
-}
-
-if ($controllerClass === \App\Http\Controllers\DashboardPanelController::class) {
-	$controller = new $controllerClass(
-		new \App\Services\DashboardPanelService(
-			new \App\Repositories\DashboardRepository($connection),
-			new \App\Repositories\NeoPanelRepository($sqlsrvConnection),
-			$regionService,
-			$arrMonths
-		)
-	);
-	echo $controller->$action($_REQUEST, $_SESSION);
-	exit;
-}
+$kernel->terminate($request, $response);

@@ -43,7 +43,13 @@ class Config
 		}
 
 		$items = array();
-		foreach (glob($configPath . DIRECTORY_SEPARATOR . '*.php') ?: array() as $file) {
+		$legacyFiles = array('app', 'auth', 'database');
+		foreach ($legacyFiles as $key) {
+			$file = $configPath . DIRECTORY_SEPARATOR . $key . '.php';
+			if (!is_file($file)) {
+				continue;
+			}
+
 			$key = pathinfo($file, PATHINFO_FILENAME);
 			$data = require $file;
 			$items[$key] = is_array($data) ? $data : array();

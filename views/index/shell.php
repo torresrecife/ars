@@ -13,23 +13,24 @@
 	<script type="text/javascript" src="js/default.js?v=<?php echo $defaultJsVersion; ?>"></script>
 </head>
 <body id="minwidth-body">
-<form name="form_ars" action="index.php" method="POST" id="form_ars">
+<?php $entryUrl = isset($entryUrl) ? (string) $entryUrl : 'index.php'; ?>
+<form name="form_ars" action="<?php echo htmlspecialchars($entryUrl, ENT_QUOTES, 'UTF-8'); ?>" method="POST" id="form_ars">
 	<div class="head_bk"></div>
 	<div class="head_fixed">
 		<div id="border-top" class="h_blue">
-			<span class="logo"><img src="css/images/logo.png" alt="Sistema de Petição" /></span>
-			<span class="title"><a href="index2.php">ARS Online - NEO Jurídico</a></span>
+			<span class="logo"><img src="css/images/logo.png" alt="Sistema de PetiÃ§Ã£o" /></span>
+			<span class="title"><a href="<?php echo htmlspecialchars($entryUrl, ENT_QUOTES, 'UTF-8'); ?>">ARS Online - NEO Jurídico</a></span>
 		</div>
 		<div id="header-box">
 			<div id="topSpace"></div>
 			<div id="module-status">
-				<span class="viewsite"><a href="javascript:EnviarDados('index.php','','','');">In&iacute;cio</a></span>
+				<span class="viewsite"><a href="javascript:EnviarDados('<?php echo htmlspecialchars($entryUrl, ENT_QUOTES, 'UTF-8'); ?>','','','');">In&iacute;cio</a></span>
 				<?php if (!empty($pageData['topAction'])): ?>
 					<span class="<?php echo $pageData['topAction']['class']; ?>"><a href='javascript:<?php echo $pageData["topAction"]["js"]; ?>'><?php echo htmlspecialchars($pageData['topAction']['label'], ENT_QUOTES, 'UTF-8'); ?></a></span>
 				<?php endif; ?>
 				<?php if ($pageData['canAdmin']): ?>
-					<span class="relatory"><a href="#" onclick="EnviarDados('index.php','3','','')">Produção</a></span>
-					<span class="viewconfig"><a href="#" onclick="EnviarDados('index.php','5','','')">Administrar</a></span>
+					<span class="relatory"><a href="#" onclick="EnviarDados('<?php echo htmlspecialchars($entryUrl, ENT_QUOTES, 'UTF-8'); ?>','3','','')">Produção</a></span>
+					<span class="viewconfig"><a href="#" onclick="EnviarDados('<?php echo htmlspecialchars($entryUrl, ENT_QUOTES, 'UTF-8'); ?>','5','','')">Administrar</a></span>
 				<?php endif; ?>
 				<span class="voltar"><a href="javascript:window.history.go(-1)">Voltar</a></span>
 				<span class="logout"><a href="inc/sair.php">Sair</a></span>

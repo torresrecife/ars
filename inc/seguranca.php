@@ -12,13 +12,18 @@ require_once __DIR__ . '/bootstrap.php';
 
 function ars_auth_service() {
 	static $service = null;
-	global $app, $_SG;
+	global $_SG;
 
 	if ($service instanceof \App\Services\AuthService) {
 		return $service;
 	}
 
-	$connection = $app->db()->mysql();
+	$legacyApp = isset($GLOBALS['app']) ? $GLOBALS['app'] : null;
+	if (!$legacyApp || !method_exists($legacyApp, 'db')) {
+		throw new \RuntimeException('Legacy application bootstrap is not available.');
+	}
+
+	$connection = $legacyApp->db()->mysql();
 	$table = isset($_SG['tabela']) ? $_SG['tabela'] : 'usuarios';
 	$repository = new \App\Repositories\UserRepository($connection, $table);
 	$regionRepository = new \App\Repositories\RegionRepository($connection);

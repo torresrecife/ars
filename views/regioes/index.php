@@ -1,4 +1,7 @@
 <div style="margin-top:80px">
+<script>
+window.arsRegionAjaxUrl = "/ars/ajax_regioes.php";
+</script>
 <label><h2><u>Regi&otilde;es</u></h2></label>
 <div>
 <table class="adminlist">

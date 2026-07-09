@@ -55,7 +55,8 @@ function EnviarDados(frm,hid,are,fla){
 }
 
 	//função editar usuário
-	function fc_edit_usu(valor1,valor2){
+function fc_edit_usu(valor1,valor2){
+		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
@@ -128,7 +129,7 @@ function EnviarDados(frm,hid,are,fla){
 						}else{
 							$.ajax({
 							   type: "POST",
-							   url:  "inc/ajax_usu.php",
+							   url:  userAjaxUrl,
 							   data: "flag=" + valor2 + "&" + mdados + "&banco_neo=" + usus.join(",") + "&regiao_neo=" + regioes.join(","),
 							   success: function(retorno_ajax){
 									if(retorno_ajax==1){
@@ -173,7 +174,7 @@ function EnviarDados(frm,hid,are,fla){
 
 		$.ajax({
 			type: "POST",
-			url:  "inc/ajax_usu.php",
+			url:  userAjaxUrl,
 			data: "flag=E&id_usu=" + valor1,
 			success: function(retorno_ajax){
 				var ret = {};
@@ -210,6 +211,7 @@ function EnviarDados(frm,hid,are,fla){
 	}
 	//função editar semana
 	function fc_edit_sem(valor1,valor2){
+		var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax_sem.php";
 
 		var tt = "";
 		var tu = "";
@@ -225,7 +227,7 @@ function EnviarDados(frm,hid,are,fla){
 
 		$.ajax({
 			type: "POST",
-			url:  "inc/ajax_sem.php",
+			url:  weekAjaxUrl,
 			data: "flag="+(valor2=="U"?"E":"")+"&id_sem=" + valor1,
 			success: function(retorno_ajax){
 				var ret = retorno_ajax.split("-|-");
@@ -265,7 +267,7 @@ function EnviarDados(frm,hid,are,fla){
 							//alert(mdados);
 							$.ajax({
 							   type: "POST",
-							   url:  "inc/ajax_sem.php",
+							   url:  weekAjaxUrl,
 							   data: "flag=" + valor2 + "&" + mdados,
 							   success: function(retorno_ajax){
 									if(retorno_ajax==1){
@@ -377,6 +379,7 @@ function EnviarDados(frm,hid,are,fla){
 		});
 	}
 	function fc_edit_cliente(valor1,valor2){
+		var clientAjaxUrl = window.arsClientAjaxUrl || "ajax_cliente.php";
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
@@ -427,7 +430,7 @@ function EnviarDados(frm,hid,are,fla){
 						});
 						$.ajax({
 						   type: "POST",
-						   url:  "inc/ajax_cliente.php",
+						   url:  clientAjaxUrl,
 						   data: "flag=" + valor2 + "&" + mdados + "&cartei_num=" + totalCarteiras + "&dados_json=" + encodeURIComponent(JSON.stringify(carteirasLista)) + "&" + cartei,
 						   success: function(retorno_ajax){
 								if(retorno_ajax==1){
@@ -467,7 +470,7 @@ function EnviarDados(frm,hid,are,fla){
 
 		$.ajax({
 			type: "POST",
-			url:  "inc/ajax_cliente.php",
+			url:  clientAjaxUrl,
 			data: "flag=E&banco_id=" + valor1,
 			success: function(retorno_ajax){
 				var ret = retorno_ajax.split("-|-");
@@ -529,7 +532,7 @@ function EnviarDados(frm,hid,are,fla){
 							});
 							$.ajax({
 							   type: "POST",
-							   url:  "inc/ajax_cliente.php",
+							   url:  clientAjaxUrl,
 							   data: "flag=" + valor2 + "&" + mdados + "&cartei_num=" + totalCarteiras + "&dados_json=" + encodeURIComponent(JSON.stringify(carteirasLista)) + "&" + cartei,
 							   success: function(retorno_ajax){
 									if(retorno_ajax==1){
@@ -1028,6 +1031,7 @@ function andamentoTiposRemover(botao){
 	return false;
 }
 function fc_edit_andamento(valor1,valor2){
+	var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax_andamento.php";
 	var tt = "";
 	var tu = "";
 	if(valor2=="I"){
@@ -1042,7 +1046,7 @@ function fc_edit_andamento(valor1,valor2){
 
 	$.ajax({
 		type: "POST",
-		url:  "inc/ajax_andamento.php",
+		url:  andamentoAjaxUrl,
 		dataType: "json",
 		data: "flag=E&anda_id=" + valor1,
 		success: function(ret){
@@ -1098,7 +1102,7 @@ function fc_edit_andamento(valor1,valor2){
 						}
 						$.ajax({
 							type: "POST",
-							url:  "inc/ajax_andamento.php",
+							url:  andamentoAjaxUrl,
 							data: $.extend({}, mdados, {
 								flag: valor2,
 								anda_neo: mandam.join(",")
@@ -1136,6 +1140,7 @@ function fc_edit_andamento(valor1,valor2){
 	});
 }
 function fc_edit_metas(valor1,valor2){
+		var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax_metas.php";
 
 		var tt = "";
 		var tu = "";
@@ -1167,7 +1172,7 @@ function fc_edit_metas(valor1,valor2){
 		}
 		$.ajax({
 			type: "POST",
-			url:  "inc/ajax_metas.php",
+			url:  metaAjaxUrl,
 			data: "flag=E&meta_id=" + valor1,
 			success: function(retorno_ajax){
 				var ret = retorno_ajax.split("-|-");
@@ -1260,7 +1265,7 @@ function fc_edit_metas(valor1,valor2){
 							});
 							$.ajax({
 							   type: "POST",
-							   url:  "inc/ajax_metas.php",
+							   url:  metaAjaxUrl,
 							   data: "flag=" + valor2 + "&" + mdados + metam + seman + defse + "&numes=" + numes,
 							   success: function(retorno_ajax){
 								 	if(retorno_ajax==1){
@@ -1293,11 +1298,12 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_del_cliente(valor1,valor2){
+		var clientAjaxUrl = window.arsClientAjaxUrl || "ajax_cliente.php";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o servidor <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
-					url:  "inc/ajax_cliente.php",
+					url:  clientAjaxUrl,
 					data: "flag=D&banco_id=" + valor1,
 					success: function(retorno_ajax){
 						$( this ).dialog( "close" );
@@ -1320,11 +1326,12 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_del_andamento(valor1,valor2){
+		var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax_andamento.php";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o andamento <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
-					url:  "inc/ajax_andamento.php",
+					url:  andamentoAjaxUrl,
 					data: "flag=D&anda_id=" + valor1,
 					success: function(retorno_ajax){
 						$( this ).dialog( "close" );
@@ -1347,11 +1354,12 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_del_metas(valor1,valor2){
+		var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax_metas.php";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a meta <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
-					url:  "inc/ajax_metas.php",
+					url:  metaAjaxUrl,
 					data: "flag=D&meta_id=" + valor1,
 					success: function(retorno_ajax){
 						$( this ).dialog( "close" );
@@ -1374,6 +1382,7 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_edit_regiao(valor1,valor2){
+		var regiaoAjaxUrl = window.arsRegionAjaxUrl || "ajax_regioes.php";
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
@@ -1422,7 +1431,7 @@ function fc_edit_metas(valor1,valor2){
 						}
 						$.ajax({
 						   type: "POST",
-						   url:  "inc/ajax_regioes.php",
+						   url:  regiaoAjaxUrl,
 						   data: "flag=" + valor2 + "&" + mdados,
 						   success: function(retorno_ajax){
 								if(retorno_ajax==1){
@@ -1462,7 +1471,7 @@ function fc_edit_metas(valor1,valor2){
 
 		$.ajax({
 			type: "POST",
-			url:  "inc/ajax_regioes.php",
+			url:  regiaoAjaxUrl,
 			data: "flag=E&regiao_id=" + valor1,
 			success: function(retorno_ajax){
 				var ret = {};
@@ -1487,11 +1496,12 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_del_regiao(valor1,valor2){
+		var regiaoAjaxUrl = window.arsRegionAjaxUrl || "ajax_regioes.php";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a regiao <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
-					url:  "inc/ajax_regioes.php",
+					url:  regiaoAjaxUrl,
 					data: "flag=D&regiao_id=" + valor1,
 					success: function(retorno_ajax){
 						$( this ).dialog( "close" );
@@ -1517,11 +1527,12 @@ function fc_edit_metas(valor1,valor2){
 	}
 
 	function fc_del_usu(valor1,valor2){
+		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuário <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
-					url:  "inc/ajax_usu.php",
+					url:  userAjaxUrl,
 					data: "flag=D&id_usu=" + valor1,
 					success: function(retorno_ajax){
 						$( this ).dialog( "close" );
@@ -1545,11 +1556,12 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_del_sem(valor1,valor2){
+		var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax_sem.php";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a semana do mês: <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
-					url:  "inc/ajax_sem.php",
+					url:  weekAjaxUrl,
 					data: "flag=D&id_sem=" + valor1,
 					success: function(retorno_ajax){
 						$( this ).dialog( "close" );

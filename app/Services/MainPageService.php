@@ -106,7 +106,7 @@ class MainPageService
 					),
 				);
 			case 2:
-				return array('type' => 'legacy', 'file' => 'index_ajax.php', 'spacer' => true);
+				return array('type' => 'controller', 'controller' => 'dashboard-panel', 'spacer' => true);
 			case 3:
 				return array(
 					'type' => 'view',
@@ -122,8 +122,8 @@ class MainPageService
 				);
 			case 4:
 				return array(
-					'type' => 'legacy',
-					'file' => ((int) $state['geral'] === 1) ? 'geral_ajax_1.php' : 'geral_ajax.php',
+					'type' => 'controller',
+					'controller' => ((int) $state['geral'] === 1) ? 'general-production-weekly' : 'general-production-monthly',
 					'spacer' => true
 				);
 			case 5:

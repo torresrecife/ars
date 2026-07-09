@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Services\RegionAdminService;
 use App\Support\View;
+use Illuminate\Http\Request;
 
 class RegionAdminController
 {
@@ -43,5 +44,17 @@ class RegionAdminController
 		}
 
 		return '0';
+	}
+
+	public function webIndex(Request $request)
+	{
+		return response($this->index());
+	}
+
+	public function webAjax(Request $request)
+	{
+		return response($this->ajax($request->all()), 200, array(
+			'Content-Type' => 'text/plain; charset=UTF-8',
+		));
 	}
 }
