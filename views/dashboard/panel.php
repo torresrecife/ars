@@ -33,8 +33,8 @@ $splitFinancialTable = !empty($productionRows) && !empty($financialRows);
 <?php else: ?>
 <br>
 <?php endif; ?>
-<input type='hidden' name='mes' id='mes' class='date-picker' value='<?php echo $month; ?>'/>
-<input type='hidden' name='ano' id='ano' class='date-picker' value='<?php echo $year; ?>'/>
+<input type='hidden' name='mes' id='mes' value='<?php echo $month; ?>'/>
+<input type='hidden' name='ano' id='ano' value='<?php echo $year; ?>'/>
 <input type='hidden' name='regiao_id' id='regiao_id' value='<?php echo $regionId; ?>'/>
 <script>
 	function send_form(andaId,bankId,bankName,month,year,weekKey,detailType){
@@ -249,6 +249,14 @@ td{
 </table>
 <br><br><br><br>
 <script>
-	var altura = <?php echo (int) $contentHeight; ?>;
-	$("#content-box").css("height",altura);
+	var alturaConteudo = <?php echo (int) $contentHeight; ?>;
+	var alturaTela = $(window).height() - $("#header-box").outerHeight(true);
+	var alturaMinima = Math.max(290, alturaTela);
+
+	$("#content-box").css({
+		height: "auto",
+		"min-height": Math.max(alturaMinima, alturaConteudo)
+	});
+	$("#element-box").css("height", alturaTela - 45);
+	$("#content-box .adminform").css("height", "auto");
 </script>
