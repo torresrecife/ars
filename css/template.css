@@ -205,7 +205,7 @@ span.num{
 
 .head_fixed  {
 	position: fixed;
-	width: 98.49%;
+	width: 98.9%;
 	z-index:2000;
 }
 .head_bk{
@@ -3313,12 +3313,12 @@ span.update-badge {
 	padding-left: 20px;
 	background: transparent url(images/***REMOVED***/icon-16-allow.png) center left no-repeat;
 }
-.input-default, input { 
+.input-default, input {
 	height:16px;
-	border: 1px solid #d3d3d3/*{borderColorDefault}*/; 
-	background: #F7F7F7/*{bgColorDefault}*/ /*url(images/ui-bg_glass_75_e6e6e6_1x400.png)*/ /*{bgImgUrlDefault}*/ 50%/*{bgDefaultXPos}*/ 50%/*{bgDefaultYPos}*/ repeat-x/*{bgDefaultRepeat}*/; 
-	font-weight: normal/*{fwDefault}*/; 
-	color: #333333/*{fcDefault}*/; 
+	border: 1px solid #d3d3d3/*{borderColorDefault}*/;
+	background: #F7F7F7/*{bgColorDefault}*/ /*url(images/ui-bg_glass_75_e6e6e6_1x400.png)*/ /*{bgImgUrlDefault}*/ 50%/*{bgDefaultXPos}*/ 50%/*{bgDefaultYPos}*/ repeat-x/*{bgDefaultRepeat}*/;
+	font-weight: normal/*{fwDefault}*/;
+	color: #333333/*{fcDefault}*/;
 	font-size:8pt;
 	font-family: Arial;
 }
@@ -3424,55 +3424,55 @@ table.topo2
 	margin-left:60px;
 }
 #nomepet{
-	height: 20px; 
-	width: 300px; 
+	height: 20px;
+	width: 300px;
 	margin-left:5px;
 	background:#FFFFFF;
 }
 #ger_pdf{
 	border:0px;
 	background: url("../img/pdf.png") no-repeat;
-	height: 38px; 
+	height: 38px;
 	width: 38px;
 	margin-left:15px;
 }
 #ger_rtf{
 	border:0px;
 	background: url("../img/doc.png") no-repeat;
-	height: 38px; 
-	width: 38px; 
+	height: 38px;
+	width: 38px;
 	margin-left:10px;
 }
 #ger_pdf_2{
 	border:0px;
 	background: url("../img/pdf.png") no-repeat;
-	height: 38px; 
+	height: 38px;
 	width: 38px;
 	margin-left:15px;
 }
 #ger_wor_2{
 	border:0px;
 	background: url("../img/doc.png") no-repeat;
-	height: 38px; 
-	width: 38px; 
+	height: 38px;
+	width: 38px;
 	margin-left:10px;
 }
 #ger_sav{
 	border:0px;
 	background: url("../img/salvar.png") no-repeat;
-	height: 38px; 
-	width: 38px; 
+	height: 38px;
+	width: 38px;
 	cursor:pointer;
 	margin-left:120px;
 }
 
 .sub_title_tb{
-	border-bottom:1px solid #ccc; 
+	border-bottom:1px solid #ccc;
 	margin-top:65px;
 	width:100%;
 }
 .sub_title_tb_b{
-	border-bottom:1px solid #ccc; 
+	border-bottom:1px solid #ccc;
 	margin-top:30px;
 	width:100%;
 }
@@ -3481,14 +3481,14 @@ table.topo2
 	font-weight:bold;
 	color:#00337F;
 	font-size: 10pt;
-	border-bottom:1px solid #ccc; 
+	border-bottom:1px solid #ccc;
 }
 .sub_title_tb_r{
 	text-align: right;
 	color:#999;
 }
 .sub_title_tb_cfg{
-	border-bottom:1px solid #ccc; 
+	border-bottom:1px solid #ccc;
 	margin-top:120px;
 	width:100%;
 	color:#ccc;

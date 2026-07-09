@@ -38,6 +38,7 @@
 		</div>
 	</div>
 	<style>
+	.ui-datepicker { display: none; }
 	.ui-datepicker-calendar { display: none; }
 	#obg_date { float:left; position:absolute; color:red; margin-left:86px; display:none }
 	</style>
