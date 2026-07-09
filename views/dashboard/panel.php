@@ -17,11 +17,22 @@ $year = $viewData['year'];
 $startDate = $viewData['startDate'];
 $regionLabel = isset($viewData['regionLabel']) ? $viewData['regionLabel'] : '';
 $regionId = isset($viewData['regionId']) ? (int) $viewData['regionId'] : 0;
+$showRegionTabs = !empty($viewData['showRegionTabs']);
+$regionTabs = isset($viewData['regionTabs']) ? $viewData['regionTabs'] : array();
 $contentHeight = $viewData['contentHeight'];
 $weekColumnWidth = (count($weeks) === 5 ? '4%' : '5%');
-$singleTableLayout = empty($productionRows);
+$splitFinancialTable = !empty($productionRows) && !empty($financialRows);
 ?>
-<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Cliente: <b><?php echo $bank['banco_cod']; ?></b><?php echo $regionLabel; ?> | M&ecirc;s / Ano: <b><?php echo $startDate; ?></b> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","p")'>&lt;</a> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","n")'>&gt;</a></div><br>
+<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Cliente: <b><?php echo $bank['banco_cod']; ?></b><?php echo $showRegionTabs ? '' : $regionLabel; ?> | M&ecirc;s / Ano: <b><?php echo $startDate; ?></b> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","p")'>&lt;</a> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","n")'>&gt;</a></div>
+<?php if ($showRegionTabs): ?>
+<div style='font-family:arial;margin:8px 0 12px 40px;font-size:10pt;'>
+	<?php foreach ($regionTabs as $tab): ?>
+		<a href='#' onclick='send_region("1","<?php echo $bank['banco_id']; ?>","<?php echo (int) $tab['id']; ?>"); return false;' style='display:inline-block;padding:4px 10px;margin-right:6px;border:1px solid #bdbdbd;background:<?php echo !empty($tab['active']) ? '#1C86EE' : '#f1f1f1'; ?>;color:<?php echo !empty($tab['active']) ? '#ffffff' : '#333333'; ?>;text-decoration:none;'><?php echo $tab['label']; ?></a>
+	<?php endforeach; ?>
+</div>
+<?php else: ?>
+<br>
+<?php endif; ?>
 <input type='hidden' name='mes' id='mes' class='date-picker' value='<?php echo $month; ?>'/>
 <input type='hidden' name='ano' id='ano' class='date-picker' value='<?php echo $year; ?>'/>
 <input type='hidden' name='regiao_id' id='regiao_id' value='<?php echo $regionId; ?>'/>
@@ -46,6 +57,10 @@ $singleTableLayout = empty($productionRows);
 	function send_nav(valor1,valor2,valor3){
 		var m_mes = $('#mes').val();
 		add_month(m_mes,valor3);
+		EnviarDados('index.php',2,valor1,valor2);
+	}
+	function send_region(valor1,valor2,regiaoId){
+		$('#regiao_id').val(regiaoId);
 		EnviarDados('index.php',2,valor1,valor2);
 	}
 	function add_month(meses,valor){
@@ -162,12 +177,12 @@ td{
 		<td align='center' class='cls_vals cls_bk'><img src='http://***REMOVED***/img/<?php echo $row['totalIcon']; ?>' class='box' /><?php echo number_format($row['totalPercent'], 0, ',', ''); ?>%</td>
 	</tr>
 	<?php endforeach; ?>
-<?php if (!$singleTableLayout): ?>
+<?php if ($splitFinancialTable): ?>
 </table>
 <?php endif; ?>
 <input type='hidden' name='codig_and' id='codig_and' />
 <input type='hidden' name='banco_and' id='banco_and' />
-<?php if (!$singleTableLayout): ?>
+<?php if ($splitFinancialTable): ?>
 <br><br>
 <table align='center' height='20%' width='100%' border='0' cellspacing='1' cellpadding='1' id='tb_fim' style='font-family:Tahoma;font-size:8pt; border-collapse: collapse;'>
 <?php endif; ?>
@@ -215,11 +230,7 @@ td{
 		<td align='center' class='cls_vals2 cls_red'><b>-</b></td>
 	</tr>
 	<?php endforeach; ?>
-<?php if ($singleTableLayout): ?>
 </table>
-<?php else: ?>
-</table>
-<?php endif; ?>
 <input type='hidden' name='codig_lnc' id='codig_lnc' />
 <input type='hidden' name='banco_lnc' id='banco_lnc' />
 <input type='hidden' name='detail_bank_id' id='detail_bank_id' />

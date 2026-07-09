@@ -51,13 +51,14 @@ class DashboardRepository
 		return $row;
 	}
 
-	public function listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, $species, $excludeNames = array(), $includeNames = array(), $regionId = 0)
+	public function listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, $species, $excludeNames = array(), $includeNames = array(), $regionId = 0, $regionIds = array())
 	{
 		$bankId = (int) $bankId;
 		$month = (int) $month;
 		$year = (int) $year;
 		$species = (int) $species;
 		$regionId = (int) $regionId;
+		$regionIds = array_values(array_unique(array_filter(array_map('intval', (array) $regionIds))));
 
 		$sql = "
 			SELECT
@@ -94,6 +95,8 @@ class DashboardRepository
 			$sql .= " AND m.regiao_id = ?";
 			$params[] = $regionId;
 			$types .= 'i';
+		} elseif (!empty($regionIds)) {
+			$sql .= " AND (m.regiao_id IS NULL OR m.regiao_id IN (" . implode(',', $regionIds) . "))";
 		} else {
 			$sql .= " AND m.regiao_id IS NULL";
 		}
@@ -174,11 +177,10 @@ class DashboardRepository
 
 		if ($regionId > 0) {
 			$sql .= " AND m.regiao_id = ?";
+			$sql .= " LIMIT 1";
 		} else {
-			$sql .= " AND m.regiao_id IS NULL";
+			$sql .= " ORDER BY CASE WHEN m.regiao_id IS NULL THEN 0 ELSE 1 END, m.meta_id ASC LIMIT 1";
 		}
-
-		$sql .= " LIMIT 1";
 
 		$stmt = mysqli_prepare($this->connection, $sql);
 		if (!$stmt) {

@@ -127,7 +127,8 @@ class NeoDetailService
 			return null;
 		}
 
-		$metaRow = $this->dashboardRepository->findMetaRowByBankMonthYearAndAndaId($bankId, $month, $year, $andaId);
+		$regionId = isset($input['detail_region_id']) ? (int) $input['detail_region_id'] : 0;
+		$metaRow = $this->dashboardRepository->findMetaRowByBankMonthYearAndAndaId($bankId, $month, $year, $andaId, $regionId);
 		if (!$metaRow) {
 			return null;
 		}
@@ -150,6 +151,18 @@ class NeoDetailService
 	private function resolveRegionFilter(array $input, array $session)
 	{
 		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
+		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
+		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
+		$selectedRegionId = isset($input['detail_region_id']) ? (int) $input['detail_region_id'] : 0;
+
+		if ($level === 'ADM') {
+			if ($selectedRegionId > 0) {
+				return $this->regionService->listUfsByRegionIds(array($selectedRegionId));
+			}
+
+			return array();
+		}
+
 		if ($userId <= 0) {
 			return array();
 		}
@@ -162,10 +175,6 @@ class NeoDetailService
 		if (empty($regionIds)) {
 			return array();
 		}
-
-		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
-		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
-		$selectedRegionId = isset($input['detail_region_id']) ? (int) $input['detail_region_id'] : 0;
 
 		if ($level === 'USU' && $mode === 'R') {
 			return $this->regionService->listUfsByRegionIds(array((int) $regionIds[0]));
