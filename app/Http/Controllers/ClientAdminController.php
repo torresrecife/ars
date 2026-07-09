@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Services\ClientAdminService;
 use App\Support\View;
+use Illuminate\Http\Request;
 
 class ClientAdminController
 {
@@ -43,5 +44,17 @@ class ClientAdminController
 		}
 
 		return '0';
+	}
+
+	public function webIndex(Request $request)
+	{
+		return response($this->index());
+	}
+
+	public function webAjax(Request $request)
+	{
+		return response($this->ajax($request->all()), 200, array(
+			'Content-Type' => 'text/plain; charset=UTF-8',
+		));
 	}
 }

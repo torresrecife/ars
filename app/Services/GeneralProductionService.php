@@ -30,8 +30,10 @@ class GeneralProductionService
 		$context = $this->buildContext($input, $session);
 		$regionFilter = $this->resolveRegionFilter($context);
 		$banks = $this->repository->listBanks($context['userSectorId'], $context['startSector'], $context['userClientIds'], false);
-		$usefulDaysCurrent = (float) diasUteis('01/' . $context['month'] . '/' . $context['year'], $this->currentEndDate($context['month'], $context['year']));
-		$usefulDaysMonth = (float) diasUteis('01/' . $context['month'] . '/' . $context['year'], $this->lastDayDate($context['month'], $context['year']));
+		$monthPadded = str_pad((string) $context['month'], 2, '0', STR_PAD_LEFT);
+		$startOfMonth = '01/' . $monthPadded . '/' . $context['year'];
+		$usefulDaysCurrent = (float) diasUteis($startOfMonth, $this->currentEndDate($context['month'], $context['year']));
+		$usefulDaysMonth = (float) diasUteis($startOfMonth, $this->lastDayDate($context['month'], $context['year']));
 		$rows = array();
 		$totals = array(
 			'metaMonth' => 0.0,

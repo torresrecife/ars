@@ -1268,6 +1268,9 @@ li#jform_access_label {
 
 div .***REMOVED***form{
 	height:95%;
+    &:has(table#tb_pro), &:has(table#tb_fin) {
+      margin-top: 64px;
+    }
 }
 
 fieldset.***REMOVED***form fieldset.radio,

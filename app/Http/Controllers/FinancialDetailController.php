@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Services\NeoDetailService;
 use App\Support\View;
+use Illuminate\Http\Request;
 
 class FinancialDetailController
 {
@@ -24,5 +25,14 @@ class FinancialDetailController
 	public function index(array $input = array(), array $session = array())
 	{
 		return $this->view->render('dados_fatur/index', $this->service->financialDetailViewData($input, $session));
+	}
+
+	public function webIndex(Request $request)
+	{
+		if (session_status() !== PHP_SESSION_ACTIVE) {
+			session_start();
+		}
+
+		return response($this->index($request->all(), $_SESSION));
 	}
 }

@@ -1,4 +1,7 @@
 <div style="margin-top:80px">
+<script>
+window.arsWeekAjaxUrl = "/ars/ajax_sem.php";
+</script>
 <label><h2><u>Semanas</u></h2></label>
 <div>
 <table class="***REMOVED***list">

@@ -143,6 +143,29 @@ class AuthService
 		return $this->users->refreshAccess($id);
 	}
 
+	public function requiresPasswordChange(array $user)
+	{
+		if (!array_key_exists('acesso_usu', $user)) {
+			return true;
+		}
+
+		$lastAccess = $user['acesso_usu'];
+
+		return $lastAccess === null
+			|| $lastAccess === ''
+			|| $lastAccess === '0000-00-00 00:00:00';
+	}
+
+	public function updatePasswordAndAccess($id, $password)
+	{
+		$hash = $this->hashPassword($password);
+		if (!$hash) {
+			return false;
+		}
+
+		return $this->users->updatePasswordAndAccess($id, $hash);
+	}
+
 	public function findUserByLogin($login)
 	{
 		return $this->users->findByLogin($login);

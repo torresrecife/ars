@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Services\WeekService;
 use App\Support\View;
+use Illuminate\Http\Request;
 
 class WeekController
 {
@@ -68,5 +69,24 @@ class WeekController
 		}
 
 		return '0';
+	}
+
+	public function webIndex(Request $request)
+	{
+		return response($this->index());
+	}
+
+	public function webAjax(Request $request)
+	{
+		$input = $request->all();
+		$headers = array(
+			'Content-Type' => 'text/plain; charset=UTF-8',
+		);
+
+		if (isset($input['flag']) && (string) $input['flag'] === 'E') {
+			$headers['Content-Type'] = 'text/html; charset=ISO-8859-1';
+		}
+
+		return response($this->ajax($input), 200, $headers);
 	}
 }

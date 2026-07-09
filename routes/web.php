@@ -1,34 +1,25 @@
 <?php
 
-declare(strict_types=1);
+use Illuminate\Support\Facades\Route;
 
-return array(
-	'/metas' => array(
-		'controller' => \App\Http\Controllers\MetaController::class,
-		'action' => 'index',
-	),
-	'/metas/ajax' => array(
-		'controller' => \App\Http\Controllers\MetaController::class,
-		'action' => 'ajax',
-	),
-	'/semanas' => array(
-		'controller' => \App\Http\Controllers\WeekController::class,
-		'action' => 'index',
-	),
-	'/semanas/ajax' => array(
-		'controller' => \App\Http\Controllers\WeekController::class,
-		'action' => 'ajax',
-	),
-	'/dados-fatur' => array(
-		'controller' => \App\Http\Controllers\FinancialDetailController::class,
-		'action' => 'index',
-	),
-	'/dados-anda' => array(
-		'controller' => \App\Http\Controllers\AndamentoDetailController::class,
-		'action' => 'index',
-	),
-	'/dashboard/panel' => array(
-		'controller' => \App\Http\Controllers\DashboardPanelController::class,
-		'action' => 'index',
-	),
-);
+Route::middleware('legacy.guest')->group(function () {
+    Route::get('/', 'AuthController@showLogin');
+    Route::get('/login.php', 'AuthController@showLogin');
+    Route::post('/login.php', 'AuthController@login');
+    Route::get('/login', 'AuthController@showLogin')->name('login');
+    Route::post('/login', 'AuthController@login')->name('login.submit');
+});
+
+Route::middleware('legacy.auth')->group(function () {
+    Route::match(['get', 'post'], '/index', 'HomeController@webIndex')->name('legacy.home');
+    Route::match(['get', 'post'], '/index.php', 'HomeController@webIndex');
+    Route::match(['get', 'post'], '/logout', 'AuthController@logout')->name('logout');
+});
+
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'app' => config('app.name'),
+        'framework' => app()->version(),
+    ]);
+});

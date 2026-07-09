@@ -1,27 +1,30 @@
 <?php
 
-if (!defined('ARS_SEGURANCA_LOADED')) {
-	include __DIR__ . '/inc/seguranca.php';
+define('LARAVEL_START', microtime(true));
+
+require __DIR__ . '/vendor/autoload.php';
+
+$app = require_once __DIR__ . '/bootstrap/app.php';
+
+$request = Illuminate\Http\Request::capture();
+$app->instance('request', $request);
+
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+$kernel->bootstrap();
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
 }
 
-if (!defined('ARS_LEGACY_FUNCTIONS_LOADED')) {
-	require_once __DIR__ . '/inc/functions.php';
+if (!isset($_SESSION['usuarioID']) || !isset($_SESSION['usuarioNome'])) {
+    http_response_code(302);
+    header('Location: /ars/login.php');
+    exit;
 }
 
-protegePagina(0);
+$controller = $app->make(App\Http\Controllers\DashboardPanelController::class);
+$response = $controller->webIndex($request);
 
-$connectionMysql = isset($GLOBALS['conexao4']) ? $GLOBALS['conexao4'] : (isset($conexao4) ? $conexao4 : null);
-$months = isset($GLOBALS['arrMonths']) ? $GLOBALS['arrMonths'] : (isset($arrMonths) ? $arrMonths : array());
+$response->send();
 
-$controller = new \App\Http\Controllers\DashboardPanelController(
-	new \App\Services\DashboardPanelService(
-		new \App\Repositories\DashboardRepository($connectionMysql),
-		new \App\Repositories\NeoPanelRepository(ars_sqlsrv_connection()),
-		new \App\Services\RegionService(
-			new \App\Repositories\RegionRepository($connectionMysql)
-		),
-		$months
-	)
-);
-
-echo $controller->index($_POST, $_SESSION);
+$kernel->terminate($request, $response);

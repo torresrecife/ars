@@ -71,6 +71,23 @@ class UserRepository
 		return $updated;
 	}
 
+	public function updatePasswordAndAccess($id, $hash)
+	{
+		$id = (int) $id;
+		$sql = "UPDATE `" . $this->table . "` SET `senha_usu` = ?, `acesso_usu` = ? WHERE `id_usu` = ? LIMIT 1";
+		$stmt = mysqli_prepare($this->connection, $sql);
+		if (!$stmt) {
+			return false;
+		}
+
+		$accessTime = date('Y-m-d H:i:s');
+		mysqli_stmt_bind_param($stmt, 'ssi', $hash, $accessTime, $id);
+		$updated = mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+
+		return $updated;
+	}
+
 	public function refreshAccess($id)
 	{
 		$id = (int) $id;

@@ -1,17 +1,3 @@
 <?php
 
-include("seguranca.php");
-protegePagina(0);
-
-$view = new \App\Support\View($app->basePath());
-$controller = new \App\Http\Controllers\WeekController(
-	new \App\Services\WeekService(new \App\Repositories\WeekRepository($conexao4)),
-	$view
-);
-
-if (isset($_POST['flag']) && $_POST['flag'] == "E") {
-	header("Content-Type: text/html; charset=ISO-8859-1", true);
-}
-
-echo $controller->ajax($_POST);
-?>
+require dirname(__DIR__) . '/ajax_sem.php';

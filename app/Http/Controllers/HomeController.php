@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Services\MainPageService;
 use App\Support\View;
+use Illuminate\Http\Request;
 
 class HomeController
 {
@@ -23,6 +24,30 @@ class HomeController
 
 	public function index(array $input, array $session)
 	{
+		$this->ensureLegacyEnvironment();
+
+		return $this->renderPage($input, $session, 'index.php');
+	}
+
+	public function webIndex(Request $request)
+	{
+		$this->ensureLegacyEnvironment();
+
+		$scriptName = str_replace('\\', '/', (string) $request->server('SCRIPT_NAME', ''));
+		if ($scriptName === '') {
+			$entryUrl = '/index.php';
+		} else {
+			$directory = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
+			$entryUrl = ($directory === '' || $directory === '.')
+				? '/index.php'
+				: $directory . '/index.php';
+		}
+
+		return response($this->renderPage($request->all(), $_SESSION, $entryUrl));
+	}
+
+	private function renderPage(array $input, array $session, $entryUrl)
+	{
 		$pageData = $this->service->build($input, $session);
 		$contentHtml = $this->renderContent($pageData['content'], $input);
 		$exportPath = dirname(dirname(dirname(__DIR__))) . '/php2/exportar.php';
@@ -31,7 +56,16 @@ class HomeController
 			'pageData' => $pageData,
 			'contentHtml' => $contentHtml,
 			'exportPath' => $exportPath,
+			'entryUrl' => $entryUrl,
 		));
+	}
+
+	private function ensureLegacyEnvironment()
+	{
+		require_once base_path('inc/seguranca.php');
+		require_once base_path('inc/functions.php');
+		require_once base_path('inc/somadias.php');
+		protegePagina(0);
 	}
 
 	private function renderContent(array $content, array $input)
@@ -40,12 +74,30 @@ class HomeController
 			return $this->view->render($content['view'], $content['data']);
 		}
 
+		if ($content['type'] === 'controller') {
+			return $this->renderControllerContent($content['controller'], $input);
+		}
+
 		$html = '';
 		if (!empty($content['spacer'])) {
 			$html .= "<br><br><br><br><br>";
 		}
 
 		return $html . $this->renderLegacyInclude($content['file'], $input);
+	}
+
+	private function renderControllerContent($controllerName, array $input)
+	{
+		switch ($controllerName) {
+			case 'dashboard-panel':
+				return app(DashboardPanelController::class)->index($input, $_SESSION);
+			case 'general-production-weekly':
+				return app(GeneralProductionController::class)->weekly($input, $_SESSION);
+			case 'general-production-monthly':
+				return app(GeneralProductionController::class)->monthly($input, $_SESSION);
+			default:
+				return '';
+		}
 	}
 
 	private function renderLegacyInclude($file, array $input)
