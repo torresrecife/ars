@@ -96,9 +96,12 @@ function expulsaVisitante($valor) {
 	}
 
 	$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+	$scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+	$directory = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
+	$loginPath = ($directory === '' || $directory === '.') ? '/login.php' : $directory . '/login.php';
 	if ($valor == 1) {
-		exit('<SCRIPT LANGUAGE="JavaScript">window.location="http://' . $host . '/ars/login.php?alerta=1"</script>');
+		exit('<SCRIPT LANGUAGE="JavaScript">window.location="http://' . $host . $loginPath . '?alerta=1"</script>');
 	}
 
-	exit('<SCRIPT LANGUAGE="JavaScript">window.location="http://' . $host . '/ars/login.php"</script>');
+	exit('<SCRIPT LANGUAGE="JavaScript">window.location="http://' . $host . $loginPath . '"</script>');
 }

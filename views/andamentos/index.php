@@ -1,6 +1,6 @@
 <div style="margin-top:80px">
 <script>
-window.arsAndamentoAjaxUrl = "/ars2/ajax_andamento.php";
+window.arsAndamentoAjaxUrl = "ajax_andamento.php";
 </script>
 <label><h2><u>Andamentos</u></h2></label>
 <div>

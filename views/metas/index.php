@@ -1,6 +1,6 @@
 <div style="margin-top:80px">
 <script>
-window.arsMetaAjaxUrl = "/ars/ajax_metas.php";
+window.arsMetaAjaxUrl = "ajax_metas.php";
 </script>
 <?php
 $bankCode = isset($bank['banco_cod']) ? $bank['banco_cod'] : '';
