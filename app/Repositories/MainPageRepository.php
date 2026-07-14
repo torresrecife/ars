@@ -90,6 +90,28 @@ class MainPageRepository
 		return $this->fetchAll($sql, $types, $params);
 	}
 
+	public function listAdminBanks($userSectorId, $userClientIds)
+	{
+		$sql = "SELECT banco_id, banco_name
+			FROM bancos
+			WHERE banco_status = 'Y'";
+		$params = array();
+		$types = '';
+
+		if ((int) $userSectorId !== 0) {
+			$sql .= " AND banco_area IN (" . (int) $userSectorId . ")";
+		}
+
+		$clientIds = $this->parseIdList($userClientIds);
+		if (!empty($clientIds)) {
+			$sql .= " AND banco_id IN (" . implode(',', $clientIds) . ")";
+		}
+
+		$sql .= " ORDER BY banco_area, banco_name";
+
+		return $this->fetchAll($sql, $types, $params);
+	}
+
 	private function fetchAll($sql, $types = '', array $params = array())
 	{
 		$stmt = mysqli_prepare($this->connection, $sql);

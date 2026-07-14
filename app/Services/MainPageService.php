@@ -127,15 +127,23 @@ class MainPageService
 					'spacer' => true
 				);
 			case 5:
-				return array('type' => 'legacy', 'file' => '***REMOVED***.php');
+				return array(
+					'type' => 'view',
+					'view' => '***REMOVED***/index',
+					'data' => array(
+						'userLevel' => $user['level'],
+						'hidArea' => $state['hid_area'],
+						'banks' => $this->repository->listAdminBanks($user['sectorId'], $user['clientIds']),
+					),
+				);
 			case 8:
-				return array('type' => 'legacy', 'file' => 'usu.php');
+				return array('type' => 'controller', 'controller' => 'user-***REMOVED***');
 			case 9:
-				return array('type' => 'legacy', 'file' => 'setor.php');
+				return array('type' => 'controller', 'controller' => 'sector-***REMOVED***');
 			case 11:
-				return array('type' => 'legacy', 'file' => 'clientes.php');
+				return array('type' => 'controller', 'controller' => 'client-***REMOVED***');
 			case 12:
-				return array('type' => 'legacy', 'file' => 'andamentos.php');
+				return array('type' => 'controller', 'controller' => 'andamento-***REMOVED***');
 			case 13:
 				return array(
 					'type' => 'view',
@@ -146,11 +154,11 @@ class MainPageService
 					),
 				);
 			case 14:
-				return array('type' => 'legacy', 'file' => 'metas.php');
+				return array('type' => 'controller', 'controller' => 'meta-***REMOVED***');
 			case 15:
-				return array('type' => 'legacy', 'file' => 'semanas.php');
+				return array('type' => 'controller', 'controller' => 'week-***REMOVED***');
 			case 16:
-				return array('type' => 'legacy', 'file' => 'regioes.php');
+				return array('type' => 'controller', 'controller' => 'region-***REMOVED***');
 			default:
 				return array(
 					'type' => 'view',

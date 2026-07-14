@@ -95,6 +95,20 @@ class HomeController
 				return app(GeneralProductionController::class)->weekly($input, $_SESSION);
 			case 'general-production-monthly':
 				return app(GeneralProductionController::class)->monthly($input, $_SESSION);
+			case 'user-***REMOVED***':
+				return app(UserAdminController::class)->index();
+			case 'sector-***REMOVED***':
+				return app(SectorAdminController::class)->index();
+			case 'client-***REMOVED***':
+				return app(ClientAdminController::class)->index();
+			case 'andamento-***REMOVED***':
+				return app(AndamentoAdminController::class)->index();
+			case 'meta-***REMOVED***':
+				return app(MetaController::class)->index($input, $_SESSION);
+			case 'week-***REMOVED***':
+				return app(WeekController::class)->index();
+			case 'region-***REMOVED***':
+				return app(RegionAdminController::class)->index();
 			default:
 				return '';
 		}
