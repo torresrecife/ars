@@ -17,8 +17,11 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 if (!isset($_SESSION['usuarioID']) || !isset($_SESSION['usuarioNome'])) {
+    $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+    $directory = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
+    $loginUrl = ($directory === '' || $directory === '.') ? '/login.php' : $directory . '/login.php';
     http_response_code(302);
-    header('Location: /ars/login.php');
+    header('Location: ' . $loginUrl);
     exit;
 }
 
