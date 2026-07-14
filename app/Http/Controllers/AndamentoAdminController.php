@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Services\AndamentoAdminService;
+use App\Support\View;
 use Illuminate\Http\Request;
 
 class AndamentoAdminController
@@ -12,9 +13,23 @@ class AndamentoAdminController
 	/** @var AndamentoAdminService */
 	private $service;
 
-	public function __construct(AndamentoAdminService $service)
+	/** @var View */
+	private $view;
+
+	public function __construct(AndamentoAdminService $service, View $view)
 	{
 		$this->service = $service;
+		$this->view = $view;
+	}
+
+	public function index()
+	{
+		return $this->view->render('andamentos/index', $this->service->indexData());
+	}
+
+	public function webIndex(Request $request)
+	{
+		return response($this->index());
 	}
 
 	public function webAjax(Request $request)

@@ -33,6 +33,21 @@ class AndamentoAdminRepository
 		return $row;
 	}
 
+	public function listAll()
+	{
+		$result = mysqli_query($this->connection, "SELECT * FROM andamentos ORDER BY especie ASC, nome ASC");
+		if ($result === false) {
+			return array();
+		}
+
+		$rows = array();
+		while ($row = mysqli_fetch_assoc($result)) {
+			$rows[] = $row;
+		}
+
+		return $rows;
+	}
+
 	public function existsByKeyOrName($nome, $chave, $excludeId = 0)
 	{
 		$sql = "SELECT anda_id FROM andamentos WHERE (nome = ? OR chave = ?)";

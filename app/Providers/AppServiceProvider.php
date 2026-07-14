@@ -6,6 +6,7 @@ use App\Repositories\MainPageRepository;
 use App\Repositories\MetaRepository;
 use App\Repositories\RegionAdminRepository;
 use App\Repositories\RegionRepository;
+use App\Repositories\SectorAdminRepository;
 use App\Repositories\ClientAdminRepository;
 use App\Repositories\AndamentoAdminRepository;
 use App\Repositories\DashboardRepository;
@@ -24,6 +25,7 @@ use App\Services\GeneralProductionService;
 use App\Services\NeoDetailService;
 use App\Services\RegionAdminService;
 use App\Services\RegionService;
+use App\Services\SectorAdminService;
 use App\Services\UserAdminService;
 use App\Services\WeekService;
 use App\Support\View;
@@ -94,6 +96,12 @@ class AppServiceProvider extends ServiceProvider
             return new UserAdminService(
                 new UserAdminRepository($app->make('legacy.mysql')),
                 $app->make(RegionService::class)
+            );
+        });
+
+        $this->app->singleton(SectorAdminService::class, function ($app) {
+            return new SectorAdminService(
+                new SectorAdminRepository($app->make('legacy.mysql'))
             );
         });
 

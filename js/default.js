@@ -302,6 +302,7 @@ function fc_edit_usu(valor1,valor2){
 
 	//função editar setores
 	function fc_edit_setor(valor1,valor2){
+		var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax_setor.php";
 
 		var tt = "";
 		var tu = "";
@@ -317,7 +318,7 @@ function fc_edit_usu(valor1,valor2){
 
 		$.ajax({
 			type: "POST",
-			url:  "inc/ajax_setor.php",
+			url:  sectorAjaxUrl,
 			data: "flag=E&id_setor=" + valor1,
 			success: function(retorno_ajax){
 				var ret = retorno_ajax.split("-|-");
@@ -345,7 +346,7 @@ function fc_edit_usu(valor1,valor2){
 
 							$.ajax({
 							   type: "POST",
-							   url:  "inc/ajax_setor.php",
+							   url:  sectorAjaxUrl,
 							   data: "flag=" + valor2 + "&" + mdados,
 							   success: function(retorno_ajax){
 									if(retorno_ajax==1){
@@ -1586,11 +1587,12 @@ function fc_edit_metas(valor1,valor2){
 	}
 
 	function fc_del_setor(valor1,valor2){
+		var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax_setor.php";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o setor <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
-					url:  "inc/ajax_setor.php",
+					url:  sectorAjaxUrl,
 					data: "flag=D&id_setor=" + valor1,
 					success: function(retorno_ajax){
 						$( this ).dialog( "close" );

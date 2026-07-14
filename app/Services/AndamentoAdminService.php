@@ -52,6 +52,17 @@ class AndamentoAdminService
 		));
 	}
 
+	public function indexData()
+	{
+		return array(
+			'andamentos' => $this->repository->listAll(),
+			'metaTipos' => array(
+				1 => 'Produção',
+				2 => 'Financeira',
+			),
+		);
+	}
+
 	public function create(array $input)
 	{
 		$payload = $this->normalizePayload($input);
