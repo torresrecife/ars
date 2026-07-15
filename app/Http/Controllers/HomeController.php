@@ -38,7 +38,7 @@ class HomeController extends Controller
 	{
 		$this->ensureLegacyEnvironment();
 
-		return response($this->renderPage($request->all(), $request->session()->all(), $this->buildScriptUrl($request, 'index.php')));
+		return response($this->renderPage($request->all(), $request->session()->all(), url('index')));
 	}
 
 	public function webSectionPage(Request $request, $section)
@@ -48,7 +48,7 @@ class HomeController extends Controller
 		$input = $request->all();
 		$input['section'] = (string) $section;
 
-		return response($this->renderPage($input, $request->session()->all(), $this->buildScriptUrl($request, 'index.php')));
+		return response($this->renderPage($input, $request->session()->all(), url('index')));
 	}
 
 	private function renderPage(array $input, array $session, $entryUrl)
@@ -63,20 +63,6 @@ class HomeController extends Controller
 			'exportPath' => $exportPath,
 			'entryUrl' => $entryUrl,
 		));
-	}
-
-	private function buildScriptUrl(Request $request, $scriptFile)
-	{
-		$scriptName = str_replace('\\', '/', (string) $request->server('SCRIPT_NAME', ''));
-		if ($scriptName === '') {
-			return '/' . ltrim((string) $scriptFile, '/');
-		}
-
-		$directory = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
-
-		return ($directory === '' || $directory === '.')
-			? '/' . ltrim((string) $scriptFile, '/')
-			: $directory . '/' . ltrim((string) $scriptFile, '/');
 	}
 
 	private function ensureLegacyEnvironment()

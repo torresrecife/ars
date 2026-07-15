@@ -94,51 +94,32 @@ class AuthService
 
 	public function clearUserSession()
 	{
-		if ($this->hasLaravelSessionStore()) {
-			session()->forget(array(
-				'usuarioID',
-				'usuarioNome',
-				'usuarioNivel',
-				'usuarioST',
-				'usuarioSetor',
-				'usuarioCliente',
-				'usuarioRegiaoModo',
-				'usuarioRegiaoIds',
-				'usuarioRegiaoUfs',
-				'usuarioLogin',
-				'usuarioSenha',
-			));
+		if (!$this->hasLaravelSessionStore()) {
+			return;
 		}
 
-		unset(
-			$_SESSION['usuarioID'],
-			$_SESSION['usuarioNome'],
-			$_SESSION['usuarioNivel'],
-			$_SESSION['usuarioST'],
-			$_SESSION['usuarioSetor'],
-			$_SESSION['usuarioCliente'],
-			$_SESSION['usuarioRegiaoModo'],
-			$_SESSION['usuarioRegiaoIds'],
-			$_SESSION['usuarioRegiaoUfs'],
-			$_SESSION['usuarioLogin'],
-			$_SESSION['usuarioSenha']
-		);
+		session()->forget(array(
+			'usuarioID',
+			'usuarioNome',
+			'usuarioNivel',
+			'usuarioST',
+			'usuarioSetor',
+			'usuarioCliente',
+			'usuarioRegiaoModo',
+			'usuarioRegiaoIds',
+			'usuarioRegiaoUfs',
+			'usuarioLogin',
+			'usuarioSenha',
+		));
 	}
 
 	public function currentUser()
 	{
-		$userId = null;
-		if ($this->hasLaravelSessionStore() && session()->has('usuarioID')) {
-			$userId = session('usuarioID');
-		} elseif (isset($_SESSION['usuarioID'])) {
-			$userId = $_SESSION['usuarioID'];
-		}
-
-		if (empty($userId)) {
+		if (!$this->hasLaravelSessionStore() || !session()->has('usuarioID')) {
 			return false;
 		}
 
-		return $this->users->findById($userId);
+		return $this->users->findById(session('usuarioID'));
 	}
 
 	public function syncSessionContext(array $user, $regenerateId = false)
@@ -167,12 +148,6 @@ class AuthService
 				session()->migrate(true);
 			}
 			session($sessionData);
-		}
-
-		if (session_status() === PHP_SESSION_ACTIVE) {
-			foreach ($sessionData as $key => $value) {
-				$_SESSION[$key] = $value;
-			}
 		}
 
 		return $user;
