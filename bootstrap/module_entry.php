@@ -53,7 +53,7 @@ if (!function_exists('ars_run_module_entry')) {
 				if ($query !== '') {
 					$location .= '?' . $query;
 				}
-				header('Location: ' . $location, true, 302);
+				header('Location: ' . $location, true, 301);
 				exit;
 			}
 		}
