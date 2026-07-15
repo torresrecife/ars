@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\RegionRepository;
-use App\Repositories\UserRepository;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
 
@@ -14,16 +12,9 @@ class AuthController extends Controller
      */
     protected $authService;
 
-    public function __construct()
+    public function __construct(AuthService $authService)
     {
-        $legacyApp = require base_path('bootstrap/legacy_app.php');
-        $connection = $legacyApp->db()->mysql();
-        $table = config('auth.user_table', 'usuarios');
-
-        $this->authService = new AuthService(
-            new UserRepository($connection, $table),
-            new RegionRepository()
-        );
+        $this->authService = $authService;
     }
 
     public function showLogin(Request $request)

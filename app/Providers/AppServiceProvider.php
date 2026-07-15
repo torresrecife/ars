@@ -14,8 +14,10 @@ use App\Repositories\GeneralProductionRepository;
 use App\Repositories\GeneralProductionNeoRepository;
 use App\Repositories\NeoDetailRepository;
 use App\Repositories\NeoPanelRepository;
+use App\Repositories\UserRepository;
 use App\Repositories\UserAdminRepository;
 use App\Repositories\WeekRepository;
+use App\Services\AuthService;
 use App\Services\ClientAdminService;
 use App\Services\AndamentoAdminService;
 use App\Services\DashboardPanelService;
@@ -59,12 +61,15 @@ class AppServiceProvider extends ServiceProvider
             return require base_path('bootstrap/legacy_app.php');
         });
 
-        $this->app->singleton('legacy.mysql', function ($app) {
-            return $app->make('legacy.application')->db()->mysql();
-        });
-
         $this->app->singleton(View::class, function () {
             return new View(base_path());
+        });
+
+        $this->app->singleton(AuthService::class, function ($app) {
+            return new AuthService(
+                new UserRepository(),
+                new RegionRepository()
+            );
         });
 
         $this->app->singleton(RegionService::class, function ($app) {
