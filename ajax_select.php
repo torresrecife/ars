@@ -1,8 +1,24 @@
 <?php
 
-require __DIR__ . '/inc/seguranca.php';
+require __DIR__ . '/inc/bootstrap.php';
 
-protegePagina(0);
+if (session_status() !== PHP_SESSION_ACTIVE) {
+	session_start();
+}
+
+$authService = new \App\Services\AuthService(
+	new \App\Repositories\UserRepository(isset($GLOBALS['conexao4']) ? $GLOBALS['conexao4'] : null),
+	new \App\Repositories\RegionRepository(isset($GLOBALS['conexao4']) ? $GLOBALS['conexao4'] : null)
+);
+
+$currentUser = $authService->currentUser();
+if (empty($currentUser)) {
+	http_response_code(302);
+	header('Location: login.php');
+	exit;
+}
+
+$authService->syncSessionContext($currentUser);
 
 header('Content-Type: text/html; charset=UTF-8', true);
 
