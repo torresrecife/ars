@@ -67,13 +67,11 @@ class MainPageService
 
 	private function resolveState(array $input)
 	{
-		$areaId = isset($input['area_id']) ? (string) $input['area_id'] : (isset($input['hid_area']) ? (string) $input['hid_area'] : '');
-		$bankId = isset($input['bank_id']) ? (string) $input['bank_id'] : (isset($input['hid_flag']) ? (string) $input['hid_flag'] : '');
+		$areaId = isset($input['area_id']) ? (string) $input['area_id'] : '';
+		$bankId = isset($input['bank_id']) ? (string) $input['bank_id'] : '';
 
 		return array(
 			'hid_send' => isset($input['hid_send']) ? (int) $input['hid_send'] : 0,
-			'hid_area' => $areaId,
-			'hid_flag' => $bankId,
 			'area_id' => $areaId,
 			'bank_id' => $bankId,
 			'geral' => isset($input['geral']) ? (int) $input['geral'] : 0,

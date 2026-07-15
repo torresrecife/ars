@@ -35,26 +35,6 @@ function msgbox(msg, bts){
 			title: 'Alerta'
 		});
 }
-function EnviarDados(frm,hid,are,fla){
-	if($("#startDate").val()=="" && (hid==2 || hid==4 || hid==14)){
-		$("#startDate").css("border","1px solid red");
-		$("#obg_date").fadeIn();
-		$("#obg_date").html("Inseir o mês / ano!");
-		setTimeout(function(){
-			$("#startDate").css("border","1px solid #ccc");
-			$("#obg_date").fadeOut();
-		}, 3000);
-	}else{
-		$("#hid_send").val(hid);
-		$("#hid_area").val(are);
-		$("#hid_flag").val(fla);
-		$("#form_ars").attr("action",frm);
-		$("#form_ars").attr("target","");
-		$("#form_ars").submit();
-	}
-}
-
-	//função editar usuário
 function EnviarPagina(frm, precisaData, are, fla){
 	if(precisaData && $("#startDate").val()==""){
 		$("#startDate").css("border","1px solid red");
@@ -65,8 +45,12 @@ function EnviarPagina(frm, precisaData, are, fla){
 			$("#obg_date").fadeOut();
 		}, 3000);
 	}else{
-		$("#hid_area").val(are || "");
-		$("#hid_flag").val(fla || "");
+		if($("#area_id").length){
+			$("#area_id").val(are || "");
+		}
+		if($("#bank_id").length){
+			$("#bank_id").val(fla || "");
+		}
 		$("#form_ars").attr("action",frm);
 		$("#form_ars").attr("target","");
 		$("#form_ars").submit();
@@ -75,9 +59,7 @@ function EnviarPagina(frm, precisaData, are, fla){
 
 function AbrirCarteiras(areaId){
 	$("#area_id").val(areaId || "");
-	$("#hid_area").val(areaId || "");
 	$("#bank_id").val("");
-	$("#hid_flag").val("");
 	$("#form_ars").attr("action","carteiras.php");
 	$("#form_ars").attr("target","");
 	$("#form_ars").submit();
@@ -96,9 +78,7 @@ function AbrirPainel(areaId, bankId){
 	}
 
 	$("#area_id").val(areaId || "");
-	$("#hid_area").val(areaId || "");
 	$("#bank_id").val(bankId || "");
-	$("#hid_flag").val(bankId || "");
 	$("#form_ars").attr("action","painel.php");
 	$("#form_ars").attr("target","");
 	$("#form_ars").submit();
@@ -1918,6 +1898,7 @@ function somarMeta(valor2){
 		$("#meta_valor_"+valor2).val(mvat);
 	}
 }
+
 
 
 
