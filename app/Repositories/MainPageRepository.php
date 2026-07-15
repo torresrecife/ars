@@ -4,144 +4,117 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use mysqli;
+use App\Models\Area;
+use App\Models\Banco;
 
 class MainPageRepository
 {
-	/** @var mysqli */
-	private $connection;
-
-	public function __construct(mysqli $connection)
-	{
-		$this->connection = $connection;
-	}
-
 	public function listAreas($userSectorId)
 	{
-		$sql = "SELECT area_id, area_nome FROM area WHERE area_status = 'Y'";
-		$params = array();
-		$types = '';
+		$query = Area::query()
+			->select(array('area_id', 'area_nome'))
+			->where('area_status', 'Y');
 
 		if ((int) $userSectorId !== 0) {
-			$sql .= " AND area_id = ?";
-			$params[] = (int) $userSectorId;
-			$types .= 'i';
+			$query->where('area_id', (int) $userSectorId);
 		}
 
-		$sql .= " ORDER BY area_nome";
-
-		return $this->fetchAll($sql, $types, $params);
+		return $query->orderBy('area_nome')
+			->get()
+			->map(function (Area $area) {
+				return $area->toArray();
+			})
+			->values()
+			->all();
 	}
 
 	public function listBanksByArea($areaId, $userClientIds)
 	{
-		$sql = "SELECT banco_id, banco_name, banco_class
-			FROM bancos
-			WHERE banco_area = ?";
-		$params = array((int) $areaId);
-		$types = 'i';
+		$query = Banco::query()
+			->select(array('banco_id', 'banco_name', 'banco_class'))
+			->where('banco_area', (int) $areaId)
+			->whereIn('banco_status', array('Y', 'P'));
 
 		$clientIds = $this->parseIdList($userClientIds);
 		if (!empty($clientIds)) {
-			$sql .= " AND banco_id IN (" . implode(',', $clientIds) . ")";
+			$query->whereIn('banco_id', $clientIds);
 		}
 
-		$sql .= " AND banco_status IN ('Y','P') ORDER BY banco_area";
-
-		return $this->fetchAll($sql, $types, $params);
+		return $query->orderBy('banco_area')
+			->get()
+			->map(function (Banco $banco) {
+				return $banco->toArray();
+			})
+			->values()
+			->all();
 	}
 
 	public function listAreasForProduction($userLevel, $userSectorId)
 	{
-		$sql = "SELECT area_id, area_nome FROM area WHERE area_status = 'Y'";
-		$params = array();
-		$types = '';
+		$query = Area::query()
+			->select(array('area_id', 'area_nome'))
+			->where('area_status', 'Y');
 
 		if ((string) $userLevel !== 'ADM') {
-			$sql .= " AND area_id = ?";
-			$params[] = (int) $userSectorId;
-			$types .= 'i';
+			$query->where('area_id', (int) $userSectorId);
 		}
 
-		$sql .= " ORDER BY area_nome";
-
-		return $this->fetchAll($sql, $types, $params);
+		return $query->orderBy('area_nome')
+			->get()
+			->map(function (Area $area) {
+				return $area->toArray();
+			})
+			->values()
+			->all();
 	}
 
 	public function listBanksForMetas($userSectorId, $userClientIds)
 	{
-		$sql = "SELECT banco_id, banco_name, banco_class
-			FROM bancos
-			WHERE banco_status = 'Y'";
-		$params = array();
-		$types = '';
+		$query = Banco::query()
+			->select(array('banco_id', 'banco_name', 'banco_class'))
+			->where('banco_status', 'Y');
 
 		if ((int) $userSectorId !== 0) {
-			$sql .= " AND banco_area IN (" . (int) $userSectorId . ")";
+			$query->where('banco_area', (int) $userSectorId);
 		}
 
 		$clientIds = $this->parseIdList($userClientIds);
 		if (!empty($clientIds)) {
-			$sql .= " AND banco_id IN (" . implode(',', $clientIds) . ")";
+			$query->whereIn('banco_id', $clientIds);
 		}
 
-		$sql .= " ORDER BY banco_cod";
-
-		return $this->fetchAll($sql, $types, $params);
+		return $query->orderBy('banco_cod')
+			->get()
+			->map(function (Banco $banco) {
+				return $banco->toArray();
+			})
+			->values()
+			->all();
 	}
 
 	public function listAdminBanks($userSectorId, $userClientIds)
 	{
-		$sql = "SELECT banco_id, banco_name
-			FROM bancos
-			WHERE banco_status = 'Y'";
-		$params = array();
-		$types = '';
+		$query = Banco::query()
+			->select(array('banco_id', 'banco_name'))
+			->where('banco_status', 'Y');
 
 		if ((int) $userSectorId !== 0) {
-			$sql .= " AND banco_area IN (" . (int) $userSectorId . ")";
+			$query->where('banco_area', (int) $userSectorId);
 		}
 
 		$clientIds = $this->parseIdList($userClientIds);
 		if (!empty($clientIds)) {
-			$sql .= " AND banco_id IN (" . implode(',', $clientIds) . ")";
+			$query->whereIn('banco_id', $clientIds);
 		}
 
-		$sql .= " ORDER BY banco_area, banco_name";
-
-		return $this->fetchAll($sql, $types, $params);
-	}
-
-	private function fetchAll($sql, $types = '', array $params = array())
-	{
-		$stmt = mysqli_prepare($this->connection, $sql);
-		if (!$stmt) {
-			return array();
-		}
-
-		if ($types !== '') {
-			$this->bindParams($stmt, $types, $params);
-		}
-
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$rows = array();
-		while ($result && ($row = mysqli_fetch_assoc($result))) {
-			$rows[] = $row;
-		}
-		mysqli_stmt_close($stmt);
-
-		return $rows;
-	}
-
-	private function bindParams($stmt, $types, array $params)
-	{
-		$references = array($types);
-		foreach ($params as $index => $value) {
-			$references[] = &$params[$index];
-		}
-
-		call_user_func_array('mysqli_stmt_bind_param', array_merge(array($stmt), $references));
+		return $query->orderBy('banco_area')
+			->orderBy('banco_name')
+			->get()
+			->map(function (Banco $banco) {
+				return $banco->toArray();
+			})
+			->values()
+			->all();
 	}
 
 	private function parseIdList($value)

@@ -4,276 +4,185 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use mysqli;
+use App\Models\Banco;
+use App\Models\Carteira;
+use App\Models\MetaAndamento;
+use App\Models\Semana;
+use Illuminate\Support\Facades\DB;
 
 class DashboardRepository
 {
-	/** @var mysqli */
-	private $connection;
-
-	public function __construct(mysqli $connection)
-	{
-		$this->connection = $connection;
-	}
-
 	public function findBankById($bankId)
 	{
-		$bankId = (int) $bankId;
-		$stmt = mysqli_prepare($this->connection, "SELECT banco_id, banco_cod, banco_name, banco_class FROM bancos WHERE banco_id = ? LIMIT 1");
-		if (!$stmt) {
-			return false;
-		}
+		$row = Banco::query()
+			->select(array('banco_id', 'banco_cod', 'banco_name', 'banco_class'))
+			->where('banco_id', (int) $bankId)
+			->first();
 
-		mysqli_stmt_bind_param($stmt, 'i', $bankId);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$row = $result ? mysqli_fetch_assoc($result) : false;
-		mysqli_stmt_close($stmt);
-
-		return $row;
+		return $row ? $row->toArray() : false;
 	}
 
 	public function findWeekByMonthYear($month, $year)
 	{
-		$month = (int) $month;
-		$year = (int) $year;
-		$stmt = mysqli_prepare($this->connection, "SELECT * FROM semanas WHERE mes = ? AND ano = ? LIMIT 1");
-		if (!$stmt) {
-			return false;
-		}
+		$row = Semana::query()
+			->where('mes', (int) $month)
+			->where('ano', (int) $year)
+			->first();
 
-		mysqli_stmt_bind_param($stmt, 'ii', $month, $year);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$row = $result ? mysqli_fetch_assoc($result) : false;
-		mysqli_stmt_close($stmt);
-
-		return $row;
+		return $row ? $row->toArray() : false;
 	}
 
 	public function listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, $species, $excludeNames = array(), $includeNames = array(), $regionId = 0, $regionIds = array())
 	{
-		$bankId = (int) $bankId;
-		$month = (int) $month;
-		$year = (int) $year;
-		$species = (int) $species;
+		$query = DB::table('metas_andamentos as m')
+			->join('andamentos as a', 'a.anda_id', '=', 'm.anda_id')
+			->where('m.banco_id', (int) $bankId)
+			->where('m.meta_mes', (int) $month)
+			->where('m.meta_ano', (int) $year)
+			->where('a.especie', (int) $species);
+
 		$regionId = (int) $regionId;
 		$regionIds = array_values(array_unique(array_filter(array_map('intval', (array) $regionIds))));
 
-		$sql = "
-			SELECT
-				m.meta_id,
-				m.banco_id,
-				m.meta_mes,
-				m.meta_ano,
-				m.anda_id,
-				m.meta_valor,
-				m.def_sem,
-				m.sem_1,
-				m.sem_2,
-				m.sem_3,
-				m.sem_4,
-				m.sem_5,
-				m.regiao_id,
-				a.nome,
-				a.especie,
-				a.anda_neo,
-				a.ordem,
-				a.chave
-			FROM metas_andamentos AS m
-			JOIN andamentos AS a ON a.anda_id = m.anda_id
-			WHERE m.banco_id = ?
-			AND m.meta_mes = ?
-			AND m.meta_ano = ?
-			AND a.especie = ?
-		";
-
-		$params = array($bankId, $month, $year, $species);
-		$types = 'iiii';
-
 		if ($regionId > 0) {
-			$sql .= " AND m.regiao_id = ?";
-			$params[] = $regionId;
-			$types .= 'i';
+			$query->where('m.regiao_id', $regionId);
 		} elseif (!empty($regionIds)) {
-			$sql .= " AND (m.regiao_id IS NULL OR m.regiao_id IN (" . implode(',', $regionIds) . "))";
+			$query->where(function ($query) use ($regionIds) {
+				$query->whereNull('m.regiao_id')
+					->orWhereIn('m.regiao_id', $regionIds);
+			});
 		} else {
-			$sql .= " AND m.regiao_id IS NULL";
+			$query->whereNull('m.regiao_id');
 		}
 
-		if (!empty($excludeNames)) {
-			foreach ($excludeNames as $excludeName) {
-				$sql .= " AND a.nome <> ?";
-				$params[] = (string) $excludeName;
-				$types .= 's';
-			}
+		foreach ($excludeNames as $excludeName) {
+			$query->where('a.nome', '<>', (string) $excludeName);
 		}
 
 		if (!empty($includeNames)) {
-			$pieces = array();
-			foreach ($includeNames as $includeName) {
-				$pieces[] = "(a.nome = ? OR a.chave = ? OR a.anda_neo = ?)";
-				$params[] = (string) $includeName;
-				$params[] = (string) $includeName;
-				$params[] = (string) $includeName;
-				$types .= 'sss';
-			}
-			$sql .= " AND (" . implode(' OR ', $pieces) . ")";
+			$query->where(function ($query) use ($includeNames) {
+				foreach ($includeNames as $includeName) {
+					$query->orWhere(function ($query) use ($includeName) {
+						$query->where('a.nome', (string) $includeName)
+							->orWhere('a.chave', (string) $includeName)
+							->orWhere('a.anda_neo', (string) $includeName);
+					});
+				}
+			});
 		}
 
-		$sql .= " ORDER BY a.especie ASC, a.ordem ASC, a.nome ASC";
-		$stmt = mysqli_prepare($this->connection, $sql);
-		if (!$stmt) {
-			return array();
-		}
-
-		$this->bindParams($stmt, $types, $params);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$rows = array();
-		while ($result && ($row = mysqli_fetch_assoc($result))) {
-			$rows[] = $row;
-		}
-		mysqli_stmt_close($stmt);
-
-		return $rows;
+		return $query
+			->orderBy('a.especie')
+			->orderBy('a.ordem')
+			->orderBy('a.nome')
+			->get(array(
+				'm.meta_id',
+				'm.banco_id',
+				'm.meta_mes',
+				'm.meta_ano',
+				'm.anda_id',
+				'm.meta_valor',
+				'm.def_sem',
+				'm.sem_1',
+				'm.sem_2',
+				'm.sem_3',
+				'm.sem_4',
+				'm.sem_5',
+				'm.regiao_id',
+				'a.nome',
+				'a.especie',
+				'a.anda_neo',
+				'a.ordem',
+				'a.chave',
+			))
+			->map(function ($row) {
+				return (array) $row;
+			})
+			->all();
 	}
 
 	public function findMetaRowByBankMonthYearAndAndaId($bankId, $month, $year, $andaId, $regionId = 0)
 	{
-		$bankId = (int) $bankId;
-		$month = (int) $month;
-		$year = (int) $year;
-		$andaId = (int) $andaId;
-		$regionId = (int) $regionId;
+		$query = DB::table('metas_andamentos as m')
+			->join('andamentos as a', 'a.anda_id', '=', 'm.anda_id')
+			->where('m.banco_id', (int) $bankId)
+			->where('m.meta_mes', (int) $month)
+			->where('m.meta_ano', (int) $year)
+			->where('m.anda_id', (int) $andaId);
 
-		$sql = "
-			SELECT
-				m.meta_id,
-				m.banco_id,
-				m.meta_mes,
-				m.meta_ano,
-				m.anda_id,
-				m.meta_valor,
-				m.def_sem,
-				m.sem_1,
-				m.sem_2,
-				m.sem_3,
-				m.sem_4,
-				m.sem_5,
-				m.regiao_id,
-				a.nome,
-				a.especie,
-				a.anda_neo,
-				a.ordem,
-				a.chave
-			FROM metas_andamentos AS m
-			JOIN andamentos AS a ON a.anda_id = m.anda_id
-			WHERE m.banco_id = ?
-			AND m.meta_mes = ?
-			AND m.meta_ano = ?
-			AND m.anda_id = ?
-		";
-
-		if ($regionId > 0) {
-			$sql .= " AND m.regiao_id = ?";
-			$sql .= " LIMIT 1";
+		if ((int) $regionId > 0) {
+			$query->where('m.regiao_id', (int) $regionId);
 		} else {
-			$sql .= " ORDER BY CASE WHEN m.regiao_id IS NULL THEN 0 ELSE 1 END, m.meta_id ASC LIMIT 1";
+			$query->orderByRaw('CASE WHEN m.regiao_id IS NULL THEN 0 ELSE 1 END')
+				->orderBy('m.meta_id');
 		}
 
-		$stmt = mysqli_prepare($this->connection, $sql);
-		if (!$stmt) {
-			return false;
-		}
+		$row = $query->first(array(
+			'm.meta_id',
+			'm.banco_id',
+			'm.meta_mes',
+			'm.meta_ano',
+			'm.anda_id',
+			'm.meta_valor',
+			'm.def_sem',
+			'm.sem_1',
+			'm.sem_2',
+			'm.sem_3',
+			'm.sem_4',
+			'm.sem_5',
+			'm.regiao_id',
+			'a.nome',
+			'a.especie',
+			'a.anda_neo',
+			'a.ordem',
+			'a.chave',
+		));
 
-		if ($regionId > 0) {
-			mysqli_stmt_bind_param($stmt, 'iiiii', $bankId, $month, $year, $andaId, $regionId);
-		} else {
-			mysqli_stmt_bind_param($stmt, 'iiii', $bankId, $month, $year, $andaId);
-		}
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$row = $result ? mysqli_fetch_assoc($result) : false;
-		mysqli_stmt_close($stmt);
-
-		return $row;
+		return $row ? (array) $row : false;
 	}
 
 	public function findCarteiraConditionByBankId($bankId)
 	{
-		$bankId = (int) $bankId;
-		$stmt = mysqli_prepare($this->connection, "SELECT carteira_vinc FROM carteira WHERE banco_id = ? AND carteira_condicao = 'Carteira' LIMIT 1");
-		if (!$stmt) {
-			return '';
-		}
+		$row = Carteira::query()
+			->select(array('carteira_vinc'))
+			->where('banco_id', (int) $bankId)
+			->where('carteira_condicao', 'Carteira')
+			->first();
 
-		mysqli_stmt_bind_param($stmt, 'i', $bankId);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$row = $result ? mysqli_fetch_assoc($result) : false;
-		mysqli_stmt_close($stmt);
-
-		return $row ? (string) $row['carteira_vinc'] : '';
+		return $row ? (string) $row->carteira_vinc : '';
 	}
 
 	public function listRegionIdsWithMetaRowsByBankMonthYear($bankId, $month, $year)
 	{
-		$bankId = (int) $bankId;
-		$month = (int) $month;
-		$year = (int) $year;
-		$stmt = mysqli_prepare($this->connection, "SELECT DISTINCT regiao_id FROM metas_andamentos WHERE banco_id = ? AND meta_mes = ? AND meta_ano = ? AND regiao_id IS NOT NULL ORDER BY regiao_id");
-		if (!$stmt) {
-			return array();
-		}
-
-		mysqli_stmt_bind_param($stmt, 'iii', $bankId, $month, $year);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$ids = array();
-		while ($result && ($row = mysqli_fetch_assoc($result))) {
-			$regionId = isset($row['regiao_id']) ? (int) $row['regiao_id'] : 0;
-			if ($regionId > 0) {
-				$ids[$regionId] = $regionId;
-			}
-		}
-		mysqli_stmt_close($stmt);
-
-		return array_values($ids);
+		return MetaAndamento::query()
+			->where('banco_id', (int) $bankId)
+			->where('meta_mes', (int) $month)
+			->where('meta_ano', (int) $year)
+			->whereNotNull('regiao_id')
+			->orderBy('regiao_id')
+			->pluck('regiao_id')
+			->map(function ($id) {
+				return (int) $id;
+			})
+			->unique()
+			->values()
+			->all();
 	}
 
 	public function listCarteiraCodesByBankId($bankId)
 	{
-		$bankId = (int) $bankId;
-		$stmt = mysqli_prepare($this->connection, "SELECT d.dados_cod FROM dados AS d JOIN carteira AS c ON c.banco_id = d.banco_id WHERE d.banco_id = ?");
-		if (!$stmt) {
-			return array();
-		}
-
-		mysqli_stmt_bind_param($stmt, 'i', $bankId);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$rows = array();
-		while ($result && ($row = mysqli_fetch_assoc($result))) {
-			$code = isset($row['dados_cod']) ? trim((string) $row['dados_cod']) : '';
-			if ($code !== '') {
-				$rows[$code] = $code;
-			}
-		}
-		mysqli_stmt_close($stmt);
-
-		return array_values($rows);
-	}
-
-	private function bindParams($stmt, $types, array $params)
-	{
-		$references = array();
-		$references[] = $types;
-
-		foreach ($params as $index => $value) {
-			$references[] = &$params[$index];
-		}
-
-		call_user_func_array('mysqli_stmt_bind_param', array_merge(array($stmt), $references));
+		return DB::table('dados as d')
+			->join('carteira as c', 'c.banco_id', '=', 'd.banco_id')
+			->where('d.banco_id', (int) $bankId)
+			->pluck('d.dados_cod')
+			->map(function ($code) {
+				return trim((string) $code);
+			})
+			->filter(function ($code) {
+				return $code !== '';
+			})
+			->unique()
+			->values()
+			->all();
 	}
 }
