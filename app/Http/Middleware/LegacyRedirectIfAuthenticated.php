@@ -41,7 +41,8 @@ class LegacyRedirectIfAuthenticated
     {
         $this->startLegacySession();
 
-        if (isset($_SESSION['usuarioID']) && isset($_SESSION['usuarioNome'])) {
+        if (($request->session()->has('usuarioID') && $request->session()->has('usuarioNome'))
+            || (isset($_SESSION['usuarioID']) && isset($_SESSION['usuarioNome']))) {
             return response('', 302)->header('Location', $this->legacyIndexUrl());
         }
 

@@ -17,7 +17,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 if (isset($_SESSION['usuarioID']) && isset($_SESSION['usuarioNome'])) {
-    header('Location: index.php');
+    header('Location: index');
     exit;
 }
 

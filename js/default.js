@@ -1,15 +1,15 @@
-
+﻿
 $(function() {
 	$('.date-picker').datepicker( {
-		dayNames: ['Domingo','Segunda','TerÃ§a','Quarta','Quinta','Sexta','SÃ¡bado'],
+		dayNames: ['Domingo','Segunda','TerÃƒÂ§a','Quarta','Quinta','Sexta','SÃƒÂ¡bado'],
 		dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
-		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','SÃ¡b','Dom'],
-		monthNames: ['Janeiro','Fevereiro','MarÃ§o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','SÃƒÂ¡b','Dom'],
+		monthNames: ['Janeiro','Fevereiro','MarÃƒÂ§o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
 		monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
-		nextText: 'PrÃ³ximo',
+		nextText: 'PrÃƒÂ³ximo',
 		prevText: 'Anterior',
 		closeText: 'OK',
-		currentText: 'MÃªs atual',
+		currentText: 'MÃƒÂªs atual',
         changeMonth: true,
         changeYear: true,
         showButtonPanel: true,
@@ -38,7 +38,7 @@ function msgbox(msg, bts){
 function mostrarErroData(){
 	$("#startDate").css("border","1px solid red");
 	$("#obg_date").fadeIn();
-	$("#obg_date").html("Inseir o mÃƒÂªs / ano!");
+	$("#obg_date").html("Inseir o mÃƒÆ’Ã‚Âªs / ano!");
 	setTimeout(function(){
 		$("#startDate").css("border","1px solid #ccc");
 		$("#obg_date").fadeOut();
@@ -137,7 +137,7 @@ function fc_edit_usu(valor1,valor2){
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
-			tt="Novo Usuário";
+			tt="Novo UsuÃ¡rio";
 			tu="criado";
 			$(".validateTips").text("Crie Um " + tt);
 			usuarioClientesReset();
@@ -150,9 +150,9 @@ function fc_edit_usu(valor1,valor2){
 			usuarioRegioesAtualizarModo();
 			sel_tipo(1, $("#setor_usu").val());
 		}else if(valor2=="U"){
-			tt="Editar Usuário";
+			tt="Editar UsuÃ¡rio";
 			tu="editado";
-			$(".validateTips").text("Edite o Usuário Abaixo");
+			$(".validateTips").text("Edite o UsuÃ¡rio Abaixo");
 		}
 
 		var abrirDialogUsuario = function(){
@@ -168,7 +168,7 @@ function fc_edit_usu(valor1,valor2){
 						var invalido = false;
 						$('.cls_usu').each(function(){
 							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-								alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
+								alert("O campo " + $(this).attr("title") + " ï¿½ obrigatï¿½rio ");
 								$(this).focus();
 								invalido = true;
 								return false;
@@ -179,7 +179,7 @@ function fc_edit_usu(valor1,valor2){
 							return false;
 						}
 						if($('.cls_usuario_cliente_input').length==0){
-							alert("Selecione ao menos um cliente para o usuário.");
+							alert("Selecione ao menos um cliente para o usuÃ¡rio.");
 							$("#banco_usu_pool").focus();
 							return false;
 						}
@@ -212,16 +212,16 @@ function fc_edit_usu(valor1,valor2){
 							   success: function(response){
 									if(response && response.ok===true){
 										$( "#dialog-edit-usu" ).dialog( "close" );
-										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Usuário " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
+										msgbox(valor2=="I"?"<br><table align='center'><tr><td>UsuÃ¡rio " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
 												AbrirModulo('usuarios');
 											}
 										});
 									}else if(response && response.code=="duplicate"){
-										alert("Usuário já cadastrado!");
+										alert("UsuÃ¡rio jÃ¡ cadastrado!");
 									}else{
-										alert((response && response.message) ? response.message : "Erro ao salvar o usuário.");
+										alert((response && response.message) ? response.message : "Erro ao salvar o usuÃ¡rio.");
 									}
 								}
 							});
@@ -257,7 +257,7 @@ function fc_edit_usu(valor1,valor2){
 			data: { flag: "E", id_usu: valor1, response_format: "json" },
 			success: function(response){
 				if(!response || response.ok!==true || !response.data){
-					alert((response && response.message) ? response.message : "Erro ao carregar os dados do usuário.");
+					alert((response && response.message) ? response.message : "Erro ao carregar os dados do usuÃ¡rio.");
 					return;
 				}
 				var ret = response.data || {};
@@ -286,7 +286,7 @@ function fc_edit_usu(valor1,valor2){
 			}
 		});
 	}
-	//função editar semana
+	//funÃ§Ã£o editar semana
 	function fc_edit_sem(valor1,valor2){
 		var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax_sem.php";
 
@@ -299,7 +299,7 @@ function fc_edit_usu(valor1,valor2){
 		}else if(valor2=="U"){
 			tt="Editar Semana";
 			tu="editada";
-			$(".validateTips").text("Edite o Usuário Abaixo");
+			$(".validateTips").text("Edite o UsuÃ¡rio Abaixo");
 		}
 
 		var abrirDialogSemana = function(){
@@ -330,7 +330,7 @@ function fc_edit_usu(valor1,valor2){
 										}
 									});
 								}else if(response && response.code=="duplicate"){
-									alert("Semana já cadastrada!");
+									alert("Semana jÃ¡ cadastrada!");
 								}else{
 									alert((response && response.message) ? response.message : "Erro ao salvar a semana.");
 								}
@@ -388,7 +388,7 @@ function fc_edit_usu(valor1,valor2){
 		});
 	}
 
-	//função editar setores
+	//funÃ§Ã£o editar setores
 	function fc_edit_setor(valor1,valor2){
 		var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax_setor.php";
 
@@ -425,7 +425,7 @@ function fc_edit_usu(valor1,valor2){
 							var mdados="";
 							$('.cls_setor').each(function(){
 								if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-									alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
+									alert("O campo " + $(this).attr("title") + " ï¿½ obrigatï¿½rio ");
 									$(this).focus();
 									return false;
 								}
@@ -446,7 +446,7 @@ function fc_edit_usu(valor1,valor2){
 											}
 										});
 									}else if(retorno_ajax==2){
-										alert("Setor já cadastrado!");
+										alert("Setor jÃ¡ cadastrado!");
 									}else{
 										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao administrador)");
 									}
@@ -471,6 +471,63 @@ function fc_edit_usu(valor1,valor2){
 		var clientAjaxUrl = window.arsClientAjaxUrl || "ajax_cliente.php";
 		var tt = "";
 		var tu = "";
+		var salvarCliente = function(){
+			var mdados="";
+			var invalido = false;
+			$('.cls_cliente').each(function(){
+				if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
+					alert("O campo " + $(this).attr("title") + " é obrigatório ");
+					$(this).focus();
+					invalido = true;
+					return false;
+				}
+				mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
+			});
+			if(invalido){
+				return false;
+			}
+			var carteiraPendente = $("#dados_name_pool").val();
+			if(carteiraPendente){
+				clienteCarteirasAdicionarValor(carteiraPendente, true);
+				$("#dados_name_pool").val("");
+			}
+			if($('.cls_cliente_carteira_input').length==0){
+				alert("Selecione ao menos uma carteira para o cliente.");
+				$("#dados_name_pool").focus();
+				return false;
+			}
+			var cartei="";
+			var totalCarteiras = 0;
+			var carteirasLista = [];
+			$('.cliente-carteiras-item').each(function(index){
+				var numero = index + 1;
+				var valorCarteira = $(this).attr("data-carteira");
+				totalCarteiras = numero;
+				carteirasLista.push(valorCarteira);
+				cartei += "dados_name_" + numero + "=" + escape(valorCarteira) + "&";
+			});
+			$.ajax({
+			   type: "POST",
+			   url:  clientAjaxUrl,
+			   dataType: "json",
+			   data: "flag=" + valor2 + "&response_format=json&" + mdados + "&cartei_num=" + totalCarteiras + "&dados_json=" + encodeURIComponent(JSON.stringify(carteirasLista)) + "&" + cartei,
+			   success: function(response){
+					if(response && response.ok===true){
+						$( "#dialog-edit-cliente" ).dialog( "close" );
+						msgbox("<br><table align='center'><tr><td>Cliente " + tu + " com sucesso !</td></tr></table><br>", {
+							Fechar: function(){
+								$( this ).dialog( "close" );
+								AbrirModulo('clientes');
+							}
+						});
+					}else if(response && response.code=="duplicate"){
+						alert("Cliente já cadastrado!");
+					}else{
+						alert((response && response.message) ? response.message : "Erro ao salvar o cliente.");
+					}
+				}
+			});
+		};
 		if(valor2=="I"){
 			tt="Novo Cliente";
 			tu="criado";
@@ -487,57 +544,7 @@ function fc_edit_usu(valor1,valor2){
 				height: 400,
 				width: 600,
 				buttons: {
-					Salvar: function() {
-						var mdados="";
-						$('.cls_cliente').each(function(){
-							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-								alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
-								$(this).focus();
-								return false;
-							}
-							mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
-						});
-						var carteiraPendente = $("#dados_name_pool").val();
-						if(carteiraPendente){
-							clienteCarteirasAdicionarValor(carteiraPendente, true);
-							$("#dados_name_pool").val("");
-						}
-						if($('.cls_cliente_carteira_input').length==0){
-							alert("Selecione ao menos uma carteira para o cliente.");
-							$("#dados_name_pool").focus();
-							return false;
-						}
-						var cartei="";
-						var totalCarteiras = 0;
-						var carteirasLista = [];
-						$('.cliente-carteiras-item').each(function(index){
-							var numero = index + 1;
-							var valorCarteira = $(this).attr("data-carteira");
-							totalCarteiras = numero;
-							carteirasLista.push(valorCarteira);
-							cartei += "dados_name_" + numero + "=" + escape(valorCarteira) + "&";
-						});
-						$.ajax({
-						   type: "POST",
-						   url:  clientAjaxUrl,
-						   data: "flag=" + valor2 + "&" + mdados + "&cartei_num=" + totalCarteiras + "&dados_json=" + encodeURIComponent(JSON.stringify(carteirasLista)) + "&" + cartei,
-						   success: function(retorno_ajax){
-								if(retorno_ajax==1){
-									$( "#dialog-edit-cliente" ).dialog( "close" );
-									msgbox("<br><table align='center'><tr><td>Cliente " + tu + " com sucesso !</td></tr></table><br>", {
-										Fechar: function(){
-											$( this ).dialog( "close" );
-											AbrirModulo('clientes');
-										}
-									});
-									}else if(retorno_ajax==2){
-										alert("JÃ¡ existe uma meta cadastrada para este cliente, mÃªs/ano, andamento e regiÃ£o.");
-									}else{
-									alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao administrador)");
-								}
-							}
-						});
-					},
+					Salvar: salvarCliente,
 					Sair: function() {
 						$( this ).dialog( "close" );
 					}
@@ -560,20 +567,25 @@ function fc_edit_usu(valor1,valor2){
 		$.ajax({
 			type: "POST",
 			url:  clientAjaxUrl,
-			data: "flag=E&banco_id=" + valor1,
-			success: function(retorno_ajax){
-				var ret = retorno_ajax.split("-|-");
+			dataType: "json",
+			data: { flag: "E", banco_id: valor1, response_format: "json" },
+			success: function(response){
+				if(!response || response.ok!==true || !response.data){
+					alert((response && response.message) ? response.message : "Erro ao carregar os dados do cliente.");
+					return;
+				}
+				var ret = response.data || {};
 				clienteCarteirasReset();
-				$("#banco_id").val(ret[0]);
-				$("#banco_name").val(ret[1]);
-				$("#banco_cod").val(ret[2]);
-				$("#banco_area option[value="+ret[4]+"]").attr("selected","selected");
-				$("#banco_status option[value="+ret[5]+"]").attr("selected","selected");
-				$("#banco_class").val(ret[6]);
-				$("#simulador").val(ret[7]);
-				$("#banco_curto").val(ret[8]);
-				var dadosSalvos = ret[9] ? ret[9].split("|||") : [];
-				if(dadosSalvos.length>0 && dadosSalvos[0]!=""){
+				$("#banco_id").val(ret.banco_id || "");
+				$("#banco_name").val(ret.banco_name || "");
+				$("#banco_cod").val(ret.banco_cod || "");
+				$("#banco_area").val(ret.banco_area || "");
+				$("#banco_status").val(ret.banco_status || "");
+				$("#banco_class").val(ret.banco_class || "");
+				$("#simulador").val(ret.simulador || "");
+				$("#banco_curto").val(ret.banco_curto || "");
+				var dadosSalvos = ret.dados_codes || [];
+				if(dadosSalvos.length>0){
 					for(var i=0;i<dadosSalvos.length;i++){
 						if(dadosSalvos[i]!=""){
 							clienteCarteirasAdicionarValor(dadosSalvos[i], true);
@@ -588,59 +600,7 @@ function fc_edit_usu(valor1,valor2){
 					height: 400,
 					width: 600,
 					buttons: {
-						Salvar: function() {
-							var mdados="";
-							$('.cls_cliente').each(function(){
-								if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-									alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
-									$(this).focus();
-									return false;
-								}
-								mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
-							});
-							/////pega as carteiras///////////
-							var carteiraPendente = $("#dados_name_pool").val();
-							if(carteiraPendente){
-								clienteCarteirasAdicionarValor(carteiraPendente, true);
-								$("#dados_name_pool").val("");
-							}
-							if($('.cls_cliente_carteira_input').length==0){
-								alert("Selecione ao menos uma carteira para o cliente.");
-								$("#dados_name_pool").focus();
-								return false;
-							}
-							var cartei="";
-							var totalCarteiras = 0;
-							var carteirasLista = [];
-							$('.cliente-carteiras-item').each(function(index){
-								var numero = index + 1;
-								var valorCarteira = $(this).attr("data-carteira");
-								totalCarteiras = numero;
-								carteirasLista.push(valorCarteira);
-								cartei += "dados_name_" + numero + "=" + escape(valorCarteira) + "&";
-							});
-							$.ajax({
-							   type: "POST",
-							   url:  clientAjaxUrl,
-							   data: "flag=" + valor2 + "&" + mdados + "&cartei_num=" + totalCarteiras + "&dados_json=" + encodeURIComponent(JSON.stringify(carteirasLista)) + "&" + cartei,
-							   success: function(retorno_ajax){
-									if(retorno_ajax==1){
-										$( "#dialog-edit-cliente" ).dialog( "close" );
-										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Cliente " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Cliente editado com sucesso !</td></tr></table><br>", {
-											Fechar: function(){
-												$( this ).dialog( "close" );
-												AbrirModulo('clientes');
-											}
-										});
-									}else if(retorno_ajax==2){
-										alert("Servidor já cadastrado!");
-									}else{
-										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao administrador)");
-									}
-								}
-							});
-
-						},
+						Salvar: salvarCliente,
 						Sair: function() {
 							$( this ).dialog( "close" );
 						}
@@ -795,7 +755,7 @@ function usuarioClientesAdicionarValor(clienteId, clienteNome, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Esse cliente já está vinculado ao usuário.");
+			alert("Esse cliente jÃ¡ estÃ¡ vinculado ao usuÃ¡rio.");
 		}
 		return false;
 	}
@@ -1098,7 +1058,7 @@ function andamentoTiposAdicionarValor(tipo, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Esse andamento já está vinculado.");
+			alert("Esse andamento jÃ¡ estÃ¡ vinculado.");
 		}
 		return false;
 	}
@@ -1169,7 +1129,7 @@ function fc_edit_andamento(valor1,valor2){
 					var invalido = false;
 					$(".cls_andamento").each(function(){
 						if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-							alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
+							alert("O campo " + $(this).attr("title") + " ï¿½ obrigatï¿½rio ");
 							$(this).focus();
 							invalido = true;
 							return false;
@@ -1201,7 +1161,7 @@ function fc_edit_andamento(valor1,valor2){
 									Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('andamentos'); }
 								});
 							}else if(response && response.code=="duplicate"){
-								alert("Andamento j� cadastrado!");
+								alert("Andamento jï¿½ cadastrado!");
 							}else{
 								alert((response && response.message) ? response.message : "Erro ao salvar o andamento.");
 							}
@@ -1256,11 +1216,87 @@ function fc_edit_metas(valor1,valor2){
 			$("#metas_num").val("1");
 			$("#inp1_1").show();
 		};
+		var abrirDialogMeta = function(){
+			$( "#dialog-edit-metas" ).dialog({
+				title: tt,
+				modal: true,
+				autoOpen: true,
+				height: 400,
+				width: 1080,
+				buttons: {
+					Salvar: function() {
+						var mdados="";
+						var invalido = false;
+						$('.cls_meta').each(function(){
+							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
+								alert("O campo " + $(this).attr("title") + " é obrigatório ");
+								$(this).focus();
+								invalido = true;
+								return false;
+							}
+							mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
+						});
+						if(invalido){
+							return false;
+						}
+						var metam="";
+						var seman="";
+						var defse="";
+						var numes=0;
+						$('.cls_metas2').each(function(){
+							numes++;
+							metam += $(this).attr("name")+"="+escape($(this).val())+"&"+"regiao_id_"+numes+"="+escape($("#regiao_id_"+numes).val())+"&"+"meta_valor_"+numes+"="+escape($("#meta_valor_"+numes).val())+"&";
+							if($("#def_sem_"+numes).prop("checked")==true){
+								defse += "def_sem_"+numes+"=Y&";
+							}else{
+								defse += "def_sem_"+numes+"=N&";
+							}
+							seman += "sem1_valor_"+numes+"="+escape($("#sem1_valor_"+numes).val())+"&";
+							seman += "sem2_valor_"+numes+"="+escape($("#sem2_valor_"+numes).val())+"&";
+							seman += "sem3_valor_"+numes+"="+escape($("#sem3_valor_"+numes).val())+"&";
+							seman += "sem4_valor_"+numes+"="+escape($("#sem4_valor_"+numes).val())+"&";
+							seman += "sem5_valor_"+numes+"="+escape($("#sem5_valor_"+numes).val())+"&";
+						});
+						$.ajax({
+						   type: "POST",
+						   url:  metaAjaxUrl,
+						   dataType: "json",
+						   data: "flag=" + valor2 + "&response_format=json&" + mdados + metam + seman + defse + "&numes=" + numes,
+						   success: function(response){
+						 		if(response && response.ok===true){
+									$( "#dialog-edit-metas" ).dialog( "close" );
+									msgbox(valor2=="I"?"<br><table align='center'><tr><td>Meta(s) " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Meta editada com sucesso !</td></tr></table><br>", {
+										Fechar: function(){
+											$( this ).dialog( "close" );
+											AbrirModulo('metas');
+										}
+									});
+								}else if(response && response.code=="duplicate"){
+									alert("Meta já cadastrada!");
+								}else{
+									alert((response && response.message) ? response.message : "Erro ao salvar a meta.");
+								}
+							}
+						});
+
+					},
+					Sair: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				close: function( event, ui ) {
+					resetMetaDialog();
+				}
+			});
+		};
 		if(valor2=="I"){
 			tt="Nova Meta";
 			tu="criada(s)";
 			$(".validateMetas").text("Crie Um " + tt);
 			resetMetaDialog();
+			$("#regiao_id_1").val("");
+			abrirDialogMeta();
+			return;
 		}else if(valor2=="U"){
 			tt="Editar Meta";
 			tu="editada(s)";
@@ -1269,127 +1305,89 @@ function fc_edit_metas(valor1,valor2){
 		$.ajax({
 			type: "POST",
 			url:  metaAjaxUrl,
-			data: "flag=E&meta_id=" + valor1,
-			success: function(retorno_ajax){
-				var ret = retorno_ajax.split("-|-");
-				if(valor2!="I"){
+			dataType: "json",
+			data: { flag: "E", meta_id: valor1, response_format: "json" },
+			success: function(response){
+				if(!response || response.ok!==true || !response.data){
+					alert((response && response.message) ? response.message : "Erro ao carregar os dados da meta.");
+					return;
+				}
+				var ret = response.data || {};
 
-					///verifica se as semanas foram definidas individualmente
-					if(ret[6]=="Y"){
-						$("#def_sem_1").attr("checked",true);
-						$(".sem_1").show();
-						$("#meta_valor_1").attr("readonly",true);
-					}else{
-						$("#def_sem_1").attr("checked",false);
-						$(".sem_1").hide();
-						$("#meta_valor_1").attr("readonly",false);
-					}
+				if((ret.def_sem || "N")=="Y"){
+					$("#def_sem_1").attr("checked",true);
+					$(".sem_1").show();
+					$("#meta_valor_1").attr("readonly",true);
+				}else{
+					$("#def_sem_1").attr("checked",false);
+					$(".sem_1").hide();
+					$("#meta_valor_1").attr("readonly",false);
+				}
 
-					$("#meta_id").val(ret[0]);
-					$("#banco_id").val(ret[1]);
-					$("#meta_mes").val(ret[2]);
-					$("#meta_ano").val(ret[3]);
-					$("#meta_name_1").val(ret[4]);
-					$("#regiao_id_1").val(ret[12]);
-					$("#meta_valor_1").val(ret[5]);
-					$("#sem1_valor_1").val(ret[7]);
-					$("#sem2_valor_1").val(ret[8]);
-					$("#sem3_valor_1").val(ret[9]);
-					$("#sem4_valor_1").val(ret[10]);
-					$("#sem5_valor_1").val(ret[11]);
+				$("#meta_id").val(ret.meta_id || "");
+				$("#banco_id").val(ret.banco_id || "");
+				$("#meta_mes").val(ret.meta_mes || "");
+				$("#meta_ano").val(ret.meta_ano || "");
+				$("#meta_name_1").val(ret.anda_id || "");
+				$("#regiao_id_1").val(ret.regiao_id || "");
+				$("#meta_valor_1").val(ret.meta_valor || "");
+				$("#sem1_valor_1").val(ret.sem_1 || "");
+				$("#sem2_valor_1").val(ret.sem_2 || "");
+				$("#sem3_valor_1").val(ret.sem_3 || "");
+				$("#sem4_valor_1").val(ret.sem_4 || "");
+				$("#sem5_valor_1").val(ret.sem_5 || "");
 
-					var espe = $("#meta_name_1 option:selected").attr("especie");
-					if(espe==2){
-						$("#meta_valor_1").setMask("decimal");
-						$(".sem_1").setMask("decimal");
-						if(ret[6]=="Y"){
-							somarMeta(1);
-						}
-					}else{
-						//defini os valores se estes não forem dinheiro
-						$("#meta_valor_1").val(parseInt(ret[5],10) || 0);
-						$("#sem1_valor_1").val(parseInt(ret[7],10) || 0);
-						$("#sem2_valor_1").val(parseInt(ret[8],10) || 0);
-						$("#sem3_valor_1").val(parseInt(ret[9],10) || 0);
-						$("#sem4_valor_1").val(parseInt(ret[10],10) || 0);
-						$("#sem5_valor_1").val(parseInt(ret[11],10) || 0);
-
-						$("#meta_valor_1").setMask("integer");
-						$(".sem_1").setMask("integer");
-						if(ret[6]=="Y"){
-							somarMeta(1);
-						}
+				var espe = $("#meta_name_1 option:selected").attr("especie");
+				if(espe==2){
+					$("#meta_valor_1").setMask("decimal");
+					$(".sem_1").setMask("decimal");
+					if((ret.def_sem || "N")=="Y"){
+						somarMeta(1);
 					}
 				}else{
-					$("#regiao_id_1").val("");
+					$("#meta_valor_1").val(parseInt(ret.meta_valor,10) || 0);
+					$("#sem1_valor_1").val(parseInt(ret.sem_1,10) || 0);
+					$("#sem2_valor_1").val(parseInt(ret.sem_2,10) || 0);
+					$("#sem3_valor_1").val(parseInt(ret.sem_3,10) || 0);
+					$("#sem4_valor_1").val(parseInt(ret.sem_4,10) || 0);
+					$("#sem5_valor_1").val(parseInt(ret.sem_5,10) || 0);
+					$("#meta_valor_1").setMask("integer");
+					$(".sem_1").setMask("integer");
+					if((ret.def_sem || "N")=="Y"){
+						somarMeta(1);
+					}
 				}
-				$( "#dialog-edit-metas" ).dialog({
-					title: tt,
-					modal: true,
-					autoOpen: true,
-					height: 400,
-					width: 1080,
-					buttons: {
-						Salvar: function() {
-							var mdados="";
-							$('.cls_meta').each(function(){
-								if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-									alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
-									$(this).focus();
-									return false;
-								}
-								mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
-							});
-							/////pega as metas///////////
-							var metam="";
-							var seman="";
-							var defse="";
-							var numes=0;
-							$('.cls_metas2').each(function(){
-								numes++;
-								metam += $(this).attr("name")+"="+escape($(this).val())+"&"+"regiao_id_"+numes+"="+escape($("#regiao_id_"+numes).val())+"&"+"meta_valor_"+numes+"="+escape($("#meta_valor_"+numes).val())+"&";
-								if($("#def_sem_"+numes).prop("checked")==true){
-									defse += "def_sem_"+numes+"=Y&";
-								}else{
-									defse += "def_sem_"+numes+"=N&";
-								}
-								seman += "sem1_valor_"+numes+"="+escape($("#sem1_valor_"+numes).val())+"&";
-								seman += "sem2_valor_"+numes+"="+escape($("#sem2_valor_"+numes).val())+"&";
-								seman += "sem3_valor_"+numes+"="+escape($("#sem3_valor_"+numes).val())+"&";
-								seman += "sem4_valor_"+numes+"="+escape($("#sem4_valor_"+numes).val())+"&";
-								seman += "sem5_valor_"+numes+"="+escape($("#sem5_valor_"+numes).val())+"&";
-							});
-							$.ajax({
-							   type: "POST",
-							   url:  metaAjaxUrl,
-							   data: "flag=" + valor2 + "&" + mdados + metam + seman + defse + "&numes=" + numes,
-							   success: function(retorno_ajax){
-								 	if(retorno_ajax==1){
-										$( "#dialog-edit-metas" ).dialog( "close" );
-										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Meta(s) " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Meta editada com sucesso !</td></tr></table><br>", {
-											Fechar: function(){
-												$( this ).dialog( "close" );
-												AbrirModulo('metas');
-											}
-										});
-									}else if(retorno_ajax==2){
-										alert("Servidor já cadastrado!");
-									}else{
-										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao administrador)");
-									}
-								}
-							});
 
-						},
-						Sair: function() {
-							$( this ).dialog( "close" );
+				abrirDialogMeta();
+			}
+		});
+	}
+	function fc_del_metas(valor1,valor2){
+		var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax_metas.php";
+		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a meta <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+			"Sim": function(){
+				$.ajax({
+					type: "POST",
+					url:  metaAjaxUrl,
+					dataType: "json",
+					data: { flag: "D", meta_id: valor1, response_format: "json" },
+					success: function(response){
+						$( this ).dialog( "close" );
+						if(response && response.ok===true){
+							msgbox("<br><table align='center'><tr><td>Meta deletada com sucesso !</td></tr></table><br>",{
+								Fechar: function(){
+									$( this ).dialog( "close" );
+									AbrirModulo('metas');
+								}
+							});
+						}else{
+							alert((response && response.message) ? response.message : "Erro ao excluir a meta.");
 						}
-					},
-					close: function( event, ui ) {
-						resetMetaDialog();
 					}
 				});
-				//alert($("#nivel_usu").find("option[value='USU']").attr("selected","selected"));
+			},
+			"Não": function(){
+				$( this ).dialog( "close" );
 			}
 		});
 	}
@@ -1400,10 +1398,11 @@ function fc_edit_metas(valor1,valor2){
 				$.ajax({
 					type: "POST",
 					url:  clientAjaxUrl,
-					data: "flag=D&banco_id=" + valor1,
-					success: function(retorno_ajax){
+					dataType: "json",
+					data: { flag: "D", banco_id: valor1, response_format: "json" },
+					success: function(response){
 						$( this ).dialog( "close" );
-						if(retorno_ajax==1){
+						if(response && response.ok===true){
 							msgbox("<br><table align='center'><tr><td>Cliente deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
@@ -1411,7 +1410,7 @@ function fc_edit_metas(valor1,valor2){
 								}
 							});
 						}else{
-							alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao administrador)");
+							alert((response && response.message) ? response.message : "Erro ao excluir o cliente.");
 						}
 					}
 				});
@@ -1442,7 +1441,7 @@ function fc_edit_metas(valor1,valor2){
 					}
 				});
 			},
-			"Não": function(){ $( this ).dialog( "close" ); }
+			"NÃ£o": function(){ $( this ).dialog( "close" ); }
 		});
 	}
 	function fc_edit_regiao(valor1,valor2){
@@ -1576,7 +1575,7 @@ function fc_edit_metas(valor1,valor2){
 	}
 	function fc_del_usu(valor1,valor2){
 		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuário <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuÃ¡rio <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
@@ -1586,27 +1585,27 @@ function fc_edit_metas(valor1,valor2){
 					success: function(response){
 						$( this ).dialog( "close" );
 						if(response && response.ok===true){
-							msgbox("<br><table align='center'><tr><td>Usuário deletado com sucesso !</td></tr></table><br>",{
+							msgbox("<br><table align='center'><tr><td>UsuÃ¡rio deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
 									AbrirModulo('usuarios');
 								}
 							});
 						}else{
-							alert((response && response.message) ? response.message : "Erro ao excluir o usuário.");
+							alert((response && response.message) ? response.message : "Erro ao excluir o usuÃ¡rio.");
 						}
 					}
 				});
 				//AbrirModulo('usuarios');
 			},
-			"Não": function(){
+			"NÃ£o": function(){
 				$( this ).dialog( "close" );
 			}
 		});
 	}
 	function fc_del_sem(valor1,valor2){
 		var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax_sem.php";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a semana do mês: <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a semana do mÃªs: <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
@@ -1629,7 +1628,7 @@ function fc_edit_metas(valor1,valor2){
 				});
 				//AbrirModulo('usuarios');
 			},
-			"Não": function(){
+			"NÃ£o": function(){
 				$( this ).dialog( "close" );
 			}
 		});
@@ -1659,7 +1658,7 @@ function fc_edit_metas(valor1,valor2){
 				});
 				//AbrirModulo('usuarios');
 			},
-			"Não": function(){
+			"NÃ£o": function(){
 				$( this ).dialog( "close" );
 			}
 		});
@@ -1673,12 +1672,12 @@ function fc_edit_metas(valor1,valor2){
 	function validaCaractaer(pEvent){
 		if(navigator.appName.indexOf('Internet Explorer')>0){
 			if ((pEvent.keyCode<97 || pEvent.keyCode>122)&&(pEvent.keyCode<48 || pEvent.keyCode>57)){
-				alert("Caractere não aceito para esse campo");
+				alert("Caractere nÃ£o aceito para esse campo");
 				pEvent.keyCode = 0;
 			}
 		}else{
 			if ((pEvent.which<97 || pEvent.which>122)&&(pEvent.which<48 || pEvent.which>57)) {
-				alert("Caractere não aceito para esse campo");
+				alert("Caractere nÃ£o aceito para esse campo");
 				pEvent.which = 0;
 			}
 		}
@@ -1686,7 +1685,7 @@ function fc_edit_metas(valor1,valor2){
 
 function diasemana(valor){
 	if(valor.value.length==10){
-		var semana = ["domingo", "segunda-feira", "terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
+		var semana = ["domingo", "segunda-feira", "terÃ§a-feira","quarta-feira","quinta-feira","sexta-feira","sÃ¡bado"];
 		var data = $(valor).val();
 		var arr = data.split("/").reverse();
 		var teste = new Date(arr[0], arr[1] - 1, arr[2]);
@@ -1699,7 +1698,7 @@ function fc_teste_senha(valor1,valor2,valor3){
 	if(valor1!=valor2){
 		$("#senha_usu1").css("border","1px solid red");
 		$("#senha_usu2").css("border","1px solid red");
-		return "Senhas não são iguais";
+		return "Senhas nÃ£o sÃ£o iguais";
 	}else if(valor1=="" && valor3=="I"){
 		$("#senha_usu1").css("border","1px solid red");
 		$("#senha_usu2").css("border","1px solid red");
@@ -1708,13 +1707,13 @@ function fc_teste_senha(valor1,valor2,valor3){
 		if((valor1!="" && valor3=="U" && valor1.length<4) || (valor1.length<4 && valor3=="I")){
 			$("#senha_usu1").css("border","1px solid red");
 			$("#senha_usu2").css("border","1px solid red");
-			return "Sua senha deve conter no mínimo 4 caracteres!";
+			return "Sua senha deve conter no mÃ­nimo 4 caracteres!";
 		}else{
 			var er = /[A-Za-z0-9_\-\.]{4,}/;
 			if((er.test(valor1)==false && valor1!="" && valor3=="U") || (er.test(valor1)==false && valor3=="I")){
 				$("#senha_usu1").css("border","1px solid red");
 				$("#senha_usu2").css("border","1px solid red");
-				return "Senha contém caractere inválido!";
+				return "Senha contÃ©m caractere invÃ¡lido!";
 			}else{
 				return "";
 			}
@@ -1729,7 +1728,7 @@ function validaEmail(mail){
 		return "Informe seu e-mail!";
 	}else if(er.test(mail) == false){
 		$("#email_usu").css("border","1px solid red");
-		return "E-mail inválido!";
+		return "E-mail invÃ¡lido!";
 	}else{
 		return "";
 	}
@@ -1743,12 +1742,12 @@ function addMes(data,mes){
 function regiaoSlugify(valor){
 	return String(valor || "")
 		.toLowerCase()
-		.replace(/[áàãâä]/g, "a")
-		.replace(/[éèêë]/g, "e")
-		.replace(/[íìîï]/g, "i")
-		.replace(/[óòõôö]/g, "o")
-		.replace(/[úùûü]/g, "u")
-		.replace(/ç/g, "c")
+		.replace(/[Ã¡Ã Ã£Ã¢Ã¤]/g, "a")
+		.replace(/[Ã©Ã¨ÃªÃ«]/g, "e")
+		.replace(/[Ã­Ã¬Ã®Ã¯]/g, "i")
+		.replace(/[Ã³Ã²ÃµÃ´Ã¶]/g, "o")
+		.replace(/[ÃºÃ¹Ã»Ã¼]/g, "u")
+		.replace(/Ã§/g, "c")
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-+|-+$/g, "");
 }
@@ -1884,7 +1883,7 @@ function sel_tipo(valor1,valor2,callback){
 				if(valor2 == 1 || valor2 == "1"){
 					$("#sel_anda").html("Selecionar Andamentos:");
 				}else if(valor2 == 2 || valor2 == "2"){
-					$("#sel_anda").html("Selecionar Lan�amentos:");
+					$("#sel_anda").html("Selecionar Lanï¿½amentos:");
 				}
 				andamentoTiposAtualizarPool();
 			}else if(valor1 == 1){
@@ -1947,6 +1946,8 @@ function somarMeta(valor2){
 		$("#meta_valor_"+valor2).val(mvat);
 	}
 }
+
+
 
 
 
