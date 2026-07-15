@@ -36,12 +36,12 @@ class HomeController
 		return response($this->renderPage($request->all(), $_SESSION, $this->buildScriptUrl($request, 'index.php')));
 	}
 
-	public function webStatePage(Request $request, $hidSend)
+	public function webSectionPage(Request $request, $section)
 	{
 		$this->ensureLegacyEnvironment();
 
 		$input = $request->all();
-		$input['hid_send'] = (int) $hidSend;
+		$input['section'] = (string) $section;
 
 		return response($this->renderPage($input, $_SESSION, $this->buildScriptUrl($request, 'index.php')));
 	}
@@ -148,9 +148,6 @@ class HomeController
 		$usu_Cliente = isset($_SESSION['usuarioCliente']) ? $_SESSION['usuarioCliente'] : 0;
 		$usu_nivel = isset($_SESSION['usuarioNivel']) ? $_SESSION['usuarioNivel'] : '';
 		$usu_id = isset($_SESSION['usuarioID']) ? $_SESSION['usuarioID'] : 0;
-		$hid_send = isset($input['hid_send']) ? $input['hid_send'] : '';
-		$hid_area = isset($input['hid_area']) ? $input['hid_area'] : '';
-		$hid_flag = isset($input['hid_flag']) ? $input['hid_flag'] : '';
 		$mesano = isset($GLOBALS['arrMonths']) ? $GLOBALS['arrMonths'][(int) date('m')] . ' / ' . date('Y') : date('m') . ' / ' . date('Y');
 
 		ob_start();

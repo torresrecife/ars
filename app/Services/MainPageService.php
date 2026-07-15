@@ -28,15 +28,14 @@ class MainPageService
 	{
 		$userContext = $this->buildUserContext($session);
 		$state = $this->resolveState($input);
-		$currentSection = $this->resolveCurrentSection($state);
 		$monthYearLabel = $this->months[(int) date('m')] . ' / ' . date('Y');
 
 		return array(
 			'user' => $userContext,
 			'state' => $state,
-			'currentSection' => $currentSection,
+			'currentSection' => $state['section'],
 			'monthYearLabel' => $monthYearLabel,
-			'topAction' => $this->resolveTopAction($currentSection),
+			'topAction' => $this->resolveTopAction($state['section']),
 			'canAdmin' => in_array($userContext['level'], array('ADM', 'GER'), true),
 			'content' => $this->resolveContent($state, $userContext, $monthYearLabel),
 		);
@@ -67,13 +66,15 @@ class MainPageService
 
 	private function resolveState(array $input)
 	{
-		$areaId = isset($input['area_id']) ? (string) $input['area_id'] : '';
-		$bankId = isset($input['bank_id']) ? (string) $input['bank_id'] : '';
+		$section = isset($input['section']) ? (string) $input['section'] : '';
+		if ($section === '') {
+			$section = (isset($input['geral']) && (int) $input['geral'] === 1) ? 'relatorio-semanal' : 'inicio';
+		}
 
 		return array(
-			'hid_send' => isset($input['hid_send']) ? (int) $input['hid_send'] : 0,
-			'area_id' => $areaId,
-			'bank_id' => $bankId,
+			'section' => $section,
+			'area_id' => isset($input['area_id']) ? (string) $input['area_id'] : '',
+			'bank_id' => isset($input['bank_id']) ? (string) $input['bank_id'] : '',
 			'geral' => isset($input['geral']) ? (int) $input['geral'] : 0,
 			'regiao_id' => isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0,
 		);
@@ -82,56 +83,22 @@ class MainPageService
 	private function resolveTopAction($currentSection)
 	{
 		$actions = array(
-			'usuarios' => array('class' => 'newuser', 'label' => 'Novo UsuÃ¡rio', 'js' => 'fc_edit_usu("", "I");'),
+			'usuarios' => array('class' => 'newuser', 'label' => 'Novo UsuÃƒÂ¡rio', 'js' => 'fc_edit_usu("", "I");'),
 			'setores' => array('class' => 'newsetor', 'label' => 'Novo Setor', 'js' => 'fc_edit_setor("", "I");'),
 			'clientes' => array('class' => 'newsetor', 'label' => 'Novo Cliente', 'js' => 'fc_edit_cliente("", "I");'),
 			'andamentos' => array('class' => 'newsetor', 'label' => 'Novo Andamento', 'js' => 'fc_edit_andamento("", "I");'),
 			'metas-admin' => array('class' => 'newsetor', 'label' => 'Nova Meta', 'js' => 'fc_edit_metas("", "I");'),
 			'semanas' => array('class' => 'newsetor', 'label' => 'Nova Semana', 'js' => 'fc_edit_sem("", "I");'),
-			'regioes' => array('class' => 'newsetor', 'label' => 'Nova RegiÃ£o', 'js' => 'fc_edit_regiao("", "I");'),
+			'regioes' => array('class' => 'newsetor', 'label' => 'Nova RegiÃƒÂ£o', 'js' => 'fc_edit_regiao("", "I");'),
 		);
 
 		return isset($actions[$currentSection]) ? $actions[$currentSection] : null;
 	}
 
-	private function resolveCurrentSection(array $state)
-	{
-		switch ((int) $state['hid_send']) {
-			case 1:
-				return 'carteiras';
-			case 2:
-				return 'painel';
-			case 3:
-				return 'producao';
-			case 4:
-				return ((int) $state['geral'] === 1) ? 'relatorio-semanal' : 'relatorio-mensal';
-			case 5:
-				return 'admin';
-			case 8:
-				return 'usuarios';
-			case 9:
-				return 'setores';
-			case 11:
-				return 'clientes';
-			case 12:
-				return 'andamentos';
-			case 13:
-				return 'metas-select';
-			case 14:
-				return 'metas-admin';
-			case 15:
-				return 'semanas';
-			case 16:
-				return 'regioes';
-			default:
-				return 'inicio';
-		}
-	}
-
 	private function resolveContent(array $state, array $user, $monthYearLabel)
 	{
-		switch ($state['hid_send']) {
-			case 1:
+		switch ($state['section']) {
+			case 'carteiras':
 				return array(
 					'type' => 'view',
 					'view' => 'index/carteira',
@@ -144,9 +111,9 @@ class MainPageService
 						'selectedRegionId' => $state['regiao_id'],
 					),
 				);
-			case 2:
+			case 'painel':
 				return array('type' => 'controller', 'controller' => 'dashboard-panel', 'spacer' => true);
-			case 3:
+			case 'producao':
 				return array(
 					'type' => 'view',
 					'view' => 'index/producao',
@@ -159,13 +126,19 @@ class MainPageService
 						'userLevel' => $user['level'],
 					),
 				);
-			case 4:
+			case 'relatorio-semanal':
 				return array(
 					'type' => 'controller',
-					'controller' => ((int) $state['geral'] === 1) ? 'general-production-weekly' : 'general-production-monthly',
+					'controller' => 'general-production-weekly',
 					'spacer' => true
 				);
-			case 5:
+			case 'relatorio-mensal':
+				return array(
+					'type' => 'controller',
+					'controller' => 'general-production-monthly',
+					'spacer' => true
+				);
+			case 'admin':
 				return array(
 					'type' => 'view',
 					'view' => 'admin/index',
@@ -175,15 +148,15 @@ class MainPageService
 						'banks' => $this->repository->listAdminBanks($user['sectorId'], $user['clientIds']),
 					),
 				);
-			case 8:
+			case 'usuarios':
 				return array('type' => 'controller', 'controller' => 'user-admin');
-			case 9:
+			case 'setores':
 				return array('type' => 'controller', 'controller' => 'sector-admin');
-			case 11:
+			case 'clientes':
 				return array('type' => 'controller', 'controller' => 'client-admin');
-			case 12:
+			case 'andamentos':
 				return array('type' => 'controller', 'controller' => 'andamento-admin');
-			case 13:
+			case 'metas-select':
 				return array(
 					'type' => 'view',
 					'view' => 'index/metas-select',
@@ -192,12 +165,13 @@ class MainPageService
 						'monthYearLabel' => $monthYearLabel,
 					),
 				);
-			case 14:
+			case 'metas-admin':
 				return array('type' => 'controller', 'controller' => 'meta-admin');
-			case 15:
+			case 'semanas':
 				return array('type' => 'controller', 'controller' => 'week-admin');
-			case 16:
+			case 'regioes':
 				return array('type' => 'controller', 'controller' => 'region-admin');
+			case 'inicio':
 			default:
 				return array(
 					'type' => 'view',

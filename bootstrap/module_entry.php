@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 
 if (!function_exists('ars_run_module_entry')) {
-	function ars_run_module_entry($hidSend)
+	function ars_run_module_entry($section)
 	{
 		define('LARAVEL_START', microtime(true));
 
@@ -17,10 +17,10 @@ if (!function_exists('ars_run_module_entry')) {
 		$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 		$kernel->bootstrap();
 
-		$resolvedHidSend = is_callable($hidSend) ? (int) call_user_func($hidSend, $request) : (int) $hidSend;
+		$resolvedSection = is_callable($section) ? (string) call_user_func($section, $request) : (string) $section;
 
 		$controller = $app->make(App\Http\Controllers\HomeController::class);
-		$response = $controller->webStatePage($request, $resolvedHidSend);
+		$response = $controller->webSectionPage($request, $resolvedSection);
 
 		$response->send();
 
