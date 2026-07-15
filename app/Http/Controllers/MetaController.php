@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ValidatesLegacyFormRequest;
+use App\Http\Requests\MetaStoreRequest;
+use App\Http\Requests\MetaUpdateRequest;
 use App\Services\MetaService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
 class MetaController
 {
+	use ValidatesLegacyFormRequest;
+
 	/** @var MetaService */
 	private $metaService;
 
@@ -112,6 +117,12 @@ class MetaController
 
 		if (isset($input['flag']) && (string) $input['flag'] === 'E') {
 			$headers['Content-Type'] = 'text/html; charset=ISO-8859-1';
+		}
+		if (isset($input['flag']) && (string) $input['flag'] === 'I' && !$this->validateLegacyFormRequest($request, MetaStoreRequest::class)) {
+			return response('0', 200, $headers);
+		}
+		if (isset($input['flag']) && (string) $input['flag'] === 'U' && !$this->validateLegacyFormRequest($request, MetaUpdateRequest::class)) {
+			return response('0', 200, $headers);
 		}
 
 		return response($this->ajax($input), 200, $headers);

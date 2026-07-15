@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ValidatesLegacyFormRequest;
+use App\Http\Requests\AndamentoStoreRequest;
+use App\Http\Requests\AndamentoUpdateRequest;
 use App\Services\AndamentoAdminService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
 class AndamentoAdminController
 {
+	use ValidatesLegacyFormRequest;
+
 	/** @var AndamentoAdminService */
 	private $service;
 
@@ -44,12 +49,22 @@ class AndamentoAdminController
 		}
 
 		if ($flag === 'I') {
+			if (!$this->validateLegacyFormRequest($request, AndamentoStoreRequest::class)) {
+				return response('0', 200, array(
+					'Content-Type' => 'text/plain; charset=UTF-8',
+				));
+			}
 			return response($this->service->create($input), 200, array(
 				'Content-Type' => 'text/plain; charset=UTF-8',
 			));
 		}
 
 		if ($flag === 'U') {
+			if (!$this->validateLegacyFormRequest($request, AndamentoUpdateRequest::class)) {
+				return response('0', 200, array(
+					'Content-Type' => 'text/plain; charset=UTF-8',
+				));
+			}
 			return response($this->service->update($input), 200, array(
 				'Content-Type' => 'text/plain; charset=UTF-8',
 			));

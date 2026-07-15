@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ValidatesLegacyFormRequest;
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Services\UserAdminService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
 class UserAdminController
 {
+	use ValidatesLegacyFormRequest;
+
 	/** @var UserAdminService */
 	private $service;
 
@@ -53,6 +58,14 @@ class UserAdminController
 
 	public function webAjax(Request $request)
 	{
+		$flag = (string) $request->input('flag', '');
+		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, UserStoreRequest::class)) {
+			return response('0', 200, array('Content-Type' => 'text/plain; charset=UTF-8'));
+		}
+		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, UserUpdateRequest::class)) {
+			return response('0', 200, array('Content-Type' => 'text/plain; charset=UTF-8'));
+		}
+
 		return response($this->ajax($request->all()), 200, array(
 			'Content-Type' => 'text/plain; charset=UTF-8',
 		));

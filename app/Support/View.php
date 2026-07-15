@@ -16,6 +16,12 @@ class View
 
 	public function render($view, array $data = array())
 	{
+		$bladeView = str_replace('/', '.', (string) $view);
+		$bladeFile = $this->basePath . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . str_replace('.', DIRECTORY_SEPARATOR, $bladeView) . '.blade.php';
+		if (is_file($bladeFile) && function_exists('app')) {
+			return app('view')->make($bladeView, $data)->render();
+		}
+
 		$viewFile = $this->basePath . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $view) . '.php';
 		if (!is_file($viewFile)) {
 			return '';
