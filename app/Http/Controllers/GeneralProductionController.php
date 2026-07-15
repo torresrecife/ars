@@ -34,19 +34,11 @@ class GeneralProductionController
 
 	public function webWeekly(Request $request)
 	{
-		if (session_status() !== PHP_SESSION_ACTIVE) {
-			session_start();
-		}
-
-		return response($this->weekly($request->all(), $_SESSION));
+		return response($this->weekly($request->all(), $request->session()->all()));
 	}
 
 	public function webMonthly(Request $request)
 	{
-		if (session_status() !== PHP_SESSION_ACTIVE) {
-			session_start();
-		}
-
-		return response($this->monthly($request->all(), $_SESSION));
+		return response($this->monthly($request->all(), $request->session()->all()));
 	}
 }

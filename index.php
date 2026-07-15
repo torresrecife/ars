@@ -13,9 +13,6 @@ $requestPath = (string) parse_url((string) $request->server('REQUEST_URI', ''), 
 $isDirectIndexRequest = basename($requestPath) === 'index.php';
 
 if ($isDirectIndexRequest) {
-	$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-	$kernel->bootstrap();
-
 	if (session_status() === PHP_SESSION_ACTIVE && session_name() !== 'PHPSESSID') {
 		session_write_close();
 	}
@@ -28,17 +25,13 @@ if ($isDirectIndexRequest) {
 		session_start();
 	}
 
-	$authService = $app->make(App\Services\AuthService::class);
-	if (!$authService->currentUser()) {
+	if (!isset($_SESSION['usuarioID']) || !isset($_SESSION['usuarioNome'])) {
 		header('Location: login.php', true, 302);
 		exit;
 	}
 
-	$controller = $app->make(App\Http\Controllers\HomeController::class);
-	$response = $controller->webIndex($request);
-	$response->send();
-	$kernel->terminate($request, $response);
-	return;
+	header('Location: index', true, 302);
+	exit;
 }
 
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);

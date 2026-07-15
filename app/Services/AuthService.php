@@ -89,15 +89,27 @@ class AuthService
 
 	public function storeUserSession(array $user)
 	{
-		if (session_status() !== PHP_SESSION_ACTIVE) {
-			session_start();
-		}
-
 		$this->syncSessionContext($user, true);
 	}
 
 	public function clearUserSession()
 	{
+		if ($this->hasLaravelSessionStore()) {
+			session()->forget(array(
+				'usuarioID',
+				'usuarioNome',
+				'usuarioNivel',
+				'usuarioST',
+				'usuarioSetor',
+				'usuarioCliente',
+				'usuarioRegiaoModo',
+				'usuarioRegiaoIds',
+				'usuarioRegiaoUfs',
+				'usuarioLogin',
+				'usuarioSenha',
+			));
+		}
+
 		unset(
 			$_SESSION['usuarioID'],
 			$_SESSION['usuarioNome'],
@@ -115,41 +127,62 @@ class AuthService
 
 	public function currentUser()
 	{
-		if (!isset($_SESSION['usuarioID'])) {
+		$userId = null;
+		if ($this->hasLaravelSessionStore() && session()->has('usuarioID')) {
+			$userId = session('usuarioID');
+		} elseif (isset($_SESSION['usuarioID'])) {
+			$userId = $_SESSION['usuarioID'];
+		}
+
+		if (empty($userId)) {
 			return false;
 		}
 
-		return $this->users->findById($_SESSION['usuarioID']);
+		return $this->users->findById($userId);
 	}
 
 	public function syncSessionContext(array $user, $regenerateId = false)
 	{
-		if (session_status() !== PHP_SESSION_ACTIVE) {
-			session_start();
-		}
-
-		if ($regenerateId) {
-			session_regenerate_id(true);
-		}
-
-		$_SESSION['usuarioID'] = $user['id_usu'];
-		$_SESSION['usuarioNome'] = $user['nome_usu'];
-		$_SESSION['usuarioNivel'] = $user['nivel_usu'];
-		$_SESSION['usuarioST'] = $user['status_usu'];
-		$_SESSION['usuarioSetor'] = $user['id_setor'];
-		$_SESSION['usuarioCliente'] = $user['id_cliente'];
-		$_SESSION['usuarioRegiaoModo'] = isset($user['regiao_modo']) ? (string) $user['regiao_modo'] : 'N';
-		$_SESSION['usuarioRegiaoIds'] = '';
-		$_SESSION['usuarioRegiaoUfs'] = '';
+		$sessionData = array(
+			'usuarioID' => $user['id_usu'],
+			'usuarioNome' => $user['nome_usu'],
+			'usuarioNivel' => $user['nivel_usu'],
+			'usuarioST' => $user['status_usu'],
+			'usuarioSetor' => $user['id_setor'],
+			'usuarioCliente' => $user['id_cliente'],
+			'usuarioRegiaoModo' => isset($user['regiao_modo']) ? (string) $user['regiao_modo'] : 'N',
+			'usuarioRegiaoIds' => '',
+			'usuarioRegiaoUfs' => '',
+		);
 
 		if ($this->regions !== null && isset($user['id_usu'])) {
 			$regionIds = $this->regions->listRegionIdsByUserId((int) $user['id_usu']);
 			$ufs = $this->regions->listUfCodesByUserId((int) $user['id_usu']);
-			$_SESSION['usuarioRegiaoIds'] = implode(',', $regionIds);
-			$_SESSION['usuarioRegiaoUfs'] = implode(',', $ufs);
+			$sessionData['usuarioRegiaoIds'] = implode(',', $regionIds);
+			$sessionData['usuarioRegiaoUfs'] = implode(',', $ufs);
+		}
+
+		if ($this->hasLaravelSessionStore()) {
+			if ($regenerateId) {
+				session()->migrate(true);
+			}
+			session($sessionData);
+		}
+
+		if (session_status() === PHP_SESSION_ACTIVE) {
+			foreach ($sessionData as $key => $value) {
+				$_SESSION[$key] = $value;
+			}
 		}
 
 		return $user;
+	}
+
+	private function hasLaravelSessionStore()
+	{
+		return function_exists('app')
+			&& app()->bound('session')
+			&& app()->bound('request');
 	}
 
 	public function refreshUserAccess($id)

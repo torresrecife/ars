@@ -101,34 +101,70 @@ class MetaController extends Controller
 
 	public function webIndex(Request $request)
 	{
-		if (session_status() !== PHP_SESSION_ACTIVE) {
-			session_start();
-		}
-
-		return response($this->index($request->all(), $_SESSION));
+		return response($this->index($request->all(), $request->session()->all()));
 	}
 
 	public function webAjax(Request $request)
 	{
 		$input = $request->all();
-		$headers = array(
-			'Content-Type' => 'text/plain; charset=UTF-8',
-		);
+		$flag = isset($input['flag']) ? (string) $input['flag'] : '';
+		$jsonMode = (string) $request->input('response_format', '') === 'json';
 
-		if (isset($input['flag']) && (string) $input['flag'] === 'E') {
-			$headers['Content-Type'] = 'text/html; charset=ISO-8859-1';
+		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, MetaStoreRequest::class)) {
+			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422) : $this->legacyTextResponse('0');
 		}
-		if (isset($input['flag']) && (string) $input['flag'] === 'I' && !$this->validateLegacyFormRequest($request, MetaStoreRequest::class)) {
-			return $this->legacyTextResponse('0');
-		}
-		if (isset($input['flag']) && (string) $input['flag'] === 'U' && !$this->validateLegacyFormRequest($request, MetaUpdateRequest::class)) {
-			return $this->legacyTextResponse('0');
+		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, MetaUpdateRequest::class)) {
+			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422) : $this->legacyTextResponse('0');
 		}
 
-		if (isset($input['flag']) && (string) $input['flag'] === 'E') {
+		if ($jsonMode) {
+			return $this->webAjaxJson($input, $flag);
+		}
+
+		if ($flag === 'E') {
 			return $this->legacyHtmlResponse($this->ajax($input));
 		}
 
 		return $this->legacyTextResponse($this->ajax($input));
+	}
+
+	private function webAjaxJson(array $input, $flag)
+	{
+		if ($flag === 'E') {
+			$row = $this->metaService->findById(isset($input['meta_id']) ? (int) $input['meta_id'] : 0);
+			if (!$row) {
+				return $this->apiJsonResponse(false, 'not_found', 'Meta nao encontrada.', array(), 404);
+			}
+
+			return $this->apiJsonResponse(true, 'loaded', 'Meta carregada.', $row);
+		}
+
+		if ($flag === 'I') {
+			return $this->mapWriteResultToJson($this->metaService->createManyFromRequest($input), 'Meta criada com sucesso.');
+		}
+
+		if ($flag === 'U') {
+			return $this->mapWriteResultToJson($this->metaService->updateManyFromRequest($input), 'Meta atualizada com sucesso.');
+		}
+
+		if ($flag === 'D') {
+			return $this->metaService->delete(isset($input['meta_id']) ? (int) $input['meta_id'] : 0)
+				? $this->apiJsonResponse(true, 'success', 'Meta excluida com sucesso.')
+				: $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
+		}
+
+		return $this->apiJsonResponse(false, 'invalid_flag', 'Operacao invalida.', array(), 400);
+	}
+
+	private function mapWriteResultToJson($result, $successMessage)
+	{
+		if ((string) $result === '1') {
+			return $this->apiJsonResponse(true, 'success', $successMessage);
+		}
+		if ((string) $result === '2') {
+			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.', array(), 409);
+		}
+
+		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
 	}
 }

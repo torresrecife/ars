@@ -29,10 +29,6 @@ class AndamentoDetailController
 
 	public function webIndex(Request $request)
 	{
-		if (session_status() !== PHP_SESSION_ACTIVE) {
-			session_start();
-		}
-
-		return response($this->index($request->all(), $_SESSION));
+		return response($this->index($request->all(), $request->session()->all()));
 	}
 }

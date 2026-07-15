@@ -38,7 +38,7 @@ class HomeController extends Controller
 	{
 		$this->ensureLegacyEnvironment();
 
-		return response($this->renderPage($request->all(), $_SESSION, $this->buildScriptUrl($request, 'index.php')));
+		return response($this->renderPage($request->all(), $request->session()->all(), $this->buildScriptUrl($request, 'index.php')));
 	}
 
 	public function webSectionPage(Request $request, $section)
@@ -48,7 +48,7 @@ class HomeController extends Controller
 		$input = $request->all();
 		$input['section'] = (string) $section;
 
-		return response($this->renderPage($input, $_SESSION, $this->buildScriptUrl($request, 'index.php')));
+		return response($this->renderPage($input, $request->session()->all(), $this->buildScriptUrl($request, 'index.php')));
 	}
 
 	private function renderPage(array $input, array $session, $entryUrl)
@@ -110,11 +110,11 @@ class HomeController extends Controller
 	{
 		switch ($controllerName) {
 			case 'dashboard-panel':
-				return app(DashboardPanelController::class)->index($input, $_SESSION);
+				return app(DashboardPanelController::class)->index($input, session()->all());
 			case 'general-production-weekly':
-				return app(GeneralProductionController::class)->weekly($input, $_SESSION);
+				return app(GeneralProductionController::class)->weekly($input, session()->all());
 			case 'general-production-monthly':
-				return app(GeneralProductionController::class)->monthly($input, $_SESSION);
+				return app(GeneralProductionController::class)->monthly($input, session()->all());
 			case 'user-***REMOVED***':
 				return app(UserAdminController::class)->index();
 			case 'sector-***REMOVED***':
@@ -124,7 +124,7 @@ class HomeController extends Controller
 			case 'andamento-***REMOVED***':
 				return app(AndamentoAdminController::class)->index();
 			case 'meta-***REMOVED***':
-				return app(MetaController::class)->index($input, $_SESSION);
+				return app(MetaController::class)->index($input, session()->all());
 			case 'week-***REMOVED***':
 				return app(WeekController::class)->index();
 			case 'region-***REMOVED***':
