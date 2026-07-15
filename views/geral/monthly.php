@@ -1,5 +1,5 @@
 <meta http-equiv='content-type' content='text/html; charset=utf-8'>
-<button name='geral' value='1' style='float:right; position:relative;margin-right:50px;border:1px dotted #999;'>Mensal</button><br>
+<button type='submit' name='geral' value='1' formaction='relatorio.php' formtarget='' style='float:right; position:relative;margin-right:50px;border:1px dotted #999;'>Mensal</button><br>
 <br><div style='font-family:arial;margin-left:40px;font-size:10pt;'><?php echo $titleArea; ?><?php echo isset($regionLabel) ? $regionLabel : ''; ?> | M&ecirc;s / Ano: <b><?php echo htmlspecialchars($startDate, ENT_QUOTES, 'UTF-8'); ?></b> </div><br>
 <script>
 	function send_form(valor1,valor2){

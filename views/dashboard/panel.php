@@ -17,17 +17,19 @@ $year = $viewData['year'];
 $startDate = $viewData['startDate'];
 $regionLabel = isset($viewData['regionLabel']) ? $viewData['regionLabel'] : '';
 $regionId = isset($viewData['regionId']) ? (int) $viewData['regionId'] : 0;
+$areaId = isset($viewData['areaId']) ? (string) $viewData['areaId'] : '';
+$bankId = isset($viewData['bankId']) ? (int) $viewData['bankId'] : 0;
 $showRegionTabs = !empty($viewData['showRegionTabs']);
 $regionTabs = isset($viewData['regionTabs']) ? $viewData['regionTabs'] : array();
 $contentHeight = $viewData['contentHeight'];
 $weekColumnWidth = (count($weeks) === 5 ? '4%' : '5%');
 $splitFinancialTable = !empty($productionRows) && !empty($financialRows);
 ?>
-<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Cliente: <b><?php echo $bank['banco_cod']; ?></b><?php echo $showRegionTabs ? '' : $regionLabel; ?> | M&ecirc;s / Ano: <b><?php echo $startDate; ?></b> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","p")'>&lt;</a> <a href='#' onclick='send_nav("1","<?php echo $bank['banco_id']; ?>","n")'>&gt;</a></div>
+<br><div style='font-family:arial;margin-left:40px;font-size:10pt;'>Cliente: <b><?php echo $bank['banco_cod']; ?></b><?php echo $showRegionTabs ? '' : $regionLabel; ?> | M&ecirc;s / Ano: <b><?php echo $startDate; ?></b> <a href='#' onclick='send_nav("<?php echo $bankId; ?>","p"); return false;'>&lt;</a> <a href='#' onclick='send_nav("<?php echo $bankId; ?>","n"); return false;'>&gt;</a></div>
 <?php if ($showRegionTabs): ?>
 <div style='font-family:arial;margin:8px 0 12px 40px;font-size:10pt;'>
 	<?php foreach ($regionTabs as $tab): ?>
-		<a href='#' onclick='send_region("1","<?php echo $bank['banco_id']; ?>","<?php echo (int) $tab['id']; ?>"); return false;' style='display:inline-block;padding:4px 10px;margin-right:6px;border:1px solid #bdbdbd;background:<?php echo !empty($tab['active']) ? '#1C86EE' : '#f1f1f1'; ?>;color:<?php echo !empty($tab['active']) ? '#ffffff' : '#333333'; ?>;text-decoration:none;'><?php echo $tab['label']; ?></a>
+		<a href='#' onclick='send_region("<?php echo $bankId; ?>","<?php echo (int) $tab['id']; ?>"); return false;' style='display:inline-block;padding:4px 10px;margin-right:6px;border:1px solid #bdbdbd;background:<?php echo !empty($tab['active']) ? '#1C86EE' : '#f1f1f1'; ?>;color:<?php echo !empty($tab['active']) ? '#ffffff' : '#333333'; ?>;text-decoration:none;'><?php echo $tab['label']; ?></a>
 	<?php endforeach; ?>
 </div>
 <?php else: ?>
@@ -36,6 +38,8 @@ $splitFinancialTable = !empty($productionRows) && !empty($financialRows);
 <input type='hidden' name='mes' id='mes' value='<?php echo $month; ?>'/>
 <input type='hidden' name='ano' id='ano' value='<?php echo $year; ?>'/>
 <input type='hidden' name='regiao_id' id='regiao_id' value='<?php echo $regionId; ?>'/>
+<input type='hidden' name='area_id' id='panel_area_id' value='<?php echo htmlspecialchars($areaId, ENT_QUOTES, 'UTF-8'); ?>'/>
+<input type='hidden' name='bank_id' id='panel_bank_id' value='<?php echo $bankId; ?>'/>
 <script>
 	function send_form(andaId,bankId,bankName,month,year,weekKey,detailType){
 		$('#detail_bank_id').val(bankId);
@@ -54,14 +58,26 @@ $splitFinancialTable = !empty($productionRows) && !empty($financialRows);
 		$('#form_ars').attr('target','_blank');
 		$('#form_ars').submit();
 	}
-	function send_nav(valor1,valor2,valor3){
+	function send_nav(bankId,valor3){
 		var m_mes = $('#mes').val();
 		add_month(m_mes,valor3);
-		EnviarDados('index.php',2,valor1,valor2);
+		$('#bank_id').val(bankId);
+		$('#hid_flag').val(bankId);
+		$('#area_id').val($('#panel_area_id').val() || '');
+		$('#hid_area').val($('#panel_area_id').val() || '');
+		$('#form_ars').attr('action','painel.php');
+		$('#form_ars').attr('target','');
+		$('#form_ars').submit();
 	}
-	function send_region(valor1,valor2,regiaoId){
+	function send_region(bankId,regiaoId){
 		$('#regiao_id').val(regiaoId);
-		EnviarDados('index.php',2,valor1,valor2);
+		$('#bank_id').val(bankId);
+		$('#hid_flag').val(bankId);
+		$('#area_id').val($('#panel_area_id').val() || '');
+		$('#hid_area').val($('#panel_area_id').val() || '');
+		$('#form_ars').attr('action','painel.php');
+		$('#form_ars').attr('target','');
+		$('#form_ars').submit();
 	}
 	function add_month(meses,valor){
 		var n_mes = 0;
