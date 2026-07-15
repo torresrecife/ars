@@ -11,7 +11,7 @@ use App\Services\WeekService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
-class WeekController
+class WeekController extends Controller
 {
 	use ValidatesLegacyFormRequest;
 
@@ -92,12 +92,16 @@ class WeekController
 			$headers['Content-Type'] = 'text/html; charset=ISO-8859-1';
 		}
 		if (isset($input['flag']) && (string) $input['flag'] === 'I' && !$this->validateLegacyFormRequest($request, WeekStoreRequest::class)) {
-			return response('0', 200, $headers);
+			return $this->legacyTextResponse('0');
 		}
 		if (isset($input['flag']) && (string) $input['flag'] === 'U' && !$this->validateLegacyFormRequest($request, WeekUpdateRequest::class)) {
-			return response('0', 200, $headers);
+			return $this->legacyTextResponse('0');
 		}
 
-		return response($this->ajax($input), 200, $headers);
+		if (isset($input['flag']) && (string) $input['flag'] === 'E') {
+			return $this->legacyHtmlResponse($this->ajax($input));
+		}
+
+		return $this->legacyTextResponse($this->ajax($input));
 	}
 }

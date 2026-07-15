@@ -11,7 +11,7 @@ use App\Services\UserAdminService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
-class UserAdminController
+class UserAdminController extends Controller
 {
 	use ValidatesLegacyFormRequest;
 
@@ -60,14 +60,12 @@ class UserAdminController
 	{
 		$flag = (string) $request->input('flag', '');
 		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, UserStoreRequest::class)) {
-			return response('0', 200, array('Content-Type' => 'text/plain; charset=UTF-8'));
+			return $this->legacyTextResponse('0');
 		}
 		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, UserUpdateRequest::class)) {
-			return response('0', 200, array('Content-Type' => 'text/plain; charset=UTF-8'));
+			return $this->legacyTextResponse('0');
 		}
 
-		return response($this->ajax($request->all()), 200, array(
-			'Content-Type' => 'text/plain; charset=UTF-8',
-		));
+		return $this->legacyTextResponse($this->ajax($request->all()));
 	}
 }

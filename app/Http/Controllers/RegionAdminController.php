@@ -11,7 +11,7 @@ use App\Services\RegionAdminService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
-class RegionAdminController
+class RegionAdminController extends Controller
 {
 	use ValidatesLegacyFormRequest;
 
@@ -60,14 +60,12 @@ class RegionAdminController
 	{
 		$flag = (string) $request->input('flag', '');
 		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, RegionStoreRequest::class)) {
-			return response('0', 200, array('Content-Type' => 'text/plain; charset=UTF-8'));
+			return $this->legacyTextResponse('0');
 		}
 		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, RegionUpdateRequest::class)) {
-			return response('0', 200, array('Content-Type' => 'text/plain; charset=UTF-8'));
+			return $this->legacyTextResponse('0');
 		}
 
-		return response($this->ajax($request->all()), 200, array(
-			'Content-Type' => 'text/plain; charset=UTF-8',
-		));
+		return $this->legacyTextResponse($this->ajax($request->all()));
 	}
 }
