@@ -17,49 +17,49 @@ Route::middleware('legacy.auth')->group(function () {
     Route::match(['get', 'post'], '/logout', 'AuthController@logout')->name('logout');
 
     Route::match(['get', 'post'], '/carteiras', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webStatePage($request, 1);
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'carteiras');
     })->name('carteiras');
 
     Route::match(['get', 'post'], '/painel', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webStatePage($request, 2);
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'painel');
     })->name('painel');
 
     Route::match(['get', 'post'], '/producao', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webStatePage($request, 3);
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'producao');
     })->name('producao');
 
     Route::match(['get', 'post'], '/***REMOVED***', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webStatePage($request, 5);
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, '***REMOVED***');
     })->name('***REMOVED***');
 
     Route::match(['get', 'post'], '/usuarios', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webStatePage($request, 8);
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'usuarios');
     })->name('usuarios');
 
     Route::match(['get', 'post'], '/setores', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webStatePage($request, 9);
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'setores');
     })->name('setores');
 
     Route::match(['get', 'post'], '/clientes', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webStatePage($request, 11);
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'clientes');
     })->name('clientes');
 
     Route::match(['get', 'post'], '/andamentos', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webStatePage($request, 12);
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'andamentos');
     })->name('andamentos');
 
     Route::match(['get', 'post'], '/metas', function (Request $request) {
         $input = $request->all();
         $hasMetaContext = isset($input['startBanco']) || isset($input['banco_id']) || isset($input['meta_mes']) || isset($input['meta_ano']);
-        return app('App\Http\Controllers\HomeController')->webStatePage($request, $hasMetaContext ? 14 : 13);
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, $hasMetaContext ? 'metas-***REMOVED***' : 'metas-select');
     })->name('metas');
 
     Route::match(['get', 'post'], '/semanas', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webStatePage($request, 15);
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'semanas');
     })->name('semanas');
 
     Route::match(['get', 'post'], '/regioes', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webStatePage($request, 16);
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'regioes');
     })->name('regioes');
 });
 
