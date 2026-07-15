@@ -33,17 +33,17 @@ class HomeController
 	{
 		$this->ensureLegacyEnvironment();
 
-		$scriptName = str_replace('\\', '/', (string) $request->server('SCRIPT_NAME', ''));
-		if ($scriptName === '') {
-			$entryUrl = '/index.php';
-		} else {
-			$directory = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
-			$entryUrl = ($directory === '' || $directory === '.')
-				? '/index.php'
-				: $directory . '/index.php';
-		}
+		return response($this->renderPage($request->all(), $_SESSION, $this->buildScriptUrl($request, 'index.php')));
+	}
 
-		return response($this->renderPage($request->all(), $_SESSION, $entryUrl));
+	public function webStatePage(Request $request, $hidSend)
+	{
+		$this->ensureLegacyEnvironment();
+
+		$input = $request->all();
+		$input['hid_send'] = (int) $hidSend;
+
+		return response($this->renderPage($input, $_SESSION, $this->buildScriptUrl($request, 'index.php')));
 	}
 
 	private function renderPage(array $input, array $session, $entryUrl)
@@ -58,6 +58,20 @@ class HomeController
 			'exportPath' => $exportPath,
 			'entryUrl' => $entryUrl,
 		));
+	}
+
+	private function buildScriptUrl(Request $request, $scriptFile)
+	{
+		$scriptName = str_replace('\\', '/', (string) $request->server('SCRIPT_NAME', ''));
+		if ($scriptName === '') {
+			return '/' . ltrim((string) $scriptFile, '/');
+		}
+
+		$directory = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
+
+		return ($directory === '' || $directory === '.')
+			? '/' . ltrim((string) $scriptFile, '/')
+			: $directory . '/' . ltrim((string) $scriptFile, '/');
 	}
 
 	private function ensureLegacyEnvironment()

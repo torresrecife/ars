@@ -1,12 +1,8 @@
 <?php
 
-$view = new \App\Support\View($app->basePath());
-$controller = new \App\Http\Controllers\MetaController(
-	new \App\Services\MetaService(
-		new \App\Repositories\MetaRepository($conexao4),
-		new \App\Services\RegionService(new \App\Repositories\RegionRepository($conexao4))
-	),
-	$view
-);
+require __DIR__ . '/bootstrap/module_entry.php';
 
-echo $controller->index($_POST, $_SESSION);
+ars_run_module_entry(function ($request) {
+	$input = $request->all();
+	return (isset($input['startBanco']) || isset($input['banco_id']) || isset($input['meta_mes']) || isset($input['meta_ano'])) ? 14 : 13;
+});

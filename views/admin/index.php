@@ -19,56 +19,56 @@
 			<?php if ($userLevel === 'ADM'): ?>
 				<div class="icon-wrapper">
 					<div class="icon">
-						<a href="#" onclick="EnviarDados('index.php','','','')">
+						<a href="index.php">
 							<img src="css/images/header/icon-48-frontpage.png" alt="" /><span>Início</span>
 						</a>
 					</div>
 				</div>
 				<div class="icon-wrapper">
 					<div class="icon">
-						<a href="#" onclick="EnviarDados('index.php','8','','')">
+						<a href="usu.php">
 							<img src="css/images/header/icon-48-user.png" alt="" /><span>Usuários</span>
 						</a>
 					</div>
 				</div>
 				<div class="icon-wrapper">
 					<div class="icon">
-						<a href="#" onclick="EnviarDados('index.php','9','','')">
+						<a href="setor.php">
 							<img src="css/images/header/icon-48-move.png" alt="" /><span>Setores</span>
 						</a>
 					</div>
 				</div>
 				<div class="icon-wrapper">
 					<div class="icon">
-						<a href="#" onclick="EnviarDados('index.php','11','')">
+						<a href="clientes.php">
 							<img src="css/images/header/icon-48-module.png" alt="" /><span>Clientes</span>
 						</a>
 					</div>
 				</div>
 				<div class="icon-wrapper">
 					<div class="icon">
-						<a href="#" onclick="EnviarDados('index.php','12','','')">
+						<a href="andamentos.php">
 							<img src="css/images/header/icon-48-stats.png" alt="" /><span>Andamentos</span>
 						</a>
 					</div>
 				</div>
 				<div class="icon-wrapper">
 					<div class="icon">
-						<a href="#" onclick="EnviarDados('index.php','16','','')">
+						<a href="regioes.php">
 							<img src="css/images/header/icon-48-regiao.png" alt="" /><span>Regiões</span>
 						</a>
 					</div>
 				</div>
 				<div class="icon-wrapper">
 					<div class="icon">
-						<a href="#" onclick="EnviarDados('index.php','15','','')">
+						<a href="semanas.php">
 							<img src="css/images/header/icon-48-calendar.png" alt="" /><span>Semanas</span>
 						</a>
 					</div>
 				</div>
 				<div class="icon-wrapper">
 					<div class="icon">
-						<a href="#" onclick="EnviarDados('index.php','13','','')">
+						<a href="metas.php">
 							<img src="css/images/header/icon-48-levels.png" alt="" /><span>Metas</span>
 						</a>
 					</div>
@@ -83,7 +83,7 @@
 			<?php elseif ($userLevel === 'GER'): ?>
 				<div class="icon-wrapper">
 					<div class="icon">
-						<a href="#" onclick="EnviarDados('index.php','13','','')">
+						<a href="metas.php">
 							<img src="css/images/header/icon-48-levels.png" alt="" /><span>Metas</span>
 						</a>
 					</div>

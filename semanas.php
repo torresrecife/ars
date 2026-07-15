@@ -1,9 +1,5 @@
 <?php
 
-$view = new \App\Support\View($app->basePath());
-$controller = new \App\Http\Controllers\WeekController(
-	new \App\Services\WeekService(new \App\Repositories\WeekRepository($conexao4)),
-	$view
-);
+require __DIR__ . '/bootstrap/module_entry.php';
 
-echo $controller->index();
+ars_run_module_entry(15);
