@@ -6,7 +6,7 @@
 			<select name="startSetor" id="startSetor" class="input-default" style="height:20px;width:200px;">
 				<option value="">Todas os Setores</option>
 				@foreach ($areas as $area)
-					<option value="{{ $area['area_id'] }}">{{ e($area['area_nome']) }}</option>
+					<option value="{{ $area['area_id'] }}"{{ ((string) $startSector === (string) $area['area_id']) ? ' selected="selected"' : '' }}>{{ e($area['area_nome']) }}</option>
 				@endforeach
 			</select>
 			@if (!empty($showRegionSelector))
@@ -23,8 +23,8 @@
 			<label for="startDate">&nbsp;M&ecirc;s / Ano:</label>
 			<input type="text" name="startDate" id="startDate" class="date-picker" readonly="readonly" value="{{ e($monthYearLabel) }}"/>
 			<span id="obg_date"></span>
-			<input type="hidden" name="mes" id="mes" value="{{ date('m') }}"/>
-			<input type="hidden" name="ano" id="ano" value="{{ date('Y') }}"/>
+			<input type="hidden" name="mes" id="mes" value="{{ (int) $month }}"/>
+			<input type="hidden" name="ano" id="ano" value="{{ (int) $year }}"/>
 			<br><br><br><br><br>
 			<div class="icon-wrapper">
 				<div class="icon">

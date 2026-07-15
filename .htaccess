@@ -1,6 +1,19 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    RewriteRule ^admin\.php$ /ars2/admin [R=301,L,QSA]
+    RewriteRule ^usu\.php$ /ars2/usuarios [R=301,L,QSA]
+    RewriteRule ^clientes\.php$ /ars2/clientes [R=301,L,QSA]
+    RewriteRule ^andamentos\.php$ /ars2/andamentos [R=301,L,QSA]
+    RewriteRule ^metas\.php$ /ars2/metas [R=301,L,QSA]
+    RewriteRule ^semanas\.php$ /ars2/semanas [R=301,L,QSA]
+    RewriteRule ^regioes\.php$ /ars2/regioes [R=301,L,QSA]
+    RewriteRule ^setor\.php$ /ars2/setores [R=301,L,QSA]
+    RewriteRule ^carteiras\.php$ /ars2/carteiras [R=301,L,QSA]
+    RewriteRule ^painel\.php$ /ars2/painel [R=301,L,QSA]
+    RewriteRule ^producao\.php$ /ars2/producao [R=301,L,QSA]
+    RewriteRule ^relatorio\.php$ /ars2/relatorio [R=301,L,QSA]
+
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]

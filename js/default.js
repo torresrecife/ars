@@ -1,15 +1,15 @@
 
 $(function() {
 	$('.date-picker').datepicker( {
-		dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+		dayNames: ['Domingo','Segunda','TerÃ§a','Quarta','Quinta','Sexta','SÃ¡bado'],
 		dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
-		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
-		monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','SÃ¡b','Dom'],
+		monthNames: ['Janeiro','Fevereiro','MarÃ§o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
 		monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
-		nextText: 'Próximo',
+		nextText: 'PrÃ³ximo',
 		prevText: 'Anterior',
 		closeText: 'OK',
-		currentText: 'Mês atual',
+		currentText: 'MÃªs atual',
         changeMonth: true,
         changeYear: true,
         showButtonPanel: true,
@@ -35,55 +35,15 @@ function msgbox(msg, bts){
 			title: 'Alerta'
 		});
 }
-function EnviarPagina(frm, precisaData, are, fla){
-	if(precisaData && $("#startDate").val()==""){
-		$("#startDate").css("border","1px solid red");
-		$("#obg_date").fadeIn();
-		$("#obg_date").html("Inseir o mÃªs / ano!");
-		setTimeout(function(){
-			$("#startDate").css("border","1px solid #ccc");
-			$("#obg_date").fadeOut();
-		}, 3000);
-	}else{
-		if($("#area_id").length){
-			$("#area_id").val(are || "");
-		}
-		if($("#bank_id").length){
-			$("#bank_id").val(fla || "");
-		}
-		$("#form_ars").attr("action", NormalizarModuloPath(frm));
-		$("#form_ars").attr("target","");
-		$("#form_ars").submit();
-	}
+function mostrarErroData(){
+	$("#startDate").css("border","1px solid red");
+	$("#obg_date").fadeIn();
+	$("#obg_date").html("Inseir o mÃƒÂªs / ano!");
+	setTimeout(function(){
+		$("#startDate").css("border","1px solid #ccc");
+		$("#obg_date").fadeOut();
+	}, 3000);
 }
-
-function AbrirCarteiras(areaId){
-	$("#area_id").val(areaId || "");
-	$("#bank_id").val("");
-	$("#form_ars").attr("action","carteiras");
-	$("#form_ars").attr("target","");
-	$("#form_ars").submit();
-}
-
-function AbrirPainel(areaId, bankId){
-	if($("#startDate").val()==""){
-		$("#startDate").css("border","1px solid red");
-		$("#obg_date").fadeIn();
-		$("#obg_date").html("Inseir o mÃªs / ano!");
-		setTimeout(function(){
-			$("#startDate").css("border","1px solid #ccc");
-			$("#obg_date").fadeOut();
-		}, 3000);
-		return;
-	}
-
-	$("#area_id").val(areaId || "");
-	$("#bank_id").val(bankId || "");
-	$("#form_ars").attr("action","painel");
-	$("#form_ars").attr("target","");
-	$("#form_ars").submit();
-}
-
 function NormalizarModuloPath(scriptFile){
 	var map = {
 		"admin.php": "admin",
@@ -104,13 +64,74 @@ function NormalizarModuloPath(scriptFile){
 
 	return map[scriptFile] || scriptFile;
 }
-
-function AbrirModulo(scriptFile){
-	$("#form_ars").attr("action", NormalizarModuloPath(scriptFile));
-	$("#form_ars").attr("target","");
-	$("#form_ars").submit();
+function ColetarParametrosNavegacao(){
+	var params = {};
+	if($("#startDate").length && $("#startDate").val()!="") { params.startDate = $("#startDate").val(); }
+	if($("#startSetor").length && $("#startSetor").val()!="") { params.startSetor = $("#startSetor").val(); }
+	if($("#mes").length && $("#mes").val()!="") { params.mes = $("#mes").val(); }
+	if($("#ano").length && $("#ano").val()!="") { params.ano = $("#ano").val(); }
+	if($("#regiao_id").length && $("#regiao_id").val()!="") { params.regiao_id = $("#regiao_id").val(); }
+	if($("#area_id").length && $("#area_id").val()!="") { params.area_id = $("#area_id").val(); }
+	if($("#bank_id").length && $("#bank_id").val()!="") { params.bank_id = $("#bank_id").val(); }
+	return params;
 }
-
+function ConstruirUrlModulo(path, params){
+	var target = NormalizarModuloPath(path);
+	var query = [];
+	params = params || {};
+	for(var key in params){
+		if(!params.hasOwnProperty(key)){
+			continue;
+		}
+		var value = params[key];
+		if(value === null || typeof value === "undefined" || value === ""){
+			continue;
+		}
+		query.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
+	}
+	return query.length ? (target + "?" + query.join("&")) : target;
+}
+function NavegarModulo(path, params){
+	window.location = ConstruirUrlModulo(path, params);
+}
+function EnviarPagina(frm, precisaData, are, fla){
+	if(precisaData && $("#startDate").val()==""){
+		mostrarErroData();
+		return;
+	}
+	var params = ColetarParametrosNavegacao();
+	if(typeof are !== "undefined" && are !== null && are !== "") { params.area_id = are; }
+	if(typeof fla !== "undefined" && fla !== null && fla !== "") { params.bank_id = fla; }
+	NavegarModulo(frm, params);
+}
+function AbrirCarteiras(areaId){
+	var params = ColetarParametrosNavegacao();
+	params.area_id = areaId || "";
+	delete params.bank_id;
+	NavegarModulo("carteiras", params);
+}
+function AbrirPainel(areaId, bankId){
+	if($("#startDate").val()==""){
+		mostrarErroData();
+		return;
+	}
+	var params = ColetarParametrosNavegacao();
+	params.area_id = areaId || "";
+	params.bank_id = bankId || "";
+	NavegarModulo("painel", params);
+}
+function AbrirRelatorio(geral){
+	if($("#startDate").length && $("#startDate").val()==""){
+		mostrarErroData();
+		return;
+	}
+	var params = ColetarParametrosNavegacao();
+	params.geral = geral;
+	NavegarModulo("relatorio", params);
+}
+function AbrirModulo(scriptFile){
+	NavegarModulo(scriptFile, {});
+}
 function fc_edit_usu(valor1,valor2){
 		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
 		var tt = "";
