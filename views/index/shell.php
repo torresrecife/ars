@@ -52,9 +52,6 @@
 			</div>
 		</div>
 	</div>
-	<input type="hidden" name="hid_send" id="hid_send" value="<?php echo htmlspecialchars((string) $pageData['state']['hid_send'], ENT_QUOTES, 'UTF-8'); ?>" />
-	<input type="hidden" name="hid_area" id="hid_area" value="<?php echo htmlspecialchars((string) $pageData['state']['hid_area'], ENT_QUOTES, 'UTF-8'); ?>" />
-	<input type="hidden" name="hid_flag" id="hid_flag" value="<?php echo htmlspecialchars((string) $pageData['state']['hid_flag'], ENT_QUOTES, 'UTF-8'); ?>" />
 	<input type="hidden" name="area_id" id="area_id" value="<?php echo htmlspecialchars((string) (isset($pageData['state']['area_id']) ? $pageData['state']['area_id'] : ''), ENT_QUOTES, 'UTF-8'); ?>" />
 	<input type="hidden" name="bank_id" id="bank_id" value="<?php echo htmlspecialchars((string) (isset($pageData['state']['bank_id']) ? $pageData['state']['bank_id'] : ''), ENT_QUOTES, 'UTF-8'); ?>" />
 </form>
