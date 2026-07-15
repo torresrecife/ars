@@ -94,6 +94,20 @@ function ConstruirUrlModulo(path, params){
 function NavegarModulo(path, params){
 	window.location = ConstruirUrlModulo(path, params);
 }
+function LerMensagemAjaxErro(xhr, fallback){
+	if(xhr && xhr.responseJSON && xhr.responseJSON.message){
+		return xhr.responseJSON.message;
+	}
+	if(xhr && xhr.responseText){
+		try{
+			var parsed = JSON.parse(xhr.responseText);
+			if(parsed && parsed.message){
+				return parsed.message;
+			}
+		}catch(e){}
+	}
+	return fallback || "Erro na operacao.";
+}
 function EnviarPagina(frm, precisaData, are, fla){
 	if(precisaData && $("#startDate").val()==""){
 		mostrarErroData();
@@ -223,6 +237,9 @@ function fc_edit_usu(valor1,valor2){
 									}else{
 										alert((response && response.message) ? response.message : "Erro ao salvar o usuÃ¡rio.");
 									}
+								},
+								error: function(xhr){
+									alert(LerMensagemAjaxErro(xhr, "Erro ao salvar o usuÃ¡rio."));
 								}
 							});
 						}
@@ -283,6 +300,9 @@ function fc_edit_usu(valor1,valor2){
 					}
 				});
 				abrirDialogUsuario();
+			},
+			error: function(xhr){
+				alert(LerMensagemAjaxErro(xhr, "Erro ao carregar os dados do usuÃ¡rio."));
 			}
 		});
 	}
@@ -334,6 +354,9 @@ function fc_edit_usu(valor1,valor2){
 								}else{
 									alert((response && response.message) ? response.message : "Erro ao salvar a semana.");
 								}
+							},
+							error: function(xhr){
+								alert(LerMensagemAjaxErro(xhr, "Erro ao salvar a semana."));
 							}
 						});
 					},
@@ -384,6 +407,9 @@ function fc_edit_usu(valor1,valor2){
 				$("#fim5_sem").val(ret.fim_5 || "");
 
 				abrirDialogSemana();
+			},
+			error: function(xhr){
+				alert(LerMensagemAjaxErro(xhr, "Erro ao carregar os dados da semana."));
 			}
 		});
 	}
@@ -525,6 +551,9 @@ function fc_edit_usu(valor1,valor2){
 					}else{
 						alert((response && response.message) ? response.message : "Erro ao salvar o cliente.");
 					}
+				},
+				error: function(xhr){
+					alert(LerMensagemAjaxErro(xhr, "Erro ao salvar o cliente."));
 				}
 			});
 		};
@@ -613,6 +642,9 @@ function fc_edit_usu(valor1,valor2){
 						$("#dados_name_pool").val("");
 					}
 				});
+			},
+			error: function(xhr){
+				alert(LerMensagemAjaxErro(xhr, "Erro ao carregar os dados do cliente."));
 			}
 		});
 	}
@@ -1276,6 +1308,9 @@ function fc_edit_metas(valor1,valor2){
 								}else{
 									alert((response && response.message) ? response.message : "Erro ao salvar a meta.");
 								}
+							},
+							error: function(xhr){
+								alert(LerMensagemAjaxErro(xhr, "Erro ao salvar a meta."));
 							}
 						});
 
@@ -1359,6 +1394,9 @@ function fc_edit_metas(valor1,valor2){
 				}
 
 				abrirDialogMeta();
+			},
+			error: function(xhr){
+				alert(LerMensagemAjaxErro(xhr, "Erro ao carregar os dados da meta."));
 			}
 		});
 	}
@@ -1383,6 +1421,9 @@ function fc_edit_metas(valor1,valor2){
 						}else{
 							alert((response && response.message) ? response.message : "Erro ao excluir a meta.");
 						}
+					},
+					error: function(xhr){
+						alert(LerMensagemAjaxErro(xhr, "Erro ao excluir a meta."));
 					}
 				});
 			},
@@ -1412,6 +1453,9 @@ function fc_edit_metas(valor1,valor2){
 						}else{
 							alert((response && response.message) ? response.message : "Erro ao excluir o cliente.");
 						}
+					},
+					error: function(xhr){
+						alert(LerMensagemAjaxErro(xhr, "Erro ao excluir o cliente."));
 					}
 				});
 			},
@@ -1594,6 +1638,9 @@ function fc_edit_metas(valor1,valor2){
 						}else{
 							alert((response && response.message) ? response.message : "Erro ao excluir o usuÃ¡rio.");
 						}
+					},
+					error: function(xhr){
+						alert(LerMensagemAjaxErro(xhr, "Erro ao excluir o usuÃ¡rio."));
 					}
 				});
 				//AbrirModulo('usuarios');
@@ -1624,6 +1671,9 @@ function fc_edit_metas(valor1,valor2){
 						}else{
 							alert((response && response.message) ? response.message : "Erro ao excluir a semana.");
 						}
+					},
+					error: function(xhr){
+						alert(LerMensagemAjaxErro(xhr, "Erro ao excluir a semana."));
 					}
 				});
 				//AbrirModulo('usuarios');
