@@ -30,4 +30,14 @@ class Controller extends BaseController
             'Content-Type' => 'application/json; charset=UTF-8',
         ));
     }
+
+    protected function apiJsonResponse($ok, $code, $message, array $data = array(), $status = 200)
+    {
+        return response()->json(array(
+            'ok' => (bool) $ok,
+            'code' => (string) $code,
+            'message' => (string) $message,
+            'data' => $data,
+        ), (int) $status);
+    }
 }

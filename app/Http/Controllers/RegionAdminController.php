@@ -59,13 +59,64 @@ class RegionAdminController extends Controller
 	public function webAjax(Request $request)
 	{
 		$flag = (string) $request->input('flag', '');
+		$jsonMode = (string) $request->input('response_format', '') === 'json';
 		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, RegionStoreRequest::class)) {
-			return $this->legacyTextResponse('0');
+			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.') : $this->legacyTextResponse('0');
 		}
 		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, RegionUpdateRequest::class)) {
-			return $this->legacyTextResponse('0');
+			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.') : $this->legacyTextResponse('0');
+		}
+
+		if ($jsonMode) {
+			return $this->webAjaxJson($request, $flag);
 		}
 
 		return $this->legacyTextResponse($this->ajax($request->all()));
+	}
+
+	private function webAjaxJson(Request $request, $flag)
+	{
+		$input = $request->all();
+
+		if ($flag === 'E') {
+			$payload = $this->service->editPayload(isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0);
+			$data = $payload !== '' ? json_decode($payload, true) : null;
+			if (!is_array($data)) {
+				return $this->apiJsonResponse(false, 'not_found', 'Regiao nao encontrada.');
+			}
+
+			return $this->apiJsonResponse(true, 'loaded', 'Regiao carregada.', $data);
+		}
+
+		if ($flag === 'I') {
+			return $this->mapWriteResultToJson($this->service->create($input), 'Regiao criada com sucesso.');
+		}
+
+		if ($flag === 'U') {
+			return $this->mapWriteResultToJson($this->service->update($input), 'Regiao atualizada com sucesso.');
+		}
+
+		if ($flag === 'D') {
+			$result = $this->service->delete(isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0);
+			if ($result === '3') {
+				return $this->apiJsonResponse(false, 'linked_users', 'Existem usuarios vinculados a esta regiao.');
+			}
+
+			return $this->mapWriteResultToJson($result, 'Regiao excluida com sucesso.');
+		}
+
+		return $this->apiJsonResponse(false, 'invalid_flag', 'Operacao invalida.');
+	}
+
+	private function mapWriteResultToJson($result, $successMessage)
+	{
+		if ((string) $result === '1') {
+			return $this->apiJsonResponse(true, 'success', $successMessage);
+		}
+		if ((string) $result === '2') {
+			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.');
+		}
+
+		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.');
 	}
 }
