@@ -1068,6 +1068,9 @@ function andamentoTiposRemover(botao){
 }
 function fc_edit_andamento(valor1,valor2){
 	var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax_andamento.php";
+	var andamentoJsonData = function(extra){
+		return $.extend({ response_format: "json" }, extra || {});
+	};
 	var tt = "";
 	var tu = "";
 	if(valor2=="I"){
@@ -1079,99 +1082,97 @@ function fc_edit_andamento(valor1,valor2){
 		tu="editado";
 		$(".validateTips").text("Edite o Andamento Abaixo");
 	}
-
+	var abrirDialogAndamento = function(ret){
+		ret = ret || {};
+		$("#anda_id").val(ret.anda_id || "");
+		$("#nome").val(ret.nome || "");
+		$("#chave").val(ret.chave || "");
+		$("#especie").val(ret.especie || "");
+		$("#painel").val(ret.painel || "");
+		$("#titulo").val(ret.titulo || "");
+		andamentoTiposReset(valor2=="I" ? "Nenhum andamento vinculado." : "Carregando andamentos vinculados...");
+		sel_tipo(0, ret.especie || "", function(){
+			if($.isArray(ret.tipos)){
+				$.each(ret.tipos, function(_, tipo){
+					andamentoTiposAdicionarValor(tipo, true);
+				});
+			}
+		});
+		$( "#dialog-edit-andamento" ).dialog({
+			title: tt,
+			modal: true,
+			autoOpen: true,
+			height: 400,
+			width: 600,
+			buttons:{
+				Salvar: function(){
+					var mdados = {};
+					var invalido = false;
+					$(".cls_andamento").each(function(){
+						if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
+							alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
+							$(this).focus();
+							invalido = true;
+							return false;
+						}
+						mdados[$(this).attr("name")] = $(this).val();
+					});
+					if(invalido){ return false; }
+					var mandam = [];
+					$(".andamento-tipos-item").each(function(){
+						var tipo = $.trim($(this).attr("data-tipo"));
+						if(tipo!==""){
+							mandam.push(tipo);
+						}
+					});
+					if(mandam.length===0){
+						alert("Selecione ao menos um andamento vinculado.");
+						$("#andam_name_pool").focus();
+						return false;
+					}
+					$.ajax({
+						type: "POST",
+						url: andamentoAjaxUrl,
+						dataType: "json",
+						data: $.extend({}, andamentoJsonData(), mdados, { flag: valor2, anda_neo: mandam.join(",") }),
+						success: function(response){
+							if(response && response.ok===true){
+								$( "#dialog-edit-andamento" ).dialog( "close" );
+								msgbox(valor2=="I"?"<br><table align='center'><tr><td>Andamento " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
+									Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('andamentos.php'); }
+								});
+							}else if(response && response.code=="duplicate"){
+								alert("Andamento j� cadastrado!");
+							}else{
+								alert((response && response.message) ? response.message : "Erro ao salvar o andamento.");
+							}
+						}
+					});
+				},
+				Sair: function() { $( this ).dialog( "close" ); }
+			},
+			close: function(){
+				$(".cls_andamento").each(function(){ $(this).val(""); });
+				andamentoTiposReset("Nenhum andamento vinculado.");
+				$("#andam_name_pool").html("").data("optionsHtml", "");
+			}
+		});
+	};
+	if(valor2=="I"){
+		abrirDialogAndamento({});
+		return;
+	}
 	$.ajax({
 		type: "POST",
-		url:  andamentoAjaxUrl,
+		url: andamentoAjaxUrl,
 		dataType: "json",
-		data: "flag=E&anda_id=" + valor1,
-		success: function(ret){
-			ret = ret || {};
-			$("#anda_id").val(ret.anda_id || "");
-			$("#nome").val(ret.nome || "");
-			$("#chave").val(ret.chave || "");
-			$("#especie").val(ret.especie || "");
-			$("#painel").val(ret.painel || "");
-			$("#titulo").val(ret.titulo || "");
-			andamentoTiposReset(valor2=="I" ? "Nenhum andamento vinculado." : "Carregando andamentos vinculados...");
-			sel_tipo(0, ret.especie || "", function(){
-				if($.isArray(ret.tipos)){
-					$.each(ret.tipos, function(_, tipo){
-						andamentoTiposAdicionarValor(tipo, true);
-					});
-				}
-			});
-
-			$( "#dialog-edit-andamento" ).dialog({
-				title: tt,
-				modal: true,
-				autoOpen: true,
-				height: 400,
-				width: 600,
-				buttons:{
-					Salvar: function(){
-						var mdados = {};
-						var invalido = false;
-						$(".cls_andamento").each(function(){
-							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-								alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
-								$(this).focus();
-								invalido = true;
-								return false;
-							}
-							mdados[$(this).attr("name")] = $(this).val();
-						});
-						if(invalido){
-							return false;
-						}
-						var mandam = [];
-						$(".andamento-tipos-item").each(function(){
-							var tipo = $.trim($(this).attr("data-tipo"));
-							if(tipo!==""){
-								mandam.push(tipo);
-							}
-						});
-						if(mandam.length===0){
-							alert("Selecione ao menos um andamento vinculado.");
-							$("#andam_name_pool").focus();
-							return false;
-						}
-						$.ajax({
-							type: "POST",
-							url:  andamentoAjaxUrl,
-							data: $.extend({}, mdados, {
-								flag: valor2,
-								anda_neo: mandam.join(",")
-							}),
-							success: function(retorno_ajax){
-								if(retorno_ajax==1){
-									$( "#dialog-edit-andamento" ).dialog( "close" );
-									msgbox(valor2=="I"?"<br><table align='center'><tr><td>Andamento " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
-										Fechar: function(){
-											$( this ).dialog( "close" );
-											AbrirModulo('andamentos.php');
-										}
-									});
-								}else if(retorno_ajax==2){
-									alert("Andamento j� cadastrado!");
-								}else{
-									alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
-								}
-							}
-						});
-					},
-					Sair: function() {
-						$( this ).dialog( "close" );
-					}
-				},
-				close: function(){
-					$(".cls_andamento").each(function(){
-						$(this).val("");
-					});
-					andamentoTiposReset("Nenhum andamento vinculado.");
-					$("#andam_name_pool").html("").data("optionsHtml", "");
-				}
-			});
+		data: andamentoJsonData({ flag: "E", anda_id: valor1 }),
+		success: function(response){
+			if(!response || response.ok!==true || !response.data){
+				alert((response && response.message) ? response.message : "Erro ao carregar os dados do andamento.");
+				return;
+			}
+			abrirDialogAndamento(response.data || {});
 		}
 	});
 }
@@ -1368,57 +1369,28 @@ function fc_edit_metas(valor1,valor2){
 				$.ajax({
 					type: "POST",
 					url:  andamentoAjaxUrl,
-					data: "flag=D&anda_id=" + valor1,
-					success: function(retorno_ajax){
+					dataType: "json",
+					data: { flag: "D", anda_id: valor1, response_format: "json" },
+					success: function(response){
 						$( this ).dialog( "close" );
-						if(retorno_ajax==1){
+						if(response && response.ok===true){
 							msgbox("<br><table align='center'><tr><td>Andamento deletado com sucesso !</td></tr></table><br>",{
-								Fechar: function(){
-									$( this ).dialog( "close" );
-									AbrirModulo('andamentos.php');
-								}
+								Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('andamentos.php'); }
 							});
 						}else{
-							alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
+							alert((response && response.message) ? response.message : "Erro ao excluir o andamento.");
 						}
 					}
 				});
 			},
-			"Não": function(){
-				$( this ).dialog( "close" );
-			}
-		});
-	}
-	function fc_del_metas(valor1,valor2){
-		var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax_metas.php";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a meta <b>" + valor2 + "</b> ?</td></tr></table><br>",{
-			"Sim": function(){
-				$.ajax({
-					type: "POST",
-					url:  metaAjaxUrl,
-					data: "flag=D&meta_id=" + valor1,
-					success: function(retorno_ajax){
-						$( this ).dialog( "close" );
-						if(retorno_ajax==1){
-							msgbox("<br><table align='center'><tr><td>Meta deletada com sucesso !</td></tr></table><br>",{
-								Fechar: function(){
-									$( this ).dialog( "close" );
-									AbrirModulo('metas.php');
-								}
-							});
-						}else{
-							alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
-						}
-					}
-				});
-			},
-			"Não": function(){
-				$( this ).dialog( "close" );
-			}
+			"Não": function(){ $( this ).dialog( "close" ); }
 		});
 	}
 	function fc_edit_regiao(valor1,valor2){
 		var regiaoAjaxUrl = window.arsRegionAjaxUrl || "ajax_regioes.php";
+		var regiaoJsonData = function(extra){
+			return $.extend({ response_format: "json" }, extra || {});
+		};
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
@@ -1426,9 +1398,7 @@ function fc_edit_metas(valor1,valor2){
 			tu="criada";
 			$(".validateRegiao").text("Crie uma nova regiao");
 			regiaoUfsReset();
-			$('.cls_regiao').each(function() {
-				$(this).val("");
-			});
+			$('.cls_regiao').each(function() { $(this).val(""); });
 			$("#regiao_status").val("Y");
 			$("#regiao_slug").data("manual", false);
 		}else if(valor2=="U"){
@@ -1436,7 +1406,6 @@ function fc_edit_metas(valor1,valor2){
 			tu="editada";
 			$(".validateRegiao").text("Edite a regiao abaixo");
 		}
-
 		var abrirDialogRegiao = function(){
 			$("#dialog-edit-regiao").dialog({
 				title: tt,
@@ -1457,66 +1426,55 @@ function fc_edit_metas(valor1,valor2){
 							}
 							mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
 						});
-						if(invalido){
-							return false;
-						}
+						if(invalido){ return false; }
 						if($(".regiao-ufs-item").length===0){
 							alert("Selecione ao menos uma UF para a regiao.");
 							$("#regiao_uf_pool").focus();
 							return false;
 						}
 						$.ajax({
-						   type: "POST",
-						   url:  regiaoAjaxUrl,
-						   data: "flag=" + valor2 + "&" + mdados,
-						   success: function(retorno_ajax){
-								if(retorno_ajax==1){
+							type: "POST",
+							url:  regiaoAjaxUrl,
+							dataType: "json",
+							data: "flag=" + valor2 + "&response_format=json&" + mdados,
+							success: function(response){
+								if(response && response.ok===true){
 									$( "#dialog-edit-regiao" ).dialog( "close" );
 									msgbox("<br><table align='center'><tr><td>Regiao " + tu + " com sucesso !</td></tr></table><br>", {
-										Fechar: function(){
-											$( this ).dialog( "close" );
-											AbrirModulo('regioes.php');
-										}
+										Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('regioes.php'); }
 									});
-								}else if(retorno_ajax==2){
+								}else if(response && response.code=="duplicate"){
 									alert("Slug de regiao ja cadastrado!");
 								}else{
-									alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
+									alert((response && response.message) ? response.message : "Erro ao salvar a regiao.");
 								}
 							}
 						});
 					},
-					Sair: function() {
-						$( this ).dialog( "close" );
-					}
+					Sair: function() { $( this ).dialog( "close" ); }
 				},
 				close: function(){
-					$('.cls_regiao').each(function() {
-						$(this).val("");
-					});
+					$('.cls_regiao').each(function() { $(this).val(""); });
 					$("#regiao_slug").data("manual", false);
 					regiaoUfsReset();
 				}
 			});
 		};
-
 		if(valor2=="I"){
 			abrirDialogRegiao();
 			return;
 		}
-
 		$.ajax({
 			type: "POST",
 			url:  regiaoAjaxUrl,
-			data: "flag=E&regiao_id=" + valor1,
-			success: function(retorno_ajax){
-				var ret = {};
-				try{
-					ret = JSON.parse(retorno_ajax);
-				}catch(e){
-					alert("Erro ao carregar os dados da regiao.");
+			dataType: "json",
+			data: regiaoJsonData({ flag: "E", regiao_id: valor1 }),
+			success: function(response){
+				if(!response || response.ok!==true || !response.data){
+					alert((response && response.message) ? response.message : "Erro ao carregar os dados da regiao.");
 					return;
 				}
+				var ret = response.data || {};
 				regiaoUfsReset();
 				$("#regiao_id_edit").val(ret.regiao_id || "");
 				$("#regiao_nome").val(ret.regiao_nome || "");
@@ -1538,30 +1496,25 @@ function fc_edit_metas(valor1,valor2){
 				$.ajax({
 					type: "POST",
 					url:  regiaoAjaxUrl,
-					data: "flag=D&regiao_id=" + valor1,
-					success: function(retorno_ajax){
+					dataType: "json",
+					data: { flag: "D", regiao_id: valor1, response_format: "json" },
+					success: function(response){
 						$( this ).dialog( "close" );
-						if(retorno_ajax==1){
+						if(response && response.ok===true){
 							msgbox("<br><table align='center'><tr><td>Regiao deletada com sucesso !</td></tr></table><br>",{
-								Fechar: function(){
-									$( this ).dialog( "close" );
-									AbrirModulo('regioes.php');
-								}
+								Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('regioes.php'); }
 							});
-						}else if(retorno_ajax==3){
+						}else if(response && response.code=="linked_users"){
 							alert("Nao e possivel excluir a regiao porque existem usuarios vinculados a ela.");
 						}else{
-							alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
+							alert((response && response.message) ? response.message : "Erro ao excluir a regiao.");
 						}
 					}
 				});
 			},
-			"Nao": function(){
-				$( this ).dialog( "close" );
-			}
+			"Nao": function(){ $( this ).dialog( "close" ); }
 		});
 	}
-
 	function fc_del_usu(valor1,valor2){
 		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuário <b>" + valor2 + "</b> ?</td></tr></table><br>",{
@@ -1898,6 +1851,13 @@ function somarMeta(valor2){
 		$("#meta_valor_"+valor2).val(mvat);
 	}
 }
+
+
+
+
+
+
+
 
 
 
