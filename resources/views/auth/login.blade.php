@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8">
     <title>Controle da ARS</title>
-    <link href="{{ $legacyBaseUrl }}/css/images/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
-    <link rel="stylesheet" href="{{ $legacyBaseUrl }}/css/system.css" type="text/css" />
-    <link rel="stylesheet" href="{{ $legacyBaseUrl }}/css/template.css" type="text/css" />
+    <link href="{{ url('css/images/favicon.ico') }}" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+    <link rel="stylesheet" href="{{ url('css/system.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ url('css/template.css') }}" type="text/css" />
 </head>
 <body>
     <div id="border-top" class="h_blue">
@@ -19,7 +19,7 @@
                 <div id="system-message-container"></div>
                 <div id="section-box">
                     <div class="m">
-                        <form action="{{ $legacyLoginUrl }}" method="post" id="form-login">
+                        <form action="{{ url('login') }}" method="post" id="form-login">
                             @csrf
                             <fieldset class="loginform">
                                 <label id="mod-login-username-lbl" for="mod-login-username">Nome de Usuario</label>

@@ -77,6 +77,7 @@ function ColetarParametrosNavegacao(){
 	var params = {};
 	if($("#startDate").length && $("#startDate").val()!="") { params.startDate = $("#startDate").val(); }
 	if($("#startSetor").length && $("#startSetor").val()!="") { params.startSetor = $("#startSetor").val(); }
+	if($("#startBanco").length && $("#startBanco").val()!="") { params.startBanco = $("#startBanco").val(); }
 	if($("#mes").length && $("#mes").val()!="") { params.mes = $("#mes").val(); }
 	if($("#ano").length && $("#ano").val()!="") { params.ano = $("#ano").val(); }
 	if($("#regiao_id").length && $("#regiao_id").val()!="") { params.regiao_id = $("#regiao_id").val(); }
@@ -154,6 +155,13 @@ function AbrirRelatorio(geral){
 }
 function AbrirModulo(scriptFile){
 	NavegarModulo(scriptFile, {});
+}
+function AbrirMetasAdmin(){
+	var params = ColetarParametrosNavegacao();
+	if($("#banco_id").length && $("#banco_id").val()!="") { params.startBanco = $("#banco_id").val(); }
+	if($("#meta_mes").length && $("#meta_mes").val()!="") { params.mes = $("#meta_mes").val(); }
+	if($("#meta_ano").length && $("#meta_ano").val()!="") { params.ano = $("#meta_ano").val(); }
+	NavegarModulo("metas", params);
 }
 function fc_edit_usu(valor1,valor2){
 var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
@@ -1309,7 +1317,7 @@ var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax/metas";
 									msgbox(valor2=="I"?"<br><table align='center'><tr><td>Meta(s) " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Meta editada com sucesso !</td></tr></table><br>", {
 										Fechar: function(){
 											$( this ).dialog( "close" );
-											AbrirModulo('metas');
+											AbrirMetasAdmin();
 										}
 									});
 								}else if(response && response.code=="duplicate"){
@@ -1424,7 +1432,7 @@ var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax/metas";
 							msgbox("<br><table align='center'><tr><td>Meta deletada com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									AbrirModulo('metas');
+									AbrirMetasAdmin();
 								}
 							});
 						}else{

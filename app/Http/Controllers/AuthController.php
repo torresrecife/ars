@@ -19,8 +19,8 @@ class AuthController extends Controller
 
     public function showLogin(Request $request)
     {
-        $legacyIndexUrl = $this->legacyIndexUrl($request);
-        $legacyLoginUrl = $this->legacyLoginUrl($request);
+        $legacyIndexUrl = url('index');
+        $legacyLoginUrl = url('login');
 
         return response()->view('auth.login', [
             'alerta' => (int) $request->query('alerta', 0),
@@ -38,12 +38,12 @@ class AuthController extends Controller
         );
 
         if ($user === false) {
-            return response('', 302)->header('Location', $this->legacyLoginUrl($request) . '?alerta=1');
+            return redirect()->to(url('login') . '?alerta=1');
         }
 
         if ($this->authService->requiresPasswordChange($user)) {
-            $legacyIndexUrl = $this->legacyIndexUrl($request);
-            $legacyLoginUrl = $this->legacyLoginUrl($request);
+            $legacyIndexUrl = url('index');
+            $legacyLoginUrl = url('login');
 
             return response()->view('auth.force-password', [
                 'userId' => (int) $user['id_usu'],
@@ -55,7 +55,7 @@ class AuthController extends Controller
 
         $this->authService->refreshUserAccess($user['id_usu']);
 
-        return response('', 302)->header('Location', $this->legacyIndexUrl($request));
+        return redirect(url('index'));
     }
 
     public function logout(Request $request)
@@ -64,7 +64,7 @@ class AuthController extends Controller
         session()->invalidate();
         session()->regenerateToken();
 
-        return response('', 302)->header('Location', $this->legacyLoginUrl($request));
+        return redirect(url('login'));
     }
 
     public function updateOwnPassword(Request $request)
@@ -87,37 +87,6 @@ class AuthController extends Controller
 
         return $this->legacyTextResponse($this->authService->updatePasswordAndAccess($idUsuario, $novaSenha) ? '1' : '2');
     }
-
-    private function legacyIndexUrl(Request $request)
-    {
-        $scriptName = str_replace('\\', '/', (string) $request->server('SCRIPT_NAME', ''));
-        if ($scriptName === '') {
-            return 'index.php';
-        }
-
-        $directory = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
-        if ($directory === '' || $directory === '.') {
-            return '/index.php';
-        }
-
-        return $directory . '/index.php';
-    }
-
-    private function legacyLoginUrl(Request $request)
-    {
-        $scriptName = str_replace('\\', '/', (string) $request->server('SCRIPT_NAME', ''));
-        if ($scriptName === '') {
-            return 'login.php';
-        }
-
-        $directory = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
-        if ($directory === '' || $directory === '.') {
-            return '/login.php';
-        }
-
-        return $directory . '/login.php';
-    }
-
     private function legacyBaseUrl($legacyUrl)
     {
         $directory = rtrim(str_replace('\\', '/', dirname((string) $legacyUrl)), '/');
