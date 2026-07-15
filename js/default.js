@@ -438,7 +438,7 @@ function fc_edit_usu(valor1,valor2){
 						var mdados="";
 						$('.cls_cliente').each(function(){
 							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-								alert("O campo " + $(this).attr("title") + " Ã© obrigatÃ³rio ");
+								alert("O campo " + $(this).attr("title") + " é obrigatório ");
 								$(this).focus();
 								return false;
 							}
