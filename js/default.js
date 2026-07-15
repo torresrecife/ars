@@ -104,6 +104,12 @@ function AbrirPainel(areaId, bankId){
 	$("#form_ars").submit();
 }
 
+function AbrirModulo(scriptFile){
+	$("#form_ars").attr("action",scriptFile);
+	$("#form_ars").attr("target","");
+	$("#form_ars").submit();
+}
+
 function fc_edit_usu(valor1,valor2){
 		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
 		var tt = "";
@@ -186,7 +192,7 @@ function fc_edit_usu(valor1,valor2){
 										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Usuário " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
-												EnviarDados('index.php','8','');
+												AbrirModulo('usu.php');
 											}
 										});
 									}else if(retorno_ajax==2){
@@ -324,7 +330,7 @@ function fc_edit_usu(valor1,valor2){
 										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Semana " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
-												EnviarDados('index.php','15','');
+												AbrirModulo('semanas.php');
 											}
 										});
 									}else if(retorno_ajax==2){
@@ -403,7 +409,7 @@ function fc_edit_usu(valor1,valor2){
 										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Setor " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
-												EnviarDados('index.php','9','');
+												AbrirModulo('setor.php');
 											}
 										});
 									}else if(retorno_ajax==2){
@@ -488,7 +494,7 @@ function fc_edit_usu(valor1,valor2){
 									msgbox("<br><table align='center'><tr><td>Cliente " + tu + " com sucesso !</td></tr></table><br>", {
 										Fechar: function(){
 											$( this ).dialog( "close" );
-											EnviarDados('index.php','11','');
+											AbrirModulo('clientes.php');
 										}
 									});
 									}else if(retorno_ajax==2){
@@ -590,7 +596,7 @@ function fc_edit_usu(valor1,valor2){
 										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Cliente " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Cliente editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
-												EnviarDados('index.php','11','');
+												AbrirModulo('clientes.php');
 											}
 										});
 									}else if(retorno_ajax==2){
@@ -1163,7 +1169,7 @@ function fc_edit_andamento(valor1,valor2){
 									msgbox(valor2=="I"?"<br><table align='center'><tr><td>Andamento " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
 										Fechar: function(){
 											$( this ).dialog( "close" );
-											EnviarDados('index.php','12','');
+											AbrirModulo('andamentos.php');
 										}
 									});
 								}else if(retorno_ajax==2){
@@ -1323,7 +1329,7 @@ function fc_edit_metas(valor1,valor2){
 										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Meta(s) " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Meta editada com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
-												EnviarDados('index.php','14','');
+												AbrirModulo('metas.php');
 											}
 										});
 									}else if(retorno_ajax==2){
@@ -1361,7 +1367,7 @@ function fc_edit_metas(valor1,valor2){
 							msgbox("<br><table align='center'><tr><td>Cliente deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									EnviarDados('index.php','11','');
+									AbrirModulo('clientes.php');
 								}
 							});
 						}else{
@@ -1389,7 +1395,7 @@ function fc_edit_metas(valor1,valor2){
 							msgbox("<br><table align='center'><tr><td>Andamento deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									EnviarDados('index.php','12','');
+									AbrirModulo('andamentos.php');
 								}
 							});
 						}else{
@@ -1417,7 +1423,7 @@ function fc_edit_metas(valor1,valor2){
 							msgbox("<br><table align='center'><tr><td>Meta deletada com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									EnviarDados('index.php','14','');
+									AbrirModulo('metas.php');
 								}
 							});
 						}else{
@@ -1489,7 +1495,7 @@ function fc_edit_metas(valor1,valor2){
 									msgbox("<br><table align='center'><tr><td>Regiao " + tu + " com sucesso !</td></tr></table><br>", {
 										Fechar: function(){
 											$( this ).dialog( "close" );
-											EnviarDados('index.php','16','');
+											AbrirModulo('regioes.php');
 										}
 									});
 								}else if(retorno_ajax==2){
@@ -1559,7 +1565,7 @@ function fc_edit_metas(valor1,valor2){
 							msgbox("<br><table align='center'><tr><td>Regiao deletada com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									EnviarDados('index.php','16','');
+									AbrirModulo('regioes.php');
 								}
 							});
 						}else if(retorno_ajax==3){
@@ -1590,7 +1596,7 @@ function fc_edit_metas(valor1,valor2){
 							msgbox("<br><table align='center'><tr><td>Usuário deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									EnviarDados('index.php','8','');
+									AbrirModulo('usu.php');
 								}
 							});
 						}else{
@@ -1598,7 +1604,7 @@ function fc_edit_metas(valor1,valor2){
 						}
 					}
 				});
-				//EnviarDados('index.php','8','');
+				//AbrirModulo('usu.php');
 			},
 			"Não": function(){
 				$( this ).dialog( "close" );
@@ -1619,7 +1625,7 @@ function fc_edit_metas(valor1,valor2){
 							msgbox("<br><table align='center'><tr><td>Semana deletada com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									EnviarDados('index.php','15','');
+									AbrirModulo('semanas.php');
 								}
 							});
 						}else{
@@ -1627,7 +1633,7 @@ function fc_edit_metas(valor1,valor2){
 						}
 					}
 				});
-				//EnviarDados('index.php','8','');
+				//AbrirModulo('usu.php');
 			},
 			"Não": function(){
 				$( this ).dialog( "close" );
@@ -1649,7 +1655,7 @@ function fc_edit_metas(valor1,valor2){
 							msgbox("<br><table align='center'><tr><td>Setor deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									EnviarDados('index.php','9','');
+									AbrirModulo('setor.php');
 								}
 							});
 						}else{
@@ -1657,7 +1663,7 @@ function fc_edit_metas(valor1,valor2){
 						}
 					}
 				});
-				//EnviarDados('index.php','8','');
+				//AbrirModulo('usu.php');
 			},
 			"Não": function(){
 				$( this ).dialog( "close" );
@@ -1912,6 +1918,7 @@ function somarMeta(valor2){
 		$("#meta_valor_"+valor2).val(mvat);
 	}
 }
+
 
 
 

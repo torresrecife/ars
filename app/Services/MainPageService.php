@@ -28,13 +28,15 @@ class MainPageService
 	{
 		$userContext = $this->buildUserContext($session);
 		$state = $this->resolveState($input);
+		$currentSection = $this->resolveCurrentSection($state);
 		$monthYearLabel = $this->months[(int) date('m')] . ' / ' . date('Y');
 
 		return array(
 			'user' => $userContext,
 			'state' => $state,
+			'currentSection' => $currentSection,
 			'monthYearLabel' => $monthYearLabel,
-			'topAction' => $this->resolveTopAction($state['hid_send']),
+			'topAction' => $this->resolveTopAction($currentSection),
 			'canAdmin' => in_array($userContext['level'], array('ADM', 'GER'), true),
 			'content' => $this->resolveContent($state, $userContext, $monthYearLabel),
 		);
@@ -79,19 +81,53 @@ class MainPageService
 		);
 	}
 
-	private function resolveTopAction($hidSend)
+	private function resolveTopAction($currentSection)
 	{
 		$actions = array(
-			8 => array('class' => 'newuser', 'label' => 'Novo Usuário', 'js' => 'fc_edit_usu("", "I");'),
-			9 => array('class' => 'newsetor', 'label' => 'Novo Setor', 'js' => 'fc_edit_setor("", "I");'),
-			11 => array('class' => 'newsetor', 'label' => 'Novo Cliente', 'js' => 'fc_edit_cliente("", "I");'),
-			12 => array('class' => 'newsetor', 'label' => 'Novo Andamento', 'js' => 'fc_edit_andamento("", "I");'),
-			14 => array('class' => 'newsetor', 'label' => 'Nova Meta', 'js' => 'fc_edit_metas("", "I");'),
-			15 => array('class' => 'newsetor', 'label' => 'Nova Semana', 'js' => 'fc_edit_sem("", "I");'),
-			16 => array('class' => 'newsetor', 'label' => 'Nova Região', 'js' => 'fc_edit_regiao("", "I");'),
+			'usuarios' => array('class' => 'newuser', 'label' => 'Novo UsuÃ¡rio', 'js' => 'fc_edit_usu("", "I");'),
+			'setores' => array('class' => 'newsetor', 'label' => 'Novo Setor', 'js' => 'fc_edit_setor("", "I");'),
+			'clientes' => array('class' => 'newsetor', 'label' => 'Novo Cliente', 'js' => 'fc_edit_cliente("", "I");'),
+			'andamentos' => array('class' => 'newsetor', 'label' => 'Novo Andamento', 'js' => 'fc_edit_andamento("", "I");'),
+			'metas-admin' => array('class' => 'newsetor', 'label' => 'Nova Meta', 'js' => 'fc_edit_metas("", "I");'),
+			'semanas' => array('class' => 'newsetor', 'label' => 'Nova Semana', 'js' => 'fc_edit_sem("", "I");'),
+			'regioes' => array('class' => 'newsetor', 'label' => 'Nova RegiÃ£o', 'js' => 'fc_edit_regiao("", "I");'),
 		);
 
-		return isset($actions[$hidSend]) ? $actions[$hidSend] : null;
+		return isset($actions[$currentSection]) ? $actions[$currentSection] : null;
+	}
+
+	private function resolveCurrentSection(array $state)
+	{
+		switch ((int) $state['hid_send']) {
+			case 1:
+				return 'carteiras';
+			case 2:
+				return 'painel';
+			case 3:
+				return 'producao';
+			case 4:
+				return ((int) $state['geral'] === 1) ? 'relatorio-semanal' : 'relatorio-mensal';
+			case 5:
+				return 'admin';
+			case 8:
+				return 'usuarios';
+			case 9:
+				return 'setores';
+			case 11:
+				return 'clientes';
+			case 12:
+				return 'andamentos';
+			case 13:
+				return 'metas-select';
+			case 14:
+				return 'metas-admin';
+			case 15:
+				return 'semanas';
+			case 16:
+				return 'regioes';
+			default:
+				return 'inicio';
+		}
 	}
 
 	private function resolveContent(array $state, array $user, $monthYearLabel)
@@ -100,8 +136,8 @@ class MainPageService
 			case 1:
 				return array(
 					'type' => 'view',
-						'view' => 'index/carteira',
-						'data' => array(
+					'view' => 'index/carteira',
+					'data' => array(
 						'banks' => $this->repository->listBanksByArea($state['area_id'], $user['clientIds']),
 						'hidArea' => $state['area_id'],
 						'monthYearLabel' => $monthYearLabel,
@@ -133,9 +169,9 @@ class MainPageService
 				);
 			case 5:
 				return array(
-						'type' => 'view',
-						'view' => 'admin/index',
-						'data' => array(
+					'type' => 'view',
+					'view' => 'admin/index',
+					'data' => array(
 						'userLevel' => $user['level'],
 						'hidArea' => $state['area_id'],
 						'banks' => $this->repository->listAdminBanks($user['sectorId'], $user['clientIds']),
