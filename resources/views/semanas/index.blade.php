@@ -47,7 +47,7 @@ window.arsWeekAjaxUrl = "ajax_sem.php";
 					<td style="width:50px"><label>M&ecirc;s/Ano:</label></td>
 					<td style="width:50px"><input type="text" class="cls_sem" name="mes_sem" id="mes_sem" style="width:90%" title="M&ecirc;s" alt="integer"/></td>
 					<td align="center" style="width:50px">/</td>
-					<td style="width:50px"><input type="text" class="cls_sem" name="ano_sem" id="ano_sem" style="width:90%" title="Ano" alt="integer"/></td>
+					<td style="width:50px"><input type="text" class="cls_sem" name="ano_sem" id="ano_sem" style="width:90%" title="Ano" maxlength="4"/></td>
 				<tr>
 					<td><label>1&ordf; Semana:</label></td>
 					<td><input type="text" class="cls_sem" name="ini1_sem" id="ini1_sem" style="width:90%" title="1&ordf; Semana in&iacute;cio" alt="integer"/></td>

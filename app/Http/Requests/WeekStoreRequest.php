@@ -8,6 +8,24 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class WeekStoreRequest extends FormRequest
 {
+	protected function prepareForValidation()
+	{
+		$this->merge(array(
+			'mes_sem' => preg_replace('/\D+/', '', (string) $this->input('mes_sem', '')),
+			'ano_sem' => preg_replace('/\D+/', '', (string) $this->input('ano_sem', '')),
+			'ini1_sem' => preg_replace('/\D+/', '', (string) $this->input('ini1_sem', '')),
+			'fim1_sem' => preg_replace('/\D+/', '', (string) $this->input('fim1_sem', '')),
+			'ini2_sem' => preg_replace('/\D+/', '', (string) $this->input('ini2_sem', '')),
+			'fim2_sem' => preg_replace('/\D+/', '', (string) $this->input('fim2_sem', '')),
+			'ini3_sem' => preg_replace('/\D+/', '', (string) $this->input('ini3_sem', '')),
+			'fim3_sem' => preg_replace('/\D+/', '', (string) $this->input('fim3_sem', '')),
+			'ini4_sem' => preg_replace('/\D+/', '', (string) $this->input('ini4_sem', '')),
+			'fim4_sem' => preg_replace('/\D+/', '', (string) $this->input('fim4_sem', '')),
+			'ini5_sem' => preg_replace('/\D+/', '', (string) $this->input('ini5_sem', '')),
+			'fim5_sem' => preg_replace('/\D+/', '', (string) $this->input('fim5_sem', '')),
+		));
+	}
+
 	public function authorize()
 	{
 		return true;
