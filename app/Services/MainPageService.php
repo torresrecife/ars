@@ -28,7 +28,7 @@ class MainPageService
 	{
 		$userContext = $this->buildUserContext($session);
 		$state = $this->resolveState($input);
-		$monthYearLabel = $this->months[(int) date('m')] . ' / ' . date('Y');
+		$monthYearLabel = $state['startDate'];
 
 		return array(
 			'user' => $userContext,
@@ -71,12 +71,30 @@ class MainPageService
 			$section = (isset($input['geral']) && (int) $input['geral'] === 1) ? 'relatorio-semanal' : 'inicio';
 		}
 
+		$month = isset($input['mes']) ? (int) $input['mes'] : (int) date('m');
+		if ($month <= 0 || $month > 12) {
+			$month = (int) date('m');
+		}
+
+		$year = isset($input['ano']) ? (int) $input['ano'] : (int) date('Y');
+		if ($year <= 0) {
+			$year = (int) date('Y');
+		}
+
+		$startDate = isset($input['startDate']) && trim((string) $input['startDate']) !== ''
+			? (string) $input['startDate']
+			: $this->months[$month] . ' / ' . $year;
+
 		return array(
 			'section' => $section,
 			'area_id' => isset($input['area_id']) ? (string) $input['area_id'] : '',
 			'bank_id' => isset($input['bank_id']) ? (string) $input['bank_id'] : '',
 			'geral' => isset($input['geral']) ? (int) $input['geral'] : 0,
 			'regiao_id' => isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0,
+			'mes' => $month,
+			'ano' => $year,
+			'startDate' => $startDate,
+			'startSetor' => isset($input['startSetor']) ? (string) $input['startSetor'] : '',
 		);
 	}
 
@@ -106,6 +124,8 @@ class MainPageService
 						'banks' => $this->repository->listBanksByArea($state['area_id'], $user['clientIds']),
 						'hidArea' => $state['area_id'],
 						'monthYearLabel' => $monthYearLabel,
+						'month' => $state['mes'],
+						'year' => $state['ano'],
 						'regions' => $user['regions'],
 						'showRegionSelector' => $user['showRegionSelector'],
 						'selectedRegionId' => $state['regiao_id'],
@@ -120,6 +140,9 @@ class MainPageService
 					'data' => array(
 						'areas' => $this->repository->listAreasForProduction($user['level'], $user['sectorId']),
 						'monthYearLabel' => $monthYearLabel,
+						'month' => $state['mes'],
+						'year' => $state['ano'],
+						'startSector' => $state['startSetor'],
 						'regions' => $user['regions'],
 						'showRegionSelector' => $user['showRegionSelector'],
 						'selectedRegionId' => $state['regiao_id'],

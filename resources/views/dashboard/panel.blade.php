@@ -59,19 +59,22 @@
 	function send_nav(bankId,valor3){
 		var m_mes = $('#mes').val();
 		add_month(m_mes,valor3);
-		$('#bank_id').val(bankId);
-		$('#area_id').val($('#panel_area_id').val() || '');
-		$('#form_ars').attr('action','painel');
-		$('#form_ars').attr('target','');
-		$('#form_ars').submit();
+		NavegarModulo('painel', {
+			bank_id: bankId,
+			area_id: $('#panel_area_id').val() || '',
+			regiao_id: $('#regiao_id').val() || '{{ $regionId }}',
+			mes: $('#mes').val(),
+			ano: $('#ano').val()
+		});
 	}
 	function send_region(bankId,regiaoId){
-		$('#regiao_id').val(regiaoId);
-		$('#bank_id').val(bankId);
-		$('#area_id').val($('#panel_area_id').val() || '');
-		$('#form_ars').attr('action','painel');
-		$('#form_ars').attr('target','');
-		$('#form_ars').submit();
+		NavegarModulo('painel', {
+			bank_id: bankId,
+			area_id: $('#panel_area_id').val() || '',
+			regiao_id: regiaoId,
+			mes: $('#mes').val(),
+			ano: $('#ano').val()
+		});
 	}
 	function add_month(meses,valor){
 		var n_mes = 0;

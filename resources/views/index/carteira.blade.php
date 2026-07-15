@@ -5,8 +5,8 @@
 			<label for="startDate">M&ecirc;s / Ano:</label>
 			<input type="text" name="startDate" id="startDate" class="date-picker" readonly="readonly" value="{{ e($monthYearLabel) }}"/>
 			<span id="obg_date"></span>
-			<input type="hidden" name="mes" id="mes" value="{{ date('m') }}"/>
-			<input type="hidden" name="ano" id="ano" value="{{ date('Y') }}"/>
+			<input type="hidden" name="mes" id="mes" value="{{ (int) $month }}"/>
+			<input type="hidden" name="ano" id="ano" value="{{ (int) $year }}"/>
 			@if (!empty($showRegionSelector))
 				<br><br>
 				<label for="regiao_id">Regi&atilde;o:</label>
