@@ -1,25 +1,5 @@
 <?php
 
-if (!defined('ARS_SEGURANCA_LOADED')) {
-	include __DIR__ . '/inc/seguranca.php';
-}
+require __DIR__ . '/bootstrap/module_entry.php';
 
-if (!defined('ARS_LEGACY_FUNCTIONS_LOADED')) {
-	require_once __DIR__ . '/inc/functions.php';
-}
-
-protegePagina(0);
-
-$view = new \App\Support\View($app->basePath());
-$regionService = new \App\Services\RegionService(
-	new \App\Repositories\RegionRepository($conexao4)
-);
-$controller = new \App\Http\Controllers\UserAdminController(
-	new \App\Services\UserAdminService(
-		new \App\Repositories\UserAdminRepository($conexao4),
-		$regionService
-	),
-	$view
-);
-
-echo $controller->index();
+ars_run_module_entry(8);
