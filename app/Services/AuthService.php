@@ -93,23 +93,7 @@ class AuthService
 			session_start();
 		}
 
-		session_regenerate_id(true);
-		$_SESSION['usuarioID'] = $user['id_usu'];
-		$_SESSION['usuarioNome'] = $user['nome_usu'];
-		$_SESSION['usuarioNivel'] = $user['nivel_usu'];
-		$_SESSION['usuarioST'] = $user['status_usu'];
-		$_SESSION['usuarioSetor'] = $user['id_setor'];
-		$_SESSION['usuarioCliente'] = $user['id_cliente'];
-		$_SESSION['usuarioRegiaoModo'] = isset($user['regiao_modo']) ? (string) $user['regiao_modo'] : 'N';
-		$_SESSION['usuarioRegiaoIds'] = '';
-		$_SESSION['usuarioRegiaoUfs'] = '';
-
-		if ($this->regions !== null && isset($user['id_usu'])) {
-			$regionIds = $this->regions->listRegionIdsByUserId((int) $user['id_usu']);
-			$ufs = $this->regions->listUfCodesByUserId((int) $user['id_usu']);
-			$_SESSION['usuarioRegiaoIds'] = implode(',', $regionIds);
-			$_SESSION['usuarioRegiaoUfs'] = implode(',', $ufs);
-		}
+		$this->syncSessionContext($user, true);
 	}
 
 	public function clearUserSession()
@@ -136,6 +120,36 @@ class AuthService
 		}
 
 		return $this->users->findById($_SESSION['usuarioID']);
+	}
+
+	public function syncSessionContext(array $user, $regenerateId = false)
+	{
+		if (session_status() !== PHP_SESSION_ACTIVE) {
+			session_start();
+		}
+
+		if ($regenerateId) {
+			session_regenerate_id(true);
+		}
+
+		$_SESSION['usuarioID'] = $user['id_usu'];
+		$_SESSION['usuarioNome'] = $user['nome_usu'];
+		$_SESSION['usuarioNivel'] = $user['nivel_usu'];
+		$_SESSION['usuarioST'] = $user['status_usu'];
+		$_SESSION['usuarioSetor'] = $user['id_setor'];
+		$_SESSION['usuarioCliente'] = $user['id_cliente'];
+		$_SESSION['usuarioRegiaoModo'] = isset($user['regiao_modo']) ? (string) $user['regiao_modo'] : 'N';
+		$_SESSION['usuarioRegiaoIds'] = '';
+		$_SESSION['usuarioRegiaoUfs'] = '';
+
+		if ($this->regions !== null && isset($user['id_usu'])) {
+			$regionIds = $this->regions->listRegionIdsByUserId((int) $user['id_usu']);
+			$ufs = $this->regions->listUfCodesByUserId((int) $user['id_usu']);
+			$_SESSION['usuarioRegiaoIds'] = implode(',', $regionIds);
+			$_SESSION['usuarioRegiaoUfs'] = implode(',', $ufs);
+		}
+
+		return $user;
 	}
 
 	public function refreshUserAccess($id)

@@ -3,7 +3,20 @@
 error_reporting(0);
 ini_set('display_errors', 0);
 
-include 'seguranca.php';
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+$app = require dirname(__DIR__) . '/bootstrap/app.php';
+$request = Illuminate\Http\Request::capture();
+$app->instance('request', $request);
+
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+$kernel->bootstrap();
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+	session_start();
+}
+
+$authService = $app->make(App\Services\AuthService::class);
 
 $forcePasswordChange = false;
 
@@ -11,13 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$usuario = isset($_POST['username']) ? $_POST['username'] : '';
 	$senha = isset($_POST['passwd']) ? $_POST['passwd'] : '';
 
-	$authResult = ars_auth_service()->attempt($usuario, $senha);
+	$authResult = $authService->attempt($usuario, $senha);
 
 	if ($authResult !== false) {
-		if (ars_auth_service()->requiresPasswordChange($authResult)) {
+		if ($authService->requiresPasswordChange($authResult)) {
 			$forcePasswordChange = true;
 		} else {
-			ars_refresh_user_access($authResult['id_usu'], $conexao4);
+			$authService->refreshUserAccess($authResult['id_usu']);
 			if (!headers_sent()) {
 				header('Location: ../index.php');
 				exit;
@@ -26,7 +39,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			exit('<script>window.location="../index.php";</script>');
 		}
 	} else {
-		expulsaVisitante(1);
+		if (session_status() === PHP_SESSION_ACTIVE) {
+			session_regenerate_id(true);
+			session_destroy();
+		}
+		header('Location: ../login.php?alerta=1');
+		exit;
 	}
 }
 ?>

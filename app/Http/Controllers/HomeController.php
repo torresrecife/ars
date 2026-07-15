@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Services\MainPageService;
+use App\Services\AuthService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
@@ -16,10 +17,14 @@ class HomeController extends Controller
 	/** @var View */
 	private $view;
 
-	public function __construct(MainPageService $service, View $view)
+	/** @var AuthService */
+	private $authService;
+
+	public function __construct(MainPageService $service, View $view, AuthService $authService)
 	{
 		$this->service = $service;
 		$this->view = $view;
+		$this->authService = $authService;
 	}
 
 	public function index(array $input, array $session)
@@ -76,10 +81,16 @@ class HomeController extends Controller
 
 	private function ensureLegacyEnvironment()
 	{
-		require_once base_path('inc/seguranca.php');
+		require_once base_path('inc/bootstrap.php');
 		require_once base_path('inc/functions.php');
 		require_once base_path('inc/somadias.php');
-		protegePagina(0);
+
+		$user = $this->authService->currentUser();
+		if (empty($user)) {
+			throw new \RuntimeException('Sessao de usuario nao encontrada.');
+		}
+
+		$this->authService->syncSessionContext($user);
 	}
 
 	private function renderContent(array $content, array $input)
