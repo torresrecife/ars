@@ -204,12 +204,13 @@ function fc_edit_usu(valor1,valor2){
 						}else if(dado_senha!=""){
 							alert(dado_senha);
 						}else{
-							$.ajax({
+						$.ajax({
 							   type: "POST",
 							   url:  userAjaxUrl,
-							   data: "flag=" + valor2 + "&" + mdados + "&banco_neo=" + usus.join(",") + "&regiao_neo=" + regioes.join(","),
-							   success: function(retorno_ajax){
-									if(retorno_ajax==1){
+							   dataType: "json",
+							   data: "flag=" + valor2 + "&response_format=json&" + mdados + "&banco_neo=" + usus.join(",") + "&regiao_neo=" + regioes.join(","),
+							   success: function(response){
+									if(response && response.ok===true){
 										$( "#dialog-edit-usu" ).dialog( "close" );
 										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Usuário " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
@@ -217,10 +218,10 @@ function fc_edit_usu(valor1,valor2){
 												AbrirModulo('usuarios');
 											}
 										});
-									}else if(retorno_ajax==2){
+									}else if(response && response.code=="duplicate"){
 										alert("Usuário já cadastrado!");
 									}else{
-										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
+										alert((response && response.message) ? response.message : "Erro ao salvar o usuário.");
 									}
 								}
 							});
@@ -252,15 +253,14 @@ function fc_edit_usu(valor1,valor2){
 		$.ajax({
 			type: "POST",
 			url:  userAjaxUrl,
-			data: "flag=E&id_usu=" + valor1,
-			success: function(retorno_ajax){
-				var ret = {};
-				try{
-					ret = JSON.parse(retorno_ajax);
-				}catch(e){
-					alert("Erro ao carregar os dados do usuário.");
+			dataType: "json",
+			data: { flag: "E", id_usu: valor1, response_format: "json" },
+			success: function(response){
+				if(!response || response.ok!==true || !response.data){
+					alert((response && response.message) ? response.message : "Erro ao carregar os dados do usuário.");
 					return;
 				}
+				var ret = response.data || {};
 				usuarioClientesReset();
 				usuarioRegioesReset();
 				$("#id_usu").val(ret.id_usu || "");
@@ -302,77 +302,88 @@ function fc_edit_usu(valor1,valor2){
 			$(".validateTips").text("Edite o Usuário Abaixo");
 		}
 
+		var abrirDialogSemana = function(){
+			$("#dialog-edit-sem").dialog({
+				title: tt,
+				modal: true,
+				autoOpen: true,
+				height: 420,
+				width: 450,
+				buttons: {
+					Salvar: function() {
+						var mdados = "";
+						$('.cls_sem').each(function(){
+							mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
+						});
+						$.ajax({
+						   type: "POST",
+						   url:  weekAjaxUrl,
+						   dataType: "json",
+						   data: "flag=" + valor2 + "&response_format=json&" + mdados,
+						   success: function(response){
+								if(response && response.ok===true){
+									$( "#dialog-edit-sem" ).dialog( "close" );
+									msgbox(valor2=="I"?"<br><table align='center'><tr><td>Semana " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
+										Fechar: function(){
+											$( this ).dialog( "close" );
+											AbrirModulo('semanas');
+										}
+									});
+								}else if(response && response.code=="duplicate"){
+									alert("Semana já cadastrada!");
+								}else{
+									alert((response && response.message) ? response.message : "Erro ao salvar a semana.");
+								}
+							}
+						});
+					},
+					Sair: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				close: function(){
+					$('.cls_sem').each(function() {
+						$(this).val("");
+					});
+				}
+			});
+		};
+
+		if(valor2=="I"){
+			$('.cls_sem').each(function() {
+				$(this).val("");
+			});
+			abrirDialogSemana();
+			return;
+		}
+
 		$.ajax({
 			type: "POST",
 			url:  weekAjaxUrl,
-			data: "flag="+(valor2=="U"?"E":"")+"&id_sem=" + valor1,
-			success: function(retorno_ajax){
-				var ret = retorno_ajax.split("-|-");
+			dataType: "json",
+			data: { flag: "E", id_sem: valor1, response_format: "json" },
+			success: function(response){
+				if(!response || response.ok!==true || !response.data){
+					alert((response && response.message) ? response.message : "Erro ao carregar os dados da semana.");
+					return;
+				}
+				var ret = response.data || {};
 
-				$("#id_sem").val(ret[0]);
+				$("#id_sem").val(ret.semanas_id || ret.id_sem || "");
+				$("#mes_sem").val(ret.mes || "");
+				$("#ano_sem").val(ret.ano || "");
+				$("#ini1_sem").val(ret.ini_1 || "");
+				$("#fim1_sem").val(ret.fim_1 || "");
+				$("#ini2_sem").val(ret.ini_2 || "");
+				$("#fim2_sem").val(ret.fim_2 || "");
+				$("#ini3_sem").val(ret.ini_3 || "");
+				$("#fim3_sem").val(ret.fim_3 || "");
+				$("#ini4_sem").val(ret.ini_4 || "");
+				$("#fim4_sem").val(ret.fim_4 || "");
+				$("#ini5_sem").val(ret.ini_5 || "");
+				$("#fim5_sem").val(ret.fim_5 || "");
 
-				$("#mes_sem").val(ret[1]);
-				$("#ano_sem").val(ret[2]);
-
-				$("#ini1_sem").val(ret[3]);
-				$("#fim1_sem").val(ret[4]);
-
-				$("#ini2_sem").val(ret[5]);
-				$("#fim2_sem").val(ret[6]);
-
-				$("#ini3_sem").val(ret[7]);
-				$("#fim3_sem").val(ret[8]);
-
-				$("#ini4_sem").val(ret[9]);
-				$("#fim4_sem").val(ret[10]);
-
-				$("#ini5_sem").val(ret[11]);
-				$("#fim5_sem").val(ret[12]);
-
-				$("#dialog-edit-sem").dialog({
-					title: tt,
-					modal: true,
-					autoOpen: true,
-					height: 420,
-					width: 450,
-					buttons: {
-						Salvar: function() {
-							var mdados="";
-							$('.cls_sem').each(function(){
-								mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
-							});
-							//alert(mdados);
-							$.ajax({
-							   type: "POST",
-							   url:  weekAjaxUrl,
-							   data: "flag=" + valor2 + "&" + mdados,
-							   success: function(retorno_ajax){
-									if(retorno_ajax==1){
-										$( "#dialog-edit-sem" ).dialog( "close" );
-										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Semana " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
-											Fechar: function(){
-												$( this ).dialog( "close" );
-												AbrirModulo('semanas');
-											}
-										});
-									}else if(retorno_ajax==2){
-										alert("Semana já cadastrada!");
-									}else{
-										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
-									}
-								}
-							});
-						},
-						Sair: function() {
-							$( this ).dialog( "close" );
-						}
-					},
-					close: function(){
-						$('.cls_sem').each(function() {
-							$(this).val("");
-						});
-					}
-				});
+				abrirDialogSemana();
 			}
 		});
 	}
@@ -1570,10 +1581,11 @@ function fc_edit_metas(valor1,valor2){
 				$.ajax({
 					type: "POST",
 					url:  userAjaxUrl,
-					data: "flag=D&id_usu=" + valor1,
-					success: function(retorno_ajax){
+					dataType: "json",
+					data: { flag: "D", id_usu: valor1, response_format: "json" },
+					success: function(response){
 						$( this ).dialog( "close" );
-						if(retorno_ajax==1){
+						if(response && response.ok===true){
 							msgbox("<br><table align='center'><tr><td>Usuário deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
@@ -1581,7 +1593,7 @@ function fc_edit_metas(valor1,valor2){
 								}
 							});
 						}else{
-							alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
+							alert((response && response.message) ? response.message : "Erro ao excluir o usuário.");
 						}
 					}
 				});
@@ -1599,10 +1611,11 @@ function fc_edit_metas(valor1,valor2){
 				$.ajax({
 					type: "POST",
 					url:  weekAjaxUrl,
-					data: "flag=D&id_sem=" + valor1,
-					success: function(retorno_ajax){
+					dataType: "json",
+					data: { flag: "D", id_sem: valor1, response_format: "json" },
+					success: function(response){
 						$( this ).dialog( "close" );
-						if(retorno_ajax==1){
+						if(response && response.ok===true){
 							msgbox("<br><table align='center'><tr><td>Semana deletada com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
@@ -1610,7 +1623,7 @@ function fc_edit_metas(valor1,valor2){
 								}
 							});
 						}else{
-							alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
+							alert((response && response.message) ? response.message : "Erro ao excluir a semana.");
 						}
 					}
 				});

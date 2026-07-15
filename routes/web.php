@@ -12,58 +12,58 @@ Route::middleware('legacy.guest')->group(function () {
 });
 
 Route::middleware('legacy.auth')->group(function () {
-    Route::match(['get', 'post'], '/index', 'HomeController@webIndex')->name('legacy.home');
-    Route::match(['get', 'post'], '/index.php', 'HomeController@webIndex');
-    Route::match(['get', 'post'], '/logout', 'AuthController@logout')->name('logout');
+    Route::get('/index', 'HomeController@webIndex')->name('legacy.home');
+    Route::get('/index.php', 'HomeController@webIndex');
+    Route::get('/logout', 'AuthController@logout')->name('logout');
 
-    Route::match(['get', 'post'], '/carteiras', function (Request $request) {
+    Route::get('/carteiras', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'carteiras');
     })->name('carteiras');
 
-    Route::match(['get', 'post'], '/painel', function (Request $request) {
+    Route::get('/painel', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'painel');
     })->name('painel');
 
-    Route::match(['get', 'post'], '/producao', function (Request $request) {
+    Route::get('/producao', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'producao');
     })->name('producao');
 
-    Route::match(['get', 'post'], '/relatorio', function (Request $request) {
+    Route::get('/relatorio', function (Request $request) {
         $input = $request->all();
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, isset($input['geral']) && (string) $input['geral'] === '1' ? 'relatorio-semanal' : 'relatorio-mensal');
     })->name('relatorio');
 
-    Route::match(['get', 'post'], '/***REMOVED***', function (Request $request) {
+    Route::get('/***REMOVED***', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, '***REMOVED***');
     })->name('***REMOVED***');
 
-    Route::match(['get', 'post'], '/usuarios', function (Request $request) {
+    Route::get('/usuarios', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'usuarios');
     })->name('usuarios');
 
-    Route::match(['get', 'post'], '/setores', function (Request $request) {
+    Route::get('/setores', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'setores');
     })->name('setores');
 
-    Route::match(['get', 'post'], '/clientes', function (Request $request) {
+    Route::get('/clientes', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'clientes');
     })->name('clientes');
 
-    Route::match(['get', 'post'], '/andamentos', function (Request $request) {
+    Route::get('/andamentos', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'andamentos');
     })->name('andamentos');
 
-    Route::match(['get', 'post'], '/metas', function (Request $request) {
+    Route::get('/metas', function (Request $request) {
         $input = $request->all();
         $hasMetaContext = isset($input['startBanco']) || isset($input['banco_id']) || isset($input['meta_mes']) || isset($input['meta_ano']);
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, $hasMetaContext ? 'metas-***REMOVED***' : 'metas-select');
     })->name('metas');
 
-    Route::match(['get', 'post'], '/semanas', function (Request $request) {
+    Route::get('/semanas', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'semanas');
     })->name('semanas');
 
-    Route::match(['get', 'post'], '/regioes', function (Request $request) {
+    Route::get('/regioes', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'regioes');
     })->name('regioes');
 });

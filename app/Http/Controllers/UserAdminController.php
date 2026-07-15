@@ -59,13 +59,59 @@ class UserAdminController extends Controller
 	public function webAjax(Request $request)
 	{
 		$flag = (string) $request->input('flag', '');
+		$jsonMode = (string) $request->input('response_format', '') === 'json';
 		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, UserStoreRequest::class)) {
-			return $this->legacyTextResponse('0');
+			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422) : $this->legacyTextResponse('0');
 		}
 		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, UserUpdateRequest::class)) {
-			return $this->legacyTextResponse('0');
+			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422) : $this->legacyTextResponse('0');
+		}
+
+		if ($jsonMode) {
+			return $this->webAjaxJson($request, $flag);
 		}
 
 		return $this->legacyTextResponse($this->ajax($request->all()));
+	}
+
+	private function webAjaxJson(Request $request, $flag)
+	{
+		$input = $request->all();
+
+		if ($flag === 'E') {
+			$payload = $this->service->editPayload(isset($input['id_usu']) ? (int) $input['id_usu'] : 0);
+			$data = $payload !== '' ? json_decode($payload, true) : null;
+			if (!is_array($data)) {
+				return $this->apiJsonResponse(false, 'not_found', 'Usuario nao encontrado.', array(), 404);
+			}
+
+			return $this->apiJsonResponse(true, 'loaded', 'Usuario carregado.', $data);
+		}
+
+		if ($flag === 'I') {
+			return $this->mapWriteResultToJson($this->service->create($input), 'Usuario criado com sucesso.');
+		}
+
+		if ($flag === 'U') {
+			return $this->mapWriteResultToJson($this->service->update($input), 'Usuario atualizado com sucesso.');
+		}
+
+		if ($flag === 'D') {
+			return $this->mapWriteResultToJson($this->service->delete(isset($input['id_usu']) ? (int) $input['id_usu'] : 0), 'Usuario excluido com sucesso.');
+		}
+
+		return $this->apiJsonResponse(false, 'invalid_flag', 'Operacao invalida.', array(), 400);
+	}
+
+	private function mapWriteResultToJson($result, $successMessage)
+	{
+		if ((string) $result === '1') {
+			return $this->apiJsonResponse(true, 'success', $successMessage);
+		}
+		if ((string) $result === '2') {
+			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.', array(), 409);
+		}
+
+		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
 	}
 }

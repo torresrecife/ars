@@ -1,7 +1,7 @@
 <div class="content_body">
 	<div class="cpanel-left">
 		<div class="cpanel">
-			<label><h2>ProduÃ§Ã£o</h2></label>
+			<label><h2>Produção</h2></label>
 			<label for="startSetor">Setor:</label>
 			<select name="startSetor" id="startSetor" class="input-default" style="height:20px;width:200px;">
 				<option value="">Todas os Setores</option>
@@ -29,7 +29,7 @@
 			<div class="icon-wrapper">
 				<div class="icon">
 					<a href="#" id="frm" onclick="EnviarPagina('relatorio',true,'',''); return false;">
-						<img src="css/images/header/icon-48-themes.png" alt="" /><span>RelatÃ³rio</span>
+						<img src="css/images/header/icon-48-themes.png" alt="" /><span>Relatório</span>
 					</a>
 				</div>
 			</div>
