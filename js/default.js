@@ -1,15 +1,15 @@
-
+﻿
 $(function() {
 	$('.date-picker').datepicker( {
-		dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+		dayNames: ['Domingo','Segunda','TerÃ§a','Quarta','Quinta','Sexta','SÃ¡bado'],
 		dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
-		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
-		monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','SÃ¡b','Dom'],
+		monthNames: ['Janeiro','Fevereiro','MarÃ§o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
 		monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
-		nextText: 'Próximo',
+		nextText: 'PrÃ³ximo',
 		prevText: 'Anterior',
 		closeText: 'OK',
-		currentText: 'Mês atual',
+		currentText: 'MÃªs atual',
         changeMonth: true,
         changeYear: true,
         showButtonPanel: true,
@@ -39,7 +39,7 @@ function EnviarPagina(frm, precisaData, are, fla){
 	if(precisaData && $("#startDate").val()==""){
 		$("#startDate").css("border","1px solid red");
 		$("#obg_date").fadeIn();
-		$("#obg_date").html("Inseir o mÃªs / ano!");
+		$("#obg_date").html("Inseir o mÃƒÂªs / ano!");
 		setTimeout(function(){
 			$("#startDate").css("border","1px solid #ccc");
 			$("#obg_date").fadeOut();
@@ -69,7 +69,7 @@ function AbrirPainel(areaId, bankId){
 	if($("#startDate").val()==""){
 		$("#startDate").css("border","1px solid red");
 		$("#obg_date").fadeIn();
-		$("#obg_date").html("Inseir o mÃªs / ano!");
+		$("#obg_date").html("Inseir o mÃƒÂªs / ano!");
 		setTimeout(function(){
 			$("#startDate").css("border","1px solid #ccc");
 			$("#obg_date").fadeOut();
@@ -95,7 +95,7 @@ function fc_edit_usu(valor1,valor2){
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
-			tt="Novo Usuário";
+			tt="Novo UsuÃ¡rio";
 			tu="criado";
 			$(".validateTips").text("Crie Um " + tt);
 			usuarioClientesReset();
@@ -108,9 +108,9 @@ function fc_edit_usu(valor1,valor2){
 			usuarioRegioesAtualizarModo();
 			sel_tipo(1, $("#setor_usu").val());
 		}else if(valor2=="U"){
-			tt="Editar Usuário";
+			tt="Editar UsuÃ¡rio";
 			tu="editado";
-			$(".validateTips").text("Edite o Usuário Abaixo");
+			$(".validateTips").text("Edite o UsuÃ¡rio Abaixo");
 		}
 
 		var abrirDialogUsuario = function(){
@@ -137,7 +137,7 @@ function fc_edit_usu(valor1,valor2){
 							return false;
 						}
 						if($('.cls_usuario_cliente_input').length==0){
-							alert("Selecione ao menos um cliente para o usuário.");
+							alert("Selecione ao menos um cliente para o usuÃ¡rio.");
 							$("#banco_usu_pool").focus();
 							return false;
 						}
@@ -169,14 +169,14 @@ function fc_edit_usu(valor1,valor2){
 							   success: function(retorno_ajax){
 									if(retorno_ajax==1){
 										$( "#dialog-edit-usu" ).dialog( "close" );
-										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Usuário " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
+										msgbox(valor2=="I"?"<br><table align='center'><tr><td>UsuÃ¡rio " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
 												AbrirModulo('usu.php');
 											}
 										});
 									}else if(retorno_ajax==2){
-										alert("Usuário já cadastrado!");
+										alert("UsuÃ¡rio jÃ¡ cadastrado!");
 									}else{
 										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 									}
@@ -216,7 +216,7 @@ function fc_edit_usu(valor1,valor2){
 				try{
 					ret = JSON.parse(retorno_ajax);
 				}catch(e){
-					alert("Erro ao carregar os dados do usuário.");
+					alert("Erro ao carregar os dados do usuÃ¡rio.");
 					return;
 				}
 				usuarioClientesReset();
@@ -244,7 +244,7 @@ function fc_edit_usu(valor1,valor2){
 			}
 		});
 	}
-	//função editar semana
+	//funÃ§Ã£o editar semana
 	function fc_edit_sem(valor1,valor2){
 		var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax_sem.php";
 
@@ -257,7 +257,7 @@ function fc_edit_usu(valor1,valor2){
 		}else if(valor2=="U"){
 			tt="Editar Semana";
 			tu="editada";
-			$(".validateTips").text("Edite o Usuário Abaixo");
+			$(".validateTips").text("Edite o UsuÃ¡rio Abaixo");
 		}
 
 		$.ajax({
@@ -314,7 +314,7 @@ function fc_edit_usu(valor1,valor2){
 											}
 										});
 									}else if(retorno_ajax==2){
-										alert("Semana já cadastrada!");
+										alert("Semana jÃ¡ cadastrada!");
 									}else{
 										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 									}
@@ -335,7 +335,7 @@ function fc_edit_usu(valor1,valor2){
 		});
 	}
 
-	//função editar setores
+	//funÃ§Ã£o editar setores
 	function fc_edit_setor(valor1,valor2){
 		var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax_setor.php";
 
@@ -393,7 +393,7 @@ function fc_edit_usu(valor1,valor2){
 											}
 										});
 									}else if(retorno_ajax==2){
-										alert("Setor já cadastrado!");
+										alert("Setor jÃ¡ cadastrado!");
 									}else{
 										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 									}
@@ -478,7 +478,7 @@ function fc_edit_usu(valor1,valor2){
 										}
 									});
 									}else if(retorno_ajax==2){
-										alert("JÃ¡ existe uma meta cadastrada para este cliente, mÃªs/ano, andamento e regiÃ£o.");
+										alert("JÃƒÂ¡ existe uma meta cadastrada para este cliente, mÃƒÂªs/ano, andamento e regiÃƒÂ£o.");
 									}else{
 									alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 								}
@@ -580,7 +580,7 @@ function fc_edit_usu(valor1,valor2){
 											}
 										});
 									}else if(retorno_ajax==2){
-										alert("Servidor já cadastrado!");
+										alert("Servidor jÃ¡ cadastrado!");
 									}else{
 										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 									}
@@ -742,7 +742,7 @@ function usuarioClientesAdicionarValor(clienteId, clienteNome, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Esse cliente já está vinculado ao usuário.");
+			alert("Esse cliente jÃ¡ estÃ¡ vinculado ao usuÃ¡rio.");
 		}
 		return false;
 	}
@@ -1045,7 +1045,7 @@ function andamentoTiposAdicionarValor(tipo, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Esse andamento já está vinculado.");
+			alert("Esse andamento jÃ¡ estÃ¡ vinculado.");
 		}
 		return false;
 	}
@@ -1091,11 +1091,17 @@ function fc_edit_andamento(valor1,valor2){
 		$("#painel").val(ret.painel || "");
 		$("#titulo").val(ret.titulo || "");
 		andamentoTiposReset(valor2=="I" ? "Nenhum andamento vinculado." : "Carregando andamentos vinculados...");
-		sel_tipo(0, ret.especie || "", function(){
-			if($.isArray(ret.tipos)){
-				$.each(ret.tipos, function(_, tipo){
-					andamentoTiposAdicionarValor(tipo, true);
-				});
+		if($.isArray(ret.tipos) && ret.tipos.length>0){
+			$.each(ret.tipos, function(_, tipo){
+				andamentoTiposAdicionarValor(tipo, true);
+			});
+		}else if(valor2=="U"){
+			andamentoTiposReset("Nenhum andamento vinculado.");
+		}
+		var especieAtual = String(ret.especie || $("#especie").val() || "");
+		sel_tipo(0, especieAtual, function(){
+			if(!$.isArray(ret.tipos) || ret.tipos.length===0){
+				andamentoTiposAtualizarInputs();
 			}
 		});
 		$( "#dialog-edit-andamento" ).dialog({
@@ -1110,7 +1116,7 @@ function fc_edit_andamento(valor1,valor2){
 					var invalido = false;
 					$(".cls_andamento").each(function(){
 						if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-							alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
+							alert("O campo " + $(this).attr("title") + " ï¿½ obrigatï¿½rio ");
 							$(this).focus();
 							invalido = true;
 							return false;
@@ -1142,7 +1148,7 @@ function fc_edit_andamento(valor1,valor2){
 									Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('andamentos.php'); }
 								});
 							}else if(response && response.code=="duplicate"){
-								alert("Andamento j� cadastrado!");
+								alert("Andamento jï¿½ cadastrado!");
 							}else{
 								alert((response && response.message) ? response.message : "Erro ao salvar o andamento.");
 							}
@@ -1247,7 +1253,7 @@ function fc_edit_metas(valor1,valor2){
 							somarMeta(1);
 						}
 					}else{
-						//defini os valores se estes não forem dinheiro
+						//defini os valores se estes nÃ£o forem dinheiro
 						$("#meta_valor_1").val(parseInt(ret[5],10) || 0);
 						$("#sem1_valor_1").val(parseInt(ret[7],10) || 0);
 						$("#sem2_valor_1").val(parseInt(ret[8],10) || 0);
@@ -1314,7 +1320,7 @@ function fc_edit_metas(valor1,valor2){
 											}
 										});
 									}else if(retorno_ajax==2){
-										alert("Servidor já cadastrado!");
+										alert("Servidor jÃ¡ cadastrado!");
 									}else{
 										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 									}
@@ -1357,7 +1363,7 @@ function fc_edit_metas(valor1,valor2){
 					}
 				});
 			},
-			"Não": function(){
+			"NÃ£o": function(){
 				$( this ).dialog( "close" );
 			}
 		});
@@ -1383,7 +1389,7 @@ function fc_edit_metas(valor1,valor2){
 					}
 				});
 			},
-			"Não": function(){ $( this ).dialog( "close" ); }
+			"NÃ£o": function(){ $( this ).dialog( "close" ); }
 		});
 	}
 	function fc_edit_regiao(valor1,valor2){
@@ -1517,7 +1523,7 @@ function fc_edit_metas(valor1,valor2){
 	}
 	function fc_del_usu(valor1,valor2){
 		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuário <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuÃ¡rio <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
@@ -1526,7 +1532,7 @@ function fc_edit_metas(valor1,valor2){
 					success: function(retorno_ajax){
 						$( this ).dialog( "close" );
 						if(retorno_ajax==1){
-							msgbox("<br><table align='center'><tr><td>Usuário deletado com sucesso !</td></tr></table><br>",{
+							msgbox("<br><table align='center'><tr><td>UsuÃ¡rio deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
 									AbrirModulo('usu.php');
@@ -1539,14 +1545,14 @@ function fc_edit_metas(valor1,valor2){
 				});
 				//AbrirModulo('usu.php');
 			},
-			"Não": function(){
+			"NÃ£o": function(){
 				$( this ).dialog( "close" );
 			}
 		});
 	}
 	function fc_del_sem(valor1,valor2){
 		var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax_sem.php";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a semana do mês: <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a semana do mÃªs: <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
@@ -1568,7 +1574,7 @@ function fc_edit_metas(valor1,valor2){
 				});
 				//AbrirModulo('usu.php');
 			},
-			"Não": function(){
+			"NÃ£o": function(){
 				$( this ).dialog( "close" );
 			}
 		});
@@ -1598,7 +1604,7 @@ function fc_edit_metas(valor1,valor2){
 				});
 				//AbrirModulo('usu.php');
 			},
-			"Não": function(){
+			"NÃ£o": function(){
 				$( this ).dialog( "close" );
 			}
 		});
@@ -1612,12 +1618,12 @@ function fc_edit_metas(valor1,valor2){
 	function validaCaractaer(pEvent){
 		if(navigator.appName.indexOf('Internet Explorer')>0){
 			if ((pEvent.keyCode<97 || pEvent.keyCode>122)&&(pEvent.keyCode<48 || pEvent.keyCode>57)){
-				alert("Caractere não aceito para esse campo");
+				alert("Caractere nÃ£o aceito para esse campo");
 				pEvent.keyCode = 0;
 			}
 		}else{
 			if ((pEvent.which<97 || pEvent.which>122)&&(pEvent.which<48 || pEvent.which>57)) {
-				alert("Caractere não aceito para esse campo");
+				alert("Caractere nÃ£o aceito para esse campo");
 				pEvent.which = 0;
 			}
 		}
@@ -1625,7 +1631,7 @@ function fc_edit_metas(valor1,valor2){
 
 function diasemana(valor){
 	if(valor.value.length==10){
-		var semana = ["domingo", "segunda-feira", "terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
+		var semana = ["domingo", "segunda-feira", "terÃ§a-feira","quarta-feira","quinta-feira","sexta-feira","sÃ¡bado"];
 		var data = $(valor).val();
 		var arr = data.split("/").reverse();
 		var teste = new Date(arr[0], arr[1] - 1, arr[2]);
@@ -1638,7 +1644,7 @@ function fc_teste_senha(valor1,valor2,valor3){
 	if(valor1!=valor2){
 		$("#senha_usu1").css("border","1px solid red");
 		$("#senha_usu2").css("border","1px solid red");
-		return "Senhas não são iguais";
+		return "Senhas nÃ£o sÃ£o iguais";
 	}else if(valor1=="" && valor3=="I"){
 		$("#senha_usu1").css("border","1px solid red");
 		$("#senha_usu2").css("border","1px solid red");
@@ -1647,13 +1653,13 @@ function fc_teste_senha(valor1,valor2,valor3){
 		if((valor1!="" && valor3=="U" && valor1.length<4) || (valor1.length<4 && valor3=="I")){
 			$("#senha_usu1").css("border","1px solid red");
 			$("#senha_usu2").css("border","1px solid red");
-			return "Sua senha deve conter no mínimo 4 caracteres!";
+			return "Sua senha deve conter no mÃ­nimo 4 caracteres!";
 		}else{
 			var er = /[A-Za-z0-9_\-\.]{4,}/;
 			if((er.test(valor1)==false && valor1!="" && valor3=="U") || (er.test(valor1)==false && valor3=="I")){
 				$("#senha_usu1").css("border","1px solid red");
 				$("#senha_usu2").css("border","1px solid red");
-				return "Senha contém caractere inválido!";
+				return "Senha contÃ©m caractere invÃ¡lido!";
 			}else{
 				return "";
 			}
@@ -1668,7 +1674,7 @@ function validaEmail(mail){
 		return "Informe seu e-mail!";
 	}else if(er.test(mail) == false){
 		$("#email_usu").css("border","1px solid red");
-		return "E-mail inválido!";
+		return "E-mail invÃ¡lido!";
 	}else{
 		return "";
 	}
@@ -1682,12 +1688,12 @@ function addMes(data,mes){
 function regiaoSlugify(valor){
 	return String(valor || "")
 		.toLowerCase()
-		.replace(/[áàãâä]/g, "a")
-		.replace(/[éèêë]/g, "e")
-		.replace(/[íìîï]/g, "i")
-		.replace(/[óòõôö]/g, "o")
-		.replace(/[úùûü]/g, "u")
-		.replace(/ç/g, "c")
+		.replace(/[Ã¡Ã Ã£Ã¢Ã¤]/g, "a")
+		.replace(/[Ã©Ã¨ÃªÃ«]/g, "e")
+		.replace(/[Ã­Ã¬Ã®Ã¯]/g, "i")
+		.replace(/[Ã³Ã²ÃµÃ´Ã¶]/g, "o")
+		.replace(/[ÃºÃ¹Ã»Ã¼]/g, "u")
+		.replace(/Ã§/g, "c")
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-+|-+$/g, "");
 }
@@ -1784,29 +1790,64 @@ function inserir_banco(valor,stt){
 	$("#banco_num").val(crt);
 }
 function sel_tipo(valor1,valor2,callback){
+	var selectAjaxUrl = window.arsSelectAjaxUrl || "ajax_select.php";
+	var montarOptions = function(selectId, html){
+		var select = $(selectId);
+		var markup = $.trim(String(html || ""));
+		var items = [];
+		if(markup !== ""){
+			var container = $("<div>").html(markup);
+			container.find("option").each(function(){
+				items.push({
+					value: $(this).attr("value") || "",
+					text: $(this).text()
+				});
+			});
+		}
+		if(items.length === 0){
+			items.push({ value: "", text: "  " });
+		}
+		select.empty();
+		for(var i = 0; i < items.length; i++){
+			select.append($("<option>").val(items[i].value).text(items[i].text));
+		}
+		select.data("optionsHtml", select.html());
+	};
 
 	$.ajax({
 		type: "POST",
-		url:  "inc/ajax_select.php",
-		data: "flag=" + valor2 + "&dados=" + valor1,
+		url: selectAjaxUrl,
+		dataType: "html",
+		cache: false,
+		data: {
+			flag: valor2,
+			dados: valor1
+		},
 		success: function(retorno_ajax){
-			if(valor1==0){
-				$("#andam_name_pool").html(retorno_ajax);
-				$("#andam_name_pool").data("optionsHtml", retorno_ajax);
-				if(valor2==1){
+			if(valor1 == 0){
+				montarOptions("#andam_name_pool", retorno_ajax);
+				if(valor2 == 1 || valor2 == "1"){
 					$("#sel_anda").html("Selecionar Andamentos:");
-				}else if(valor2==2){
+				}else if(valor2 == 2 || valor2 == "2"){
 					$("#sel_anda").html("Selecionar Lançamentos:");
 				}
 				andamentoTiposAtualizarPool();
-			}else if(valor1==1){
-				$("#banco_usu_pool").html(retorno_ajax);
-				$("#banco_usu_pool").data("optionsHtml", retorno_ajax);
+			}else if(valor1 == 1){
+				montarOptions("#banco_usu_pool", retorno_ajax);
 				$("#sel_banco").html("Clientes:");
 				usuarioClientesAtualizarPool();
 			}
 			if(typeof callback === "function"){
 				callback(retorno_ajax);
+			}
+		},
+		error: function(){
+			if(valor1 == 0){
+				$("#andam_name_pool").html("<option value=''>Erro ao carregar</option>");
+				$("#andam_name_pool").data("optionsHtml", "<option value=''>Erro ao carregar</option>");
+			}else if(valor1 == 1){
+				$("#banco_usu_pool").html("<option value=''>Erro ao carregar</option>");
+				$("#banco_usu_pool").data("optionsHtml", "<option value=''>Erro ao carregar</option>");
 			}
 		}
 	});
@@ -1851,6 +1892,7 @@ function somarMeta(valor2){
 		$("#meta_valor_"+valor2).val(mvat);
 	}
 }
+
 
 
 
