@@ -122,10 +122,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(DashboardPanelService::class, function ($app) {
             $months = isset($GLOBALS['arrMonths']) && is_array($GLOBALS['arrMonths'])
                 ? $GLOBALS['arrMonths']
-                : array(1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'MarÃ§o', 4 => 'Abril', 5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto', 9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro');
+                : array(1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Mar????o', 4 => 'Abril', 5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto', 9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro');
 
             return new DashboardPanelService(
-                new DashboardRepository($app->make('legacy.mysql')),
+                new DashboardRepository(),
                 new NeoPanelRepository($this->legacySqlsrvConnection($app)),
                 $app->make(RegionService::class),
                 $months
@@ -135,14 +135,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(NeoDetailService::class, function ($app) {
             return new NeoDetailService(
                 new NeoDetailRepository($this->legacySqlsrvConnection($app)),
-                new DashboardRepository($app->make('legacy.mysql')),
+                new DashboardRepository(),
                 $app->make(RegionService::class)
             );
         });
 
         $this->app->singleton(GeneralProductionService::class, function ($app) {
             return new GeneralProductionService(
-                new GeneralProductionRepository($app->make('legacy.mysql')),
+                new GeneralProductionRepository(),
                 new GeneralProductionNeoRepository($this->legacySqlsrvConnection($app)),
                 $app->make(RegionService::class)
             );
@@ -151,10 +151,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(MainPageService::class, function ($app) {
             $months = isset($GLOBALS['arrMonths']) && is_array($GLOBALS['arrMonths'])
                 ? $GLOBALS['arrMonths']
-                : array(1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril', 5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto', 9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro');
+                : array(1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Mar??o', 4 => 'Abril', 5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto', 9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro');
 
             return new MainPageService(
-                new MainPageRepository($app->make('legacy.mysql')),
+                new MainPageRepository(),
                 $app->make(RegionService::class),
                 $months
             );
@@ -172,3 +172,4 @@ class AppServiceProvider extends ServiceProvider
         require_once base_path('inc/somadias.php');
     }
 }
+
