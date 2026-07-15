@@ -4,109 +4,86 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use mysqli;
+use App\Models\Area;
+use App\Models\Banco;
+use App\Models\Carteira;
+use App\Models\Dado;
+use Illuminate\Support\Facades\DB;
 
 class ClientAdminRepository
 {
-	/** @var mysqli */
-	private $connection;
-
 	/** @var resource|null */
 	private $sqlsrvConnection;
 
-	public function __construct(mysqli $connection, $sqlsrvConnection = null)
+	/** @var int */
+	private $lastInsertId = 0;
+
+	public function __construct($sqlsrvConnection = null)
 	{
-		$this->connection = $connection;
 		$this->sqlsrvConnection = $sqlsrvConnection;
 	}
 
 	public function all()
 	{
-		$sql = "SELECT b.*, a.area_nome, DATE_FORMAT(b.banco_creator, '%d/%m/%Y') AS datacad
-			FROM bancos AS b
-			JOIN area AS a ON a.area_id = b.banco_area
-			GROUP BY b.banco_id
-			ORDER BY b.banco_id";
-		$result = mysqli_query($this->connection, $sql);
-		if (!$result) {
-			return array();
-		}
-
-		$rows = array();
-		while ($row = mysqli_fetch_assoc($result)) {
-			$rows[] = $row;
-		}
-
-		return $rows;
+		return DB::table('bancos as b')
+			->join('area as a', 'a.area_id', '=', 'b.banco_area')
+			->orderBy('b.banco_id')
+			->get(array(
+				'b.*',
+				'a.area_nome',
+				DB::raw("DATE_FORMAT(b.banco_creator, '%d/%m/%Y') AS datacad"),
+			))
+			->map(function ($row) {
+				return (array) $row;
+			})
+			->all();
 	}
 
 	public function listDadosByBanco()
 	{
-		$result = mysqli_query($this->connection, "SELECT banco_id, dados_cod FROM dados ORDER BY banco_id, dados_id");
-		if (!$result) {
-			return array();
-		}
-
-		$rows = array();
-		while ($row = mysqli_fetch_assoc($result)) {
-			$rows[] = $row;
-		}
-
-		return $rows;
+		return Dado::query()
+			->select(array('banco_id', 'dados_cod'))
+			->orderBy('banco_id')
+			->orderBy('dados_id')
+			->get()
+			->map(function (Dado $dado) {
+				return $dado->toArray();
+			})
+			->values()
+			->all();
 	}
 
 	public function listDadosByBancoId($bancoId)
 	{
-		$stmt = mysqli_prepare($this->connection, "SELECT dados_cod FROM dados WHERE banco_id = ? ORDER BY dados_id");
-		if (!$stmt) {
-			return array();
-		}
-
-		$bancoId = (int) $bancoId;
-		mysqli_stmt_bind_param($stmt, 'i', $bancoId);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-
-		$rows = array();
-		while ($result && ($row = mysqli_fetch_assoc($result))) {
-			$rows[] = $row;
-		}
-
-		mysqli_stmt_close($stmt);
-
-		return $rows;
+		return Dado::query()
+			->select(array('dados_cod'))
+			->where('banco_id', (int) $bancoId)
+			->orderBy('dados_id')
+			->get()
+			->map(function (Dado $dado) {
+				return $dado->toArray();
+			})
+			->values()
+			->all();
 	}
 
 	public function findById($id)
 	{
-		$stmt = mysqli_prepare($this->connection, "SELECT * FROM bancos WHERE banco_id = ? LIMIT 1");
-		if (!$stmt) {
-			return false;
-		}
+		$row = Banco::query()->find((int) $id);
 
-		$id = (int) $id;
-		mysqli_stmt_bind_param($stmt, 'i', $id);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$row = $result ? mysqli_fetch_assoc($result) : false;
-		mysqli_stmt_close($stmt);
-
-		return $row;
+		return $row ? $row->toArray() : false;
 	}
 
 	public function listAreas()
 	{
-		$result = mysqli_query($this->connection, "SELECT * FROM area ORDER BY area_id");
-		if (!$result) {
-			return array();
-		}
-
-		$rows = array();
-		while ($row = mysqli_fetch_assoc($result)) {
-			$rows[] = $row;
-		}
-
-		return $rows;
+		return Area::query()
+			->orderBy('area_id')
+			->get()
+			->map(function (Area $area) {
+				return $area->toArray();
+			})
+			->values()
+			->all();
 	}
 
 	public function listCarteiras()
@@ -136,176 +113,110 @@ class ClientAdminRepository
 
 	public function insertBank(array $data)
 	{
-		$sql = "INSERT INTO bancos (
-			banco_name, banco_cod, banco_creator, banco_area,
-			banco_status, banco_class, simulador, banco_curto
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		$model = new Banco();
+		$model->fill(array(
+			'banco_name' => (string) $data['banco_name'],
+			'banco_cod' => (string) $data['banco_cod'],
+			'banco_creator' => (string) $data['banco_creator'],
+			'banco_area' => (int) $data['banco_area'],
+			'banco_status' => (string) $data['banco_status'],
+			'banco_class' => (string) $data['banco_class'],
+			'simulador' => (int) $data['simulador'],
+			'banco_curto' => (string) $data['banco_curto'],
+		));
 
-		$stmt = mysqli_prepare($this->connection, $sql);
-		if (!$stmt) {
-			return false;
-		}
-
-		$name = (string) $data['banco_name'];
-		$cod = (string) $data['banco_cod'];
-		$creator = (string) $data['banco_creator'];
-		$area = (int) $data['banco_area'];
-		$status = (string) $data['banco_status'];
-		$class = (string) $data['banco_class'];
-		$simulador = (int) $data['simulador'];
-		$curto = (string) $data['banco_curto'];
-
-		mysqli_stmt_bind_param($stmt, 'sssissis', $name, $cod, $creator, $area, $status, $class, $simulador, $curto);
-		$ok = mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
+		$ok = $model->save();
+		$this->lastInsertId = $ok ? (int) $model->banco_id : 0;
 
 		return $ok;
 	}
 
 	public function updateBank(array $data)
 	{
-		$sql = "UPDATE bancos SET
-			banco_name = ?,
-			banco_cod = ?,
-			banco_creator = ?,
-			banco_area = ?,
-			banco_status = ?,
-			banco_class = ?,
-			simulador = ?,
-			banco_curto = ?
-			WHERE banco_id = ?";
-		$stmt = mysqli_prepare($this->connection, $sql);
-		if (!$stmt) {
+		$model = Banco::query()->find((int) $data['banco_id']);
+		if (!$model) {
 			return false;
 		}
 
-		$name = (string) $data['banco_name'];
-		$cod = (string) $data['banco_cod'];
-		$creator = (string) $data['banco_creator'];
-		$area = (int) $data['banco_area'];
-		$status = (string) $data['banco_status'];
-		$class = (string) $data['banco_class'];
-		$simulador = (int) $data['simulador'];
-		$curto = (string) $data['banco_curto'];
-		$id = (int) $data['banco_id'];
+		$model->fill(array(
+			'banco_name' => (string) $data['banco_name'],
+			'banco_cod' => (string) $data['banco_cod'],
+			'banco_creator' => (string) $data['banco_creator'],
+			'banco_area' => (int) $data['banco_area'],
+			'banco_status' => (string) $data['banco_status'],
+			'banco_class' => (string) $data['banco_class'],
+			'simulador' => (int) $data['simulador'],
+			'banco_curto' => (string) $data['banco_curto'],
+		));
 
-		mysqli_stmt_bind_param($stmt, 'sssissisi', $name, $cod, $creator, $area, $status, $class, $simulador, $curto, $id);
-		$ok = mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
-
-		return $ok;
+		return $model->save();
 	}
 
 	public function getLastInsertId()
 	{
-		return (int) mysqli_insert_id($this->connection);
+		return $this->lastInsertId;
 	}
 
 	public function createCarteira($bancoId, $date)
 	{
-		$sql = "INSERT INTO carteira (
-			banco_id, carteira_condicao, carteira_cod, carteira_vinc, carteira_date, carteira_status
-		) VALUES (?, 'Carteira', '1', 'IN', ?, 'Y')";
-		$stmt = mysqli_prepare($this->connection, $sql);
-		if (!$stmt) {
-			return false;
-		}
+		$model = new Carteira();
+		$model->fill(array(
+			'banco_id' => (int) $bancoId,
+			'carteira_condicao' => 'Carteira',
+			'carteira_cod' => 1,
+			'carteira_vinc' => 'IN',
+			'carteira_date' => (string) $date,
+			'carteira_status' => 'Y',
+		));
 
-		$bancoId = (int) $bancoId;
-		$date = (string) $date;
-		mysqli_stmt_bind_param($stmt, 'is', $bancoId, $date);
-		$ok = mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
-
-		return $ok;
+		return $model->save();
 	}
 
 	public function findCarteiraIdByBanco($bancoId)
 	{
-		$stmt = mysqli_prepare($this->connection, "SELECT carteira_id FROM carteira WHERE banco_id = ? ORDER BY carteira_id DESC LIMIT 1");
-		if (!$stmt) {
-			return 0;
-		}
+		$row = Carteira::query()
+			->where('banco_id', (int) $bancoId)
+			->orderByDesc('carteira_id')
+			->first();
 
-		$bancoId = (int) $bancoId;
-		mysqli_stmt_bind_param($stmt, 'i', $bancoId);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$row = $result ? mysqli_fetch_assoc($result) : false;
-		mysqli_stmt_close($stmt);
-
-		return $row ? (int) $row['carteira_id'] : 0;
+		return $row ? (int) $row->carteira_id : 0;
 	}
 
 	public function deleteDadosByBanco($bancoId)
 	{
-		$stmt = mysqli_prepare($this->connection, "DELETE FROM dados WHERE banco_id = ?");
-		if (!$stmt) {
-			return false;
-		}
+		Dado::query()->where('banco_id', (int) $bancoId)->delete();
 
-		$bancoId = (int) $bancoId;
-		mysqli_stmt_bind_param($stmt, 'i', $bancoId);
-		$ok = mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
-
-		return $ok;
+		return true;
 	}
 
 	public function insertDados($carteiraId, $bancoId, $dadosCod, $date)
 	{
-		$sql = "INSERT INTO dados (carteira_id, banco_id, dados_cod, dados_date, dados_status)
-			VALUES (?, ?, ?, ?, 'Y')";
-		$stmt = mysqli_prepare($this->connection, $sql);
-		if (!$stmt) {
-			return false;
-		}
+		$model = new Dado();
+		$model->fill(array(
+			'carteira_id' => (int) $carteiraId,
+			'banco_id' => (int) $bancoId,
+			'dados_cod' => (string) $dadosCod,
+			'dados_date' => (string) $date,
+			'dados_status' => 'Y',
+		));
 
-		$carteiraId = (int) $carteiraId;
-		$bancoId = (int) $bancoId;
-		$dadosCod = (string) $dadosCod;
-		$date = (string) $date;
-		mysqli_stmt_bind_param($stmt, 'iiss', $carteiraId, $bancoId, $dadosCod, $date);
-		$ok = mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
-
-		return $ok;
+		return $model->save();
 	}
 
 	public function deleteBankCascade($bancoId)
 	{
 		$bancoId = (int) $bancoId;
-		$ok = true;
 
-		$stmtDados = mysqli_prepare($this->connection, "DELETE FROM dados WHERE banco_id = ?");
-		$stmtCarteira = mysqli_prepare($this->connection, "DELETE FROM carteira WHERE banco_id = ? LIMIT 1");
-		$stmtBanco = mysqli_prepare($this->connection, "DELETE FROM bancos WHERE banco_id = ? LIMIT 1");
+		try {
+			DB::transaction(function () use ($bancoId) {
+				Dado::query()->where('banco_id', $bancoId)->delete();
+				Carteira::query()->where('banco_id', $bancoId)->delete();
+				Banco::query()->where('banco_id', $bancoId)->delete();
+			});
 
-		if (!$stmtDados || !$stmtCarteira || !$stmtBanco) {
-			if ($stmtDados) {
-				mysqli_stmt_close($stmtDados);
-			}
-			if ($stmtCarteira) {
-				mysqli_stmt_close($stmtCarteira);
-			}
-			if ($stmtBanco) {
-				mysqli_stmt_close($stmtBanco);
-			}
+			return true;
+		} catch (\Exception $exception) {
 			return false;
 		}
-
-		mysqli_stmt_bind_param($stmtDados, 'i', $bancoId);
-		$ok = $ok && mysqli_stmt_execute($stmtDados);
-		mysqli_stmt_close($stmtDados);
-
-		mysqli_stmt_bind_param($stmtCarteira, 'i', $bancoId);
-		$ok = $ok && mysqli_stmt_execute($stmtCarteira);
-		mysqli_stmt_close($stmtCarteira);
-
-		mysqli_stmt_bind_param($stmtBanco, 'i', $bancoId);
-		$ok = $ok && mysqli_stmt_execute($stmtBanco);
-		mysqli_stmt_close($stmtBanco);
-
-		return $ok;
 	}
 }

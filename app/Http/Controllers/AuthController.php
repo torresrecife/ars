@@ -22,7 +22,7 @@ class AuthController extends Controller
 
         $this->authService = new AuthService(
             new UserRepository($connection, $table),
-            new RegionRepository($connection)
+            new RegionRepository()
         );
     }
 
