@@ -6,6 +6,23 @@ use Closure;
 
 class LegacyRedirectIfAuthenticated
 {
+    private function startLegacySession()
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            if (session_name() === 'PHPSESSID') {
+                return;
+            }
+
+            session_write_close();
+        }
+
+        if (session_name() !== 'PHPSESSID') {
+            session_name('PHPSESSID');
+        }
+
+        session_start();
+    }
+
     private function legacyIndexUrl()
     {
         $scriptName = str_replace('\\', '/', isset($_SERVER['SCRIPT_NAME']) ? (string) $_SERVER['SCRIPT_NAME'] : '');
@@ -22,9 +39,7 @@ class LegacyRedirectIfAuthenticated
 
     public function handle($request, Closure $next)
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
+        $this->startLegacySession();
 
         if (isset($_SESSION['usuarioID']) && isset($_SESSION['usuarioNome'])) {
             return response('', 302)->header('Location', $this->legacyIndexUrl());

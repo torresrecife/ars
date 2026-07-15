@@ -61,7 +61,7 @@
 		add_month(m_mes,valor3);
 		$('#bank_id').val(bankId);
 		$('#area_id').val($('#panel_area_id').val() || '');
-		$('#form_ars').attr('action','painel.php');
+		$('#form_ars').attr('action','painel');
 		$('#form_ars').attr('target','');
 		$('#form_ars').submit();
 	}
@@ -69,7 +69,7 @@
 		$('#regiao_id').val(regiaoId);
 		$('#bank_id').val(bankId);
 		$('#area_id').val($('#panel_area_id').val() || '');
-		$('#form_ars').attr('action','painel.php');
+		$('#form_ars').attr('action','painel');
 		$('#form_ars').attr('target','');
 		$('#form_ars').submit();
 	}

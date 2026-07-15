@@ -1,6 +1,6 @@
 @php
 	$defaultJsVersion = is_file(base_path('js/default.js')) ? filemtime(base_path('js/default.js')) : time();
-	$entryUrl = isset($entryUrl) ? (string) $entryUrl : 'index.php';
+	$entryUrl = isset($entryUrl) ? (string) $entryUrl : url('index');
 @endphp
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pt-br" lang="pt-br" dir="ltr">
@@ -17,25 +17,26 @@
 </head>
 <body id="minwidth-body">
 <form name="form_ars" action="{{ e($entryUrl) }}" method="POST" id="form_ars">
+	@csrf
 	<div class="head_bk"></div>
 	<div class="head_fixed">
 		<div id="border-top" class="h_blue">
 			<span class="logo"><img src="css/images/logo.png" alt="Sistema de Peti&ccedil;&atilde;o" /></span>
-			<span class="title"><a href="{{ e($entryUrl) }}">ARS Online - NEO Jur&iacute;dico</a></span>
+			<span class="title"><a href="{{ url('index') }}">ARS Online - NEO Jur&iacute;dico</a></span>
 		</div>
 		<div id="header-box">
 			<div id="topSpace"></div>
 			<div id="module-status">
-				<span class="viewsite"><a href="index.php">In&iacute;cio</a></span>
+				<span class="viewsite"><a href="{{ url('index') }}">In&iacute;cio</a></span>
 				@if (!empty($pageData['topAction']))
 					<span class="{{ $pageData['topAction']['class'] }}"><a href="javascript:{{ $pageData['topAction']['js'] }}">{{ e($pageData['topAction']['label']) }}</a></span>
 				@endif
 				@if ($pageData['canAdmin'])
-					<span class="relatory"><a href="producao.php">Produ&ccedil;&atilde;o</a></span>
-					<span class="viewconfig"><a href="***REMOVED***.php">Administrar</a></span>
+					<span class="relatory"><a href="{{ url('producao') }}">Produ&ccedil;&atilde;o</a></span>
+					<span class="viewconfig"><a href="{{ url('***REMOVED***') }}">Administrar</a></span>
 				@endif
 				<span class="voltar"><a href="javascript:window.history.go(-1)">Voltar</a></span>
-				<span class="logout"><a href="inc/sair.php">Sair</a></span>
+				<span class="logout"><a href="{{ url('logout') }}">Sair</a></span>
 			</div>
 			<div class="clr"></div>
 		</div>

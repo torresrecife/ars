@@ -28,6 +28,11 @@ Route::middleware('legacy.auth')->group(function () {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'producao');
     })->name('producao');
 
+    Route::match(['get', 'post'], '/relatorio', function (Request $request) {
+        $input = $request->all();
+        return app('App\Http\Controllers\HomeController')->webSectionPage($request, isset($input['geral']) && (string) $input['geral'] === '1' ? 'relatorio-semanal' : 'relatorio-mensal');
+    })->name('relatorio');
+
     Route::match(['get', 'post'], '/***REMOVED***', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, '***REMOVED***');
     })->name('***REMOVED***');

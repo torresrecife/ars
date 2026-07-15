@@ -1,15 +1,15 @@
-﻿
+
 $(function() {
 	$('.date-picker').datepicker( {
-		dayNames: ['Domingo','Segunda','TerÃ§a','Quarta','Quinta','Sexta','SÃ¡bado'],
+		dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
 		dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
-		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','SÃ¡b','Dom'],
-		monthNames: ['Janeiro','Fevereiro','MarÃ§o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+		monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
 		monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
-		nextText: 'PrÃ³ximo',
+		nextText: 'Próximo',
 		prevText: 'Anterior',
 		closeText: 'OK',
-		currentText: 'MÃªs atual',
+		currentText: 'Mês atual',
         changeMonth: true,
         changeYear: true,
         showButtonPanel: true,
@@ -39,7 +39,7 @@ function EnviarPagina(frm, precisaData, are, fla){
 	if(precisaData && $("#startDate").val()==""){
 		$("#startDate").css("border","1px solid red");
 		$("#obg_date").fadeIn();
-		$("#obg_date").html("Inseir o mÃƒÂªs / ano!");
+		$("#obg_date").html("Inseir o mÃªs / ano!");
 		setTimeout(function(){
 			$("#startDate").css("border","1px solid #ccc");
 			$("#obg_date").fadeOut();
@@ -51,7 +51,7 @@ function EnviarPagina(frm, precisaData, are, fla){
 		if($("#bank_id").length){
 			$("#bank_id").val(fla || "");
 		}
-		$("#form_ars").attr("action",frm);
+		$("#form_ars").attr("action", NormalizarModuloPath(frm));
 		$("#form_ars").attr("target","");
 		$("#form_ars").submit();
 	}
@@ -60,7 +60,7 @@ function EnviarPagina(frm, precisaData, are, fla){
 function AbrirCarteiras(areaId){
 	$("#area_id").val(areaId || "");
 	$("#bank_id").val("");
-	$("#form_ars").attr("action","carteiras.php");
+	$("#form_ars").attr("action","carteiras");
 	$("#form_ars").attr("target","");
 	$("#form_ars").submit();
 }
@@ -69,7 +69,7 @@ function AbrirPainel(areaId, bankId){
 	if($("#startDate").val()==""){
 		$("#startDate").css("border","1px solid red");
 		$("#obg_date").fadeIn();
-		$("#obg_date").html("Inseir o mÃƒÂªs / ano!");
+		$("#obg_date").html("Inseir o mÃªs / ano!");
 		setTimeout(function(){
 			$("#startDate").css("border","1px solid #ccc");
 			$("#obg_date").fadeOut();
@@ -79,13 +79,34 @@ function AbrirPainel(areaId, bankId){
 
 	$("#area_id").val(areaId || "");
 	$("#bank_id").val(bankId || "");
-	$("#form_ars").attr("action","painel.php");
+	$("#form_ars").attr("action","painel");
 	$("#form_ars").attr("target","");
 	$("#form_ars").submit();
 }
 
+function NormalizarModuloPath(scriptFile){
+	var map = {
+		"***REMOVED***.php": "***REMOVED***",
+		"usu.php": "usuarios",
+		"usuarios.php": "usuarios",
+		"setor.php": "setores",
+		"setores.php": "setores",
+		"clientes.php": "clientes",
+		"andamentos.php": "andamentos",
+		"metas.php": "metas",
+		"semanas.php": "semanas",
+		"regioes.php": "regioes",
+		"carteiras.php": "carteiras",
+		"painel.php": "painel",
+		"producao.php": "producao",
+		"relatorio.php": "relatorio"
+	};
+
+	return map[scriptFile] || scriptFile;
+}
+
 function AbrirModulo(scriptFile){
-	$("#form_ars").attr("action",scriptFile);
+	$("#form_ars").attr("action", NormalizarModuloPath(scriptFile));
 	$("#form_ars").attr("target","");
 	$("#form_ars").submit();
 }
@@ -95,7 +116,7 @@ function fc_edit_usu(valor1,valor2){
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
-			tt="Novo UsuÃ¡rio";
+			tt="Novo Usuário";
 			tu="criado";
 			$(".validateTips").text("Crie Um " + tt);
 			usuarioClientesReset();
@@ -108,9 +129,9 @@ function fc_edit_usu(valor1,valor2){
 			usuarioRegioesAtualizarModo();
 			sel_tipo(1, $("#setor_usu").val());
 		}else if(valor2=="U"){
-			tt="Editar UsuÃ¡rio";
+			tt="Editar Usuário";
 			tu="editado";
-			$(".validateTips").text("Edite o UsuÃ¡rio Abaixo");
+			$(".validateTips").text("Edite o Usuário Abaixo");
 		}
 
 		var abrirDialogUsuario = function(){
@@ -126,7 +147,7 @@ function fc_edit_usu(valor1,valor2){
 						var invalido = false;
 						$('.cls_usu').each(function(){
 							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-								alert("O campo " + $(this).attr("title") + " é obrigatório ");
+								alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
 								$(this).focus();
 								invalido = true;
 								return false;
@@ -137,7 +158,7 @@ function fc_edit_usu(valor1,valor2){
 							return false;
 						}
 						if($('.cls_usuario_cliente_input').length==0){
-							alert("Selecione ao menos um cliente para o usuÃ¡rio.");
+							alert("Selecione ao menos um cliente para o usuário.");
 							$("#banco_usu_pool").focus();
 							return false;
 						}
@@ -169,14 +190,14 @@ function fc_edit_usu(valor1,valor2){
 							   success: function(retorno_ajax){
 									if(retorno_ajax==1){
 										$( "#dialog-edit-usu" ).dialog( "close" );
-										msgbox(valor2=="I"?"<br><table align='center'><tr><td>UsuÃ¡rio " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
+										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Usuário " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
-												AbrirModulo('usu.php');
+												AbrirModulo('usuarios');
 											}
 										});
 									}else if(retorno_ajax==2){
-										alert("UsuÃ¡rio jÃ¡ cadastrado!");
+										alert("Usuário já cadastrado!");
 									}else{
 										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 									}
@@ -216,7 +237,7 @@ function fc_edit_usu(valor1,valor2){
 				try{
 					ret = JSON.parse(retorno_ajax);
 				}catch(e){
-					alert("Erro ao carregar os dados do usuÃ¡rio.");
+					alert("Erro ao carregar os dados do usuário.");
 					return;
 				}
 				usuarioClientesReset();
@@ -244,7 +265,7 @@ function fc_edit_usu(valor1,valor2){
 			}
 		});
 	}
-	//funÃ§Ã£o editar semana
+	//função editar semana
 	function fc_edit_sem(valor1,valor2){
 		var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax_sem.php";
 
@@ -257,7 +278,7 @@ function fc_edit_usu(valor1,valor2){
 		}else if(valor2=="U"){
 			tt="Editar Semana";
 			tu="editada";
-			$(".validateTips").text("Edite o UsuÃ¡rio Abaixo");
+			$(".validateTips").text("Edite o Usuário Abaixo");
 		}
 
 		$.ajax({
@@ -310,11 +331,11 @@ function fc_edit_usu(valor1,valor2){
 										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Semana " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
-												AbrirModulo('semanas.php');
+												AbrirModulo('semanas');
 											}
 										});
 									}else if(retorno_ajax==2){
-										alert("Semana jÃ¡ cadastrada!");
+										alert("Semana já cadastrada!");
 									}else{
 										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 									}
@@ -335,7 +356,7 @@ function fc_edit_usu(valor1,valor2){
 		});
 	}
 
-	//funÃ§Ã£o editar setores
+	//função editar setores
 	function fc_edit_setor(valor1,valor2){
 		var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax_setor.php";
 
@@ -372,7 +393,7 @@ function fc_edit_usu(valor1,valor2){
 							var mdados="";
 							$('.cls_setor').each(function(){
 								if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-									alert("O campo " + $(this).attr("title") + " é obrigatório ");
+									alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
 									$(this).focus();
 									return false;
 								}
@@ -389,11 +410,11 @@ function fc_edit_usu(valor1,valor2){
 										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Setor " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
-												AbrirModulo('setor.php');
+												AbrirModulo('setores');
 											}
 										});
 									}else if(retorno_ajax==2){
-										alert("Setor jÃ¡ cadastrado!");
+										alert("Setor já cadastrado!");
 									}else{
 										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 									}
@@ -438,7 +459,7 @@ function fc_edit_usu(valor1,valor2){
 						var mdados="";
 						$('.cls_cliente').each(function(){
 							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-								alert("O campo " + $(this).attr("title") + " é obrigatório ");
+								alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
 								$(this).focus();
 								return false;
 							}
@@ -474,11 +495,11 @@ function fc_edit_usu(valor1,valor2){
 									msgbox("<br><table align='center'><tr><td>Cliente " + tu + " com sucesso !</td></tr></table><br>", {
 										Fechar: function(){
 											$( this ).dialog( "close" );
-											AbrirModulo('clientes.php');
+											AbrirModulo('clientes');
 										}
 									});
 									}else if(retorno_ajax==2){
-										alert("JÃƒÂ¡ existe uma meta cadastrada para este cliente, mÃƒÂªs/ano, andamento e regiÃƒÂ£o.");
+										alert("JÃ¡ existe uma meta cadastrada para este cliente, mÃªs/ano, andamento e regiÃ£o.");
 									}else{
 									alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 								}
@@ -539,7 +560,7 @@ function fc_edit_usu(valor1,valor2){
 							var mdados="";
 							$('.cls_cliente').each(function(){
 								if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-									alert("O campo " + $(this).attr("title") + " é obrigatório ");
+									alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
 									$(this).focus();
 									return false;
 								}
@@ -576,11 +597,11 @@ function fc_edit_usu(valor1,valor2){
 										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Cliente " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Cliente editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
-												AbrirModulo('clientes.php');
+												AbrirModulo('clientes');
 											}
 										});
 									}else if(retorno_ajax==2){
-										alert("Servidor jÃ¡ cadastrado!");
+										alert("Servidor já cadastrado!");
 									}else{
 										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 									}
@@ -742,7 +763,7 @@ function usuarioClientesAdicionarValor(clienteId, clienteNome, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Esse cliente jÃ¡ estÃ¡ vinculado ao usuÃ¡rio.");
+			alert("Esse cliente já está vinculado ao usuário.");
 		}
 		return false;
 	}
@@ -1045,7 +1066,7 @@ function andamentoTiposAdicionarValor(tipo, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Esse andamento jÃ¡ estÃ¡ vinculado.");
+			alert("Esse andamento já está vinculado.");
 		}
 		return false;
 	}
@@ -1116,7 +1137,7 @@ function fc_edit_andamento(valor1,valor2){
 					var invalido = false;
 					$(".cls_andamento").each(function(){
 						if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-							alert("O campo " + $(this).attr("title") + " ï¿½ obrigatï¿½rio ");
+							alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
 							$(this).focus();
 							invalido = true;
 							return false;
@@ -1145,10 +1166,10 @@ function fc_edit_andamento(valor1,valor2){
 							if(response && response.ok===true){
 								$( "#dialog-edit-andamento" ).dialog( "close" );
 								msgbox(valor2=="I"?"<br><table align='center'><tr><td>Andamento " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
-									Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('andamentos.php'); }
+									Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('andamentos'); }
 								});
 							}else if(response && response.code=="duplicate"){
-								alert("Andamento jï¿½ cadastrado!");
+								alert("Andamento j� cadastrado!");
 							}else{
 								alert((response && response.message) ? response.message : "Erro ao salvar o andamento.");
 							}
@@ -1253,7 +1274,7 @@ function fc_edit_metas(valor1,valor2){
 							somarMeta(1);
 						}
 					}else{
-						//defini os valores se estes nÃ£o forem dinheiro
+						//defini os valores se estes não forem dinheiro
 						$("#meta_valor_1").val(parseInt(ret[5],10) || 0);
 						$("#sem1_valor_1").val(parseInt(ret[7],10) || 0);
 						$("#sem2_valor_1").val(parseInt(ret[8],10) || 0);
@@ -1281,7 +1302,7 @@ function fc_edit_metas(valor1,valor2){
 							var mdados="";
 							$('.cls_meta').each(function(){
 								if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-									alert("O campo " + $(this).attr("title") + " é obrigatório ");
+									alert("O campo " + $(this).attr("title") + " � obrigat�rio ");
 									$(this).focus();
 									return false;
 								}
@@ -1316,11 +1337,11 @@ function fc_edit_metas(valor1,valor2){
 										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Meta(s) " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Meta editada com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
-												AbrirModulo('metas.php');
+												AbrirModulo('metas');
 											}
 										});
 									}else if(retorno_ajax==2){
-										alert("Servidor jÃ¡ cadastrado!");
+										alert("Servidor já cadastrado!");
 									}else{
 										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
 									}
@@ -1354,7 +1375,7 @@ function fc_edit_metas(valor1,valor2){
 							msgbox("<br><table align='center'><tr><td>Cliente deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									AbrirModulo('clientes.php');
+									AbrirModulo('clientes');
 								}
 							});
 						}else{
@@ -1363,7 +1384,7 @@ function fc_edit_metas(valor1,valor2){
 					}
 				});
 			},
-			"NÃ£o": function(){
+			"Não": function(){
 				$( this ).dialog( "close" );
 			}
 		});
@@ -1381,7 +1402,7 @@ function fc_edit_metas(valor1,valor2){
 						$( this ).dialog( "close" );
 						if(response && response.ok===true){
 							msgbox("<br><table align='center'><tr><td>Andamento deletado com sucesso !</td></tr></table><br>",{
-								Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('andamentos.php'); }
+								Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('andamentos'); }
 							});
 						}else{
 							alert((response && response.message) ? response.message : "Erro ao excluir o andamento.");
@@ -1389,7 +1410,7 @@ function fc_edit_metas(valor1,valor2){
 					}
 				});
 			},
-			"NÃ£o": function(){ $( this ).dialog( "close" ); }
+			"Não": function(){ $( this ).dialog( "close" ); }
 		});
 	}
 	function fc_edit_regiao(valor1,valor2){
@@ -1447,7 +1468,7 @@ function fc_edit_metas(valor1,valor2){
 								if(response && response.ok===true){
 									$( "#dialog-edit-regiao" ).dialog( "close" );
 									msgbox("<br><table align='center'><tr><td>Regiao " + tu + " com sucesso !</td></tr></table><br>", {
-										Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('regioes.php'); }
+										Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('regioes'); }
 									});
 								}else if(response && response.code=="duplicate"){
 									alert("Slug de regiao ja cadastrado!");
@@ -1508,7 +1529,7 @@ function fc_edit_metas(valor1,valor2){
 						$( this ).dialog( "close" );
 						if(response && response.ok===true){
 							msgbox("<br><table align='center'><tr><td>Regiao deletada com sucesso !</td></tr></table><br>",{
-								Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('regioes.php'); }
+								Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('regioes'); }
 							});
 						}else if(response && response.code=="linked_users"){
 							alert("Nao e possivel excluir a regiao porque existem usuarios vinculados a ela.");
@@ -1523,7 +1544,7 @@ function fc_edit_metas(valor1,valor2){
 	}
 	function fc_del_usu(valor1,valor2){
 		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuÃ¡rio <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuário <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
@@ -1532,10 +1553,10 @@ function fc_edit_metas(valor1,valor2){
 					success: function(retorno_ajax){
 						$( this ).dialog( "close" );
 						if(retorno_ajax==1){
-							msgbox("<br><table align='center'><tr><td>UsuÃ¡rio deletado com sucesso !</td></tr></table><br>",{
+							msgbox("<br><table align='center'><tr><td>Usuário deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									AbrirModulo('usu.php');
+									AbrirModulo('usuarios');
 								}
 							});
 						}else{
@@ -1543,16 +1564,16 @@ function fc_edit_metas(valor1,valor2){
 						}
 					}
 				});
-				//AbrirModulo('usu.php');
+				//AbrirModulo('usuarios');
 			},
-			"NÃ£o": function(){
+			"Não": function(){
 				$( this ).dialog( "close" );
 			}
 		});
 	}
 	function fc_del_sem(valor1,valor2){
 		var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax_sem.php";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a semana do mÃªs: <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a semana do mês: <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
@@ -1564,7 +1585,7 @@ function fc_edit_metas(valor1,valor2){
 							msgbox("<br><table align='center'><tr><td>Semana deletada com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									AbrirModulo('semanas.php');
+									AbrirModulo('semanas');
 								}
 							});
 						}else{
@@ -1572,9 +1593,9 @@ function fc_edit_metas(valor1,valor2){
 						}
 					}
 				});
-				//AbrirModulo('usu.php');
+				//AbrirModulo('usuarios');
 			},
-			"NÃ£o": function(){
+			"Não": function(){
 				$( this ).dialog( "close" );
 			}
 		});
@@ -1594,7 +1615,7 @@ function fc_edit_metas(valor1,valor2){
 							msgbox("<br><table align='center'><tr><td>Setor deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
-									AbrirModulo('setor.php');
+									AbrirModulo('setores');
 								}
 							});
 						}else{
@@ -1602,9 +1623,9 @@ function fc_edit_metas(valor1,valor2){
 						}
 					}
 				});
-				//AbrirModulo('usu.php');
+				//AbrirModulo('usuarios');
 			},
-			"NÃ£o": function(){
+			"Não": function(){
 				$( this ).dialog( "close" );
 			}
 		});
@@ -1618,12 +1639,12 @@ function fc_edit_metas(valor1,valor2){
 	function validaCaractaer(pEvent){
 		if(navigator.appName.indexOf('Internet Explorer')>0){
 			if ((pEvent.keyCode<97 || pEvent.keyCode>122)&&(pEvent.keyCode<48 || pEvent.keyCode>57)){
-				alert("Caractere nÃ£o aceito para esse campo");
+				alert("Caractere não aceito para esse campo");
 				pEvent.keyCode = 0;
 			}
 		}else{
 			if ((pEvent.which<97 || pEvent.which>122)&&(pEvent.which<48 || pEvent.which>57)) {
-				alert("Caractere nÃ£o aceito para esse campo");
+				alert("Caractere não aceito para esse campo");
 				pEvent.which = 0;
 			}
 		}
@@ -1631,7 +1652,7 @@ function fc_edit_metas(valor1,valor2){
 
 function diasemana(valor){
 	if(valor.value.length==10){
-		var semana = ["domingo", "segunda-feira", "terÃ§a-feira","quarta-feira","quinta-feira","sexta-feira","sÃ¡bado"];
+		var semana = ["domingo", "segunda-feira", "terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
 		var data = $(valor).val();
 		var arr = data.split("/").reverse();
 		var teste = new Date(arr[0], arr[1] - 1, arr[2]);
@@ -1644,7 +1665,7 @@ function fc_teste_senha(valor1,valor2,valor3){
 	if(valor1!=valor2){
 		$("#senha_usu1").css("border","1px solid red");
 		$("#senha_usu2").css("border","1px solid red");
-		return "Senhas nÃ£o sÃ£o iguais";
+		return "Senhas não são iguais";
 	}else if(valor1=="" && valor3=="I"){
 		$("#senha_usu1").css("border","1px solid red");
 		$("#senha_usu2").css("border","1px solid red");
@@ -1653,13 +1674,13 @@ function fc_teste_senha(valor1,valor2,valor3){
 		if((valor1!="" && valor3=="U" && valor1.length<4) || (valor1.length<4 && valor3=="I")){
 			$("#senha_usu1").css("border","1px solid red");
 			$("#senha_usu2").css("border","1px solid red");
-			return "Sua senha deve conter no mÃ­nimo 4 caracteres!";
+			return "Sua senha deve conter no mínimo 4 caracteres!";
 		}else{
 			var er = /[A-Za-z0-9_\-\.]{4,}/;
 			if((er.test(valor1)==false && valor1!="" && valor3=="U") || (er.test(valor1)==false && valor3=="I")){
 				$("#senha_usu1").css("border","1px solid red");
 				$("#senha_usu2").css("border","1px solid red");
-				return "Senha contÃ©m caractere invÃ¡lido!";
+				return "Senha contém caractere inválido!";
 			}else{
 				return "";
 			}
@@ -1674,7 +1695,7 @@ function validaEmail(mail){
 		return "Informe seu e-mail!";
 	}else if(er.test(mail) == false){
 		$("#email_usu").css("border","1px solid red");
-		return "E-mail invÃ¡lido!";
+		return "E-mail inválido!";
 	}else{
 		return "";
 	}
@@ -1688,12 +1709,12 @@ function addMes(data,mes){
 function regiaoSlugify(valor){
 	return String(valor || "")
 		.toLowerCase()
-		.replace(/[Ã¡Ã Ã£Ã¢Ã¤]/g, "a")
-		.replace(/[Ã©Ã¨ÃªÃ«]/g, "e")
-		.replace(/[Ã­Ã¬Ã®Ã¯]/g, "i")
-		.replace(/[Ã³Ã²ÃµÃ´Ã¶]/g, "o")
-		.replace(/[ÃºÃ¹Ã»Ã¼]/g, "u")
-		.replace(/Ã§/g, "c")
+		.replace(/[áàãâä]/g, "a")
+		.replace(/[éèêë]/g, "e")
+		.replace(/[íìîï]/g, "i")
+		.replace(/[óòõôö]/g, "o")
+		.replace(/[úùûü]/g, "u")
+		.replace(/ç/g, "c")
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-+|-+$/g, "");
 }
@@ -1829,7 +1850,7 @@ function sel_tipo(valor1,valor2,callback){
 				if(valor2 == 1 || valor2 == "1"){
 					$("#sel_anda").html("Selecionar Andamentos:");
 				}else if(valor2 == 2 || valor2 == "2"){
-					$("#sel_anda").html("Selecionar Lançamentos:");
+					$("#sel_anda").html("Selecionar Lan�amentos:");
 				}
 				andamentoTiposAtualizarPool();
 			}else if(valor1 == 1){
@@ -1892,6 +1913,7 @@ function somarMeta(valor2){
 		$("#meta_valor_"+valor2).val(mvat);
 	}
 }
+
 
 
 
