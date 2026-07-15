@@ -83,13 +83,13 @@ class MainPageService
 	private function resolveTopAction($currentSection)
 	{
 		$actions = array(
-			'usuarios' => array('class' => 'newuser', 'label' => 'Novo UsuÃƒÂ¡rio', 'js' => 'fc_edit_usu("", "I");'),
+			'usuarios' => array('class' => 'newuser', 'label' => 'Novo Usuário', 'js' => 'fc_edit_usu("", "I");'),
 			'setores' => array('class' => 'newsetor', 'label' => 'Novo Setor', 'js' => 'fc_edit_setor("", "I");'),
 			'clientes' => array('class' => 'newsetor', 'label' => 'Novo Cliente', 'js' => 'fc_edit_cliente("", "I");'),
 			'andamentos' => array('class' => 'newsetor', 'label' => 'Novo Andamento', 'js' => 'fc_edit_andamento("", "I");'),
 			'metas-admin' => array('class' => 'newsetor', 'label' => 'Nova Meta', 'js' => 'fc_edit_metas("", "I");'),
 			'semanas' => array('class' => 'newsetor', 'label' => 'Nova Semana', 'js' => 'fc_edit_sem("", "I");'),
-			'regioes' => array('class' => 'newsetor', 'label' => 'Nova RegiÃƒÂ£o', 'js' => 'fc_edit_regiao("", "I");'),
+			'regioes' => array('class' => 'newsetor', 'label' => 'Nova Região', 'js' => 'fc_edit_regiao("", "I");'),
 		);
 
 		return isset($actions[$currentSection]) ? $actions[$currentSection] : null;

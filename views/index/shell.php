@@ -18,7 +18,7 @@
 	<div class="head_bk"></div>
 	<div class="head_fixed">
 		<div id="border-top" class="h_blue">
-			<span class="logo"><img src="css/images/logo.png" alt="Sistema de PetiÃƒÂ§ÃƒÂ£o" /></span>
+			<span class="logo"><img src="css/images/logo.png" alt="Sistema Ars" /></span>
 			<span class="title"><a href="<?php echo htmlspecialchars($entryUrl, ENT_QUOTES, 'UTF-8'); ?>">ARS Online - NEO Jurídico</a></span>
 		</div>
 		<div id="header-box">
