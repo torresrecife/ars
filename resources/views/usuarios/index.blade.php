@@ -1,6 +1,6 @@
 <div style="margin-top:80px">
 <script>
-window.arsUserAjaxUrl = "ajax_usu.php";
+window.arsUserAjaxUrl = "{{ url('ajax/usuarios') }}";
 </script>
 <label><h2><u>Usu&aacute;rios</u></h2></label>
 <div>

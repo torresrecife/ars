@@ -15,6 +15,16 @@ Route::middleware('legacy.auth')->group(function () {
     Route::get('/index', 'HomeController@webIndex')->name('legacy.home');
     Route::get('/index.php', 'HomeController@webIndex');
     Route::get('/logout', 'AuthController@logout')->name('logout');
+    Route::post('/ajax/newpass', 'AuthController@updateOwnPassword')->name('ajax.newpass');
+    Route::post('/ajax/select', 'SelectController@webAjax')->name('ajax.select');
+    Route::post('/ajax/usuarios', 'UserAdminController@webAjax')->name('ajax.usuarios');
+    Route::post('/ajax/setores', 'SectorAdminController@webAjax')->name('ajax.setores');
+    Route::post('/ajax/clientes', 'ClientAdminController@webAjax')->name('ajax.clientes');
+    Route::post('/ajax/andamentos', 'AndamentoAdminController@webAjax')->name('ajax.andamentos');
+    Route::post('/ajax/metas', 'MetaController@webAjax')->name('ajax.metas');
+    Route::post('/ajax/semanas', 'WeekController@webAjax')->name('ajax.semanas');
+    Route::match(['get', 'post'], '/detalhes/andamentos', 'AndamentoDetailController@webIndex')->name('detalhes.andamentos');
+    Route::match(['get', 'post'], '/detalhes/faturamento', 'FinancialDetailController@webIndex')->name('detalhes.faturamento');
 
     Route::get('/carteiras', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'carteiras');
@@ -66,6 +76,8 @@ Route::middleware('legacy.auth')->group(function () {
     Route::get('/regioes', function (Request $request) {
         return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'regioes');
     })->name('regioes');
+
+    Route::post('/ajax/regioes', 'RegionAdminController@webAjax')->name('ajax.regioes');
 });
 
 Route::get('/health', function () {

@@ -1,5 +1,14 @@
 ﻿
 $(function() {
+	var csrfToken = $('meta[name="csrf-token"]').attr('content');
+	if(csrfToken){
+		$.ajaxSetup({
+			headers: {
+				'X-CSRF-TOKEN': csrfToken
+			}
+		});
+	}
+
 	$('.date-picker').datepicker( {
 		dayNames: ['Domingo','Segunda','TerÃƒÂ§a','Quarta','Quinta','Sexta','SÃƒÂ¡bado'],
 		dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
@@ -147,7 +156,7 @@ function AbrirModulo(scriptFile){
 	NavegarModulo(scriptFile, {});
 }
 function fc_edit_usu(valor1,valor2){
-		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
+var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
@@ -308,7 +317,7 @@ function fc_edit_usu(valor1,valor2){
 	}
 	//funÃ§Ã£o editar semana
 	function fc_edit_sem(valor1,valor2){
-		var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax_sem.php";
+var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax/semanas";
 
 		var tt = "";
 		var tu = "";
@@ -416,7 +425,7 @@ function fc_edit_usu(valor1,valor2){
 
 	//funÃ§Ã£o editar setores
 	function fc_edit_setor(valor1,valor2){
-		var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax_setor.php";
+var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax/setores";
 
 		var tt = "";
 		var tu = "";
@@ -494,7 +503,7 @@ function fc_edit_usu(valor1,valor2){
 		});
 	}
 	function fc_edit_cliente(valor1,valor2){
-		var clientAjaxUrl = window.arsClientAjaxUrl || "ajax_cliente.php";
+var clientAjaxUrl = window.arsClientAjaxUrl || "ajax/clientes";
 		var tt = "";
 		var tu = "";
 		var salvarCliente = function(){
@@ -1112,7 +1121,7 @@ function andamentoTiposRemover(botao){
 	return false;
 }
 function fc_edit_andamento(valor1,valor2){
-	var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax_andamento.php";
+var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax/andamentos";
 	var andamentoJsonData = function(extra){
 		return $.extend({ response_format: "json" }, extra || {});
 	};
@@ -1228,7 +1237,7 @@ function fc_edit_andamento(valor1,valor2){
 	});
 }
 function fc_edit_metas(valor1,valor2){
-		var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax_metas.php";
+var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax/metas";
 
 		var tt = "";
 		var tu = "";
@@ -1401,7 +1410,7 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_del_metas(valor1,valor2){
-		var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax_metas.php";
+var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax/metas";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a meta <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
@@ -1433,7 +1442,7 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_del_cliente(valor1,valor2){
-		var clientAjaxUrl = window.arsClientAjaxUrl || "ajax_cliente.php";
+var clientAjaxUrl = window.arsClientAjaxUrl || "ajax/clientes";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o servidor <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
@@ -1465,7 +1474,7 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_del_andamento(valor1,valor2){
-		var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax_andamento.php";
+var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax/andamentos";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o andamento <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
@@ -1489,7 +1498,7 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_edit_regiao(valor1,valor2){
-		var regiaoAjaxUrl = window.arsRegionAjaxUrl || "ajax_regioes.php";
+var regiaoAjaxUrl = window.arsRegionAjaxUrl || "ajax/regioes";
 		var regiaoJsonData = function(extra){
 			return $.extend({ response_format: "json" }, extra || {});
 		};
@@ -1592,7 +1601,7 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_del_regiao(valor1,valor2){
-		var regiaoAjaxUrl = window.arsRegionAjaxUrl || "ajax_regioes.php";
+var regiaoAjaxUrl = window.arsRegionAjaxUrl || "ajax/regioes";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a regiao <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
@@ -1618,7 +1627,7 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_del_usu(valor1,valor2){
-		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
+var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuÃ¡rio <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
@@ -1651,7 +1660,7 @@ function fc_edit_metas(valor1,valor2){
 		});
 	}
 	function fc_del_sem(valor1,valor2){
-		var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax_sem.php";
+var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax/semanas";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a semana do mÃªs: <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
@@ -1685,7 +1694,7 @@ function fc_edit_metas(valor1,valor2){
 	}
 
 	function fc_del_setor(valor1,valor2){
-		var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax_setor.php";
+var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax/setores";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o setor <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
@@ -1894,7 +1903,7 @@ function inserir_banco(valor,stt){
 	$("#banco_num").val(crt);
 }
 function sel_tipo(valor1,valor2,callback){
-	var selectAjaxUrl = window.arsSelectAjaxUrl || "ajax_select.php";
+var selectAjaxUrl = window.arsSelectAjaxUrl || "ajax/select";
 	var montarOptions = function(selectId, html){
 		var select = $(selectId);
 		var markup = $.trim(String(html || ""));

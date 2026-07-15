@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Nova senha</title>
     <script type="text/javascript" src="{{ $legacyBaseUrl }}/js/jquery-1.8.0.min.js"></script>
     <script type="text/javascript" src="{{ $legacyBaseUrl }}/js/jquery-ui-1.8.23.custom.min.js"></script>
@@ -34,7 +35,7 @@ function new_pass(){
                 }else{
                     $.ajax({
                         type: "POST",
-                        url : "{{ $legacyBaseUrl }}/inc/ajax_newpass.php",
+                        url : "{{ url('ajax/newpass') }}",
                         data: "flag=U&id_usu={{ $userId }}&senha_usu1=" + $("#senha_usu1").val(),
                         success: function(){
                             $("<div></div>").html("<br><table align='center'><tr><td>Senha alterada com sucesso!</td></tr></table>").dialog({

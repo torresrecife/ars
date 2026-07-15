@@ -38,5 +38,5 @@
 	</fieldset>
 </div>
 <script>
-window.arsSectorAjaxUrl = "ajax_setor.php";
+window.arsSectorAjaxUrl = "{{ url('ajax/setores') }}";
 </script>

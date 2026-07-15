@@ -49,9 +49,9 @@
 		$('#banco_and').val(bankName);
 		$('#banco_lnc').val(bankName);
 		if(detailType=='and'){
-			$('#form_ars').attr('action','dados_anda.php');
+			$('#form_ars').attr('action','{{ url('detalhes/andamentos') }}');
 		}else if(detailType=='fat'){
-			$('#form_ars').attr('action','dados_fatur.php');
+			$('#form_ars').attr('action','{{ url('detalhes/faturamento') }}');
 		}
 		$('#form_ars').attr('target','_blank');
 		$('#form_ars').submit();
