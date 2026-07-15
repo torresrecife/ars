@@ -1,6 +1,6 @@
 <div style="margin-top:80px">
 <script>
-window.arsWeekAjaxUrl = "ajax_sem.php";
+window.arsWeekAjaxUrl = "{{ url('ajax/semanas') }}";
 </script>
 <label><h2><u>Semanas</u></h2></label>
 <div>

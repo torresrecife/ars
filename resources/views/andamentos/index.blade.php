@@ -1,7 +1,7 @@
 <div style="margin-top:80px">
 <script>
-window.arsAndamentoAjaxUrl = "ajax_andamento.php";
-window.arsSelectAjaxUrl = "ajax_select.php";
+window.arsAndamentoAjaxUrl = "{{ url('ajax/andamentos') }}";
+window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 </script>
 <label><h2><u>Andamentos</u></h2></label>
 <div>

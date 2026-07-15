@@ -1,6 +1,19 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    RewriteRule ^ajax_usu\.php$ ajax/usuarios [L,QSA]
+    RewriteRule ^ajax_setor\.php$ ajax/setores [L,QSA]
+    RewriteRule ^ajax_cliente\.php$ ajax/clientes [L,QSA]
+    RewriteRule ^ajax_andamento\.php$ ajax/andamentos [L,QSA]
+    RewriteRule ^ajax_metas\.php$ ajax/metas [L,QSA]
+    RewriteRule ^ajax_sem\.php$ ajax/semanas [L,QSA]
+    RewriteRule ^ajax_regioes\.php$ ajax/regioes [L,QSA]
+    RewriteRule ^ajax_select\.php$ ajax/select [L,QSA]
+    RewriteRule ^ajax_newpass\.php$ ajax/newpass [L,QSA]
+    RewriteRule ^inc/ajax_newpass\.php$ ajax/newpass [L,QSA]
+    RewriteRule ^dados_anda\.php$ detalhes/andamentos [L,QSA]
+    RewriteRule ^dados_fatur\.php$ detalhes/faturamento [L,QSA]
+
     RewriteRule ^***REMOVED***\.php$ /ars2/***REMOVED*** [R=301,L,QSA]
     RewriteRule ^usu\.php$ /ars2/usuarios [R=301,L,QSA]
     RewriteRule ^clientes\.php$ /ars2/clientes [R=301,L,QSA]

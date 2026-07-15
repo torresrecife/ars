@@ -67,6 +67,27 @@ class AuthController extends Controller
         return response('', 302)->header('Location', $this->legacyLoginUrl($request));
     }
 
+    public function updateOwnPassword(Request $request)
+    {
+        $currentUser = $this->authService->currentUser();
+        if (empty($currentUser)) {
+            return $this->legacyTextResponse('2');
+        }
+
+        $idUsuario = (int) $request->input('id_usu', 0);
+        $novaSenha = (string) $request->input('senha_usu1', '');
+
+        if ($idUsuario <= 0 || $novaSenha === '') {
+            return $this->legacyTextResponse('2');
+        }
+
+        if ((int) $currentUser['id_usu'] !== $idUsuario) {
+            return $this->legacyTextResponse('2');
+        }
+
+        return $this->legacyTextResponse($this->authService->updatePasswordAndAccess($idUsuario, $novaSenha) ? '1' : '2');
+    }
+
     private function legacyIndexUrl(Request $request)
     {
         $scriptName = str_replace('\\', '/', (string) $request->server('SCRIPT_NAME', ''));
