@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ValidatesLegacyFormRequest;
+use App\Http\Requests\RegionStoreRequest;
+use App\Http\Requests\RegionUpdateRequest;
 use App\Services\RegionAdminService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
 class RegionAdminController
 {
+	use ValidatesLegacyFormRequest;
+
 	/** @var RegionAdminService */
 	private $service;
 
@@ -53,6 +58,14 @@ class RegionAdminController
 
 	public function webAjax(Request $request)
 	{
+		$flag = (string) $request->input('flag', '');
+		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, RegionStoreRequest::class)) {
+			return response('0', 200, array('Content-Type' => 'text/plain; charset=UTF-8'));
+		}
+		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, RegionUpdateRequest::class)) {
+			return response('0', 200, array('Content-Type' => 'text/plain; charset=UTF-8'));
+		}
+
 		return response($this->ajax($request->all()), 200, array(
 			'Content-Type' => 'text/plain; charset=UTF-8',
 		));
