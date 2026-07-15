@@ -17,18 +17,18 @@
 	<div class="cpanel-right">
 		<div class="cpanel">
 			@if ($userLevel === 'ADM')
-				<div class="icon-wrapper"><div class="icon"><a href="index.php"><img src="css/images/header/icon-48-frontpage.png" alt="" /><span>In&iacute;cio</span></a></div></div>
-				<div class="icon-wrapper"><div class="icon"><a href="usu.php"><img src="css/images/header/icon-48-user.png" alt="" /><span>Usu&aacute;rios</span></a></div></div>
-				<div class="icon-wrapper"><div class="icon"><a href="setor.php"><img src="css/images/header/icon-48-move.png" alt="" /><span>Setores</span></a></div></div>
-				<div class="icon-wrapper"><div class="icon"><a href="clientes.php"><img src="css/images/header/icon-48-module.png" alt="" /><span>Clientes</span></a></div></div>
-				<div class="icon-wrapper"><div class="icon"><a href="andamentos.php"><img src="css/images/header/icon-48-stats.png" alt="" /><span>Andamentos</span></a></div></div>
-				<div class="icon-wrapper"><div class="icon"><a href="regioes.php"><img src="css/images/header/icon-48-regiao.png" alt="" /><span>Regi&otilde;es</span></a></div></div>
-				<div class="icon-wrapper"><div class="icon"><a href="semanas.php"><img src="css/images/header/icon-48-calendar.png" alt="" /><span>Semanas</span></a></div></div>
-				<div class="icon-wrapper"><div class="icon"><a href="metas.php"><img src="css/images/header/icon-48-levels.png" alt="" /><span>Metas</span></a></div></div>
-				<div class="icon-wrapper"><div class="icon"><a href="producao.php"><img src="css/images/header/icon-48-menumgr.png" alt="" /><span>Produ&ccedil;&atilde;o</span></a></div></div>
+				<div class="icon-wrapper"><div class="icon"><a href="{{ url('index') }}"><img src="css/images/header/icon-48-frontpage.png" alt="" /><span>In&iacute;cio</span></a></div></div>
+				<div class="icon-wrapper"><div class="icon"><a href="{{ url('usuarios') }}"><img src="css/images/header/icon-48-user.png" alt="" /><span>Usu&aacute;rios</span></a></div></div>
+				<div class="icon-wrapper"><div class="icon"><a href="{{ url('setores') }}"><img src="css/images/header/icon-48-move.png" alt="" /><span>Setores</span></a></div></div>
+				<div class="icon-wrapper"><div class="icon"><a href="{{ url('clientes') }}"><img src="css/images/header/icon-48-module.png" alt="" /><span>Clientes</span></a></div></div>
+				<div class="icon-wrapper"><div class="icon"><a href="{{ url('andamentos') }}"><img src="css/images/header/icon-48-stats.png" alt="" /><span>Andamentos</span></a></div></div>
+				<div class="icon-wrapper"><div class="icon"><a href="{{ url('regioes') }}"><img src="css/images/header/icon-48-regiao.png" alt="" /><span>Regi&otilde;es</span></a></div></div>
+				<div class="icon-wrapper"><div class="icon"><a href="{{ url('semanas') }}"><img src="css/images/header/icon-48-calendar.png" alt="" /><span>Semanas</span></a></div></div>
+				<div class="icon-wrapper"><div class="icon"><a href="{{ url('metas') }}"><img src="css/images/header/icon-48-levels.png" alt="" /><span>Metas</span></a></div></div>
+				<div class="icon-wrapper"><div class="icon"><a href="{{ url('producao') }}"><img src="css/images/header/icon-48-menumgr.png" alt="" /><span>Produ&ccedil;&atilde;o</span></a></div></div>
 			@elseif ($userLevel === 'GER')
-				<div class="icon-wrapper"><div class="icon"><a href="metas.php"><img src="css/images/header/icon-48-levels.png" alt="" /><span>Metas</span></a></div></div>
-				<div class="icon-wrapper"><div class="icon"><a href="producao.php"><img src="css/images/header/icon-48-menumgr.png" alt="" /><span>Produ&ccedil;&atilde;o</span></a></div></div>
+				<div class="icon-wrapper"><div class="icon"><a href="{{ url('metas') }}"><img src="css/images/header/icon-48-levels.png" alt="" /><span>Metas</span></a></div></div>
+				<div class="icon-wrapper"><div class="icon"><a href="{{ url('producao') }}"><img src="css/images/header/icon-48-menumgr.png" alt="" /><span>Produ&ccedil;&atilde;o</span></a></div></div>
 			@endif
 		</div>
 	</div>
