@@ -31,7 +31,7 @@ class DashboardPanelService
 
 	public function build(array $input, array $session = array())
 	{
-		$bankId = isset($input['hid_flag']) ? (int) $input['hid_flag'] : 0;
+		$bankId = isset($input['bank_id']) ? (int) $input['bank_id'] : (isset($input['hid_flag']) ? (int) $input['hid_flag'] : 0);
 		if ($bankId <= 0) {
 			return array('error' => 'Volte e selecione o Banco!');
 		}
@@ -61,6 +61,8 @@ class DashboardPanelService
 		return array(
 			'error' => '',
 			'bank' => $bank,
+			'bankId' => $bankId,
+			'areaId' => isset($input['area_id']) ? (string) $input['area_id'] : (isset($input['hid_area']) ? (string) $input['hid_area'] : ''),
 			'month' => $month,
 			'year' => $year,
 			'showRegionTabs' => $regionTabs['show'],

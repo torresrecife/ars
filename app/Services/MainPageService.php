@@ -65,10 +65,15 @@ class MainPageService
 
 	private function resolveState(array $input)
 	{
+		$areaId = isset($input['area_id']) ? (string) $input['area_id'] : (isset($input['hid_area']) ? (string) $input['hid_area'] : '');
+		$bankId = isset($input['bank_id']) ? (string) $input['bank_id'] : (isset($input['hid_flag']) ? (string) $input['hid_flag'] : '');
+
 		return array(
 			'hid_send' => isset($input['hid_send']) ? (int) $input['hid_send'] : 0,
-			'hid_area' => isset($input['hid_area']) ? (string) $input['hid_area'] : '',
-			'hid_flag' => isset($input['hid_flag']) ? (string) $input['hid_flag'] : '',
+			'hid_area' => $areaId,
+			'hid_flag' => $bankId,
+			'area_id' => $areaId,
+			'bank_id' => $bankId,
 			'geral' => isset($input['geral']) ? (int) $input['geral'] : 0,
 			'regiao_id' => isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0,
 		);
@@ -95,10 +100,10 @@ class MainPageService
 			case 1:
 				return array(
 					'type' => 'view',
-					'view' => 'index/carteira',
-					'data' => array(
-						'banks' => $this->repository->listBanksByArea($state['hid_area'], $user['clientIds']),
-						'hidArea' => $state['hid_area'],
+						'view' => 'index/carteira',
+						'data' => array(
+						'banks' => $this->repository->listBanksByArea($state['area_id'], $user['clientIds']),
+						'hidArea' => $state['area_id'],
 						'monthYearLabel' => $monthYearLabel,
 						'regions' => $user['regions'],
 						'showRegionSelector' => $user['showRegionSelector'],
@@ -128,11 +133,11 @@ class MainPageService
 				);
 			case 5:
 				return array(
-					'type' => 'view',
-					'view' => '***REMOVED***/index',
-					'data' => array(
+						'type' => 'view',
+						'view' => '***REMOVED***/index',
+						'data' => array(
 						'userLevel' => $user['level'],
-						'hidArea' => $state['hid_area'],
+						'hidArea' => $state['area_id'],
 						'banks' => $this->repository->listAdminBanks($user['sectorId'], $user['clientIds']),
 					),
 				);

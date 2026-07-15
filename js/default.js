@@ -73,6 +73,37 @@ function EnviarPagina(frm, precisaData, are, fla){
 	}
 }
 
+function AbrirCarteiras(areaId){
+	$("#area_id").val(areaId || "");
+	$("#hid_area").val(areaId || "");
+	$("#bank_id").val("");
+	$("#hid_flag").val("");
+	$("#form_ars").attr("action","carteiras.php");
+	$("#form_ars").attr("target","");
+	$("#form_ars").submit();
+}
+
+function AbrirPainel(areaId, bankId){
+	if($("#startDate").val()==""){
+		$("#startDate").css("border","1px solid red");
+		$("#obg_date").fadeIn();
+		$("#obg_date").html("Inseir o mÃªs / ano!");
+		setTimeout(function(){
+			$("#startDate").css("border","1px solid #ccc");
+			$("#obg_date").fadeOut();
+		}, 3000);
+		return;
+	}
+
+	$("#area_id").val(areaId || "");
+	$("#hid_area").val(areaId || "");
+	$("#bank_id").val(bankId || "");
+	$("#hid_flag").val(bankId || "");
+	$("#form_ars").attr("action","painel.php");
+	$("#form_ars").attr("target","");
+	$("#form_ars").submit();
+}
+
 function fc_edit_usu(valor1,valor2){
 		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
 		var tt = "";

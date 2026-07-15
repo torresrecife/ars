@@ -29,7 +29,7 @@
 					<span class="<?php echo $pageData['topAction']['class']; ?>"><a href='javascript:<?php echo $pageData["topAction"]["js"]; ?>'><?php echo htmlspecialchars($pageData['topAction']['label'], ENT_QUOTES, 'UTF-8'); ?></a></span>
 				<?php endif; ?>
 				<?php if ($pageData['canAdmin']): ?>
-					<span class="relatory"><a href="producao.php">ProduÃ§Ã£o</a></span>
+					<span class="relatory"><a href="producao.php">Produção</a></span>
 					<span class="viewconfig"><a href="***REMOVED***.php">Administrar</a></span>
 				<?php endif; ?>
 				<span class="voltar"><a href="javascript:window.history.go(-1)">Voltar</a></span>
@@ -55,6 +55,8 @@
 	<input type="hidden" name="hid_send" id="hid_send" value="<?php echo htmlspecialchars((string) $pageData['state']['hid_send'], ENT_QUOTES, 'UTF-8'); ?>" />
 	<input type="hidden" name="hid_area" id="hid_area" value="<?php echo htmlspecialchars((string) $pageData['state']['hid_area'], ENT_QUOTES, 'UTF-8'); ?>" />
 	<input type="hidden" name="hid_flag" id="hid_flag" value="<?php echo htmlspecialchars((string) $pageData['state']['hid_flag'], ENT_QUOTES, 'UTF-8'); ?>" />
+	<input type="hidden" name="area_id" id="area_id" value="<?php echo htmlspecialchars((string) (isset($pageData['state']['area_id']) ? $pageData['state']['area_id'] : ''), ENT_QUOTES, 'UTF-8'); ?>" />
+	<input type="hidden" name="bank_id" id="bank_id" value="<?php echo htmlspecialchars((string) (isset($pageData['state']['bank_id']) ? $pageData['state']['bank_id'] : ''), ENT_QUOTES, 'UTF-8'); ?>" />
 </form>
 <?php if (is_file($exportPath)) { include $exportPath; } ?>
 </body>
