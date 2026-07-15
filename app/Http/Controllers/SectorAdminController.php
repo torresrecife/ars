@@ -8,7 +8,7 @@ use App\Services\SectorAdminService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
-class SectorAdminController
+class SectorAdminController extends Controller
 {
 	/** @var SectorAdminService */
 	private $service;

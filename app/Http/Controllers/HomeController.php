@@ -8,7 +8,7 @@ use App\Services\MainPageService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
-class HomeController
+class HomeController extends Controller
 {
 	/** @var MainPageService */
 	private $service;

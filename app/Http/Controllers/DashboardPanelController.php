@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
 use App\Services\DashboardPanelService;
 use Illuminate\Http\Request;
 
-class DashboardPanelController
+class DashboardPanelController extends Controller
 {
 	/** @var DashboardPanelService */
 	private $service;

@@ -11,7 +11,7 @@ use App\Services\AndamentoAdminService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
-class AndamentoAdminController
+class AndamentoAdminController extends Controller
 {
 	use ValidatesLegacyFormRequest;
 
@@ -43,41 +43,27 @@ class AndamentoAdminController
 		$flag = isset($input['flag']) ? (string) $input['flag'] : '';
 
 		if ($flag === 'E') {
-			return response($this->service->editPayload(isset($input['anda_id']) ? (int) $input['anda_id'] : 0), 200, array(
-				'Content-Type' => 'application/json; charset=UTF-8',
-			));
+			return $this->legacyJsonResponse($this->service->editPayload(isset($input['anda_id']) ? (int) $input['anda_id'] : 0));
 		}
 
 		if ($flag === 'I') {
 			if (!$this->validateLegacyFormRequest($request, AndamentoStoreRequest::class)) {
-				return response('0', 200, array(
-					'Content-Type' => 'text/plain; charset=UTF-8',
-				));
+				return $this->legacyTextResponse('0');
 			}
-			return response($this->service->create($input), 200, array(
-				'Content-Type' => 'text/plain; charset=UTF-8',
-			));
+			return $this->legacyTextResponse($this->service->create($input));
 		}
 
 		if ($flag === 'U') {
 			if (!$this->validateLegacyFormRequest($request, AndamentoUpdateRequest::class)) {
-				return response('0', 200, array(
-					'Content-Type' => 'text/plain; charset=UTF-8',
-				));
+				return $this->legacyTextResponse('0');
 			}
-			return response($this->service->update($input), 200, array(
-				'Content-Type' => 'text/plain; charset=UTF-8',
-			));
+			return $this->legacyTextResponse($this->service->update($input));
 		}
 
 		if ($flag === 'D') {
-			return response($this->service->delete(isset($input['anda_id']) ? (int) $input['anda_id'] : 0), 200, array(
-				'Content-Type' => 'text/plain; charset=UTF-8',
-			));
+			return $this->legacyTextResponse($this->service->delete(isset($input['anda_id']) ? (int) $input['anda_id'] : 0));
 		}
 
-		return response('0', 200, array(
-			'Content-Type' => 'text/plain; charset=UTF-8',
-		));
+		return $this->legacyTextResponse('0');
 	}
 }

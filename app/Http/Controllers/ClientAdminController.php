@@ -11,7 +11,7 @@ use App\Services\ClientAdminService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
-class ClientAdminController
+class ClientAdminController extends Controller
 {
 	use ValidatesLegacyFormRequest;
 
@@ -60,14 +60,12 @@ class ClientAdminController
 	{
 		$flag = (string) $request->input('flag', '');
 		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, ClientStoreRequest::class)) {
-			return response('0', 200, array('Content-Type' => 'text/plain; charset=UTF-8'));
+			return $this->legacyTextResponse('0');
 		}
 		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, ClientUpdateRequest::class)) {
-			return response('0', 200, array('Content-Type' => 'text/plain; charset=UTF-8'));
+			return $this->legacyTextResponse('0');
 		}
 
-		return response($this->ajax($request->all()), 200, array(
-			'Content-Type' => 'text/plain; charset=UTF-8',
-		));
+		return $this->legacyTextResponse($this->ajax($request->all()));
 	}
 }
