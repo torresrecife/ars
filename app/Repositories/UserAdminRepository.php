@@ -4,90 +4,57 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use mysqli;
+use App\Models\Area;
+use App\Models\Banco;
+use App\Models\Usuario;
 
 class UserAdminRepository
 {
-	/** @var mysqli */
-	private $connection;
-
-	public function __construct(mysqli $connection)
-	{
-		$this->connection = $connection;
-	}
+	/** @var int */
+	private $lastInsertId = 0;
 
 	public function all()
 	{
-		$result = mysqli_query($this->connection, "SELECT * FROM usuarios AS u ORDER BY u.id_usu");
-		if (!$result) {
-			return array();
-		}
-
-		$rows = array();
-		while ($row = mysqli_fetch_assoc($result)) {
-			$rows[] = $row;
-		}
-
-		return $rows;
+		return Usuario::query()
+			->orderBy('id_usu')
+			->get()
+			->map(function (Usuario $user) {
+				return $user->toArray();
+			})
+			->values()
+			->all();
 	}
 
 	public function findById($id)
 	{
-		$stmt = mysqli_prepare($this->connection, "SELECT * FROM usuarios WHERE id_usu = ? LIMIT 1");
-		if (!$stmt) {
-			return false;
-		}
+		$row = Usuario::query()->find((int) $id);
 
-		$id = (int) $id;
-		mysqli_stmt_bind_param($stmt, 'i', $id);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$row = $result ? mysqli_fetch_assoc($result) : false;
-		mysqli_stmt_close($stmt);
-
-		return $row;
+		return $row ? $row->toArray() : false;
 	}
 
 	public function findByLogin($login, $excludeId = 0)
 	{
-		$sql = "SELECT * FROM usuarios WHERE login_usu = ?";
-		$types = 's';
-		$params = array((string) $login);
+		$query = Usuario::query()->where('login_usu', (string) $login);
 
 		if ((int) $excludeId > 0) {
-			$sql .= " AND id_usu <> ?";
-			$types .= 'i';
-			$params[] = (int) $excludeId;
+			$query->where('id_usu', '<>', (int) $excludeId);
 		}
 
-		$sql .= " LIMIT 1";
-		$stmt = mysqli_prepare($this->connection, $sql);
-		if (!$stmt) {
-			return false;
-		}
+		$row = $query->first();
 
-		$this->bindParams($stmt, $types, $params);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$row = $result ? mysqli_fetch_assoc($result) : false;
-		mysqli_stmt_close($stmt);
-
-		return $row;
+		return $row ? $row->toArray() : false;
 	}
 
 	public function listAreas()
 	{
-		$result = mysqli_query($this->connection, "SELECT * FROM area ORDER BY area_id");
-		if (!$result) {
-			return array();
-		}
-
-		$rows = array();
-		while ($row = mysqli_fetch_assoc($result)) {
-			$rows[] = $row;
-		}
-
-		return $rows;
+		return Area::query()
+			->orderBy('area_id')
+			->get()
+			->map(function (Area $area) {
+				return $area->toArray();
+			})
+			->values()
+			->all();
 	}
 
 	public function listClientsByIds(array $ids)
@@ -104,122 +71,74 @@ class UserAdminRepository
 			return array();
 		}
 
-		$sql = "SELECT banco_id, banco_name FROM bancos WHERE banco_id IN (" . implode(',', $cleanIds) . ") ORDER BY banco_name";
-		$result = mysqli_query($this->connection, $sql);
-		if (!$result) {
-			return array();
-		}
-
-		$rows = array();
-		while ($row = mysqli_fetch_assoc($result)) {
-			$rows[] = $row;
-		}
-
-		return $rows;
+		return Banco::query()
+			->select(array('banco_id', 'banco_name'))
+			->whereIn('banco_id', array_values($cleanIds))
+			->orderBy('banco_name')
+			->get()
+			->map(function (Banco $banco) {
+				return $banco->toArray();
+			})
+			->values()
+			->all();
 	}
 
 	public function insert(array $data)
 	{
-		$sql = "INSERT INTO usuarios (
-			nome_usu, login_usu, senha_usu, email_usu, nivel_usu,
-			id_setor, id_cliente, regiao_modo, acesso_usu, data_cad, status_usu
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)";
+		$model = new Usuario();
+		$model->nome_usu = (string) $data['nome_usu'];
+		$model->login_usu = (string) $data['login_usu'];
+		$model->senha_usu = (string) $data['senha_usu'];
+		$model->email_usu = (string) $data['email_usu'];
+		$model->nivel_usu = (string) $data['nivel_usu'];
+		$model->id_setor = (int) $data['id_setor'];
+		$model->id_cliente = (string) $data['id_cliente'];
+		$model->regiao_modo = (string) $data['regiao_modo'];
+		$model->acesso_usu = null;
+		$model->data_cad = (string) $data['data_cad'];
+		$model->status_usu = (string) $data['status_usu'];
 
-		$stmt = mysqli_prepare($this->connection, $sql);
-		if (!$stmt) {
-			return false;
-		}
-
-		$nome = (string) $data['nome_usu'];
-		$login = (string) $data['login_usu'];
-		$senha = (string) $data['senha_usu'];
-		$email = (string) $data['email_usu'];
-		$nivel = (string) $data['nivel_usu'];
-		$setor = (int) $data['id_setor'];
-		$cliente = (string) $data['id_cliente'];
-		$regiaoModo = (string) $data['regiao_modo'];
-		$dataCad = (string) $data['data_cad'];
-		$status = (string) $data['status_usu'];
-
-		mysqli_stmt_bind_param($stmt, 'sssssissss', $nome, $login, $senha, $email, $nivel, $setor, $cliente, $regiaoModo, $dataCad, $status);
-		$ok = mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
+		$ok = $model->save();
+		$this->lastInsertId = $ok ? (int) $model->id_usu : 0;
 
 		return $ok;
 	}
 
 	public function update(array $data)
 	{
-		$sql = "UPDATE usuarios SET
-			nome_usu = ?,
-			login_usu = ?,
-			email_usu = ?,
-			nivel_usu = ?,
-			id_setor = ?,
-			id_cliente = ?,
-			regiao_modo = ?,
-			status_usu = ?";
-		$types = 'ssssisss';
-		$params = array(
-			(string) $data['nome_usu'],
-			(string) $data['login_usu'],
-			(string) $data['email_usu'],
-			(string) $data['nivel_usu'],
-			(int) $data['id_setor'],
-			(string) $data['id_cliente'],
-			(string) $data['regiao_modo'],
-			(string) $data['status_usu'],
-		);
-
-		if ((string) $data['senha_usu'] !== '') {
-			$sql .= ", senha_usu = ?";
-			$types .= 's';
-			$params[] = (string) $data['senha_usu'];
-		}
-
-		$sql .= " WHERE id_usu = ?";
-		$types .= 'i';
-		$params[] = (int) $data['id_usu'];
-
-		$stmt = mysqli_prepare($this->connection, $sql);
-		if (!$stmt) {
+		$model = Usuario::query()->find((int) $data['id_usu']);
+		if (!$model) {
 			return false;
 		}
 
-		$this->bindParams($stmt, $types, $params);
-		$ok = mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
+		$model->nome_usu = (string) $data['nome_usu'];
+		$model->login_usu = (string) $data['login_usu'];
+		$model->email_usu = (string) $data['email_usu'];
+		$model->nivel_usu = (string) $data['nivel_usu'];
+		$model->id_setor = (int) $data['id_setor'];
+		$model->id_cliente = (string) $data['id_cliente'];
+		$model->regiao_modo = (string) $data['regiao_modo'];
+		$model->status_usu = (string) $data['status_usu'];
 
-		return $ok;
+		if ((string) $data['senha_usu'] !== '') {
+			$model->senha_usu = (string) $data['senha_usu'];
+		}
+
+		return $model->save();
 	}
 
 	public function lastInsertId()
 	{
-		return (int) mysqli_insert_id($this->connection);
+		return $this->lastInsertId;
 	}
 
 	public function delete($id)
 	{
-		$stmt = mysqli_prepare($this->connection, "DELETE FROM usuarios WHERE id_usu = ? LIMIT 1");
-		if (!$stmt) {
+		$model = Usuario::query()->find((int) $id);
+		if (!$model) {
 			return false;
 		}
 
-		$id = (int) $id;
-		mysqli_stmt_bind_param($stmt, 'i', $id);
-		$ok = mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
-
-		return $ok;
-	}
-
-	private function bindParams($stmt, $types, array $params)
-	{
-		$references = array($types);
-		foreach ($params as $index => $value) {
-			$references[] = &$params[$index];
-		}
-
-		call_user_func_array('mysqli_stmt_bind_param', array_merge(array($stmt), $references));
+		return (bool) $model->delete();
 	}
 }

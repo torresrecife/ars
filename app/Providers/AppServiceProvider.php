@@ -69,46 +69,45 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(RegionService::class, function ($app) {
             return new RegionService(
-                new RegionRepository($app->make('legacy.mysql'))
+                new RegionRepository()
             );
         });
 
         $this->app->singleton(RegionAdminService::class, function ($app) {
             return new RegionAdminService(
-                new RegionAdminRepository($app->make('legacy.mysql'))
+                new RegionAdminRepository()
             );
         });
 
         $this->app->singleton(WeekService::class, function ($app) {
             return new WeekService(
-                new WeekRepository($app->make('legacy.mysql'))
+                new WeekRepository()
             );
         });
 
         $this->app->singleton(MetaService::class, function ($app) {
             return new MetaService(
-                new MetaRepository($app->make('legacy.mysql')),
+                new MetaRepository(),
                 $app->make(RegionService::class)
             );
         });
 
         $this->app->singleton(UserAdminService::class, function ($app) {
             return new UserAdminService(
-                new UserAdminRepository($app->make('legacy.mysql')),
+                new UserAdminRepository(),
                 $app->make(RegionService::class)
             );
         });
 
         $this->app->singleton(SectorAdminService::class, function ($app) {
             return new SectorAdminService(
-                new SectorAdminRepository($app->make('legacy.mysql'))
+                new SectorAdminRepository()
             );
         });
 
         $this->app->singleton(ClientAdminService::class, function ($app) {
             return new ClientAdminService(
                 new ClientAdminRepository(
-                    $app->make('legacy.mysql'),
                     function_exists('ars_sqlsrv_connection') ? ars_sqlsrv_connection() : null
                 )
             );
@@ -116,7 +115,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(AndamentoAdminService::class, function ($app) {
             return new AndamentoAdminService(
-                new AndamentoAdminRepository($app->make('legacy.mysql'))
+                new AndamentoAdminRepository()
             );
         });
 

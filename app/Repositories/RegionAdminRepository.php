@@ -4,141 +4,116 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use mysqli;
+use App\Models\Regiao;
+use App\Models\RegiaoUf;
+use App\Models\UsuarioRegiao;
+use Illuminate\Support\Facades\DB;
 
 class RegionAdminRepository
 {
-	/** @var mysqli */
-	private $connection;
-
-	public function __construct(mysqli $connection)
-	{
-		$this->connection = $connection;
-	}
+	/** @var int */
+	private $lastInsertId = 0;
 
 	public function all()
 	{
-		$sql = "SELECT r.regiao_id, r.regiao_nome, r.regiao_slug, r.regiao_status,
-			COALESCE(GROUP_CONCAT(DISTINCT ru.uf ORDER BY ru.uf SEPARATOR ', '), '') AS ufs,
-			COUNT(DISTINCT ur.usuario_id) AS total_usuarios
-			FROM regioes AS r
-			LEFT JOIN regioes_ufs AS ru ON ru.regiao_id = r.regiao_id
-			LEFT JOIN usuarios_regioes AS ur ON ur.regiao_id = r.regiao_id
-			GROUP BY r.regiao_id, r.regiao_nome, r.regiao_slug, r.regiao_status
-			ORDER BY r.regiao_nome";
-		$result = mysqli_query($this->connection, $sql);
-		if (!$result) {
-			return array();
-		}
-
-		$rows = array();
-		while ($row = mysqli_fetch_assoc($result)) {
-			$rows[] = $row;
-		}
-
-		return $rows;
+		return Regiao::query()
+			->leftJoin('regioes_ufs as ru', 'ru.regiao_id', '=', 'regioes.regiao_id')
+			->leftJoin('usuarios_regioes as ur', 'ur.regiao_id', '=', 'regioes.regiao_id')
+			->groupBy('regioes.regiao_id', 'regioes.regiao_nome', 'regioes.regiao_slug', 'regioes.regiao_status')
+			->orderBy('regioes.regiao_nome')
+			->get(array(
+				'regioes.regiao_id',
+				'regioes.regiao_nome',
+				'regioes.regiao_slug',
+				'regioes.regiao_status',
+				DB::raw("COALESCE(GROUP_CONCAT(DISTINCT ru.uf ORDER BY ru.uf SEPARATOR ', '), '') AS ufs"),
+				DB::raw('COUNT(DISTINCT ur.usuario_id) AS total_usuarios'),
+			))
+			->map(function (Regiao $row) {
+				return array(
+					'regiao_id' => (int) $row->regiao_id,
+					'regiao_nome' => (string) $row->regiao_nome,
+					'regiao_slug' => (string) $row->regiao_slug,
+					'regiao_status' => (string) $row->regiao_status,
+					'ufs' => (string) $row->ufs,
+					'total_usuarios' => (string) $row->total_usuarios,
+				);
+			})
+			->values()
+			->all();
 	}
 
 	public function findById($id)
 	{
-		$stmt = mysqli_prepare($this->connection, "SELECT regiao_id, regiao_nome, regiao_slug, regiao_status FROM regioes WHERE regiao_id = ? LIMIT 1");
-		if (!$stmt) {
-			return false;
-		}
+		$row = Regiao::query()
+			->select(array('regiao_id', 'regiao_nome', 'regiao_slug', 'regiao_status'))
+			->where('regiao_id', (int) $id)
+			->first();
 
-		$id = (int) $id;
-		mysqli_stmt_bind_param($stmt, 'i', $id);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$row = $result ? mysqli_fetch_assoc($result) : false;
-		mysqli_stmt_close($stmt);
-
-		return $row;
+		return $row ? $row->toArray() : false;
 	}
 
 	public function findBySlug($slug, $excludeId = 0)
 	{
-		$sql = "SELECT regiao_id FROM regioes WHERE regiao_slug = ?";
-		$types = 's';
-		$params = array((string) $slug);
+		$query = Regiao::query()
+			->select(array('regiao_id'))
+			->where('regiao_slug', (string) $slug);
 
 		if ((int) $excludeId > 0) {
-			$sql .= " AND regiao_id <> ?";
-			$types .= 'i';
-			$params[] = (int) $excludeId;
+			$query->where('regiao_id', '<>', (int) $excludeId);
 		}
 
-		$sql .= " LIMIT 1";
-		$stmt = mysqli_prepare($this->connection, $sql);
-		if (!$stmt) {
-			return false;
-		}
+		$row = $query->first();
 
-		$this->bindParams($stmt, $types, $params);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$row = $result ? mysqli_fetch_assoc($result) : false;
-		mysqli_stmt_close($stmt);
-
-		return $row;
+		return $row ? $row->toArray() : false;
 	}
 
 	public function listUfsByRegionId($regionId)
 	{
-		$stmt = mysqli_prepare($this->connection, "SELECT uf FROM regioes_ufs WHERE regiao_id = ? ORDER BY uf");
-		if (!$stmt) {
-			return array();
-		}
+		$rows = RegiaoUf::query()
+			->where('regiao_id', (int) $regionId)
+			->orderBy('uf')
+			->pluck('uf')
+			->all();
 
-		$regionId = (int) $regionId;
-		mysqli_stmt_bind_param($stmt, 'i', $regionId);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
 		$ufs = array();
-		while ($result && ($row = mysqli_fetch_assoc($result))) {
-			$uf = isset($row['uf']) ? strtoupper(trim((string) $row['uf'])) : '';
+		foreach ($rows as $uf) {
+			$uf = strtoupper(trim((string) $uf));
 			if ($uf !== '') {
 				$ufs[$uf] = $uf;
 			}
 		}
-		mysqli_stmt_close($stmt);
 
 		return array_values($ufs);
 	}
 
 	public function insert(array $data)
 	{
-		$stmt = mysqli_prepare($this->connection, "INSERT INTO regioes (regiao_nome, regiao_slug, regiao_status, data_cad) VALUES (?, ?, ?, NOW())");
-		if (!$stmt) {
-			return false;
-		}
+		$model = new Regiao();
+		$model->regiao_nome = (string) $data['regiao_nome'];
+		$model->regiao_slug = (string) $data['regiao_slug'];
+		$model->regiao_status = (string) $data['regiao_status'];
+		$model->data_cad = date('Y-m-d H:i:s');
 
-		$name = (string) $data['regiao_nome'];
-		$slug = (string) $data['regiao_slug'];
-		$status = (string) $data['regiao_status'];
-		mysqli_stmt_bind_param($stmt, 'sss', $name, $slug, $status);
-		$ok = mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
+		$ok = $model->save();
+		$this->lastInsertId = $ok ? (int) $model->regiao_id : 0;
 
 		return $ok;
 	}
 
 	public function update(array $data)
 	{
-		$stmt = mysqli_prepare($this->connection, "UPDATE regioes SET regiao_nome = ?, regiao_slug = ?, regiao_status = ?, data_alt = NOW() WHERE regiao_id = ?");
-		if (!$stmt) {
+		$model = Regiao::query()->find((int) $data['regiao_id']);
+		if (!$model) {
 			return false;
 		}
 
-		$id = (int) $data['regiao_id'];
-		$name = (string) $data['regiao_nome'];
-		$slug = (string) $data['regiao_slug'];
-		$status = (string) $data['regiao_status'];
-		mysqli_stmt_bind_param($stmt, 'sssi', $name, $slug, $status, $id);
-		$ok = mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
+		$model->regiao_nome = (string) $data['regiao_nome'];
+		$model->regiao_slug = (string) $data['regiao_slug'];
+		$model->regiao_status = (string) $data['regiao_status'];
+		$model->data_alt = date('Y-m-d H:i:s');
 
-		return $ok;
+		return $model->save();
 	}
 
 	public function delete($id)
@@ -147,34 +122,19 @@ class RegionAdminRepository
 			return 'LINKED_USERS';
 		}
 
-		$stmt = mysqli_prepare($this->connection, "DELETE FROM regioes WHERE regiao_id = ? LIMIT 1");
-		if (!$stmt) {
+		$model = Regiao::query()->find((int) $id);
+		if (!$model) {
 			return false;
 		}
 
-		$id = (int) $id;
-		mysqli_stmt_bind_param($stmt, 'i', $id);
-		$ok = mysqli_stmt_execute($stmt);
-		mysqli_stmt_close($stmt);
-
-		return $ok;
+		return (bool) $model->delete();
 	}
 
 	public function countUsersByRegionId($regionId)
 	{
-		$stmt = mysqli_prepare($this->connection, "SELECT COUNT(*) AS total FROM usuarios_regioes WHERE regiao_id = ?");
-		if (!$stmt) {
-			return 0;
-		}
-
-		$regionId = (int) $regionId;
-		mysqli_stmt_bind_param($stmt, 'i', $regionId);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-		$row = $result ? mysqli_fetch_assoc($result) : false;
-		mysqli_stmt_close($stmt);
-
-		return $row ? (int) $row['total'] : 0;
+		return (int) UsuarioRegiao::query()
+			->where('regiao_id', (int) $regionId)
+			->count();
 	}
 
 	public function replaceUfs($regionId, array $ufs)
@@ -185,45 +145,28 @@ class RegionAdminRepository
 		}
 
 		$ufs = $this->normalizeUfs($ufs);
-		$deleteStmt = mysqli_prepare($this->connection, "DELETE FROM regioes_ufs WHERE regiao_id = ?");
-		if (!$deleteStmt) {
+
+		try {
+			DB::transaction(function () use ($regionId, $ufs) {
+				RegiaoUf::query()->where('regiao_id', $regionId)->delete();
+
+				foreach ($ufs as $uf) {
+					RegiaoUf::query()->create(array(
+						'regiao_id' => $regionId,
+						'uf' => $uf,
+					));
+				}
+			});
+
+			return true;
+		} catch (\Exception $exception) {
 			return false;
 		}
-
-		mysqli_begin_transaction($this->connection);
-		mysqli_stmt_bind_param($deleteStmt, 'i', $regionId);
-		$ok = mysqli_stmt_execute($deleteStmt);
-		mysqli_stmt_close($deleteStmt);
-
-		if ($ok && !empty($ufs)) {
-			$insertStmt = mysqli_prepare($this->connection, "INSERT INTO regioes_ufs (regiao_id, uf) VALUES (?, ?)");
-			if (!$insertStmt) {
-				mysqli_rollback($this->connection);
-				return false;
-			}
-
-			foreach ($ufs as $uf) {
-				mysqli_stmt_bind_param($insertStmt, 'is', $regionId, $uf);
-				if (!mysqli_stmt_execute($insertStmt)) {
-					$ok = false;
-					break;
-				}
-			}
-			mysqli_stmt_close($insertStmt);
-		}
-
-		if ($ok) {
-			mysqli_commit($this->connection);
-			return true;
-		}
-
-		mysqli_rollback($this->connection);
-		return false;
 	}
 
 	public function lastInsertId()
 	{
-		return (int) mysqli_insert_id($this->connection);
+		return $this->lastInsertId;
 	}
 
 	private function normalizeUfs(array $ufs)
@@ -237,15 +180,5 @@ class RegionAdminRepository
 		}
 
 		return array_values($clean);
-	}
-
-	private function bindParams($stmt, $types, array $params)
-	{
-		$references = array($types);
-		foreach ($params as $index => $value) {
-			$references[] = &$params[$index];
-		}
-
-		call_user_func_array('mysqli_stmt_bind_param', array_merge(array($stmt), $references));
 	}
 }
