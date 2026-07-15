@@ -23,7 +23,7 @@
 			<?php foreach ($banks as $bank): ?>
 				<div class='icon-wrapper' style='height:100%'>
 					<div class='icon'>
-						<a href='#' onclick='EnviarDados("index.php",2,"<?php echo htmlspecialchars((string) $hidArea, ENT_QUOTES, 'UTF-8'); ?>","<?php echo $bank['banco_id']; ?>")' class='clspet' grupo='0'>
+						<a href='#' onclick='EnviarPagina("painel.php",true,"<?php echo htmlspecialchars((string) $hidArea, ENT_QUOTES, "UTF-8"); ?>","<?php echo $bank["banco_id"]; ?>"); return false;' class='clspet' grupo='0'>
 							<img src='css/images/header/icon-48-module.png' alt='' />
 							<span style='position:relative;margin-top:0px'> &nbsp; <?php echo htmlspecialchars($bank['banco_name'] . ($bank['banco_class'] ? ' (' . $bank['banco_class'] . ')' : ''), ENT_QUOTES, 'UTF-8'); ?> &nbsp; </span>
 						</a>

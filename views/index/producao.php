@@ -28,7 +28,7 @@
 			<br><br><br><br><br>
 			<div class="icon-wrapper">
 				<div class="icon">
-					<a href="#" id="frm" onclick="EnviarDados('index.php',4,'')">
+					<a href="#" id="frm" onclick="EnviarPagina('relatorio.php',true,'',''); return false;">
 						<img src="css/images/header/icon-48-themes.png" alt="" /><span>Relatório</span>
 					</a>
 				</div>

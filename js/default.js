@@ -55,6 +55,24 @@ function EnviarDados(frm,hid,are,fla){
 }
 
 	//função editar usuário
+function EnviarPagina(frm, precisaData, are, fla){
+	if(precisaData && $("#startDate").val()==""){
+		$("#startDate").css("border","1px solid red");
+		$("#obg_date").fadeIn();
+		$("#obg_date").html("Inseir o mÃªs / ano!");
+		setTimeout(function(){
+			$("#startDate").css("border","1px solid #ccc");
+			$("#obg_date").fadeOut();
+		}, 3000);
+	}else{
+		$("#hid_area").val(are || "");
+		$("#hid_flag").val(fla || "");
+		$("#form_ars").attr("action",frm);
+		$("#form_ars").attr("target","");
+		$("#form_ars").submit();
+	}
+}
+
 function fc_edit_usu(valor1,valor2){
 		var userAjaxUrl = window.arsUserAjaxUrl || "ajax_usu.php";
 		var tt = "";
