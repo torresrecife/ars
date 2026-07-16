@@ -24,7 +24,15 @@ window.arsClientAjaxUrl = "{{ url('ajax/clientes') }}";
 		<td class="order">{{ $client['datacad'] }}</td>
 		<td class="order">{{ e($client['area_nome']) }}</td>
 		<td class="order">{{ isset($statusLabels[$client['banco_status']]) ? $statusLabels[$client['banco_status']] : $client['banco_status'] }}</td>
-		<td class="order" style="width:130px">{!! fc_botoes_cliente($client['banco_id'], 'block', $client['banco_name']) !!}</td>
+		<td class="order" style="width:130px">
+			@include('partials.admin-action-buttons', [
+				'display' => 'block',
+				'editAction' => "fc_edit_cliente(" . (int) $client['banco_id'] . ",'U')",
+				'deleteAction' => "fc_del_cliente(" . (int) $client['banco_id'] . "," . json_encode((string) $client['banco_name']) . ")",
+				'editTitle' => 'Editar Cliente',
+				'deleteTitle' => 'Excluir Cliente',
+			])
+		</td>
 	</tr>
 @endforeach
 </table>

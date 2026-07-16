@@ -30,7 +30,15 @@ window.arsWeekAjaxUrl = "{{ url('ajax/semanas') }}";
 		<td class="order" style="background:#1E90FF;color:#ffffff">{!! ($arr['ini_5'] ? $arr['ini_5'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_5'] : '-') !!}</td>
 		<td class="order">{{ $arr['dataalt'] }}</td>
 		<td class="order">{{ $arr['datacad'] }}</td>
-		<td class="order" style="width:130px">{!! fc_botoes_sem($arr['semanas_id'], 'block', $arr['mes']) !!}</td>
+		<td class="order" style="width:130px">
+			@include('partials.admin-action-buttons', [
+				'display' => 'block',
+				'editAction' => "fc_edit_sem(" . (int) $arr['semanas_id'] . ",'U')",
+				'deleteAction' => "fc_del_sem(" . (int) $arr['semanas_id'] . "," . json_encode((string) $arr['mes']) . ")",
+				'editTitle' => 'Editar Semana',
+				'deleteTitle' => 'Excluir Semana',
+			])
+		</td>
 	</tr>
 @endforeach
 </table>
