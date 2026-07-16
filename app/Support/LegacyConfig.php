@@ -19,7 +19,6 @@ class LegacyConfig
 			'auth' => array(
 				'case_sensitive' => (bool) ($config['auth']['case_sensitive'] ?? false),
 				'validate_always' => (bool) ($config['auth']['validate_always'] ?? true),
-				'login_page' => (string) ($config['auth']['login_page'] ?? 'login.php'),
 				'user_table' => (string) ($config['auth']['user_table'] ?? 'usuarios'),
 			),
 			'db' => array(

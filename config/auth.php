@@ -40,6 +40,5 @@ return [
 
     'case_sensitive' => (bool) env('AUTH_CASE_SENSITIVE', false),
     'validate_always' => (bool) env('AUTH_VALIDATE_ALWAYS', true),
-    'login_page' => env('AUTH_LOGIN_PAGE', 'login.php'),
     'user_table' => env('AUTH_USER_TABLE', 'usuarios'),
 ];
