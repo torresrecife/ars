@@ -9,6 +9,14 @@ use Illuminate\Http\Request;
 
 class SelectController extends Controller
 {
+	/** @var mixed */
+	private $sqlsrvConnection;
+
+	public function __construct()
+	{
+		$this->sqlsrvConnection = app()->bound('legacy.sqlsrv') ? app('legacy.sqlsrv') : null;
+	}
+
 	public function webAjax(Request $request)
 	{
 		$options = array('<option value="">  </option>');
@@ -28,11 +36,11 @@ class SelectController extends Controller
 
 	private function appendSqlsrvOptions(array &$options, $flag)
 	{
-		if (!function_exists('ars_sqlsrv_connection') || !function_exists('sqlsrv_query')) {
+		if (!function_exists('sqlsrv_query')) {
 			return;
 		}
 
-		$conexao = ars_sqlsrv_connection();
+		$conexao = $this->sqlsrvConnection;
 		if (!$conexao) {
 			return;
 		}

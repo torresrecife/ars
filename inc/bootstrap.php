@@ -59,30 +59,3 @@ if (!defined('ARS_BOOTSTRAP_LOADED')) {
 	$conexao1 = null;
 	$GLOBALS['conexao1'] = $conexao1;
 }
-
-if (!function_exists('ars_sqlsrv_connection')) {
-	function ars_sqlsrv_connection() {
-		global $conexao1;
-
-		if ($conexao1 !== null) {
-			return $conexao1;
-		}
-
-		if (!function_exists('sqlsrv_connect')) {
-			return null;
-		}
-
-		$legacyApp = isset($GLOBALS['app']) ? $GLOBALS['app'] : null;
-		if (!$legacyApp || !method_exists($legacyApp, 'db')) {
-			return null;
-		}
-
-		try {
-			$conexao1 = $legacyApp->db()->sqlsrv();
-		} catch (\RuntimeException $exception) {
-			$conexao1 = null;
-		}
-
-		return $conexao1;
-	}
-}

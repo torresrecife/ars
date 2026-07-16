@@ -27,16 +27,16 @@ function enviar_neo(valor){
 <table align="center" width="70%" id="tbf1" border="1" cellspacing="5" cellpadding="5" bordercolor="#ccc" style="border-collapse:collapse;font-size:10pt;color:#333;font-family:arial;margin-top:20px">
 <tr bgcolor="#ebebeb">
 <th align="center" class="comFiltro"><b>N.</b></th>
-<th align="center" class="comFiltro"><b>CÃ³digo</b></th>
+<th align="center" class="comFiltro"><b>Código</b></th>
 <th align="center" class="comFiltro"><b>Autor</b></th>
-<th align="center" class="comFiltro"><b>RÃ©u</b></th>
+<th align="center" class="comFiltro"><b>Réu</b></th>
 <th align="center" class="comFiltro"><b>Processo</b></th>
 <th align="center" class="comFiltro"><b>Processo CNJ</b></th>
 <th align="center" class="comFiltro"><b>Conta</b></th>
 <th align="center" class="comFiltro"><b>Comarca</b></th>
 <th align="center" class="comFiltro"><b>UF</b></th>
-<th align="center" class="comFiltro"><b>CartÃ³rio</b></th>
-<th align="center" class="comFiltro"><b>Cod LanÃ§amento</b></th>
+<th align="center" class="comFiltro"><b>Cartório</b></th>
+<th align="center" class="comFiltro"><b>Cod Lançamento</b></th>
 <th align="center" class="comFiltro"><b>N. Contratante</b></th>
 <th align="center" class="comFiltro"><b>Andamento</b></th>
 <th align="center" class="comFiltro"><b>Valor</b></th>
@@ -69,7 +69,7 @@ function enviar_neo(valor){
 <td align="left">Banco: {{ e((string) $bankName) }}</td>
 <td align="left"><span class="titulo_r" id="id_sel">Total Selecionado: {{ $totalCount }}</span></td>
 <td align="right"><div id="id_crs">Valor Total: <b>{{ number_format($totalValue, 2, ',', '.') }}</b></div></td>
-<td align="right">LanÃ§amentos</td>
+<td align="right">Lançamentos</td>
 </tr>
 </table>
 <br>

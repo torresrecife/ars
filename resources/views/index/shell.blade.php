@@ -1,5 +1,4 @@
 @php
-	$defaultJsVersion = is_file(base_path('js/default.js')) ? filemtime(base_path('js/default.js')) : time();
 	$setoresJsVersion = is_file(base_path('js/modules/setores.js')) ? filemtime(base_path('js/modules/setores.js')) : time();
 	$usuariosJsVersion = is_file(base_path('js/modules/usuarios.js')) ? filemtime(base_path('js/modules/usuarios.js')) : time();
 	$semanasJsVersion = is_file(base_path('js/modules/semanas.js')) ? filemtime(base_path('js/modules/semanas.js')) : time();
@@ -7,6 +6,9 @@
 	$clientesJsVersion = is_file(base_path('js/modules/clientes.js')) ? filemtime(base_path('js/modules/clientes.js')) : time();
 	$andamentosJsVersion = is_file(base_path('js/modules/andamentos.js')) ? filemtime(base_path('js/modules/andamentos.js')) : time();
 	$metasJsVersion = is_file(base_path('js/modules/metas.js')) ? filemtime(base_path('js/modules/metas.js')) : time();
+	$helpersJsVersion = is_file(base_path('js/modules/helpers.js')) ? filemtime(base_path('js/modules/helpers.js')) : time();
+	$painelJsVersion = is_file(base_path('js/modules/painel.js')) ? filemtime(base_path('js/modules/painel.js')) : time();
+	$relatorioJsVersion = is_file(base_path('js/modules/relatorio.js')) ? filemtime(base_path('js/modules/relatorio.js')) : time();
 	$entryUrl = isset($entryUrl) ? (string) $entryUrl : url('index');
 @endphp
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -21,7 +23,7 @@
 	<script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.8.23.custom.min.js"></script>
 	<script type="text/javascript" src="js/jquery.meio.mask.js"></script>
-	<script type="text/javascript" src="js/default.js?v={{ $defaultJsVersion }}"></script>
+	<script type="text/javascript" src="js/modules/helpers.js?v={{ $helpersJsVersion }}"></script>
 	<script type="text/javascript" src="js/modules/setores.js?v={{ $setoresJsVersion }}"></script>
 	<script type="text/javascript" src="js/modules/usuarios.js?v={{ $usuariosJsVersion }}"></script>
 	<script type="text/javascript" src="js/modules/semanas.js?v={{ $semanasJsVersion }}"></script>
@@ -29,6 +31,8 @@
 	<script type="text/javascript" src="js/modules/clientes.js?v={{ $clientesJsVersion }}"></script>
 	<script type="text/javascript" src="js/modules/andamentos.js?v={{ $andamentosJsVersion }}"></script>
 	<script type="text/javascript" src="js/modules/metas.js?v={{ $metasJsVersion }}"></script>
+	<script type="text/javascript" src="js/modules/painel.js?v={{ $painelJsVersion }}"></script>
+	<script type="text/javascript" src="js/modules/relatorio.js?v={{ $relatorioJsVersion }}"></script>
 </head>
 <body id="minwidth-body">
 	<div class="head_bk"></div>

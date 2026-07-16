@@ -2,13 +2,7 @@
 <button type="button" onclick="AbrirRelatorio(1);" style="float:right; position:relative;margin-right:50px;border:1px dotted #999;">Mensal</button><br>
 <br><div style="font-family:arial;margin-left:40px;font-size:10pt;">{!! $titleArea !!}{!! isset($regionLabel) ? $regionLabel : '' !!} | M&ecirc;s / Ano: <b>{{ e($startDate) }}</b> </div><br>
 <script>
-	function send_form(valor1,valor2){
-		$("#codig_lnc").val(valor1);
-		$("#banco_lnc").val(valor2);
-		$("#form_ars").attr("action","{{ url('detalhes/faturamento') }}");
-		$("#form_ars").attr("target","_blank");
-		$("#form_ars").submit();
-	}
+	window.arsDetailFaturamentoUrl = "{{ url('detalhes/faturamento') }}";
 </script>
 <style>
 td.cls_dados{border-left-width:1px;border:1px dotted #999;height:30px;}
@@ -49,7 +43,7 @@ td.cls_body{border-left-width:1px;border:1px dotted #999;height:30px;text-align:
 		<td class="cls_indic" style="padding-left:5px">{{ e($row['name']) }}</td>
 		@foreach ($row['weekData'] as $weekData)
 			<td class="cls_vals cls_body" align="center" style="background:#F0F0F0">{{ number_format($weekData['meta'], 2, ',', '.') }}</td>
-			<td class="cls_vals cls_body cls_real" align="center" onclick="send_form('{{ implode(',', $weekData['codes']) }}','{{ e($row['name']) }}');">{{ number_format($weekData['real'], 2, ',', '.') }}</td>
+			<td class="cls_vals cls_body cls_real" align="center" onclick="relatorioAbrirDetalhe('{{ implode(',', $weekData['codes']) }}','{{ e($row['name']) }}');">{{ number_format($weekData['real'], 2, ',', '.') }}</td>
 			<td class="cls_body" align="center"><img src="http://***REMOVED***/img/{{ $weekData['icon'] }}" class="box" />{{ number_format($weekData['percent'], 0, ',', '') }} %</td>
 		@endforeach
 		<td class="">&nbsp;</td>

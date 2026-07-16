@@ -61,6 +61,10 @@ class AppServiceProvider extends ServiceProvider
             return require base_path('bootstrap/legacy_app.php');
         });
 
+        $this->app->singleton('legacy.sqlsrv', function ($app) {
+            return $this->legacySqlsrvConnection($app);
+        });
+
         $this->app->singleton(View::class, function () {
             return new View(base_path());
         });
@@ -113,7 +117,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ClientAdminService::class, function ($app) {
             return new ClientAdminService(
                 new ClientAdminRepository(
-                    function_exists('ars_sqlsrv_connection') ? ars_sqlsrv_connection() : null
+                    $app->make('legacy.sqlsrv')
                 )
             );
         });
