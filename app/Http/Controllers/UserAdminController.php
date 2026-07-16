@@ -59,19 +59,14 @@ class UserAdminController extends Controller
 	public function webAjax(Request $request)
 	{
 		$flag = (string) $request->input('flag', '');
-		$jsonMode = (string) $request->input('response_format', '') === 'json';
 		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, UserStoreRequest::class)) {
-			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422) : $this->legacyTextResponse('0');
+			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
 		}
 		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, UserUpdateRequest::class)) {
-			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422) : $this->legacyTextResponse('0');
+			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
 		}
 
-		if ($jsonMode) {
-			return $this->webAjaxJson($request, $flag);
-		}
-
-		return $this->legacyTextResponse($this->ajax($request->all()));
+		return $this->webAjaxJson($request, $flag);
 	}
 
 	private function webAjaxJson(Request $request, $flag)

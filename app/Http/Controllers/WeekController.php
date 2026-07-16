@@ -85,24 +85,15 @@ class WeekController extends Controller
 	{
 		$input = $request->all();
 		$flag = isset($input['flag']) ? (string) $input['flag'] : '';
-		$jsonMode = (string) $request->input('response_format', '') === 'json';
 
 		if (isset($input['flag']) && (string) $input['flag'] === 'I' && !$this->validateLegacyFormRequest($request, WeekStoreRequest::class)) {
-			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422) : $this->legacyTextResponse('0');
+			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
 		}
 		if (isset($input['flag']) && (string) $input['flag'] === 'U' && !$this->validateLegacyFormRequest($request, WeekUpdateRequest::class)) {
-			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422) : $this->legacyTextResponse('0');
+			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
 		}
 
-		if ($jsonMode) {
-			return $this->webAjaxJson($input, $flag);
-		}
-
-		if ($flag === 'E') {
-			return $this->legacyHtmlResponse($this->ajax($input));
-		}
-
-		return $this->legacyTextResponse($this->ajax($input));
+		return $this->webAjaxJson($input, $flag);
 	}
 
 	private function webAjaxJson(array $input, $flag)

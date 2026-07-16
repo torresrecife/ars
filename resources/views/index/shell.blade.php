@@ -1,5 +1,6 @@
 @php
 	$defaultJsVersion = is_file(base_path('js/default.js')) ? filemtime(base_path('js/default.js')) : time();
+	$setoresJsVersion = is_file(base_path('js/modules/setores.js')) ? filemtime(base_path('js/modules/setores.js')) : time();
 	$entryUrl = isset($entryUrl) ? (string) $entryUrl : url('index');
 @endphp
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -15,6 +16,7 @@
 	<script type="text/javascript" src="js/jquery-ui-1.8.23.custom.min.js"></script>
 	<script type="text/javascript" src="js/jquery.meio.mask.js"></script>
 	<script type="text/javascript" src="js/default.js?v={{ $defaultJsVersion }}"></script>
+	<script type="text/javascript" src="js/modules/setores.js?v={{ $setoresJsVersion }}"></script>
 </head>
 <body id="minwidth-body">
 <form name="form_ars" action="{{ e($entryUrl) }}" method="POST" id="form_ars">

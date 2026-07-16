@@ -56,14 +56,61 @@ class SectorAdminController extends Controller
 	public function webAjax(Request $request)
 	{
 		$input = $request->all();
-		$headers = array(
-			'Content-Type' => 'text/plain; charset=UTF-8',
-		);
+		$flag = isset($input['flag']) ? (string) $input['flag'] : '';
 
-		if (isset($input['flag']) && (string) $input['flag'] === 'E') {
-			$headers['Content-Type'] = 'text/html; charset=ISO-8859-1';
+		if ($flag === 'I') {
+			$request->validate(array(
+				'area_nome' => 'required|string|max:255',
+			));
+		}
+		if ($flag === 'U') {
+			$request->validate(array(
+				'area_id' => 'required|integer|min:1',
+				'area_nome' => 'required|string|max:255',
+			));
 		}
 
-		return response($this->ajax($input), 200, $headers);
+		if ($flag === 'E') {
+			$areaId = isset($input['area_id']) ? (int) $input['area_id'] : (isset($input['id_setor']) ? (int) $input['id_setor'] : 0);
+			$payload = $this->service->editPayload($areaId);
+			if ($payload === '') {
+				return $this->apiJsonResponse(false, 'not_found', 'Setor nao encontrado.', array(), 404);
+			}
+
+			$parts = explode('-|-', $payload);
+
+			return $this->apiJsonResponse(true, 'loaded', 'Setor carregado.', array(
+				'area_id' => isset($parts[0]) ? (int) $parts[0] : 0,
+				'area_nome' => isset($parts[1]) ? (string) $parts[1] : '',
+				'area_date' => isset($parts[2]) ? (string) $parts[2] : '',
+			));
+		}
+
+		if ($flag === 'I') {
+			return $this->mapWriteResultToJson($this->service->create($input), 'Setor criado com sucesso.');
+		}
+
+		if ($flag === 'U') {
+			return $this->mapWriteResultToJson($this->service->update($input), 'Setor atualizado com sucesso.');
+		}
+
+		if ($flag === 'D') {
+			$areaId = isset($input['area_id']) ? (int) $input['area_id'] : (isset($input['id_setor']) ? (int) $input['id_setor'] : 0);
+			return $this->mapWriteResultToJson($this->service->delete($areaId), 'Setor excluido com sucesso.');
+		}
+
+		return $this->apiJsonResponse(false, 'invalid_flag', 'Operacao invalida.', array(), 400);
+	}
+
+	private function mapWriteResultToJson($result, $successMessage)
+	{
+		if ((string) $result === '1') {
+			return $this->apiJsonResponse(true, 'success', $successMessage);
+		}
+		if ((string) $result === '2') {
+			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.', array(), 409);
+		}
+
+		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
 	}
 }

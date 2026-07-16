@@ -51,6 +51,83 @@ class HomeController extends Controller
 		return response($this->renderPage($input, $request->session()->all(), url('index')));
 	}
 
+	public function webCarteiras(Request $request)
+	{
+		return $this->webSectionPage($request, 'carteiras');
+	}
+
+	public function webPainel(Request $request)
+	{
+		return $this->webSectionPage($request, 'painel');
+	}
+
+	public function webProducao(Request $request)
+	{
+		return $this->webSectionPage($request, 'producao');
+	}
+
+	public function webRelatorio(Request $request)
+	{
+		$input = $request->all();
+		$section = (isset($input['geral']) && (string) $input['geral'] === '1')
+			? 'relatorio-semanal'
+			: 'relatorio-mensal';
+
+		return $this->webSectionPage($request, $section);
+	}
+
+	public function webAdmin(Request $request)
+	{
+		return $this->webSectionPage($request, 'admin');
+	}
+
+	public function webUsuarios(Request $request)
+	{
+		return $this->webSectionPage($request, 'usuarios');
+	}
+
+	public function webSetores(Request $request)
+	{
+		return $this->webSectionPage($request, 'setores');
+	}
+
+	public function webClientes(Request $request)
+	{
+		return $this->webSectionPage($request, 'clientes');
+	}
+
+	public function webAndamentos(Request $request)
+	{
+		return $this->webSectionPage($request, 'andamentos');
+	}
+
+	public function webMetas(Request $request)
+	{
+		$input = $request->all();
+		$hasMetaContext = isset($input['startBanco']) || isset($input['banco_id']) || isset($input['meta_mes']) || isset($input['meta_ano']);
+
+		return $this->webSectionPage($request, $hasMetaContext ? 'metas-admin' : 'metas-select');
+	}
+
+	public function webSemanas(Request $request)
+	{
+		return $this->webSectionPage($request, 'semanas');
+	}
+
+	public function webRegioes(Request $request)
+	{
+		return $this->webSectionPage($request, 'regioes');
+	}
+
+	public function health()
+	{
+		return response()->json(array(
+			'status' => 'ok',
+			'app' => config('app.name'),
+			'framework' => app()->version(),
+		));
+	}
+
 	private function renderPage(array $input, array $session, $entryUrl)
 	{
 		$pageData = $this->service->build($input, $session);
