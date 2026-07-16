@@ -144,10 +144,6 @@ class HomeController extends Controller
 
 	private function ensureLegacyEnvironment()
 	{
-		require_once base_path('inc/bootstrap.php');
-		require_once base_path('inc/functions.php');
-		require_once base_path('inc/somadias.php');
-
 		$user = $this->authService->currentUser();
 		if (empty($user)) {
 			throw new \RuntimeException('Sessao de usuario nao encontrada.');
