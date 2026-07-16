@@ -2,13 +2,7 @@
 <button type="button" onclick="AbrirRelatorio(0);" style="float:right;margin-right:50px;border:1px dotted #999;">Semanal</button>
 <br><div style="font-family:arial;margin-left:40px;font-size:10pt;">{!! $titleArea !!}{!! isset($regionLabel) ? $regionLabel : '' !!} | M&ecirc;s / Ano: <b>{{ e($startDate) }}</b> </div><br>
 <script>
-	function send_form(valor1,valor2){
-		$("#codig_lnc").val(valor1);
-		$("#banco_lnc").val(valor2);
-		$("#form_ars").attr("action","{{ url('detalhes/faturamento') }}");
-		$("#form_ars").attr("target","_blank");
-		$("#form_ars").submit();
-	}
+	window.arsDetailFaturamentoUrl = "{{ url('detalhes/faturamento') }}";
 </script>
 <style>
 td.cls_dados{border-left-width:1px;border-botton:1px dotted #999;border-left:1px dotted #999;border-right:1px dotted #999;height:30px;}
@@ -44,7 +38,7 @@ td.cls_body{border-left-width:1px;border:1px dotted #999;height:30px;}
 		<td class="cls_body" style="padding-left:5px">{{ e($row['name']) }}</td>
 		<td class="cls_body" align="center">R$ {{ number_format($row['metaMonth'], 2, ',', '.') }}</td>
 		<td class="cls_body" align="center">R$ {{ number_format($row['metaToday'], 2, ',', '.') }}</td>
-		<td class="cls_body cls_real" align="center" onclick="send_form('{{ implode(',', $row['codes']) }}','{{ e($row['name']) }}');">R$ {{ number_format($row['realized'], 2, ',', '.') }}</td>
+		<td class="cls_body cls_real" align="center" onclick="relatorioAbrirDetalhe('{{ implode(',', $row['codes']) }}','{{ e($row['name']) }}');">R$ {{ number_format($row['realized'], 2, ',', '.') }}</td>
 		<td class="cls_body" align="center">R$ {{ number_format($row['balance'], 2, ',', '.') }}</td>
 		<td class="cls_body" align="center" style="background:{{ $row['color'] }};color:#000">{{ number_format($row['percentToday'], 1, ',', '.') }}%</td>
 		<td class="cls_perc2" align="center" style="background:#fff;color:#000;border-botton:0;border-top:0;">&nbsp;</td>

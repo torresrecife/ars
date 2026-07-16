@@ -6,7 +6,7 @@ if (defined('ARS_LEGACY_FUNCTIONS_LOADED')) {
 define('ARS_LEGACY_FUNCTIONS_LOADED', true);
 
 function formata_data_extenso($strDate){
-	$arrMonthsOfYear = array(1 => 'janeiro','fevereiro','marÃ§o','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro');
+	$arrMonthsOfYear = array(1 => 'janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro');
 	$intDayOfMonth = date("d");
 	$intMonthOfYear = date("n");
 	$intYear = date("Y");
@@ -37,11 +37,11 @@ function limita_caracteres($texto, $limite, $quebra = true){
    if($tamanho <= $limite){ //Verifica se o tamanho do texto Ã© menor ou igual ao limite
       $novo_texto = $texto;
    }else{ // Se o tamanho do texto for maior que o limite
-      if($quebra == true){ // Verifica a opÃ§Ã£o de quebrar o texto
+      if($quebra == true){ // Verifica a opção de quebrar o texto
          $novo_texto = trim(substr($texto, 0, $limite))."...";
       }else{ // Se nÃ£o, corta $texto na Ãºltima palavra antes do limite
-         $ultimo_espaco = strrpos(substr($texto, 0, $limite), " "); // Localiza o Ãºtlimo espaÃ§o antes de $limite
-         $novo_texto = trim(substr($texto, 0, $ultimo_espaco)).""; // Corta o $texto atÃ© a posiÃ§Ã£o localizada
+         $ultimo_espaco = strrpos(substr($texto, 0, $limite), " "); // Localiza o Ãºtlimo espaço antes de $limite
+         $novo_texto = trim(substr($texto, 0, $ultimo_espaco)).""; // Corta o $texto atÃ© a posição localizada
       }
    }
    return $novo_texto; // Retorna o valor formatado
@@ -53,7 +53,7 @@ function diasemana($data) {
 	$dia =  substr("$data",8,9);
 
 	return $diasemana = date("w", mktime(0,0,0,$mes,$dia,$ano));
-	
+
 }
 function Vsemana($valor){
 	switch(diasemana($valor)){
@@ -91,20 +91,20 @@ function ultimodia($mes,$ano){
 	return $ultimo_dia = date("t", mktime(0,0,0,$mes,'01',$ano)); // MÃ¡gica, plim!
 }
 function P_semana($mes,$ano,$num,$par){
-	
+
 	$fim_0 = $ano."-".$mes."-01";
-	$fim_1 = date('Y-m-d', strtotime("+".Vsemana($fim_0)." days",strtotime($fim_0))); 
-	$fim_2 = date('Y-m-d', strtotime("+".Vsemana($fim_1)." days",strtotime($fim_1))); 
-	$fim_3 = date('Y-m-d', strtotime("+".Vsemana($fim_2)." days",strtotime($fim_2))); 
-	$fim_4 = date('Y-m-d', strtotime("+".Vsemana($fim_3)." days",strtotime($fim_3))); 
-	$fim_5 = date('Y-m-d', strtotime("+".Vsemana($fim_4)." days",strtotime($fim_4))); 
-	
+	$fim_1 = date('Y-m-d', strtotime("+".Vsemana($fim_0)." days",strtotime($fim_0)));
+	$fim_2 = date('Y-m-d', strtotime("+".Vsemana($fim_1)." days",strtotime($fim_1)));
+	$fim_3 = date('Y-m-d', strtotime("+".Vsemana($fim_2)." days",strtotime($fim_2)));
+	$fim_4 = date('Y-m-d', strtotime("+".Vsemana($fim_3)." days",strtotime($fim_3)));
+	$fim_5 = date('Y-m-d', strtotime("+".Vsemana($fim_4)." days",strtotime($fim_4)));
+
 	$ini_1 = date('Y-m-d', strtotime("+0 days",strtotime($fim_0)));
 	$ini_2 = date('Y-m-d', strtotime("+".(Vsemana($fim_0)+1)." days",strtotime($fim_0)));
 	$ini_3 = date('Y-m-d', strtotime("+".(Vsemana($fim_1)+1)." days",strtotime($fim_1)));
 	$ini_4 = date('Y-m-d', strtotime("+".(Vsemana($fim_2)+1)." days",strtotime($fim_2)));
 	$ini_5 = date('Y-m-d', strtotime("+".(Vsemana($fim_3)+1)." days",strtotime($fim_3)));
-	
+
 	for($z=1;$z<=5;$z++){
 		if($num==$z && $par=="ini"){
 			return ${"ini_".$z};
@@ -116,9 +116,9 @@ function P_semana($mes,$ano,$num,$par){
 			}
 		}
 	}
-	
+
 }
-$arrMonths = array(1=>'Janeiro',2=>'Fevereiro',3=>'MarÃ§o',4=>'Abril',5=>'Maio',6=>'Junho',7=>'Julho',8=>'Agosto',9=>'Setembro',10=>'Outubro',11=>'Novembro',12=>'Dezembro');
+$arrMonths = array(1=>'Janeiro',2=>'Fevereiro',3=>'Março',4=>'Abril',5=>'Maio',6=>'Junho',7=>'Julho',8=>'Agosto',9=>'Setembro',10=>'Outubro',11=>'Novembro',12=>'Dezembro');
 
 
 ?>

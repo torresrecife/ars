@@ -23,11 +23,11 @@
 	$weekColumnWidth = (count($weeks) === 5 ? '4%' : '5%');
 	$splitFinancialTable = !empty($productionRows) && !empty($financialRows);
 @endphp
-<br><div style="font-family:arial;margin-left:40px;font-size:10pt;">Cliente: <b>{{ $bank['banco_cod'] }}</b>{!! $showRegionTabs ? '' : $regionLabel !!} | M&ecirc;s / Ano: <b>{{ $startDate }}</b> <a href="#" onclick="send_nav('{{ $bankId }}','p'); return false;">&lt;</a> <a href="#" onclick="send_nav('{{ $bankId }}','n'); return false;">&gt;</a></div>
+<br><div style="font-family:arial;margin-left:40px;font-size:10pt;">Cliente: <b>{{ $bank['banco_cod'] }}</b>{!! $showRegionTabs ? '' : $regionLabel !!} | M&ecirc;s / Ano: <b>{{ $startDate }}</b> <a href="#" onclick="painelNavegarMes('{{ $bankId }}','p'); return false;">&lt;</a> <a href="#" onclick="painelNavegarMes('{{ $bankId }}','n'); return false;">&gt;</a></div>
 @if ($showRegionTabs)
 <div style="font-family:arial;margin:8px 0 12px 40px;font-size:10pt;">
 	@foreach ($regionTabs as $tab)
-		<a href="#" onclick="send_region('{{ $bankId }}','{{ (int) $tab['id'] }}'); return false;" style="display:inline-block;padding:4px 10px;margin-right:6px;border:1px solid #bdbdbd;background:{{ !empty($tab['active']) ? '#1C86EE' : '#f1f1f1' }};color:{{ !empty($tab['active']) ? '#ffffff' : '#333333' }};text-decoration:none;">{!! $tab['label'] !!}</a>
+		<a href="#" onclick="painelNavegarRegiao('{{ $bankId }}','{{ (int) $tab['id'] }}'); return false;" style="display:inline-block;padding:4px 10px;margin-right:6px;border:1px solid #bdbdbd;background:{{ !empty($tab['active']) ? '#1C86EE' : '#f1f1f1' }};color:{{ !empty($tab['active']) ? '#ffffff' : '#333333' }};text-decoration:none;">{!! $tab['label'] !!}</a>
 	@endforeach
 </div>
 @else
@@ -39,61 +39,12 @@
 <input type="hidden" name="area_id" id="panel_area_id" value="{{ e($areaId) }}"/>
 <input type="hidden" name="bank_id" id="panel_bank_id" value="{{ $bankId }}"/>
 <script>
-	function send_form(andaId,bankId,bankName,month,year,weekKey,detailType){
-		$('#detail_bank_id').val(bankId);
-		$('#detail_anda_id').val(andaId);
-		$('#detail_month').val(month);
-		$('#detail_year').val(year);
-		$('#detail_week').val(weekKey);
-		$('#detail_region_id').val($('#regiao_id').val() || '{{ $regionId }}');
-		$('#banco_and').val(bankName);
-		$('#banco_lnc').val(bankName);
-		if(detailType=='and'){
-			$('#form_ars').attr('action','{{ url('detalhes/andamentos') }}');
-		}else if(detailType=='fat'){
-			$('#form_ars').attr('action','{{ url('detalhes/faturamento') }}');
-		}
-		$('#form_ars').attr('target','_blank');
-		$('#form_ars').submit();
-	}
-	function send_nav(bankId,valor3){
-		var m_mes = $('#mes').val();
-		add_month(m_mes,valor3);
-		NavegarModulo('painel', {
-			bank_id: bankId,
-			area_id: $('#panel_area_id').val() || '',
-			regiao_id: $('#regiao_id').val() || '{{ $regionId }}',
-			mes: $('#mes').val(),
-			ano: $('#ano').val()
-		});
-	}
-	function send_region(bankId,regiaoId){
-		NavegarModulo('painel', {
-			bank_id: bankId,
-			area_id: $('#panel_area_id').val() || '',
-			regiao_id: regiaoId,
-			mes: $('#mes').val(),
-			ano: $('#ano').val()
-		});
-	}
-	function add_month(meses,valor){
-		var n_mes = 0;
-		var n_ano = parseFloat($('#ano').val());
-		if(meses==12 && valor=='n'){
-			n_mes=1;
-			$('#ano').val(n_ano+1);
-		}else if(meses==01 && valor=='p'){
-			n_mes=12;
-			$('#ano').val(n_ano-1);
-		}else{
-			if(valor=='n'){
-				n_mes = parseFloat(meses) + 1;
-			}else if(valor=='p'){
-				n_mes = parseFloat(meses) - 1;
-			}
-		}
-		$('#mes').val(n_mes);
-	}
+	window.arsPanelConfig = {
+		regionId: {{ (int) $regionId }}
+	};
+	window.arsDetailAndamentoUrl = "{{ url('detalhes/andamentos') }}";
+	window.arsDetailFaturamentoUrl = "{{ url('detalhes/faturamento') }}";
+	window.arsPanelContentHeight = {{ (int) $contentHeight }};
 </script>
 <style>
 td{border-left-width:1px;border:1px dotted #999;}
@@ -139,11 +90,11 @@ td{border-left-width:1px;border:1px dotted #999;}
 		<td class="cls_indic">{{ $row['name'] }}</td>
 		@foreach ($row['weekData'] as $weekIndex => $weekData)
 			<td align="center" class="cls_vals" style="background:#F0F0F0">{{ number_format($weekData['meta'], 0, ',', '.') }}</td>
-			<td align="center" class="cls_vals cls_real" onclick="send_form('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','{{ (int) $weekIndex }}','and');">{{ $weekData['real'] }}</td>
+			<td align="center" class="cls_vals cls_real" onclick="painelAbrirDetalhe('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','{{ (int) $weekIndex }}','and');">{{ $weekData['real'] }}</td>
 			<td align="center" class="cls_vals"><img src="http://10.81.11.202/img/{{ $weekData['icon'] }}" class="box" />{{ number_format($weekData['percent'], 0, ',', '') }}%</td>
 		@endforeach
 		<td align="center" class="cls_vals cls_real cls_bk" style="background:#F2F5A9"><b>{{ number_format($row['totalMeta'], 0, ',', '.') }}</b></td>
-		<td align="center" class="cls_vals cls_real cls_bk" onclick="send_form('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','total','and');"><b>{{ $row['totalReal'] }}</b></td>
+		<td align="center" class="cls_vals cls_real cls_bk" onclick="painelAbrirDetalhe('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','total','and');"><b>{{ $row['totalReal'] }}</b></td>
 		<td align="center" class="cls_vals cls_bk"><img src="http://10.81.11.202/img/{{ $row['totalIcon'] }}" class="box" />{{ number_format($row['totalPercent'], 0, ',', '') }}%</td>
 	</tr>
 	@endforeach
@@ -162,11 +113,11 @@ td{border-left-width:1px;border:1px dotted #999;}
 		<td class="cls_indic">{{ $row['name'] }}</td>
 		@foreach ($row['weekData'] as $weekIndex => $weekData)
 			<td align="center" class="cls_vals" style="background:#F0F0F0">{{ number_format($weekData['meta'], 2, ',', '.') }}</td>
-			<td align="center" class="cls_vals cls_real" onclick="send_form('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','{{ (int) $weekIndex }}','fat');">{{ number_format($weekData['real'], 2, ',', '.') }}</td>
+			<td align="center" class="cls_vals cls_real" onclick="painelAbrirDetalhe('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','{{ (int) $weekIndex }}','fat');">{{ number_format($weekData['real'], 2, ',', '.') }}</td>
 			<td align="center" class="cls_vals"><img src="http://10.81.11.202/img/{{ $weekData['icon'] }}" class="box" />{{ number_format($weekData['percent'], 0, ',', '') }}%</td>
 		@endforeach
 		<td align="center" class="cls_vals cls_real cls_bk" style="background:#F2F5A9"><b>{{ number_format($row['totalMeta'], 2, ',', '.') }}</b></td>
-		<td align="center" class="cls_vals cls_real cls_bk" onclick="send_form('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','total','fat');"><b>{{ number_format($row['totalReal'], 2, ',', '.') }}</b></td>
+		<td align="center" class="cls_vals cls_real cls_bk" onclick="painelAbrirDetalhe('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','total','fat');"><b>{{ number_format($row['totalReal'], 2, ',', '.') }}</b></td>
 		<td align="center" class="cls_vals cls_bk"><img src="http://10.81.11.202/img/{{ $row['totalIcon'] }}" class="box" />{{ number_format($row['totalPercent'], 0, ',', '') }}%</td>
 	</tr>
 	@endforeach
@@ -190,11 +141,11 @@ td{border-left-width:1px;border:1px dotted #999;}
 		<td class="cls_vals2 cls_red"><b>PREJUIZOS</b></td>
 		@foreach ($row['weekData'] as $weekIndex => $weekData)
 			<td align="center" class="cls_vals2 cls_red2" style="background:#f5d5d5"><b>0,00</b></td>
-			<td align="center" class="cls_vals2 cls_real cls_red" onclick="send_form('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','{{ (int) $weekIndex }}','fat');"><b>{{ number_format($weekData['real'], 2, ',', '.') }}</b></td>
+			<td align="center" class="cls_vals2 cls_real cls_red" onclick="painelAbrirDetalhe('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','{{ (int) $weekIndex }}','fat');"><b>{{ number_format($weekData['real'], 2, ',', '.') }}</b></td>
 			<td align="center" class="cls_vals2 cls_red"><b>-</b></td>
 		@endforeach
 		<td align="center" class="cls_vals2 cls_red" style="background:#ffdede"><b>0,00</b></td>
-		<td align="center" class="cls_vals2 cls_real cls_red" onclick="send_form('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','total','fat');"><b>{{ number_format($row['totalReal'], 2, ',', '.') }}</b></td>
+		<td align="center" class="cls_vals2 cls_real cls_red" onclick="painelAbrirDetalhe('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','total','fat');"><b>{{ number_format($row['totalReal'], 2, ',', '.') }}</b></td>
 		<td align="center" class="cls_vals2 cls_red"><b>-</b></td>
 	</tr>
 	@endforeach
@@ -208,16 +159,4 @@ td{border-left-width:1px;border:1px dotted #999;}
 	</tr>
 </table>
 <br><br><br><br>
-<script>
-	var alturaConteudo = {{ (int) $contentHeight }};
-	var alturaTela = $(window).height() - $("#header-box").outerHeight(true);
-	var alturaMinima = Math.max(290, alturaTela);
-
-	$("#content-box").css({
-		height: "auto",
-		"min-height": Math.max(alturaMinima, alturaConteudo)
-	});
-	$("#element-box").css("height", alturaTela - 45);
-	$("#content-box .adminform").css("height", "auto");
-</script>
 @endif

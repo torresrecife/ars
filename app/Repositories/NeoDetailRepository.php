@@ -32,7 +32,7 @@ class NeoDetailRepository
 				(
 					select top 1 pp.Pessoa
 					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa = 'RÃ©u' and pp.CodigoProcesso = p.CodigoProcesso
+					where pp.TipoPessoa = 'Réu' and pp.CodigoProcesso = p.CodigoProcesso
 				) as Adverso,
 				(
 					select top 1 pp.Pessoa
@@ -78,7 +78,7 @@ class NeoDetailRepository
 				(
 					select top 1 pp.Pessoa
 					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa = 'RÃ©u' and pp.CodigoProcesso = p.CodigoProcesso
+					where pp.TipoPessoa = 'Réu' and pp.CodigoProcesso = p.CodigoProcesso
 				) as Adverso,
 				dist.DataAjuizamento as Ajuizamento
 			FROM v_Processo AS p WITH (NOLOCK)
@@ -89,12 +89,12 @@ class NeoDetailRepository
 					SELECT ap.DataHoraEvento
 					FROM v_Andamento_Processo as ap WITH (NOLOCK)
 					WHERE ap.CodigoProcesso = p.CodigoProcesso
-					AND ap.TipoAndamentoProcesso = 'AÃ§Ã£o distribuÃ­da'
+					AND ap.TipoAndamentoProcesso = 'Ação distribuída'
 					UNION ALL
 					SELECT ah.DataHoraEvento
 					FROM v_Andamento_Processo_Historico as ah WITH (NOLOCK)
 					WHERE ah.CodigoProcesso = p.CodigoProcesso
-					AND ah.TipoAndamentoProcesso = 'AÃ§Ã£o distribuÃ­da'
+					AND ah.TipoAndamentoProcesso = 'Ação distribuída'
 				) x
 				ORDER BY x.DataHoraEvento DESC
 			) dist
@@ -128,7 +128,7 @@ class NeoDetailRepository
 				(
 					select top 1 pp.Pessoa
 					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa = 'RÃ©u' and pp.CodigoProcesso = p.CodigoProcesso
+					where pp.TipoPessoa = 'Réu' and pp.CodigoProcesso = p.CodigoProcesso
 				) as Adverso,
 				(
 					select top 1 pp.Pessoa
@@ -178,7 +178,7 @@ class NeoDetailRepository
 				(
 					select top 1 pp.Pessoa
 					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa = 'RÃ©u' and pp.CodigoProcesso = p.CodigoProcesso
+					where pp.TipoPessoa = 'Réu' and pp.CodigoProcesso = p.CodigoProcesso
 				) as Adverso,
 				dist.DataAjuizamento as Ajuizamento
 			FROM v_Processo AS p WITH (NOLOCK)
@@ -189,12 +189,12 @@ class NeoDetailRepository
 					SELECT ap.DataHoraEvento
 					FROM v_Andamento_Processo as ap WITH (NOLOCK)
 					WHERE ap.CodigoProcesso = p.CodigoProcesso
-					AND ap.TipoAndamentoProcesso = 'AÃ§Ã£o distribuÃ­da'
+					AND ap.TipoAndamentoProcesso = 'Ação distribuída'
 					UNION ALL
 					SELECT ah.DataHoraEvento
 					FROM v_Andamento_Processo_Historico as ah WITH (NOLOCK)
 					WHERE ah.CodigoProcesso = p.CodigoProcesso
-					AND ah.TipoAndamentoProcesso = 'AÃ§Ã£o distribuÃ­da'
+					AND ah.TipoAndamentoProcesso = 'Ação distribuída'
 				) x
 				ORDER BY x.DataHoraEvento DESC
 			) dist
