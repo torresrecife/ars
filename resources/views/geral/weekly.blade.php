@@ -51,8 +51,6 @@ td.cls_body{border-left-width:1px;border:1px dotted #999;height:30px;}
 		<td class="cls_body" align="center" style="background:{{ $row['color'] }};color:#000"><b>{{ number_format($row['percentMonth'], 1, ',', '.') }}%</b></td>
 	</tr>
 	@endforeach
-	<input type="hidden" name="codig_lnc" id="codig_lnc" />
-	<input type="hidden" name="banco_lnc" id="banco_lnc" />
 	<input type="hidden" name="startSetor" value="{{ e($startSector) }}"/>
 	<input type="hidden" name="startDate" value="{{ e($startDate) }}" />
 	<input type="hidden" name="mes" value="{{ (int) $month }}" />

@@ -19,8 +19,6 @@
 	<script type="text/javascript" src="js/modules/setores.js?v={{ $setoresJsVersion }}"></script>
 </head>
 <body id="minwidth-body">
-<form name="form_ars" action="{{ e($entryUrl) }}" method="POST" id="form_ars">
-	@csrf
 	<div class="head_bk"></div>
 	<div class="head_fixed">
 		<div id="border-top" class="h_blue">
@@ -58,8 +56,20 @@
 			</div>
 		</div>
 	</div>
+<form name="form_ars" action="{{ e($entryUrl) }}" method="POST" id="form_ars" style="display:none">
+	@csrf
 	<input type="hidden" name="area_id" id="area_id" value="{{ e((string) ($pageData['state']['area_id'] ?? '')) }}" />
 	<input type="hidden" name="bank_id" id="bank_id" value="{{ e((string) ($pageData['state']['bank_id'] ?? '')) }}" />
+	<input type="hidden" name="codig_and" id="codig_and" value="" />
+	<input type="hidden" name="banco_and" id="banco_and" value="" />
+	<input type="hidden" name="codig_lnc" id="codig_lnc" value="" />
+	<input type="hidden" name="banco_lnc" id="banco_lnc" value="" />
+	<input type="hidden" name="detail_bank_id" id="detail_bank_id" value="" />
+	<input type="hidden" name="detail_anda_id" id="detail_anda_id" value="" />
+	<input type="hidden" name="detail_month" id="detail_month" value="" />
+	<input type="hidden" name="detail_year" id="detail_year" value="" />
+	<input type="hidden" name="detail_week" id="detail_week" value="" />
+	<input type="hidden" name="detail_region_id" id="detail_region_id" value="" />
 </form>
 @php
 	if (is_file($exportPath)) {

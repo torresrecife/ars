@@ -71,8 +71,6 @@ td.cls_body{border-left-width:1px;border:1px dotted #999;height:30px;text-align:
 		<td align="center" class="cls_vals2 cls_bk"><b>{{ number_format($totals['real'], 2, ',', '.') }}</b></td>
 		<td align="center" class="cls_vals2 cls_bk"><img src="http://10.81.11.202/img/{{ $totals['icon'] }}" class="box" /><b>{{ number_format($totals['percent'], 0, ',', '') }} %</b></td>
 	</tr>
-	<input type="hidden" name="codig_lnc" id="codig_lnc" />
-	<input type="hidden" name="banco_lnc" id="banco_lnc" />
 	<input type="hidden" name="startSetor" value="{{ e($startSector) }}"/>
 	<input type="hidden" name="startDate" value="{{ e($startDate) }}" />
 	<input type="hidden" name="mes" value="{{ (int) $month }}" />
