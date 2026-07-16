@@ -150,8 +150,6 @@ td{border-left-width:1px;border:1px dotted #999;}
 @if ($splitFinancialTable)
 </table>
 @endif
-<input type="hidden" name="codig_and" id="codig_and" />
-<input type="hidden" name="banco_and" id="banco_and" />
 @if ($splitFinancialTable)
 <br><br>
 <table align="center" height="20%" width="100%" border="0" cellspacing="1" cellpadding="1" id="tb_fim" style="font-family:Tahoma;font-size:8pt; border-collapse: collapse;">
@@ -201,14 +199,6 @@ td{border-left-width:1px;border:1px dotted #999;}
 	</tr>
 	@endforeach
 </table>
-<input type="hidden" name="codig_lnc" id="codig_lnc" />
-<input type="hidden" name="banco_lnc" id="banco_lnc" />
-<input type="hidden" name="detail_bank_id" id="detail_bank_id" />
-<input type="hidden" name="detail_anda_id" id="detail_anda_id" />
-<input type="hidden" name="detail_month" id="detail_month" />
-<input type="hidden" name="detail_year" id="detail_year" />
-<input type="hidden" name="detail_week" id="detail_week" />
-<input type="hidden" name="detail_region_id" id="detail_region_id" value="{{ $regionId }}" />
 <br>
 <table align="center" height="6%" width="25%" border="1" cellspacing="3" cellpadding="3" id="tb_tot" style="font-family:arial;font-size:8pt; border-collapse: collapse;">
 	<tr>
