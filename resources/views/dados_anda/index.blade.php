@@ -27,7 +27,7 @@ function enviar_neo(valor){
 <table align="center" width="80%" id="tbf1" border="1" cellspacing="5" cellpadding="5" bordercolor="#ccc" style="border-collapse:collapse;font-size:10pt;color:#333;font-family:arial;margin-top:20px">
 <tr bgcolor="#ebebeb">
 <th align="center" class="comFiltro"><b>N.</b></th>
-<th align="center" class="comFiltro"><b>CÃ³digo</b></th>
+<th align="center" class="comFiltro"><b>Código</b></th>
 <th align="center" class="comFiltro"><b>Adverso</b></th>
 <th align="center" class="comFiltro"><b>Ajuizamento</b></th>
 <th align="center" class="comFiltro"><b>Processo</b></th>
