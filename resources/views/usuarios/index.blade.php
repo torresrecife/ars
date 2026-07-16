@@ -29,7 +29,15 @@ window.arsUserAjaxUrl = "{{ url('ajax/usuarios') }}";
 		<td class="order">{{ strftime('%d/%m/%Y %H:%M:%S', strtotime($user['data_cad'])) }}</td>
 		<td class="order">{{ e($user['email_usu']) }}</td>
 		<td class="order">{{ e($user['status_usu']) }}</td>
-		<td class="order" style="width:130px">{!! fc_botoes_usu($user['id_usu'], 'block', $user['login_usu']) !!}</td>
+		<td class="order" style="width:130px">
+			@include('partials.***REMOVED***-action-buttons', [
+				'display' => 'block',
+				'editAction' => "fc_edit_usu(" . (int) $user['id_usu'] . ",'U')",
+				'deleteAction' => "fc_del_usu(" . (int) $user['id_usu'] . "," . json_encode((string) $user['login_usu']) . ")",
+				'editTitle' => 'Editar Usuario',
+				'deleteTitle' => 'Excluir Usuario',
+			])
+		</td>
 	</tr>
 @endforeach
 </table>

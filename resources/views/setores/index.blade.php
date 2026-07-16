@@ -15,7 +15,15 @@
 							<td class="order">{{ (int) $area['area_id'] }}</td>
 							<td class="order">{{ e($area['area_nome']) }}</td>
 							<td class="order">{{ e($area['area_date']) }}</td>
-							<td class="order" style="width:130px">{!! fc_botoes_setor($area['area_id'], 'block', $area['area_nome']) !!}</td>
+							<td class="order" style="width:130px">
+								@include('partials.***REMOVED***-action-buttons', [
+									'display' => 'block',
+									'editAction' => "fc_edit_setor(" . (int) $area['area_id'] . ",'U')",
+									'deleteAction' => "fc_del_setor(" . (int) $area['area_id'] . "," . json_encode((string) $area['area_nome']) . ")",
+									'editTitle' => 'Editar Setor',
+									'deleteTitle' => 'Excluir Setor',
+								])
+							</td>
 						</tr>
 					@endforeach
 				</table>

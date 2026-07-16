@@ -22,7 +22,15 @@ window.arsRegionAjaxUrl = "{{ url('ajax/regioes') }}";
 		<td class="order">{{ e($region['ufs']) }}</td>
 		<td class="order">{{ (int) $region['total_usuarios'] }}</td>
 		<td class="order">{{ ((string) $region['regiao_status'] === 'Y') ? 'Ativa' : 'Inativa' }}</td>
-		<td class="order" style="width:130px">{!! fc_botoes_regiao($region['regiao_id'], 'block', $region['regiao_nome']) !!}</td>
+		<td class="order" style="width:130px">
+			@include('partials.***REMOVED***-action-buttons', [
+				'display' => 'block',
+				'editAction' => "fc_edit_regiao(" . (int) $region['regiao_id'] . ",'U')",
+				'deleteAction' => "fc_del_regiao(" . (int) $region['regiao_id'] . "," . json_encode((string) $region['regiao_nome']) . ")",
+				'editTitle' => 'Editar Regiao',
+				'deleteTitle' => 'Excluir Regiao',
+			])
+		</td>
 	</tr>
 @endforeach
 </table>

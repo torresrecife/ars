@@ -16,6 +16,17 @@
 </head>
 <body>
 <script>
+$(function(){
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+    if(csrfToken){
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            }
+        });
+    }
+});
+
 function new_pass(){
     $("#dialog-new-pass").dialog({
         title: "Nova senha",
@@ -35,9 +46,14 @@ function new_pass(){
                 }else{
                     $.ajax({
                         type: "POST",
+                        dataType: "json",
                         url : "{{ url('ajax/newpass') }}",
                         data: "flag=U&id_usu={{ $userId }}&senha_usu1=" + $("#senha_usu1").val(),
-                        success: function(){
+                        success: function(response){
+                            if(!response || response.ok!==true){
+                                alert((response && response.message) ? response.message : "Nao foi possivel alterar a senha.");
+                                return;
+                            }
                             $("<div></div>").html("<br><table align='center'><tr><td>Senha alterada com sucesso!</td></tr></table>").dialog({
                                 modal: true,
                                 autoOpen: true,
@@ -49,6 +65,13 @@ function new_pass(){
                                 },
                                 title: "Alerta"
                             });
+                        },
+                        error: function(xhr){
+                            if(xhr && xhr.responseJSON && xhr.responseJSON.message){
+                                alert(xhr.responseJSON.message);
+                                return;
+                            }
+                            alert("Nao foi possivel alterar a senha.");
                         }
                     });
                 }

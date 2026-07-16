@@ -25,7 +25,15 @@ window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 		<td class="order" style="color:#ffffff;background:{{ ((int) $andamento['especie'] === 1 ? '#1C86EE' : '#FFB90F') }}">{{ e($metaTipos[(int) $andamento['especie']]) }}</td>
 		<td class="order">{{ e($andamento['painel']) }}</td>
 		<td class="order">{{ e($andamento['titulo']) }}</td>
-		<td class="order" style="width:130px">{!! fc_botoes_andamento($andamento['anda_id'], 'block', $andamento['nome']) !!}</td>
+		<td class="order" style="width:130px">
+			@include('partials.***REMOVED***-action-buttons', [
+				'display' => 'block',
+				'editAction' => "fc_edit_andamento(" . (int) $andamento['anda_id'] . ",'U')",
+				'deleteAction' => "fc_del_andamento(" . (int) $andamento['anda_id'] . "," . json_encode((string) $andamento['nome']) . ")",
+				'editTitle' => 'Editar Andamento',
+				'deleteTitle' => 'Excluir Andamento',
+			])
+		</td>
 	</tr>
 @endforeach
 </table>

@@ -71,21 +71,25 @@ class AuthController extends Controller
     {
         $currentUser = $this->authService->currentUser();
         if (empty($currentUser)) {
-            return $this->legacyTextResponse('2');
+            return $this->apiJsonResponse(false, 'unauthenticated', 'Sessao expirada.', array(), 401);
         }
 
         $idUsuario = (int) $request->input('id_usu', 0);
         $novaSenha = (string) $request->input('senha_usu1', '');
 
         if ($idUsuario <= 0 || $novaSenha === '') {
-            return $this->legacyTextResponse('2');
+            return $this->apiJsonResponse(false, 'invalid_payload', 'Dados invalidos.', array(), 422);
         }
 
         if ((int) $currentUser['id_usu'] !== $idUsuario) {
-            return $this->legacyTextResponse('2');
+            return $this->apiJsonResponse(false, 'forbidden', 'Usuario invalido para alteracao da senha.', array(), 403);
         }
 
-        return $this->legacyTextResponse($this->authService->updatePasswordAndAccess($idUsuario, $novaSenha) ? '1' : '2');
+        if (!$this->authService->updatePasswordAndAccess($idUsuario, $novaSenha)) {
+            return $this->apiJsonResponse(false, 'update_failed', 'Nao foi possivel alterar a senha.', array(), 409);
+        }
+
+        return $this->apiJsonResponse(true, 'updated', 'Senha alterada com sucesso.');
     }
     private function legacyBaseUrl($legacyUrl)
     {

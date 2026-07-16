@@ -26,7 +26,15 @@ window.arsMetaAjaxUrl = "{{ url('ajax/metas') }}";
 		<td class="order">{{ e((string) $arr['nome']) }}</td>
 		<td class="order" style="color:#ffffff;background:{{ ((int) $arr['especie'] === 1 ? '#1C86EE' : '#FFB90F') }}">{{ e((string) $metaTipos[$arr['especie']]) }}</td>
 		<td class="order">{{ $metaValor }}</td>
-		<td class="order" style="width:130px">{!! fc_botoes_metas($arr['meta_id'], 'block', $arr['nome']) !!}</td>
+		<td class="order" style="width:130px">
+			@include('partials.***REMOVED***-action-buttons', [
+				'display' => 'block',
+				'editAction' => "fc_edit_metas(" . (int) $arr['meta_id'] . ",'U')",
+				'deleteAction' => "fc_del_metas(" . (int) $arr['meta_id'] . "," . json_encode((string) $arr['nome']) . ")",
+				'editTitle' => 'Editar Meta',
+				'deleteTitle' => 'Excluir Meta',
+			])
+		</td>
 	</tr>
 @endforeach
 </table>
