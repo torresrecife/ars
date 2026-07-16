@@ -38,18 +38,6 @@ window.arsMetaAjaxUrl = "{{ url('ajax/metas') }}";
 	</tr>
 @endforeach
 </table>
-<script>
-	function my_especie(valor){
-		var espe = $("#meta_name_" + valor + " option:selected").attr("especie");
-		if(espe==2){
-			$("#meta_valor_"+valor).setMask("decimal");
-			$(".sem_"+valor).setMask("decimal");
-		}else{
-			$("#meta_valor_"+valor).setMask("numbers");
-			$(".sem_"+valor).setMask("numbers");
-		}
-	}
-</script>
 <br><div style="font-family:arial;margin-left:40px;font-size:10pt;">Total da meta financeira: <b>R$ {{ number_format((float) $totalFinanceiro, 2, ',', '.') }}</b></div><br>
 <div id="dialog-edit-metas" title="Editar Meta" style="display:none; text-align:left;">
 	<p class="validateMetas">Edite a Meta Abaixo</p>
