@@ -168,7 +168,7 @@ var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
 		var tt = "";
 		var tu = "";
 		if(valor2=="I"){
-			tt="Novo UsuÃ¡rio";
+			tt="Novo usuário";
 			tu="criado";
 			$(".validateTips").text("Crie Um " + tt);
 			usuarioClientesReset();
@@ -181,9 +181,9 @@ var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
 			usuarioRegioesAtualizarModo();
 			sel_tipo(1, $("#setor_usu").val());
 		}else if(valor2=="U"){
-			tt="Editar UsuÃ¡rio";
+			tt="Editar usuário";
 			tu="editado";
-			$(".validateTips").text("Edite o UsuÃ¡rio Abaixo");
+			$(".validateTips").text("Edite o usuário Abaixo");
 		}
 
 		var abrirDialogUsuario = function(){
@@ -210,7 +210,7 @@ var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
 							return false;
 						}
 						if($('.cls_usuario_cliente_input').length==0){
-							alert("Selecione ao menos um cliente para o usuÃ¡rio.");
+							alert("Selecione ao menos um cliente para o usuário.");
 							$("#banco_usu_pool").focus();
 							return false;
 						}
@@ -243,20 +243,20 @@ var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
 							   success: function(response){
 									if(response && response.ok===true){
 										$( "#dialog-edit-usu" ).dialog( "close" );
-										msgbox(valor2=="I"?"<br><table align='center'><tr><td>UsuÃ¡rio " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
+										msgbox(valor2=="I"?"<br><table align='center'><tr><td>usuário " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
 											Fechar: function(){
 												$( this ).dialog( "close" );
 												AbrirModulo('usuarios');
 											}
 										});
 									}else if(response && response.code=="duplicate"){
-										alert("UsuÃ¡rio jÃ¡ cadastrado!");
+										alert("usuário jÃ¡ cadastrado!");
 									}else{
-										alert((response && response.message) ? response.message : "Erro ao salvar o usuÃ¡rio.");
+										alert((response && response.message) ? response.message : "Erro ao salvar o usuário.");
 									}
 								},
 								error: function(xhr){
-									alert(LerMensagemAjaxErro(xhr, "Erro ao salvar o usuÃ¡rio."));
+									alert(LerMensagemAjaxErro(xhr, "Erro ao salvar o usuário."));
 								}
 							});
 						}
@@ -291,7 +291,7 @@ var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
 			data: { flag: "E", id_usu: valor1, response_format: "json" },
 			success: function(response){
 				if(!response || response.ok!==true || !response.data){
-					alert((response && response.message) ? response.message : "Erro ao carregar os dados do usuÃ¡rio.");
+					alert((response && response.message) ? response.message : "Erro ao carregar os dados do usuário.");
 					return;
 				}
 				var ret = response.data || {};
@@ -319,7 +319,7 @@ var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
 				abrirDialogUsuario();
 			},
 			error: function(xhr){
-				alert(LerMensagemAjaxErro(xhr, "Erro ao carregar os dados do usuÃ¡rio."));
+				alert(LerMensagemAjaxErro(xhr, "Erro ao carregar os dados do usuário."));
 			}
 		});
 	}
@@ -336,7 +336,7 @@ var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax/semanas";
 		}else if(valor2=="U"){
 			tt="Editar Semana";
 			tu="editada";
-			$(".validateTips").text("Edite o UsuÃ¡rio Abaixo");
+			$(".validateTips").text("Edite o usuário Abaixo");
 		}
 
 		var abrirDialogSemana = function(){
@@ -431,85 +431,6 @@ var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax/semanas";
 		});
 	}
 
-	//funÃ§Ã£o editar setores
-	function fc_edit_setor(valor1,valor2){
-var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax/setores";
-
-		var tt = "";
-		var tu = "";
-		if(valor2=="I"){
-			tt="Novo Setor";
-			tu="criado";
-			$(".validateTips").text("Crie Um " + tt);
-		}else if(valor2=="U"){
-			tt="Editar Setor";
-			tu="editado";
-			$(".validateTips").text("Edite o Setor Abaixo");
-		}
-
-		$.ajax({
-			type: "POST",
-			url:  sectorAjaxUrl,
-			data: "flag=E&id_setor=" + valor1,
-			success: function(retorno_ajax){
-				var ret = retorno_ajax.split("-|-");
-				//alert(ret[1]);
-				$("#id_setor").val(ret[0]);
-				$("#nome_setor").val(ret[1]);
-
-				$( "#dialog-edit-setor" ).dialog({
-					title: tt,
-					modal: true,
-					autoOpen: true,
-					height: 440,
-					width: 450,
-					buttons: {
-						Salvar: function() {
-							var mdados="";
-							$('.cls_setor').each(function(){
-								if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-									alert("O campo " + $(this).attr("title") + " ï¿½ obrigatï¿½rio ");
-									$(this).focus();
-									return false;
-								}
-								mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
-							});
-
-							$.ajax({
-							   type: "POST",
-							   url:  sectorAjaxUrl,
-							   data: "flag=" + valor2 + "&" + mdados,
-							   success: function(retorno_ajax){
-									if(retorno_ajax==1){
-										$( "#dialog-edit-setor" ).dialog( "close" );
-										msgbox(valor2=="I"?"<br><table align='center'><tr><td>Setor " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
-											Fechar: function(){
-												$( this ).dialog( "close" );
-												AbrirModulo('setores');
-											}
-										});
-									}else if(retorno_ajax==2){
-										alert("Setor jÃ¡ cadastrado!");
-									}else{
-										alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
-									}
-								}
-							});
-
-						},
-						Sair: function() {
-							$( this ).dialog( "close" );
-						}
-					},
-					close: function(){
-						$('.cls_setor').each(function() {
-							$(this).val("");
-						});
-					}
-				});
-			}
-		});
-	}
 	function fc_edit_cliente(valor1,valor2){
 var clientAjaxUrl = window.arsClientAjaxUrl || "ajax/clientes";
 		var tt = "";
@@ -804,7 +725,7 @@ function usuarioClientesAdicionarValor(clienteId, clienteNome, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Esse cliente jÃ¡ estÃ¡ vinculado ao usuÃ¡rio.");
+			alert("Esse cliente jÃ¡ estÃ¡ vinculado ao usuário.");
 		}
 		return false;
 	}
@@ -1636,7 +1557,7 @@ var regiaoAjaxUrl = window.arsRegionAjaxUrl || "ajax/regioes";
 	}
 	function fc_del_usu(valor1,valor2){
 var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuÃ¡rio <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuário <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
 				$.ajax({
 					type: "POST",
@@ -1646,18 +1567,18 @@ var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
 					success: function(response){
 						$( this ).dialog( "close" );
 						if(response && response.ok===true){
-							msgbox("<br><table align='center'><tr><td>UsuÃ¡rio deletado com sucesso !</td></tr></table><br>",{
+							msgbox("<br><table align='center'><tr><td>usuário deletado com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );
 									AbrirModulo('usuarios');
 								}
 							});
 						}else{
-							alert((response && response.message) ? response.message : "Erro ao excluir o usuÃ¡rio.");
+							alert((response && response.message) ? response.message : "Erro ao excluir o usuário.");
 						}
 					},
 					error: function(xhr){
-						alert(LerMensagemAjaxErro(xhr, "Erro ao excluir o usuÃ¡rio."));
+						alert(LerMensagemAjaxErro(xhr, "Erro ao excluir o usuário."));
 					}
 				});
 				//AbrirModulo('usuarios');
@@ -1691,36 +1612,6 @@ var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax/semanas";
 					},
 					error: function(xhr){
 						alert(LerMensagemAjaxErro(xhr, "Erro ao excluir a semana."));
-					}
-				});
-				//AbrirModulo('usuarios');
-			},
-			"NÃ£o": function(){
-				$( this ).dialog( "close" );
-			}
-		});
-	}
-
-	function fc_del_setor(valor1,valor2){
-var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax/setores";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o setor <b>" + valor2 + "</b> ?</td></tr></table><br>",{
-			"Sim": function(){
-				$.ajax({
-					type: "POST",
-					url:  sectorAjaxUrl,
-					data: "flag=D&id_setor=" + valor1,
-					success: function(retorno_ajax){
-						$( this ).dialog( "close" );
-						if(retorno_ajax==1){
-							msgbox("<br><table align='center'><tr><td>Setor deletado com sucesso !</td></tr></table><br>",{
-								Fechar: function(){
-									$( this ).dialog( "close" );
-									AbrirModulo('setores');
-								}
-							});
-						}else{
-							alert("Erro: " + retorno_ajax + ". (Copie esse erro e informe ao ***REMOVED***istrador)");
-						}
 					}
 				});
 				//AbrirModulo('usuarios');

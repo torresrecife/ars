@@ -41,43 +41,38 @@ class AndamentoAdminController extends Controller
 	{
 		$input = $request->all();
 		$flag = isset($input['flag']) ? (string) $input['flag'] : '';
-		$jsonMode = (string) $request->input('response_format', '') === 'json';
 
 		if ($flag === 'E') {
-			if ($jsonMode) {
-				$payload = json_decode($this->service->editPayload(isset($input['anda_id']) ? (int) $input['anda_id'] : 0), true);
-				if (!is_array($payload) || empty($payload['anda_id'])) {
-					return $this->apiJsonResponse(false, 'not_found', 'Andamento nao encontrado.');
-				}
-
-				return $this->apiJsonResponse(true, 'loaded', 'Andamento carregado.', $payload);
+			$payload = json_decode($this->service->editPayload(isset($input['anda_id']) ? (int) $input['anda_id'] : 0), true);
+			if (!is_array($payload) || empty($payload['anda_id'])) {
+				return $this->apiJsonResponse(false, 'not_found', 'Andamento nao encontrado.', array(), 404);
 			}
 
-			return $this->legacyJsonResponse($this->service->editPayload(isset($input['anda_id']) ? (int) $input['anda_id'] : 0));
+			return $this->apiJsonResponse(true, 'loaded', 'Andamento carregado.', $payload);
 		}
 
 		if ($flag === 'I') {
 			if (!$this->validateLegacyFormRequest($request, AndamentoStoreRequest::class)) {
-				return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.') : $this->legacyTextResponse('0');
+				return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
 			}
 			$result = $this->service->create($input);
-			return $jsonMode ? $this->mapWriteResultToJson($result, 'Andamento criado com sucesso.') : $this->legacyTextResponse($result);
+			return $this->mapWriteResultToJson($result, 'Andamento criado com sucesso.');
 		}
 
 		if ($flag === 'U') {
 			if (!$this->validateLegacyFormRequest($request, AndamentoUpdateRequest::class)) {
-				return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.') : $this->legacyTextResponse('0');
+				return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
 			}
 			$result = $this->service->update($input);
-			return $jsonMode ? $this->mapWriteResultToJson($result, 'Andamento atualizado com sucesso.') : $this->legacyTextResponse($result);
+			return $this->mapWriteResultToJson($result, 'Andamento atualizado com sucesso.');
 		}
 
 		if ($flag === 'D') {
 			$result = $this->service->delete(isset($input['anda_id']) ? (int) $input['anda_id'] : 0);
-			return $jsonMode ? $this->mapWriteResultToJson($result, 'Andamento excluido com sucesso.') : $this->legacyTextResponse($result);
+			return $this->mapWriteResultToJson($result, 'Andamento excluido com sucesso.');
 		}
 
-		return $jsonMode ? $this->apiJsonResponse(false, 'invalid_flag', 'Operacao invalida.') : $this->legacyTextResponse('0');
+		return $this->apiJsonResponse(false, 'invalid_flag', 'Operacao invalida.', array(), 400);
 	}
 
 	private function mapWriteResultToJson($result, $successMessage)
@@ -86,9 +81,9 @@ class AndamentoAdminController extends Controller
 			return $this->apiJsonResponse(true, 'success', $successMessage);
 		}
 		if ((string) $result === '2') {
-			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.');
+			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.', array(), 409);
 		}
 
-		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.');
+		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
 	}
 }

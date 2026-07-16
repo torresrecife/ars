@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('legacy.guest')->group(function () {
@@ -23,64 +22,20 @@ Route::middleware('legacy.auth')->group(function () {
     Route::match(['get', 'post'], '/detalhes/andamentos', 'AndamentoDetailController@webIndex')->name('detalhes.andamentos');
     Route::match(['get', 'post'], '/detalhes/faturamento', 'FinancialDetailController@webIndex')->name('detalhes.faturamento');
 
-    Route::get('/carteiras', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'carteiras');
-    })->name('carteiras');
-
-    Route::get('/painel', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'painel');
-    })->name('painel');
-
-    Route::get('/producao', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'producao');
-    })->name('producao');
-
-    Route::get('/relatorio', function (Request $request) {
-        $input = $request->all();
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, isset($input['geral']) && (string) $input['geral'] === '1' ? 'relatorio-semanal' : 'relatorio-mensal');
-    })->name('relatorio');
-
-    Route::get('/***REMOVED***', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, '***REMOVED***');
-    })->name('***REMOVED***');
-
-    Route::get('/usuarios', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'usuarios');
-    })->name('usuarios');
-
-    Route::get('/setores', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'setores');
-    })->name('setores');
-
-    Route::get('/clientes', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'clientes');
-    })->name('clientes');
-
-    Route::get('/andamentos', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'andamentos');
-    })->name('andamentos');
-
-    Route::get('/metas', function (Request $request) {
-        $input = $request->all();
-        $hasMetaContext = isset($input['startBanco']) || isset($input['banco_id']) || isset($input['meta_mes']) || isset($input['meta_ano']);
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, $hasMetaContext ? 'metas-***REMOVED***' : 'metas-select');
-    })->name('metas');
-
-    Route::get('/semanas', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'semanas');
-    })->name('semanas');
-
-    Route::get('/regioes', function (Request $request) {
-        return app('App\Http\Controllers\HomeController')->webSectionPage($request, 'regioes');
-    })->name('regioes');
+    Route::get('/carteiras', 'HomeController@webCarteiras')->name('carteiras');
+    Route::get('/painel', 'HomeController@webPainel')->name('painel');
+    Route::get('/producao', 'HomeController@webProducao')->name('producao');
+    Route::get('/relatorio', 'HomeController@webRelatorio')->name('relatorio');
+    Route::get('/***REMOVED***', 'HomeController@webAdmin')->name('***REMOVED***');
+    Route::get('/usuarios', 'HomeController@webUsuarios')->name('usuarios');
+    Route::get('/setores', 'HomeController@webSetores')->name('setores');
+    Route::get('/clientes', 'HomeController@webClientes')->name('clientes');
+    Route::get('/andamentos', 'HomeController@webAndamentos')->name('andamentos');
+    Route::get('/metas', 'HomeController@webMetas')->name('metas');
+    Route::get('/semanas', 'HomeController@webSemanas')->name('semanas');
+    Route::get('/regioes', 'HomeController@webRegioes')->name('regioes');
 
     Route::post('/ajax/regioes', 'RegionAdminController@webAjax')->name('ajax.regioes');
 });
 
-Route::get('/health', function () {
-    return response()->json([
-        'status' => 'ok',
-        'app' => config('app.name'),
-        'framework' => app()->version(),
-    ]);
-});
+Route::get('/health', 'HomeController@health');

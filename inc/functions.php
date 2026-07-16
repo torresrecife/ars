@@ -13,75 +13,6 @@ function formata_data_extenso($strDate){
 	return $intDayOfMonth . ' de ' . $arrMonthsOfYear[$intMonthOfYear] . ' de ' . $intYear. '.';
 }
 
-function fc_select($p_tb,$p_id,$val_id,$val_nome,$usu,$conex,$p_setor=""){
-	$q = mysqli_query($conex,"SELECT $val_id , $val_nome FROM " . $p_tb. " " . ($usu!="" ? "where tipo_usu = " . $usu : "") . " " . ($p_setor!="" ? "and id_setor = " . $p_setor : "") . " GROUP BY " . $val_nome . " ORDER BY " . $val_nome. " ");
-	echo "<option></option>";
-	
-	while($w = mysqli_fetch_array($q)){
-		echo "<option value='" . $w[$val_id] . "' " . ($w[$val_id] == "$p_id" ? "selected" : "") . ">" . $w[$val_nome] . "</option>";
-	}
-}
-function fc_select_li($p_tb,$p_id,$val_id,$val_nome,$usu,$conex,$p_setor=""){
-	$q = mysqli_query($conex,"SELECT $val_id , $val_nome FROM " . $p_tb. " " . ($usu!="" ? "where tipo_usu = " . $usu : "") . " " . ($p_setor!="" ? "and id_setor = " . $p_setor : "") . " GROUP BY " . $val_nome . " ORDER BY " . $val_nome. " ");	
-	while($w = mysqli_fetch_array($q)){
-		//echo "<li><a class='icon-16-copy' href='index.php?TIPOPET=".$w[$val_id]."' >" . $w[$val_nome] . "</a></li>";
-		echo "<li><a class='icon-16-copy' href='#' onclick='EnviarDados(\"index.php\",\"$p_id\",".$w[$val_id].");' >" . $w[$val_nome] . "</a></li>";
-	}
-}
-function fc_select_div($p_tb,$p_id,$val_id,$val_nome,$usu,$se,$conex,$p_setor=""){
-	//$SETOR_1 = "";
-	$q = mysqli_query($conex,"SELECT $val_id , $val_nome, nome_pre, nome_pos, id_setor FROM " . $p_tb. " " . ($usu!="" ? "where tipo_usu = " . $usu : "") . " " . ($p_setor!="" ? "and id_setor = " . $p_setor : "") . " GROUP BY " . $val_id . " ORDER BY nome_pre, " . $val_nome. " ");
-	while($w = mysqli_fetch_array($q)){	
-			$SETOR[$w['id_setor']] .= "<div class='icon-wrapper'>
-							<div class='icon'>";
-								if($se=="E"){
-									$SETOR[$w['id_setor']] .= "<a href='#' onclick='mark_active(this)' class='clspet' grupo='0' numpet='" . $w[$val_id] . "'>";
-								}elseif($se=="S"){
-									$SETOR[$w['id_setor']] .= "<a href='#' onclick='EnviarDados(\"index.php\",\"$p_id\",".$w[$val_id].");'>";
-								}
-							$SETOR[$w['id_setor']] .= "<span style='float:left;position:absolute;font-size:7pt;padding:2px;color:#999'>"  . $w['nome_pre'] . "</span>";
-							$SETOR[$w['id_setor']] .= "<img src='css/images/header/icon-48-article-edit.png' alt=''  />";
-							$SETOR[$w['id_setor']] .= "<span style='position:relative;margin-top:-8px'> &nbsp; " . trim($w[$val_nome]) . " &nbsp; </span>
-							</a>
-						</div>
-					</div>";
-	
-	}
-	foreach($SETOR as $SET){
-		echo $SET;
-	}
-}
-function fc_select_dados($id_input,$conex,$p_setor=""){
-	$q = mysqli_query($conex,"SELECT id_dados, nome_dados FROM tp_dados_tb where id_input = '$id_input' " . ($p_setor!="" ? "and id_setor = " . $p_setor : "") . " ORDER BY nome_dados asc ");
-	echo "<option></option>";
-	
-	while($w = mysqli_fetch_array($q)){
-		echo "<option value='" . $w['id_dados'] . "' " . ($w[$val_id] == "$p_id" ? "selected" : "") . ">" . $w['nome_dados'] . "</option>";
-	}
-}
-
-function fc_select_name($cond,$where,$col,$banco,$conex){
-	if($where!='' && $col !='' && $banco !=''){
-		$campo = explode("|_|",$col);
-		$sel  = " SELECT ";
-		
-		for($i=0;$i<=count($campo);$i++){
-			if($campo[$i] != ''){
-				$sel .= ($i> 0 ? (',' . $campo[$i]) : $campo[$i] );
-			}
-		}
-		$sel .= " FROM $banco";
-		$sel .= " where $cond = $where";
-		$sel .= " limit 1";			
-		$q = mysqli_query($conex,$sel);
-		$w = mysqli_fetch_array($q);
-		return $w[0];
-		//return "SELECT $col FROM $banco where $cond = $where limit 1"; //$w[0];
-	}else{
-		return '';
-	}
-	
-}
 
 //Maiúscula
 function upwords($str){
@@ -149,12 +80,6 @@ function fc_botoes_metas($id_metas,$displ,$nome=""){
 	return "<div id='module-status' style='display:" . $displ . ";'>
 				<span class='editar'><a href='javascript:fc_edit_metas(\"$id_metas\",\"U\");' class='button_del' title='Editar Meta'>Editar</a></span>
 				<span class='excluir'><a href='javascript:fc_del_metas(\"$id_metas\",\"".utf8_encode($nome)."\");' class='button_del' title='Excluir Meta'>Excluir</a></span>
-			</div>";
-}
-function fc_botoes_grp($id_list,$displ,$nome=""){
-	return "<div id='module-status' style='display:" . $displ . ";'>
-				<span class='editar'><a href='javascript:fc_edit_list(\"$id_list\",\"U\");' class='button_del' title='Editar Servidor'>Editar</a></span>
-				<span class='excluir'><a href='javascript:fc_del_list(\"$id_list\",\"$nome\");' class='button_del' title='Excluir Servidor'>Excluir</a></span>
 			</div>";
 }
 function fc_botoes_setor($id_setor,$displ,$nome=""){

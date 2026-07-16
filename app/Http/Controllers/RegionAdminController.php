@@ -59,19 +59,14 @@ class RegionAdminController extends Controller
 	public function webAjax(Request $request)
 	{
 		$flag = (string) $request->input('flag', '');
-		$jsonMode = (string) $request->input('response_format', '') === 'json';
 		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, RegionStoreRequest::class)) {
-			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.') : $this->legacyTextResponse('0');
+			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
 		}
 		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, RegionUpdateRequest::class)) {
-			return $jsonMode ? $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.') : $this->legacyTextResponse('0');
+			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
 		}
 
-		if ($jsonMode) {
-			return $this->webAjaxJson($request, $flag);
-		}
-
-		return $this->legacyTextResponse($this->ajax($request->all()));
+		return $this->webAjaxJson($request, $flag);
 	}
 
 	private function webAjaxJson(Request $request, $flag)
@@ -82,7 +77,7 @@ class RegionAdminController extends Controller
 			$payload = $this->service->editPayload(isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0);
 			$data = $payload !== '' ? json_decode($payload, true) : null;
 			if (!is_array($data)) {
-				return $this->apiJsonResponse(false, 'not_found', 'Regiao nao encontrada.');
+				return $this->apiJsonResponse(false, 'not_found', 'Regiao nao encontrada.', array(), 404);
 			}
 
 			return $this->apiJsonResponse(true, 'loaded', 'Regiao carregada.', $data);
@@ -99,13 +94,13 @@ class RegionAdminController extends Controller
 		if ($flag === 'D') {
 			$result = $this->service->delete(isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0);
 			if ($result === '3') {
-				return $this->apiJsonResponse(false, 'linked_users', 'Existem usuarios vinculados a esta regiao.');
+				return $this->apiJsonResponse(false, 'linked_users', 'Existem usuarios vinculados a esta regiao.', array(), 409);
 			}
 
 			return $this->mapWriteResultToJson($result, 'Regiao excluida com sucesso.');
 		}
 
-		return $this->apiJsonResponse(false, 'invalid_flag', 'Operacao invalida.');
+		return $this->apiJsonResponse(false, 'invalid_flag', 'Operacao invalida.', array(), 400);
 	}
 
 	private function mapWriteResultToJson($result, $successMessage)
@@ -114,9 +109,9 @@ class RegionAdminController extends Controller
 			return $this->apiJsonResponse(true, 'success', $successMessage);
 		}
 		if ((string) $result === '2') {
-			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.');
+			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.', array(), 409);
 		}
 
-		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.');
+		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
 	}
 }
