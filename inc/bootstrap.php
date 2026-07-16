@@ -7,10 +7,6 @@ use App\Support\LegacyConfig;
 if (!defined('ARS_BOOTSTRAP_LOADED')) {
 	define('ARS_BOOTSTRAP_LOADED', true);
 
-	if (session_status() !== PHP_SESSION_ACTIVE) {
-		session_start();
-	}
-
 	$app = require __DIR__ . '/../bootstrap/legacy_app.php';
 	$arsConfig = LegacyConfig::build($app->config()->all());
 	$GLOBALS['app'] = $app;
@@ -23,7 +19,6 @@ if (!defined('ARS_BOOTSTRAP_LOADED')) {
 		'conectaServidor' => true,
 		'caseSensitive' => $arsConfig['auth']['case_sensitive'],
 		'validaSempre' => $arsConfig['auth']['validate_always'],
-		'paginaLogin' => $arsConfig['auth']['login_page'],
 		'tabela' => $arsConfig['auth']['user_table'],
 		'servidor' => $arsConfig['db']['mysql']['host'],
 		'usuario' => $arsConfig['db']['mysql']['user'],

@@ -5,15 +5,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('legacy.guest')->group(function () {
     Route::get('/', 'AuthController@showLogin');
-    Route::get('/login.php', 'AuthController@showLogin');
-    Route::post('/login.php', 'AuthController@login');
     Route::get('/login', 'AuthController@showLogin')->name('login');
     Route::post('/login', 'AuthController@login')->name('login.submit');
 });
 
 Route::middleware('legacy.auth')->group(function () {
     Route::get('/index', 'HomeController@webIndex')->name('legacy.home');
-    Route::get('/index.php', 'HomeController@webIndex');
     Route::get('/logout', 'AuthController@logout')->name('logout');
     Route::post('/ajax/newpass', 'AuthController@updateOwnPassword')->name('ajax.newpass');
     Route::post('/ajax/select', 'SelectController@webAjax')->name('ajax.select');
