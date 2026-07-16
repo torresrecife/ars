@@ -186,14 +186,15 @@ function fc_del_metas(valor1,valor2){
 var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax/metas";
 		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a meta <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 			"Sim": function(){
+				var confirmDialog = $(this);
 				$.ajax({
 					type: "POST",
 					url:  metaAjaxUrl,
 					dataType: "json",
 					data: { flag: "D", meta_id: valor1, response_format: "json" },
 					success: function(response){
-						$( this ).dialog( "close" );
 						if(response && response.ok===true){
+							confirmDialog.dialog("close");
 							msgbox("<br><table align='center'><tr><td>Meta deletada com sucesso !</td></tr></table><br>",{
 								Fechar: function(){
 									$( this ).dialog( "close" );

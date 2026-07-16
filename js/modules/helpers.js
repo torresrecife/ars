@@ -163,6 +163,20 @@ function AbrirMetasAdmin(){
 	if($("#meta_ano").length && $("#meta_ano").val()!="") { params.ano = $("#meta_ano").val(); }
 	NavegarModulo("metas", params);
 }
+function AbrirMetasSelecao(){
+	if($("#startDate").length && $("#startDate").val()==""){
+		mostrarErroData();
+		return;
+	}
+	if(!$("#startBanco").length || $("#startBanco").val()==""){
+		alert("Selecione o cliente.");
+		$("#startBanco").focus();
+		return;
+	}
+
+	var params = ColetarParametrosNavegacao();
+	NavegarModulo("metas", params);
+}
 // usuarios.js e semanas.js carregam os fluxos desses modulos
 
 	// clientes.js, andamentos.js e metas.js carregam os handlers desses modulos

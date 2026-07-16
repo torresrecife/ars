@@ -186,6 +186,8 @@ class MainPageService
 					'data' => array(
 						'banks' => $this->repository->listBanksForMetas($user['sectorId'], $user['clientIds']),
 						'monthYearLabel' => $monthYearLabel,
+						'month' => $state['mes'],
+						'year' => $state['ano'],
 					),
 				);
 			case 'metas-admin':

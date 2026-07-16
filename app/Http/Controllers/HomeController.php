@@ -104,7 +104,15 @@ class HomeController extends Controller
 	public function webMetas(Request $request)
 	{
 		$input = $request->all();
-		$hasMetaContext = isset($input['startBanco']) || isset($input['banco_id']) || isset($input['meta_mes']) || isset($input['meta_ano']);
+		$hasMetaContext = false;
+
+		if (isset($input['startBanco']) && (int) $input['startBanco'] > 0) {
+			$hasMetaContext = true;
+		}
+
+		if (isset($input['banco_id']) && (int) $input['banco_id'] > 0) {
+			$hasMetaContext = true;
+		}
 
 		return $this->webSectionPage($request, $hasMetaContext ? 'metas-admin' : 'metas-select');
 	}
