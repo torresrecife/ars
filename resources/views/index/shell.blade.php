@@ -4,6 +4,9 @@
 	$usuariosJsVersion = is_file(base_path('js/modules/usuarios.js')) ? filemtime(base_path('js/modules/usuarios.js')) : time();
 	$semanasJsVersion = is_file(base_path('js/modules/semanas.js')) ? filemtime(base_path('js/modules/semanas.js')) : time();
 	$regioesJsVersion = is_file(base_path('js/modules/regioes.js')) ? filemtime(base_path('js/modules/regioes.js')) : time();
+	$clientesJsVersion = is_file(base_path('js/modules/clientes.js')) ? filemtime(base_path('js/modules/clientes.js')) : time();
+	$andamentosJsVersion = is_file(base_path('js/modules/andamentos.js')) ? filemtime(base_path('js/modules/andamentos.js')) : time();
+	$metasJsVersion = is_file(base_path('js/modules/metas.js')) ? filemtime(base_path('js/modules/metas.js')) : time();
 	$entryUrl = isset($entryUrl) ? (string) $entryUrl : url('index');
 @endphp
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -23,6 +26,9 @@
 	<script type="text/javascript" src="js/modules/usuarios.js?v={{ $usuariosJsVersion }}"></script>
 	<script type="text/javascript" src="js/modules/semanas.js?v={{ $semanasJsVersion }}"></script>
 	<script type="text/javascript" src="js/modules/regioes.js?v={{ $regioesJsVersion }}"></script>
+	<script type="text/javascript" src="js/modules/clientes.js?v={{ $clientesJsVersion }}"></script>
+	<script type="text/javascript" src="js/modules/andamentos.js?v={{ $andamentosJsVersion }}"></script>
+	<script type="text/javascript" src="js/modules/metas.js?v={{ $metasJsVersion }}"></script>
 </head>
 <body id="minwidth-body">
 	<div class="head_bk"></div>
