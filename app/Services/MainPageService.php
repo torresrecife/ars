@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\MainPageRepository;
+use App\ViewModels\MainPageContent;
+use App\ViewModels\MainPageState;
+use App\ViewModels\MainPageUserContext;
 
 class MainPageService
 {
@@ -28,16 +31,16 @@ class MainPageService
 	{
 		$userContext = $this->buildUserContext($session);
 		$state = $this->resolveState($input);
-		$monthYearLabel = $state['startDate'];
+		$monthYearLabel = $state->startDate();
 
 		return array(
-			'user' => $userContext,
-			'state' => $state,
-			'currentSection' => $state['section'],
+			'user' => $userContext->toArray(),
+			'state' => $state->toArray(),
+			'currentSection' => $state->section(),
 			'monthYearLabel' => $monthYearLabel,
-			'topAction' => $this->resolveTopAction($state['section']),
-			'canAdmin' => in_array($userContext['level'], array('ADM', 'GER'), true),
-			'content' => $this->resolveContent($state, $userContext, $monthYearLabel),
+			'topAction' => $this->resolveTopAction($state->section()),
+			'canAdmin' => $userContext->canAdmin(),
+			'content' => $this->resolveContent($state, $userContext, $monthYearLabel)->toArray(),
 		);
 	}
 
@@ -47,20 +50,20 @@ class MainPageService
 		$regionMode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
 		$regions = $userId > 0 ? $this->regionService->listUserRegions($userId) : array();
 
-		return array(
-			'sectorId' => isset($session['usuarioSetor']) ? (int) $session['usuarioSetor'] : 0,
-			'clientIds' => isset($session['usuarioCliente']) ? (string) $session['usuarioCliente'] : '',
-			'regionMode' => $regionMode,
-			'regionIds' => isset($session['usuarioRegiaoIds']) ? (string) $session['usuarioRegiaoIds'] : '',
-			'regionUfs' => isset($session['usuarioRegiaoUfs']) ? (string) $session['usuarioRegiaoUfs'] : '',
-			'level' => isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '',
-			'id' => $userId,
-			'regions' => $regions,
-			'showRegionSelector' => $this->shouldShowRegionSelector(
+		return new MainPageUserContext(
+			isset($session['usuarioSetor']) ? $session['usuarioSetor'] : 0,
+			isset($session['usuarioCliente']) ? $session['usuarioCliente'] : '',
+			$regionMode,
+			isset($session['usuarioRegiaoIds']) ? $session['usuarioRegiaoIds'] : '',
+			isset($session['usuarioRegiaoUfs']) ? $session['usuarioRegiaoUfs'] : '',
+			isset($session['usuarioNivel']) ? $session['usuarioNivel'] : '',
+			$userId,
+			$regions,
+			$this->shouldShowRegionSelector(
 				isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '',
 				$regionMode,
 				$regions
-			),
+			)
 		);
 	}
 
@@ -85,16 +88,16 @@ class MainPageService
 			? (string) $input['startDate']
 			: $this->months[$month] . ' / ' . $year;
 
-		return array(
-			'section' => $section,
-			'area_id' => isset($input['area_id']) ? (string) $input['area_id'] : '',
-			'bank_id' => isset($input['bank_id']) ? (string) $input['bank_id'] : '',
-			'geral' => isset($input['geral']) ? (int) $input['geral'] : 0,
-			'regiao_id' => isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0,
-			'mes' => $month,
-			'ano' => $year,
-			'startDate' => $startDate,
-			'startSetor' => isset($input['startSetor']) ? (string) $input['startSetor'] : '',
+		return new MainPageState(
+			$section,
+			isset($input['area_id']) ? $input['area_id'] : '',
+			isset($input['bank_id']) ? $input['bank_id'] : '',
+			isset($input['geral']) ? $input['geral'] : 0,
+			isset($input['regiao_id']) ? $input['regiao_id'] : 0,
+			$month,
+			$year,
+			$startDate,
+			isset($input['startSetor']) ? $input['startSetor'] : ''
 		);
 	}
 
@@ -113,98 +116,70 @@ class MainPageService
 		return isset($actions[$currentSection]) ? $actions[$currentSection] : null;
 	}
 
-	private function resolveContent(array $state, array $user, $monthYearLabel)
+	private function resolveContent(MainPageState $state, MainPageUserContext $user, $monthYearLabel)
 	{
-		switch ($state['section']) {
+		switch ($state->section()) {
 			case 'carteiras':
-				return array(
-					'type' => 'view',
-					'view' => 'index/carteira',
-					'data' => array(
-						'banks' => $this->repository->listBanksByArea($state['area_id'], $user['clientIds']),
-						'hidArea' => $state['area_id'],
+				return MainPageContent::forView('index/carteira', array(
+						'banks' => $this->repository->listBanksByArea($state->areaId(), $user->clientIds()),
+						'hidArea' => $state->areaId(),
 						'monthYearLabel' => $monthYearLabel,
-						'month' => $state['mes'],
-						'year' => $state['ano'],
-						'regions' => $user['regions'],
-						'showRegionSelector' => $user['showRegionSelector'],
-						'selectedRegionId' => $state['regiao_id'],
-					),
-				);
+						'month' => $state->mes(),
+						'year' => $state->ano(),
+						'regions' => $user->regions(),
+						'showRegionSelector' => $user->showRegionSelector(),
+						'selectedRegionId' => $state->regiaoId(),
+					));
 			case 'painel':
-				return array('type' => 'controller', 'controller' => 'dashboard-panel', 'spacer' => true);
+				return MainPageContent::forController('dashboard-panel', true);
 			case 'producao':
-				return array(
-					'type' => 'view',
-					'view' => 'index/producao',
-					'data' => array(
-						'areas' => $this->repository->listAreasForProduction($user['level'], $user['sectorId']),
+				return MainPageContent::forView('index/producao', array(
+						'areas' => $this->repository->listAreasForProduction($user->level(), $user->sectorId()),
 						'monthYearLabel' => $monthYearLabel,
-						'month' => $state['mes'],
-						'year' => $state['ano'],
-						'startSector' => $state['startSetor'],
-						'regions' => $user['regions'],
-						'showRegionSelector' => $user['showRegionSelector'],
-						'selectedRegionId' => $state['regiao_id'],
-						'userLevel' => $user['level'],
-					),
-				);
+						'month' => $state->mes(),
+						'year' => $state->ano(),
+						'startSector' => $state->startSetor(),
+						'regions' => $user->regions(),
+						'showRegionSelector' => $user->showRegionSelector(),
+						'selectedRegionId' => $state->regiaoId(),
+						'userLevel' => $user->level(),
+					));
 			case 'relatorio-semanal':
-				return array(
-					'type' => 'controller',
-					'controller' => 'general-production-weekly',
-					'spacer' => true
-				);
+				return MainPageContent::forController('general-production-weekly', true);
 			case 'relatorio-mensal':
-				return array(
-					'type' => 'controller',
-					'controller' => 'general-production-monthly',
-					'spacer' => true
-				);
+				return MainPageContent::forController('general-production-monthly', true);
 			case '***REMOVED***':
-				return array(
-					'type' => 'view',
-					'view' => '***REMOVED***/index',
-					'data' => array(
-						'userLevel' => $user['level'],
-						'hidArea' => $state['area_id'],
-						'banks' => $this->repository->listAdminBanks($user['sectorId'], $user['clientIds']),
-					),
-				);
+				return MainPageContent::forView('***REMOVED***/index', array(
+						'userLevel' => $user->level(),
+						'hidArea' => $state->areaId(),
+						'banks' => $this->repository->listAdminBanks($user->sectorId(), $user->clientIds()),
+					));
 			case 'usuarios':
-				return array('type' => 'controller', 'controller' => 'user-***REMOVED***');
+				return MainPageContent::forController('user-***REMOVED***');
 			case 'setores':
-				return array('type' => 'controller', 'controller' => 'sector-***REMOVED***');
+				return MainPageContent::forController('sector-***REMOVED***');
 			case 'clientes':
-				return array('type' => 'controller', 'controller' => 'client-***REMOVED***');
+				return MainPageContent::forController('client-***REMOVED***');
 			case 'andamentos':
-				return array('type' => 'controller', 'controller' => 'andamento-***REMOVED***');
+				return MainPageContent::forController('andamento-***REMOVED***');
 			case 'metas-select':
-				return array(
-					'type' => 'view',
-					'view' => 'index/metas-select',
-					'data' => array(
-						'banks' => $this->repository->listBanksForMetas($user['sectorId'], $user['clientIds']),
+				return MainPageContent::forView('index/metas-select', array(
+						'banks' => $this->repository->listBanksForMetas($user->sectorId(), $user->clientIds()),
 						'monthYearLabel' => $monthYearLabel,
-						'month' => $state['mes'],
-						'year' => $state['ano'],
-					),
-				);
+						'month' => $state->mes(),
+						'year' => $state->ano(),
+					));
 			case 'metas-***REMOVED***':
-				return array('type' => 'controller', 'controller' => 'meta-***REMOVED***');
+				return MainPageContent::forController('meta-***REMOVED***');
 			case 'semanas':
-				return array('type' => 'controller', 'controller' => 'week-***REMOVED***');
+				return MainPageContent::forController('week-***REMOVED***');
 			case 'regioes':
-				return array('type' => 'controller', 'controller' => 'region-***REMOVED***');
+				return MainPageContent::forController('region-***REMOVED***');
 			case 'inicio':
 			default:
-				return array(
-					'type' => 'view',
-					'view' => 'index/default',
-					'data' => array(
-						'areas' => $this->repository->listAreas($user['sectorId']),
-					),
-				);
+				return MainPageContent::forView('index/default', array(
+						'areas' => $this->repository->listAreas($user->sectorId()),
+					));
 		}
 	}
 
