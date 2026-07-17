@@ -89,144 +89,118 @@ function regiaoUfsRemover(botao){
 	return false;
 }
 function fc_edit_regiao(valor1,valor2){
-var regiaoAjaxUrl = window.arsRegionAjaxUrl || "ajax/regioes";
-		var regiaoJsonData = function(extra){
-			return $.extend({ response_format: "json" }, extra || {});
-		};
-		var tt = "";
-		var tu = "";
-		if(valor2=="I"){
-			tt="Nova Regiao";
-			tu="criada";
-			$(".validateRegiao").text("Crie uma nova regiao");
-			regiaoUfsReset();
-			$('.cls_regiao').each(function() { $(this).val(""); });
-			$("#regiao_status").val("Y");
-			$("#regiao_slug").data("manual", false);
-		}else if(valor2=="U"){
-			tt="Editar Regiao";
-			tu="editada";
-			$(".validateRegiao").text("Edite a regiao abaixo");
-		}
-		var abrirDialogRegiao = function(){
-			$("#dialog-edit-regiao").dialog({
-				title: tt,
-				modal: true,
-				autoOpen: true,
-				height: 420,
-				width: 580,
-				buttons: {
-					Salvar: function() {
-						var mdados = "";
-						var invalido = false;
-						$('.cls_regiao').each(function(){
-							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-								alert("O campo " + $(this).attr("title") + " e obrigatorio ");
-								$(this).focus();
-								invalido = true;
-								return false;
-							}
-							mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
-						});
-						if(invalido){ return false; }
-						if($(".regiao-ufs-item").length===0){
-							alert("Selecione ao menos uma UF para a regiao.");
-							$("#regiao_uf_pool").focus();
+	var regiaoResourceBaseUrl = window.arsRegionResourceBaseUrl || "admin/regioes";
+	var regiaoResourceUrl = function(id){
+		return regiaoResourceBaseUrl + "/" + id;
+	};
+	var tt = "";
+	var tu = "";
+	if(valor2=="I"){
+		tt="Nova Regiao";
+		tu="criada";
+		$(".validateRegiao").text("Crie uma nova regiao");
+		regiaoUfsReset();
+		$('.cls_regiao').each(function() { $(this).val(""); });
+		$("#regiao_status").val("Y");
+		$("#regiao_slug").data("manual", false);
+	}else if(valor2=="U"){
+		tt="Editar Regiao";
+		tu="editada";
+		$(".validateRegiao").text("Edite a região abaixo");
+	}
+	var abrirDialogRegiao = function(){
+		$("#dialog-edit-regiao").dialog({
+			title: tt,
+			modal: true,
+			autoOpen: true,
+			height: 420,
+			width: 580,
+			buttons: {
+				Salvar: function() {
+					var invalido = false;
+					$('.cls_regiao').each(function(){
+						if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
+							alert("O campo " + $(this).attr("title") + " e obrigatorio ");
+							$(this).focus();
+							invalido = true;
 							return false;
 						}
-						$.ajax({
-							type: "POST",
-							url:  regiaoAjaxUrl,
-							dataType: "json",
-							data: "flag=" + valor2 + "&response_format=json&" + mdados,
-							success: function(response){
-								if(response && response.ok===true){
-									$( "#dialog-edit-regiao" ).dialog( "close" );
-									msgbox("<br><table align='center'><tr><td>Regiao " + tu + " com sucesso !</td></tr></table><br>", {
-										Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('regioes'); }
-									});
-								}else if(response && response.code=="duplicate"){
-									alert("Slug de regiao ja cadastrado!");
-								}else{
-									alert((response && response.message) ? response.message : "Erro ao salvar a regiao.");
-								}
-							}
-						});
-					},
-					Sair: function() { $( this ).dialog( "close" ); }
-				},
-				close: function(){
-					$('.cls_regiao').each(function() { $(this).val(""); });
-					$("#regiao_slug").data("manual", false);
-					regiaoUfsReset();
-				}
-			});
-		};
-		if(valor2=="I"){
-			abrirDialogRegiao();
-			return;
-		}
-		$.ajax({
-			type: "POST",
-			url:  regiaoAjaxUrl,
-			dataType: "json",
-			data: regiaoJsonData({ flag: "E", regiao_id: valor1 }),
-			success: function(response){
-				if(!response || response.ok!==true || !response.data){
-					alert((response && response.message) ? response.message : "Erro ao carregar os dados da regiao.");
-					return;
-				}
-				var ret = response.data || {};
-				regiaoUfsReset();
-				$("#regiao_id_edit").val(ret.regiao_id || "");
-				$("#regiao_nome").val(ret.regiao_nome || "");
-				$("#regiao_slug").val(ret.regiao_slug || "");
-				$("#regiao_slug").data("manual", true);
-				$("#regiao_status").val(ret.regiao_status || "Y");
-				var ufs = ret.ufs || [];
-				for(var i=0;i<ufs.length;i++){
-					regiaoUfsAdicionarValor(ufs[i], true);
-				}
-				abrirDialogRegiao();
-			}
-		});
-}
-function fc_del_regiao(valor1,valor2){
-var regiaoAjaxUrl = window.arsRegionAjaxUrl || "ajax/regioes";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a regiao <b>" + valor2 + "</b> ?</td></tr></table><br>",{
-			"Sim": function(){
-				$.ajax({
-					type: "POST",
-					url:  regiaoAjaxUrl,
-					dataType: "json",
-					data: { flag: "D", regiao_id: valor1, response_format: "json" },
-					success: function(response){
-						$( this ).dialog( "close" );
-						if(response && response.ok===true){
-							msgbox("<br><table align='center'><tr><td>Regiao deletada com sucesso !</td></tr></table><br>",{
+					});
+					if(invalido){ return false; }
+					if($(".regiao-ufs-item").length===0){
+						alert("Selecione ao menos uma UF para a regiao.");
+						$("#regiao_uf_pool").focus();
+						return false;
+					}
+					var payload = {};
+					$('.cls_regiao').each(function(){
+						payload[$(this).attr("name")] = $(this).val();
+					});
+					arsJsonSubmit(
+						valor2=="I" ? "POST" : "PUT",
+						valor2=="I" ? regiaoResourceBaseUrl : regiaoResourceUrl($("#regiao_id_edit").val()),
+						payload,
+						"Erro ao salvar a regiao.",
+						function(){
+							$("#dialog-edit-regiao").dialog("close");
+							msgbox("<br><table align='center'><tr><td>Região " + tu + " com sucesso !</td></tr></table><br>", {
 								Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('regioes'); }
 							});
-						}else if(response && response.code=="linked_users"){
-							alert("Nao e possivel excluir a regiao porque existem usuarios vinculados a ela.");
-						}else{
-							alert((response && response.message) ? response.message : "Erro ao excluir a regiao.");
 						}
-					}
-				});
+					);
+				},
+				Sair: function() { $( this ).dialog( "close" ); }
 			},
-			"Nao": function(){ $( this ).dialog( "close" ); }
+			close: function(){
+				$('.cls_regiao').each(function() { $(this).val(""); });
+				$("#regiao_slug").data("manual", false);
+				regiaoUfsReset();
+			}
 		});
+	};
+	if(valor2=="I"){
+		abrirDialogRegiao();
+		return;
+	}
+	arsJsonGet(regiaoResourceUrl(valor1), "Erro ao carregar os dados da regiao.", function(ret){
+		regiaoUfsReset();
+		$("#regiao_id_edit").val(ret.regiao_id || "");
+		$("#regiao_nome").val(ret.regiao_nome || "");
+		$("#regiao_slug").val(ret.regiao_slug || "");
+		$("#regiao_slug").data("manual", true);
+		$("#regiao_status").val(ret.regiao_status || "Y");
+		var ufs = ret.ufs || [];
+		for(var i=0;i<ufs.length;i++){
+			regiaoUfsAdicionarValor(ufs[i], true);
+		}
+		abrirDialogRegiao();
+	});
+}
+function fc_del_regiao(valor1,valor2){
+	var regiaoResourceBaseUrl = window.arsRegionResourceBaseUrl || "admin/regioes";
+	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a região <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+		"Sim": function(){
+			var dialog = $(this);
+			arsJsonSubmit("DELETE", regiaoResourceBaseUrl + "/" + valor1, {}, "Erro ao excluir a região.", function(){
+				dialog.dialog("close");
+				msgbox("<br><table align='center'><tr><td>Região deletada com sucesso !</td></tr></table><br>",{
+					Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('regioes'); }
+				});
+			});
+		},
+		"Nao": function(){ $( this ).dialog( "close" ); }
+	});
 }
 
 function regiaoSlugify(valor){
 	return String(valor || "")
 		.toLowerCase()
-		.replace(/[Ã¡Ã Ã£Ã¢Ã¤]/g, "a")
-		.replace(/[Ã©Ã¨ÃªÃ«]/g, "e")
-		.replace(/[Ã­Ã¬Ã®Ã¯]/g, "i")
-		.replace(/[Ã³Ã²ÃµÃ´Ã¶]/g, "o")
-		.replace(/[ÃºÃ¹Ã»Ã¼]/g, "u")
-		.replace(/Ã§/g, "c")
+		.replace(/[áàãâä]/g, "a")
+		.replace(/[éèêë]/g, "e")
+		.replace(/[íìîï]/g, "i")
+		.replace(/[óòõôö]/g, "o")
+		.replace(/[úùûü]/g, "u")
+		.replace(/ç/g, "c")
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-+|-+$/g, "");
 }

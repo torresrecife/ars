@@ -40,6 +40,31 @@ class MainPageContent
 		return new self('controller', '', array(), $controller, $spacer);
 	}
 
+	public function type()
+	{
+		return $this->type;
+	}
+
+	public function view()
+	{
+		return $this->view;
+	}
+
+	public function data()
+	{
+		return $this->data;
+	}
+
+	public function controller()
+	{
+		return $this->controller;
+	}
+
+	public function spacer()
+	{
+		return $this->spacer;
+	}
+
 	public function toArray()
 	{
 		$payload = array('type' => $this->type);

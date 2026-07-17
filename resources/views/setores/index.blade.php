@@ -46,5 +46,5 @@
 	</fieldset>
 </div>
 <script>
-window.arsSectorAjaxUrl = "{{ url('ajax/setores') }}";
+window.arsSectorResourceBaseUrl = "{{ url('admin/setores') }}";
 </script>

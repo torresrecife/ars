@@ -1,6 +1,6 @@
 <div style="margin-top:80px">
 <script>
-window.arsAndamentoAjaxUrl = "{{ url('ajax/andamentos') }}";
+window.arsAndamentoResourceBaseUrl = "{{ url('admin/andamentos') }}";
 window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 </script>
 <label><h2><u>Andamentos</u></h2></label>

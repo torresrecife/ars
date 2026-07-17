@@ -1,6 +1,6 @@
 <div style="margin-top:80px">
 <script>
-window.arsUserAjaxUrl = "{{ url('ajax/usuarios') }}";
+window.arsUserResourceBaseUrl = "{{ url('admin/usuarios') }}";
 </script>
 <label><h2><u>Usu&aacute;rios</u></h2></label>
 <div>

@@ -1,6 +1,6 @@
 <div style="margin-top:80px">
 <script>
-window.arsClientAjaxUrl = "{{ url('ajax/clientes') }}";
+window.arsClientResourceBaseUrl = "{{ url('admin/clientes') }}";
 </script>
 <label><h2><u>Clientes</u></h2></label>
 <div>

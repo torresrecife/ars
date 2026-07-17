@@ -1,162 +1,150 @@
 function fc_edit_usu(valor1,valor2){
-var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
-		var tt = "";
-		var tu = "";
-		if(valor2=="I"){
-			tt="Novo usuário";
-			tu="criado";
-			$(".validateTips").text("Crie Um " + tt);
-			usuarioClientesReset();
-			usuarioRegioesReset();
-			$('.cls_usu').each(function() {
-				$(this).val("");
-			});
-			$("#setor_usu").val("0");
-			$("#regiao_modo").val("N");
-			usuarioRegioesAtualizarModo();
-			sel_tipo(1, $("#setor_usu").val());
-		}else if(valor2=="U"){
-			tt="Editar usuário";
-			tu="editado";
-			$(".validateTips").text("Edite o usuário Abaixo");
-		}
+	var userResourceBaseUrl = window.arsUserResourceBaseUrl || "admin/usuarios";
+	var userResourceUrl = function(id){
+		return userResourceBaseUrl + "/" + id;
+	};
+	var tt = "";
+	var tu = "";
+	if(valor2=="I"){
+		tt="Novo usuário";
+		tu="criado";
+		$(".validateTips").text("Crie Um " + tt);
+		usuarioClientesReset();
+		usuarioRegioesReset();
+		$('.cls_usu').each(function() {
+			$(this).val("");
+		});
+		$("#setor_usu").val("0");
+		$("#regiao_modo").val("N");
+		usuarioRegioesAtualizarModo();
+		sel_tipo(1, $("#setor_usu").val());
+	}else if(valor2=="U"){
+		tt="Editar usuário";
+		tu="editado";
+		$(".validateTips").text("Edite o usuário Abaixo");
+	}
 
-		var abrirDialogUsuario = function(){
-			$("#dialog-edit-usu").dialog({
-				title: tt,
-				modal: true,
-				autoOpen: true,
-				height: 470,
-				width: 520,
-				buttons: {
-					Salvar: function() {
-						var mdados="";
-						var invalido = false;
-						$('.cls_usu').each(function(){
-							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-								alert("O campo " + $(this).attr("title") + " ï¿½ obrigatï¿½rio ");
-								$(this).focus();
-								invalido = true;
-								return false;
-							}
-							mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
-						});
-						if(invalido){
+	var abrirDialogUsuario = function(){
+		$("#dialog-edit-usu").dialog({
+			title: tt,
+			modal: true,
+			autoOpen: true,
+			height: 470,
+			width: 520,
+			buttons: {
+				Salvar: function() {
+					var invalido = false;
+					$('.cls_usu').each(function(){
+						if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
+							alert("O campo " + $(this).attr("title") + " é obrigatório ");
+							$(this).focus();
+							invalido = true;
 							return false;
 						}
-						if($('.cls_usuario_cliente_input').length==0){
-							alert("Selecione ao menos um cliente para o usuário.");
-							$("#banco_usu_pool").focus();
-							return false;
+					});
+					if(invalido){
+						return false;
+					}
+					if($('.cls_usuario_cliente_input').length==0){
+						alert("Selecione ao menos um cliente para o usuário.");
+						$("#banco_usu_pool").focus();
+						return false;
+					}
+					var clientes = [];
+					var regioes = [];
+					$('.usuario-clientes-item').each(function(){
+						var clienteId = $(this).attr("data-cliente-id");
+						if(clienteId){
+							clientes.push(clienteId);
 						}
-						var usus = [];
-						var regioes = [];
-						$('.usuario-clientes-item').each(function(){
-							var clienteId = $(this).attr("data-cliente-id");
-							if(clienteId){
-								usus.push(clienteId);
-							}
-						});
-						$('.usuario-regioes-item').each(function(){
-							var regiaoId = $(this).attr("data-regiao-id");
-							if(regiaoId){
-								regioes.push(regiaoId);
-							}
-						});
-						var dado_email = validaEmail($("#email_usu").val());
-						var dado_senha = fc_teste_senha($("#senha_usu1").val(),$("#senha_usu2").val(),valor2);
-						if(dado_email!=""){
-							alert(dado_email);
-						}else if(dado_senha!=""){
-							alert(dado_senha);
-						}else{
-						$.ajax({
-							   type: "POST",
-							   url:  userAjaxUrl,
-							   dataType: "json",
-							   data: "flag=" + valor2 + "&response_format=json&" + mdados + "&banco_neo=" + usus.join(",") + "&regiao_neo=" + regioes.join(","),
-							   success: function(response){
-									if(response && response.ok===true){
-										$( "#dialog-edit-usu" ).dialog( "close" );
-										msgbox(valor2=="I"?"<br><table align='center'><tr><td>usuário " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
-											Fechar: function(){
-												$( this ).dialog( "close" );
-												AbrirModulo('usuarios');
-											}
-										});
-									}else if(response && response.code=="duplicate"){
-										alert("usuário jÃ¡ cadastrado!");
-									}else{
-										alert((response && response.message) ? response.message : "Erro ao salvar o usuário.");
-									}
-								},
-								error: function(xhr){
-									alert(LerMensagemAjaxErro(xhr, "Erro ao salvar o usuário."));
+					});
+					$('.usuario-regioes-item').each(function(){
+						var regiaoId = $(this).attr("data-regiao-id");
+						if(regiaoId){
+							regioes.push(regiaoId);
+						}
+					});
+					var dado_email = validaEmail($("#email_usu").val());
+					var dado_senha = fc_teste_senha($("#senha_usu1").val(),$("#senha_usu2").val(),valor2);
+					if(dado_email!=""){
+						alert(dado_email);
+						return false;
+					}
+					if(dado_senha!=""){
+						alert(dado_senha);
+						return false;
+					}
+
+					var payload = {};
+					$('.cls_usu').each(function(){
+						payload[$(this).attr("name")] = $(this).val();
+					});
+					payload.banco_neo = clientes.join(",");
+					payload.regiao_neo = regioes.join(",");
+
+					arsJsonSubmit(
+						valor2=="I" ? "POST" : "PUT",
+						valor2=="I" ? userResourceBaseUrl : userResourceUrl($("#id_usu").val()),
+						payload,
+						"Erro ao salvar o usuário.",
+						function(){
+							$("#dialog-edit-usu").dialog("close");
+							msgbox(valor2=="I"?"<br><table align='center'><tr><td>usuário " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
+								Fechar: function(){
+									$( this ).dialog( "close" );
+									AbrirModulo('usuarios');
 								}
 							});
 						}
-					},
-					Sair: function() {
-						$( this ).dialog( "close" );
-					}
+					);
 				},
-				close: function(){
-					$('.cls_usu').each(function() {
-						$(this).val("");
-					});
-					usuarioClientesReset();
-					usuarioRegioesReset();
-					$("#banco_usu_pool").html("");
+				Sair: function() {
+					$( this ).dialog( "close" );
 				}
-			});
-			$("#nivel_usu").off("change.usuarioRegioes").on("change.usuarioRegioes", usuarioRegioesAtualizarModo);
-			$("#regiao_modo").off("change.usuarioRegioes").on("change.usuarioRegioes", usuarioRegioesAtualizarModo);
-			usuarioRegioesAtualizarModo();
-		};
-
-		if(valor2=="I"){
-			abrirDialogUsuario();
-			return;
-		}
-
-		$.ajax({
-			type: "POST",
-			url:  userAjaxUrl,
-			dataType: "json",
-			data: { flag: "E", id_usu: valor1, response_format: "json" },
-			success: function(response){
-				if(!response || response.ok!==true || !response.data){
-					alert((response && response.message) ? response.message : "Erro ao carregar os dados do usuário.");
-					return;
-				}
-				var ret = response.data || {};
+			},
+			close: function(){
+				$('.cls_usu').each(function() {
+					$(this).val("");
+				});
 				usuarioClientesReset();
 				usuarioRegioesReset();
-				$("#id_usu").val(ret.id_usu || "");
-				$("#nome_usu").val(ret.nome_usu || "");
-				$("#login_usu").val(ret.login_usu || "");
-				$("#email_usu").val(ret.email_usu || "");
-				$("#nivel_usu").val(ret.nivel_usu || "");
-				$("#setor_usu").val(ret.id_setor || "0");
-				$("#regiao_modo").val(ret.regiao_modo || "N");
-				$("#status_usu").val(ret.status_usu || "");
-				var regions = ret.regions || [];
-				for(var j=0;j<regions.length;j++){
-					usuarioRegioesAdicionarValor(String(regions[j].id), regions[j].name, true);
-				}
-				usuarioRegioesAtualizarModo();
-				sel_tipo(1, ret.id_setor || 0, function(){
-					var clients = ret.clients || [];
-					for(var i=0;i<clients.length;i++){
-						usuarioClientesAdicionarValor(String(clients[i].id), clients[i].name, true);
-					}
-				});
-				abrirDialogUsuario();
-			},
-			error: function(xhr){
-				alert(LerMensagemAjaxErro(xhr, "Erro ao carregar os dados do usuário."));
+				$("#banco_usu_pool").html("");
 			}
 		});
+		$("#nivel_usu").off("change.usuarioRegioes").on("change.usuarioRegioes", usuarioRegioesAtualizarModo);
+		$("#regiao_modo").off("change.usuarioRegioes").on("change.usuarioRegioes", usuarioRegioesAtualizarModo);
+		usuarioRegioesAtualizarModo();
+	};
+
+	if(valor2=="I"){
+		abrirDialogUsuario();
+		return;
+	}
+
+	arsJsonGet(userResourceUrl(valor1), "Erro ao carregar os dados do usuário.", function(ret){
+		usuarioClientesReset();
+		usuarioRegioesReset();
+		$("#id_usu").val(ret.id_usu || "");
+		$("#nome_usu").val(ret.nome_usu || "");
+		$("#login_usu").val(ret.login_usu || "");
+		$("#email_usu").val(ret.email_usu || "");
+		$("#nivel_usu").val(ret.nivel_usu || "");
+		$("#setor_usu").val(ret.id_setor || "0");
+		$("#regiao_modo").val(ret.regiao_modo || "N");
+		$("#status_usu").val(ret.status_usu || "");
+		var regions = ret.regions || [];
+		for(var j=0;j<regions.length;j++){
+			usuarioRegioesAdicionarValor(String(regions[j].id), regions[j].name, true);
+		}
+		usuarioRegioesAtualizarModo();
+		sel_tipo(1, ret.id_setor || 0, function(){
+			var clients = ret.clients || [];
+			for(var i=0;i<clients.length;i++){
+				usuarioClientesAdicionarValor(String(clients[i].id), clients[i].name, true);
+			}
+		});
+		abrirDialogUsuario();
+	});
 }
 
 function usuarioClientesReset(){
@@ -228,7 +216,7 @@ function usuarioClientesAdicionarValor(clienteId, clienteNome, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Esse cliente jÃ¡ estÃ¡ vinculado ao usuário.");
+			alert("Esse cliente já está vinculado ao usuário.");
 		}
 		return false;
 	}
@@ -370,34 +358,22 @@ function usuarioRegioesRemover(botao){
 	return false;
 }
 function fc_del_usu(valor1,valor2){
-var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuário <b>" + valor2 + "</b> ?</td></tr></table><br>",{
-			"Sim": function(){
-				$.ajax({
-					type: "POST",
-					url:  userAjaxUrl,
-					dataType: "json",
-					data: { flag: "D", id_usu: valor1, response_format: "json" },
-					success: function(response){
+	var userResourceBaseUrl = window.arsUserResourceBaseUrl || "admin/usuarios";
+	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuário <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+		"Sim": function(){
+			var dialog = $(this);
+			arsJsonSubmit("DELETE", userResourceBaseUrl + "/" + valor1, {}, "Erro ao excluir o usuário.", function(){
+				dialog.dialog("close");
+				msgbox("<br><table align='center'><tr><td>usuário deletado com sucesso !</td></tr></table><br>",{
+					Fechar: function(){
 						$( this ).dialog( "close" );
-						if(response && response.ok===true){
-							msgbox("<br><table align='center'><tr><td>usuário deletado com sucesso !</td></tr></table><br>",{
-								Fechar: function(){
-									$( this ).dialog( "close" );
-									AbrirModulo('usuarios');
-								}
-							});
-						}else{
-							alert((response && response.message) ? response.message : "Erro ao excluir o usuário.");
-						}
-					},
-					error: function(xhr){
-						alert(LerMensagemAjaxErro(xhr, "Erro ao excluir o usuário."));
+						AbrirModulo('usuarios');
 					}
 				});
-			},
-			"Não": function(){
-				$( this ).dialog( "close" );
-			}
-		});
+			});
+		},
+		"Não": function(){
+			$( this ).dialog( "close" );
+		}
+	});
 }
