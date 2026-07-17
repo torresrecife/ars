@@ -118,6 +118,47 @@ function LerMensagemAjaxErro(xhr, fallback){
 	}
 	return fallback || "Erro na operacao.";
 }
+function arsAjax(options){
+	return $.ajax($.extend({
+		dataType: "json",
+		cache: false
+	}, options || {}));
+}
+function arsJsonGet(url, fallbackMessage, onLoaded){
+	return arsAjax({
+		type: "GET",
+		url: url,
+		success: function(response){
+			if(!response || response.ok !== true || typeof onLoaded !== "function"){
+				alert((response && response.message) ? response.message : (fallbackMessage || "Erro ao carregar os dados."));
+				return;
+			}
+			onLoaded(response.data || {}, response);
+		},
+		error: function(xhr){
+			alert(LerMensagemAjaxErro(xhr, fallbackMessage || "Erro ao carregar os dados."));
+		}
+	});
+}
+function arsJsonSubmit(method, url, payload, fallbackMessage, onSuccess){
+	return arsAjax({
+		type: method,
+		url: url,
+		data: payload || {},
+		success: function(response){
+			if(!response || response.ok !== true){
+				alert((response && response.message) ? response.message : (fallbackMessage || "Erro na operacao."));
+				return;
+			}
+			if(typeof onSuccess === "function"){
+				onSuccess(response);
+			}
+		},
+		error: function(xhr){
+			alert(LerMensagemAjaxErro(xhr, fallbackMessage || "Erro na operacao."));
+		}
+	});
+}
 function validaEmail(email){
 	var valor = $.trim(String(email || ""));
 	if(valor === ""){

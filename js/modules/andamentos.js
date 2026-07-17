@@ -70,7 +70,7 @@ function andamentoTiposAdicionarValor(tipo, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Esse andamento jÃ¡ estÃ¡ vinculado.");
+			alert("Esse andamento já está vinculado.");
 		}
 		return false;
 	}
@@ -92,9 +92,9 @@ function andamentoTiposRemover(botao){
 	return false;
 }
 function fc_edit_andamento(valor1,valor2){
-var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax/andamentos";
-	var andamentoJsonData = function(extra){
-		return $.extend({ response_format: "json" }, extra || {});
+	var andamentoResourceBaseUrl = window.arsAndamentoResourceBaseUrl || "***REMOVED***/andamentos";
+	var andamentoResourceUrl = function(id){
+		return andamentoResourceBaseUrl + "/" + id;
 	};
 	var tt = "";
 	var tu = "";
@@ -129,7 +129,7 @@ var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax/andamentos";
 				andamentoTiposAtualizarInputs();
 			}
 		});
-		$( "#dialog-edit-andamento" ).dialog({
+		$("#dialog-edit-andamento").dialog({
 			title: tt,
 			modal: true,
 			autoOpen: true,
@@ -141,7 +141,7 @@ var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax/andamentos";
 					var invalido = false;
 					$(".cls_andamento").each(function(){
 						if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-							alert("O campo " + $(this).attr("title") + " ï¿½ obrigatï¿½rio ");
+							alert("O campo " + $(this).attr("title") + " é obrigatório ");
 							$(this).focus();
 							invalido = true;
 							return false;
@@ -161,26 +161,20 @@ var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax/andamentos";
 						$("#andam_name_pool").focus();
 						return false;
 					}
-					$.ajax({
-						type: "POST",
-						url: andamentoAjaxUrl,
-						dataType: "json",
-						data: $.extend({}, andamentoJsonData(), mdados, { flag: valor2, anda_neo: mandam.join(",") }),
-						success: function(response){
-							if(response && response.ok===true){
-								$( "#dialog-edit-andamento" ).dialog( "close" );
-								msgbox(valor2=="I"?"<br><table align='center'><tr><td>Andamento " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
-									Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('andamentos'); }
-								});
-							}else if(response && response.code=="duplicate"){
-								alert("Andamento jï¿½ cadastrado!");
-							}else{
-								alert((response && response.message) ? response.message : "Erro ao salvar o andamento.");
-							}
+					arsJsonSubmit(
+						valor2=="I" ? "POST" : "PUT",
+						valor2=="I" ? andamentoResourceBaseUrl : andamentoResourceUrl($("#anda_id").val()),
+						$.extend({}, mdados, { anda_neo: mandam.join(",") }),
+						"Erro ao salvar o andamento.",
+						function(){
+							$("#dialog-edit-andamento").dialog("close");
+							msgbox(valor2=="I"?"<br><table align='center'><tr><td>Andamento " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
+								Fechar: function(){ $(this).dialog("close"); AbrirModulo('andamentos'); }
+							});
 						}
-					});
+					);
 				},
-				Sair: function() { $( this ).dialog( "close" ); }
+				Sair: function() { $(this).dialog("close"); }
 			},
 			close: function(){
 				$(".cls_andamento").each(function(){ $(this).val(""); });
@@ -193,41 +187,22 @@ var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax/andamentos";
 		abrirDialogAndamento({});
 		return;
 	}
-	$.ajax({
-		type: "POST",
-		url: andamentoAjaxUrl,
-		dataType: "json",
-		data: andamentoJsonData({ flag: "E", anda_id: valor1 }),
-		success: function(response){
-			if(!response || response.ok!==true || !response.data){
-				alert((response && response.message) ? response.message : "Erro ao carregar os dados do andamento.");
-				return;
-			}
-			abrirDialogAndamento(response.data || {});
-		}
+	arsJsonGet(andamentoResourceUrl(valor1), "Erro ao carregar os dados do andamento.", function(ret){
+		abrirDialogAndamento(ret || {});
 	});
 }
 function fc_del_andamento(valor1,valor2){
-var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax/andamentos";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o andamento <b>" + valor2 + "</b> ?</td></tr></table><br>",{
-			"Sim": function(){
-				$.ajax({
-					type: "POST",
-					url:  andamentoAjaxUrl,
-					dataType: "json",
-					data: { flag: "D", anda_id: valor1, response_format: "json" },
-					success: function(response){
-						$( this ).dialog( "close" );
-						if(response && response.ok===true){
-							msgbox("<br><table align='center'><tr><td>Andamento deletado com sucesso !</td></tr></table><br>",{
-								Fechar: function(){ $( this ).dialog( "close" ); AbrirModulo('andamentos'); }
-							});
-						}else{
-							alert((response && response.message) ? response.message : "Erro ao excluir o andamento.");
-						}
-					}
+	var andamentoResourceBaseUrl = window.arsAndamentoResourceBaseUrl || "***REMOVED***/andamentos";
+	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o andamento <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+		"Sim": function(){
+			var dialog = $(this);
+			arsJsonSubmit("DELETE", andamentoResourceBaseUrl + "/" + valor1, {}, "Erro ao excluir o andamento.", function(){
+				dialog.dialog("close");
+				msgbox("<br><table align='center'><tr><td>Andamento deletado com sucesso !</td></tr></table><br>",{
+					Fechar: function(){ $(this).dialog("close"); AbrirModulo('andamentos'); }
 				});
-			},
-			"Não": function(){ $( this ).dialog( "close" ); }
-		});
+			});
+		},
+		"Não": function(){ $(this).dialog("close"); }
+	});
 }

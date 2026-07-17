@@ -45,10 +45,10 @@
 			<div id="topSpace"></div>
 			<div id="module-status">
 				<span class="viewsite"><a href="{{ url('index') }}">In&iacute;cio</a></span>
-				@if (!empty($pageData['topAction']))
-					<span class="{{ $pageData['topAction']['class'] }}"><a href="javascript:{{ $pageData['topAction']['js'] }}">{{ e($pageData['topAction']['label']) }}</a></span>
+				@if ($pageData->topAction())
+					<span class="{{ $pageData->topAction()->className() }}"><a href="javascript:{{ $pageData->topAction()->javascript() }}">{{ e($pageData->topAction()->label()) }}</a></span>
 				@endif
-				@if ($pageData['canAdmin'])
+				@if ($pageData->canAdmin())
 					<span class="relatory"><a href="{{ url('producao') }}">Produ&ccedil;&atilde;o</a></span>
 					<span class="viewconfig"><a href="{{ url('***REMOVED***') }}">Administrar</a></span>
 				@endif
@@ -74,8 +74,8 @@
 	</div>
 <form name="form_ars" action="{{ e($entryUrl) }}" method="POST" id="form_ars" style="display:none">
 	@csrf
-	<input type="hidden" name="area_id" id="area_id" value="{{ e((string) ($pageData['state']['area_id'] ?? '')) }}" />
-	<input type="hidden" name="bank_id" id="bank_id" value="{{ e((string) ($pageData['state']['bank_id'] ?? '')) }}" />
+	<input type="hidden" name="area_id" id="area_id" value="{{ e($pageData->state()->areaId()) }}" />
+	<input type="hidden" name="bank_id" id="bank_id" value="{{ e($pageData->state()->bankId()) }}" />
 	<input type="hidden" name="codig_and" id="codig_and" value="" />
 	<input type="hidden" name="banco_and" id="banco_and" value="" />
 	<input type="hidden" name="codig_lnc" id="codig_lnc" value="" />

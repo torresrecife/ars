@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Concerns\ValidatesLegacyFormRequest;
 use App\Http\Requests\MetaStoreRequest;
 use App\Http\Requests\MetaUpdateRequest;
 use App\Services\MetaService;
 use App\Support\View;
-use Illuminate\Http\Request;
 
 class MetaController extends Controller
 {
-	use ValidatesLegacyFormRequest;
-
 	/** @var MetaService */
 	private $metaService;
 
@@ -55,96 +51,34 @@ class MetaController extends Controller
 		));
 	}
 
-	public function ajax(array $input = array())
+	public function show($id)
 	{
-		$flag = isset($input['flag']) ? (string) $input['flag'] : '';
-
-		if ($flag === 'E') {
-			$row = $this->metaService->findById(isset($input['meta_id']) ? (int) $input['meta_id'] : 0);
-			if (!$row) {
-				return '';
-			}
-
-			$ordered = array(
-				isset($row['meta_id']) ? $row['meta_id'] : '',
-				isset($row['banco_id']) ? $row['banco_id'] : '',
-				isset($row['meta_mes']) ? $row['meta_mes'] : '',
-				isset($row['meta_ano']) ? $row['meta_ano'] : '',
-				isset($row['anda_id']) ? $row['anda_id'] : '',
-				isset($row['meta_valor']) ? $row['meta_valor'] : '',
-				isset($row['def_sem']) ? $row['def_sem'] : '',
-				isset($row['sem_1']) ? $row['sem_1'] : '',
-				isset($row['sem_2']) ? $row['sem_2'] : '',
-				isset($row['sem_3']) ? $row['sem_3'] : '',
-				isset($row['sem_4']) ? $row['sem_4'] : '',
-				isset($row['sem_5']) ? $row['sem_5'] : '',
-				isset($row['regiao_id']) ? $row['regiao_id'] : '',
-			);
-
-			return implode('-|-', $ordered) . '-|-';
+		$row = $this->metaService->findById((int) $id);
+		if (!$row) {
+			return $this->apiJsonResponse(false, 'not_found', 'Meta nao encontrada.', array(), 404);
 		}
 
-		if ($flag === 'I') {
-			return $this->metaService->createManyFromRequest($input);
-		}
-
-		if ($flag === 'U') {
-			return $this->metaService->updateManyFromRequest($input);
-		}
-
-		if ($flag === 'D') {
-			return $this->metaService->delete(isset($input['meta_id']) ? (int) $input['meta_id'] : 0) ? '1' : '0';
-		}
-
-		return '0';
+		return $this->apiJsonResponse(true, 'loaded', 'Meta carregada.', $row);
 	}
 
-	public function webIndex(Request $request)
+	public function store(MetaStoreRequest $request)
 	{
-		return response($this->index($request->all(), $request->session()->all()));
+		return $this->mapWriteResultToJson($this->metaService->createManyFromRequest($request->all()), 'Meta criada com sucesso.');
 	}
 
-	public function webAjax(Request $request)
+	public function update(MetaUpdateRequest $request, $id)
 	{
 		$input = $request->all();
-		$flag = isset($input['flag']) ? (string) $input['flag'] : '';
+		$input['meta_id'] = (int) $id;
 
-		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, MetaStoreRequest::class)) {
-			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
-		}
-		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, MetaUpdateRequest::class)) {
-			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
-		}
-
-		return $this->webAjaxJson($input, $flag);
+		return $this->mapWriteResultToJson($this->metaService->updateManyFromRequest($input), 'Meta atualizada com sucesso.');
 	}
 
-	private function webAjaxJson(array $input, $flag)
+	public function destroy($id)
 	{
-		if ($flag === 'E') {
-			$row = $this->metaService->findById(isset($input['meta_id']) ? (int) $input['meta_id'] : 0);
-			if (!$row) {
-				return $this->apiJsonResponse(false, 'not_found', 'Meta nao encontrada.', array(), 404);
-			}
-
-			return $this->apiJsonResponse(true, 'loaded', 'Meta carregada.', $row);
-		}
-
-		if ($flag === 'I') {
-			return $this->mapWriteResultToJson($this->metaService->createManyFromRequest($input), 'Meta criada com sucesso.');
-		}
-
-		if ($flag === 'U') {
-			return $this->mapWriteResultToJson($this->metaService->updateManyFromRequest($input), 'Meta atualizada com sucesso.');
-		}
-
-		if ($flag === 'D') {
-			return $this->metaService->delete(isset($input['meta_id']) ? (int) $input['meta_id'] : 0)
-				? $this->apiJsonResponse(true, 'success', 'Meta excluida com sucesso.')
-				: $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
-		}
-
-		return $this->apiJsonResponse(false, 'invalid_flag', 'Operacao invalida.', array(), 400);
+		return $this->metaService->delete((int) $id)
+			? $this->apiJsonResponse(true, 'success', 'Meta excluida com sucesso.')
+			: $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
 	}
 
 	private function mapWriteResultToJson($result, $successMessage)

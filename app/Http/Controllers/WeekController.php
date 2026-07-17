@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Concerns\ValidatesLegacyFormRequest;
 use App\Http\Requests\WeekStoreRequest;
 use App\Http\Requests\WeekUpdateRequest;
 use App\Services\WeekService;
 use App\Support\View;
-use Illuminate\Http\Request;
 
 class WeekController extends Controller
 {
-	use ValidatesLegacyFormRequest;
-
 	/** @var WeekService */
 	private $weekService;
 
@@ -48,80 +44,34 @@ class WeekController extends Controller
 		));
 	}
 
-	public function ajax(array $input = array())
+	public function show($id)
 	{
-		$flag = isset($input['flag']) ? (string) $input['flag'] : '';
-
-		if ($flag === 'E') {
-			$row = $this->weekService->findById(isset($input['id_sem']) ? (int) $input['id_sem'] : 0);
-			if (!$row) {
-				return '';
-			}
-
-			return implode('-|-', array_values($row)) . '-|-';
+		$row = $this->weekService->findById((int) $id);
+		if (!$row) {
+			return $this->apiJsonResponse(false, 'not_found', 'Semana nao encontrada.', array(), 404);
 		}
 
-		if ($flag === 'I') {
-			return (string) $this->weekService->createFromRequest($input);
-		}
-
-		if ($flag === 'U') {
-			return (string) $this->weekService->updateFromRequest($input);
-		}
-
-		if ($flag === 'D') {
-			return $this->weekService->delete(isset($input['id_sem']) ? (int) $input['id_sem'] : 0) ? '1' : '0';
-		}
-
-		return '0';
+		return $this->apiJsonResponse(true, 'loaded', 'Semana carregada.', $row);
 	}
 
-	public function webIndex(Request $request)
+	public function store(WeekStoreRequest $request)
 	{
-		return response($this->index());
+		return $this->mapWriteResultToJson($this->weekService->createFromRequest($request->all()), 'Semana criada com sucesso.');
 	}
 
-	public function webAjax(Request $request)
+	public function update(WeekUpdateRequest $request, $id)
 	{
 		$input = $request->all();
-		$flag = isset($input['flag']) ? (string) $input['flag'] : '';
+		$input['id_sem'] = (int) $id;
 
-		if (isset($input['flag']) && (string) $input['flag'] === 'I' && !$this->validateLegacyFormRequest($request, WeekStoreRequest::class)) {
-			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
-		}
-		if (isset($input['flag']) && (string) $input['flag'] === 'U' && !$this->validateLegacyFormRequest($request, WeekUpdateRequest::class)) {
-			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
-		}
-
-		return $this->webAjaxJson($input, $flag);
+		return $this->mapWriteResultToJson($this->weekService->updateFromRequest($input), 'Semana atualizada com sucesso.');
 	}
 
-	private function webAjaxJson(array $input, $flag)
+	public function destroy($id)
 	{
-		if ($flag === 'E') {
-			$row = $this->weekService->findById(isset($input['id_sem']) ? (int) $input['id_sem'] : 0);
-			if (!$row) {
-				return $this->apiJsonResponse(false, 'not_found', 'Semana nao encontrada.', array(), 404);
-			}
-
-			return $this->apiJsonResponse(true, 'loaded', 'Semana carregada.', $row);
-		}
-
-		if ($flag === 'I') {
-			return $this->mapWriteResultToJson($this->weekService->createFromRequest($input), 'Semana criada com sucesso.');
-		}
-
-		if ($flag === 'U') {
-			return $this->mapWriteResultToJson($this->weekService->updateFromRequest($input), 'Semana atualizada com sucesso.');
-		}
-
-		if ($flag === 'D') {
-			return $this->weekService->delete(isset($input['id_sem']) ? (int) $input['id_sem'] : 0)
-				? $this->apiJsonResponse(true, 'success', 'Semana excluida com sucesso.')
-				: $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
-		}
-
-		return $this->apiJsonResponse(false, 'invalid_flag', 'Operacao invalida.', array(), 400);
+		return $this->weekService->delete((int) $id)
+			? $this->apiJsonResponse(true, 'success', 'Semana excluida com sucesso.')
+			: $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
 	}
 
 	private function mapWriteResultToJson($result, $successMessage)

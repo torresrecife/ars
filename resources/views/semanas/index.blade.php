@@ -1,6 +1,6 @@
 <div style="margin-top:80px">
 <script>
-window.arsWeekAjaxUrl = "{{ url('ajax/semanas') }}";
+window.arsWeekResourceBaseUrl = "{{ url('***REMOVED***/semanas') }}";
 </script>
 <label><h2><u>Semanas</u></h2></label>
 <div>

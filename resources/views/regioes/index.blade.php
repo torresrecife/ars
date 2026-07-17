@@ -1,6 +1,6 @@
 <div style="margin-top:80px">
 <script>
-window.arsRegionAjaxUrl = "{{ url('ajax/regioes') }}";
+window.arsRegionResourceBaseUrl = "{{ url('***REMOVED***/regioes') }}";
 </script>
 <label><h2><u>Regi&otilde;es</u></h2></label>
 <div>

@@ -7,7 +7,9 @@ namespace App\Services;
 use App\Repositories\MainPageRepository;
 use App\ViewModels\MainPageContent;
 use App\ViewModels\MainPageState;
+use App\ViewModels\MainPageTopAction;
 use App\ViewModels\MainPageUserContext;
+use App\ViewModels\MainPageViewData;
 
 class MainPageService
 {
@@ -33,14 +35,12 @@ class MainPageService
 		$state = $this->resolveState($input);
 		$monthYearLabel = $state->startDate();
 
-		return array(
-			'user' => $userContext->toArray(),
-			'state' => $state->toArray(),
-			'currentSection' => $state->section(),
-			'monthYearLabel' => $monthYearLabel,
-			'topAction' => $this->resolveTopAction($state->section()),
-			'canAdmin' => $userContext->canAdmin(),
-			'content' => $this->resolveContent($state, $userContext, $monthYearLabel)->toArray(),
+		return new MainPageViewData(
+			$userContext,
+			$state,
+			$monthYearLabel,
+			$this->resolveContent($state, $userContext, $monthYearLabel),
+			$this->resolveTopAction($state->section())
 		);
 	}
 
@@ -104,13 +104,13 @@ class MainPageService
 	private function resolveTopAction($currentSection)
 	{
 		$actions = array(
-			'usuarios' => array('class' => 'newuser', 'label' => 'Novo Usuário', 'js' => 'fc_edit_usu("", "I");'),
-			'setores' => array('class' => 'newsetor', 'label' => 'Novo Setor', 'js' => 'fc_edit_setor("", "I");'),
-			'clientes' => array('class' => 'newsetor', 'label' => 'Novo Cliente', 'js' => 'fc_edit_cliente("", "I");'),
-			'andamentos' => array('class' => 'newsetor', 'label' => 'Novo Andamento', 'js' => 'fc_edit_andamento("", "I");'),
-			'metas-***REMOVED***' => array('class' => 'newsetor', 'label' => 'Nova Meta', 'js' => 'fc_edit_metas("", "I");'),
-			'semanas' => array('class' => 'newsetor', 'label' => 'Nova Semana', 'js' => 'fc_edit_sem("", "I");'),
-			'regioes' => array('class' => 'newsetor', 'label' => 'Nova Região', 'js' => 'fc_edit_regiao("", "I");'),
+			'usuarios' => new MainPageTopAction('newuser', 'Novo Usuário', 'fc_edit_usu("", "I");'),
+			'setores' => new MainPageTopAction('newsetor', 'Novo Setor', 'fc_edit_setor("", "I");'),
+			'clientes' => new MainPageTopAction('newsetor', 'Novo Cliente', 'fc_edit_cliente("", "I");'),
+			'andamentos' => new MainPageTopAction('newsetor', 'Novo Andamento', 'fc_edit_andamento("", "I");'),
+			'metas-***REMOVED***' => new MainPageTopAction('newsetor', 'Nova Meta', 'fc_edit_metas("", "I");'),
+			'semanas' => new MainPageTopAction('newsetor', 'Nova Semana', 'fc_edit_sem("", "I");'),
+			'regioes' => new MainPageTopAction('newsetor', 'Nova Região', 'fc_edit_regiao("", "I");'),
 		);
 
 		return isset($actions[$currentSection]) ? $actions[$currentSection] : null;
@@ -121,39 +121,39 @@ class MainPageService
 		switch ($state->section()) {
 			case 'carteiras':
 				return MainPageContent::forView('index/carteira', array(
-						'banks' => $this->repository->listBanksByArea($state->areaId(), $user->clientIds()),
-						'hidArea' => $state->areaId(),
-						'monthYearLabel' => $monthYearLabel,
-						'month' => $state->mes(),
-						'year' => $state->ano(),
-						'regions' => $user->regions(),
-						'showRegionSelector' => $user->showRegionSelector(),
-						'selectedRegionId' => $state->regiaoId(),
-					));
+					'banks' => $this->repository->listBanksByArea($state->areaId(), $user->clientIds()),
+					'hidArea' => $state->areaId(),
+					'monthYearLabel' => $monthYearLabel,
+					'month' => $state->mes(),
+					'year' => $state->ano(),
+					'regions' => $user->regions(),
+					'showRegionSelector' => $user->showRegionSelector(),
+					'selectedRegionId' => $state->regiaoId(),
+				));
 			case 'painel':
 				return MainPageContent::forController('dashboard-panel', true);
 			case 'producao':
 				return MainPageContent::forView('index/producao', array(
-						'areas' => $this->repository->listAreasForProduction($user->level(), $user->sectorId()),
-						'monthYearLabel' => $monthYearLabel,
-						'month' => $state->mes(),
-						'year' => $state->ano(),
-						'startSector' => $state->startSetor(),
-						'regions' => $user->regions(),
-						'showRegionSelector' => $user->showRegionSelector(),
-						'selectedRegionId' => $state->regiaoId(),
-						'userLevel' => $user->level(),
-					));
+					'areas' => $this->repository->listAreasForProduction($user->level(), $user->sectorId()),
+					'monthYearLabel' => $monthYearLabel,
+					'month' => $state->mes(),
+					'year' => $state->ano(),
+					'startSector' => $state->startSetor(),
+					'regions' => $user->regions(),
+					'showRegionSelector' => $user->showRegionSelector(),
+					'selectedRegionId' => $state->regiaoId(),
+					'userLevel' => $user->level(),
+				));
 			case 'relatorio-semanal':
 				return MainPageContent::forController('general-production-weekly', true);
 			case 'relatorio-mensal':
 				return MainPageContent::forController('general-production-monthly', true);
 			case '***REMOVED***':
 				return MainPageContent::forView('***REMOVED***/index', array(
-						'userLevel' => $user->level(),
-						'hidArea' => $state->areaId(),
-						'banks' => $this->repository->listAdminBanks($user->sectorId(), $user->clientIds()),
-					));
+					'userLevel' => $user->level(),
+					'hidArea' => $state->areaId(),
+					'banks' => $this->repository->listAdminBanks($user->sectorId(), $user->clientIds()),
+				));
 			case 'usuarios':
 				return MainPageContent::forController('user-***REMOVED***');
 			case 'setores':
@@ -164,11 +164,11 @@ class MainPageService
 				return MainPageContent::forController('andamento-***REMOVED***');
 			case 'metas-select':
 				return MainPageContent::forView('index/metas-select', array(
-						'banks' => $this->repository->listBanksForMetas($user->sectorId(), $user->clientIds()),
-						'monthYearLabel' => $monthYearLabel,
-						'month' => $state->mes(),
-						'year' => $state->ano(),
-					));
+					'banks' => $this->repository->listBanksForMetas($user->sectorId(), $user->clientIds()),
+					'monthYearLabel' => $monthYearLabel,
+					'month' => $state->mes(),
+					'year' => $state->ano(),
+				));
 			case 'metas-***REMOVED***':
 				return MainPageContent::forController('meta-***REMOVED***');
 			case 'semanas':
@@ -178,8 +178,8 @@ class MainPageService
 			case 'inicio':
 			default:
 				return MainPageContent::forView('index/default', array(
-						'areas' => $this->repository->listAreas($user->sectorId()),
-					));
+					'areas' => $this->repository->listAreas($user->sectorId()),
+				));
 		}
 	}
 

@@ -4,7 +4,7 @@
 @endphp
 <div style="margin-top:80px">
 <script>
-window.arsMetaAjaxUrl = "{{ url('ajax/metas') }}";
+window.arsMetaResourceBaseUrl = "{{ url('***REMOVED***/metas') }}";
 </script>
 <br><div style="font-family:arial;margin-left:40px;font-size:10pt;">Cliente: <b>{{ e((string) $bankCode) }}</b> | M&ecirc;s / Ano: <b>{{ e((string) $startDate) }}</b></div><br>
 <label><h2><u>Metas</u></h2></label>

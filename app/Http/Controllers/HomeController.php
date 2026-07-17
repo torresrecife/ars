@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Services\MainPageService;
 use App\Services\AuthService;
+use App\Services\MainPageContentRenderer;
+use App\Services\MainPageService;
 use App\Support\View;
 use Illuminate\Http\Request;
 
@@ -20,11 +21,19 @@ class HomeController extends Controller
 	/** @var AuthService */
 	private $authService;
 
-	public function __construct(MainPageService $service, View $view, AuthService $authService)
-	{
+	/** @var MainPageContentRenderer */
+	private $contentRenderer;
+
+	public function __construct(
+		MainPageService $service,
+		View $view,
+		AuthService $authService,
+		MainPageContentRenderer $contentRenderer
+	) {
 		$this->service = $service;
 		$this->view = $view;
 		$this->authService = $authService;
+		$this->contentRenderer = $contentRenderer;
 	}
 
 	public function index(array $input, array $session)
@@ -139,7 +148,7 @@ class HomeController extends Controller
 	private function renderPage(array $input, array $session, $entryUrl)
 	{
 		$pageData = $this->service->build($input, $session);
-		$contentHtml = $this->renderContent($pageData['content'], $input);
+		$contentHtml = $this->contentRenderer->render($pageData->content(), $input, $session);
 		$exportPath = dirname(dirname(dirname(__DIR__))) . '/php2/exportar.php';
 
 		return $this->view->render('index/shell', array(
@@ -159,46 +168,4 @@ class HomeController extends Controller
 
 		$this->authService->syncSessionContext($user);
 	}
-
-	private function renderContent(array $content, array $input)
-	{
-		if ($content['type'] === 'view') {
-			return $this->view->render($content['view'], $content['data']);
-		}
-
-		if ($content['type'] === 'controller') {
-			return $this->renderControllerContent($content['controller'], $input);
-		}
-
-		return '';
-	}
-
-	private function renderControllerContent($controllerName, array $input)
-	{
-		switch ($controllerName) {
-			case 'dashboard-panel':
-				return app(DashboardPanelController::class)->index($input, session()->all());
-			case 'general-production-weekly':
-				return app(GeneralProductionController::class)->weekly($input, session()->all());
-			case 'general-production-monthly':
-				return app(GeneralProductionController::class)->monthly($input, session()->all());
-			case 'user-***REMOVED***':
-				return app(UserAdminController::class)->index();
-			case 'sector-***REMOVED***':
-				return app(SectorAdminController::class)->index();
-			case 'client-***REMOVED***':
-				return app(ClientAdminController::class)->index();
-			case 'andamento-***REMOVED***':
-				return app(AndamentoAdminController::class)->index();
-			case 'meta-***REMOVED***':
-				return app(MetaController::class)->index($input, session()->all());
-			case 'week-***REMOVED***':
-				return app(WeekController::class)->index();
-			case 'region-***REMOVED***':
-				return app(RegionAdminController::class)->index();
-			default:
-				return '';
-		}
-	}
-
 }

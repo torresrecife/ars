@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Concerns\ValidatesLegacyFormRequest;
 use App\Http\Requests\RegionStoreRequest;
 use App\Http\Requests\RegionUpdateRequest;
 use App\Services\RegionAdminService;
 use App\Support\View;
-use Illuminate\Http\Request;
 
 class RegionAdminController extends Controller
 {
-	use ValidatesLegacyFormRequest;
-
 	/** @var RegionAdminService */
 	private $service;
 
@@ -32,75 +28,38 @@ class RegionAdminController extends Controller
 		return $this->view->render('regioes/index', $this->service->indexData());
 	}
 
-	public function ajax(array $input)
+	public function show($id)
 	{
-		$flag = isset($input['flag']) ? (string) $input['flag'] : '';
-		if ($flag === 'E') {
-			return $this->service->editPayload(isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0);
-		}
-		if ($flag === 'I') {
-			return $this->service->create($input);
-		}
-		if ($flag === 'U') {
-			return $this->service->update($input);
-		}
-		if ($flag === 'D') {
-			return $this->service->delete(isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0);
+		$payload = $this->service->editPayload((int) $id);
+		$data = $payload !== '' ? json_decode($payload, true) : null;
+		if (!is_array($data)) {
+			return $this->apiJsonResponse(false, 'not_found', 'Regiao nao encontrada.', array(), 404);
 		}
 
-		return '0';
+		return $this->apiJsonResponse(true, 'loaded', 'Regiao carregada.', $data);
 	}
 
-	public function webIndex(Request $request)
+	public function store(RegionStoreRequest $request)
 	{
-		return response($this->index());
+		return $this->mapWriteResultToJson($this->service->create($request->all()), 'Regiao criada com sucesso.');
 	}
 
-	public function webAjax(Request $request)
-	{
-		$flag = (string) $request->input('flag', '');
-		if ($flag === 'I' && !$this->validateLegacyFormRequest($request, RegionStoreRequest::class)) {
-			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
-		}
-		if ($flag === 'U' && !$this->validateLegacyFormRequest($request, RegionUpdateRequest::class)) {
-			return $this->apiJsonResponse(false, 'validation_error', 'Dados invalidos.', array(), 422);
-		}
-
-		return $this->webAjaxJson($request, $flag);
-	}
-
-	private function webAjaxJson(Request $request, $flag)
+	public function update(RegionUpdateRequest $request, $id)
 	{
 		$input = $request->all();
+		$input['regiao_id'] = (int) $id;
 
-		if ($flag === 'E') {
-			$payload = $this->service->editPayload(isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0);
-			$data = $payload !== '' ? json_decode($payload, true) : null;
-			if (!is_array($data)) {
-				return $this->apiJsonResponse(false, 'not_found', 'Regiao nao encontrada.', array(), 404);
-			}
+		return $this->mapWriteResultToJson($this->service->update($input), 'Regiao atualizada com sucesso.');
+	}
 
-			return $this->apiJsonResponse(true, 'loaded', 'Regiao carregada.', $data);
+	public function destroy($id)
+	{
+		$result = $this->service->delete((int) $id);
+		if ($result === '3') {
+			return $this->apiJsonResponse(false, 'linked_users', 'Existem usuarios vinculados a esta regiao.', array(), 409);
 		}
 
-		if ($flag === 'I') {
-			return $this->mapWriteResultToJson($this->service->create($input), 'Regiao criada com sucesso.');
-		}
-
-		if ($flag === 'U') {
-			return $this->mapWriteResultToJson($this->service->update($input), 'Regiao atualizada com sucesso.');
-		}
-
-		if ($flag === 'D') {
-			$result = $this->service->delete(isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0);
-			if ($result === '3') {
-				return $this->apiJsonResponse(false, 'linked_users', 'Existem usuarios vinculados a esta regiao.', array(), 409);
-			}
-
-			return $this->mapWriteResultToJson($result, 'Regiao excluida com sucesso.');
-		}
-
-		return $this->apiJsonResponse(false, 'invalid_flag', 'Operacao invalida.', array(), 400);
+		return $this->mapWriteResultToJson($result, 'Regiao excluida com sucesso.');
 	}
 
 	private function mapWriteResultToJson($result, $successMessage)

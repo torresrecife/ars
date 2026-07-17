@@ -10,210 +10,181 @@ function my_especie(valor){
 }
 
 function fc_edit_metas(valor1,valor2){
-var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax/metas";
+	var metaResourceBaseUrl = window.arsMetaResourceBaseUrl || "***REMOVED***/metas";
+	var metaResourceUrl = function(id){
+		return metaResourceBaseUrl + "/" + id;
+	};
 
-		var tt = "";
-		var tu = "";
-		var resetMetaDialog = function(){
-			$("#meta_id").val("");
-			$("#meta_name_1").val("");
-			$("#regiao_id_1").val("");
-			$("#meta_valor_1").val("");
-			$("#meta_valor_1").attr("readonly",false);
-			$("#def_sem_1").attr("checked",false);
-			$("#sem1_valor_1").val("").hide();
-			$("#sem2_valor_1").val("").hide();
-			$("#sem3_valor_1").val("").hide();
-			$("#sem4_valor_1").val("").hide();
-			$("#sem5_valor_1").val("").hide();
-			$("#metas_1").html("");
-			$("#metas_num").val("1");
-			$("#inp1_1").show();
-		};
-		var abrirDialogMeta = function(){
-			$( "#dialog-edit-metas" ).dialog({
-				title: tt,
-				modal: true,
-				autoOpen: true,
-				height: 400,
-				width: 1080,
-				buttons: {
-					Salvar: function() {
-						var mdados="";
-						var invalido = false;
-						$('.cls_meta').each(function(){
-							if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-								alert("O campo " + $(this).attr("title") + " é obrigatório ");
-								$(this).focus();
-								invalido = true;
-								return false;
-							}
-							mdados += $(this).attr("name")+"="+escape($(this).val())+"&";
-						});
-						if(invalido){
-							return false;
-						}
-						var metam="";
-						var seman="";
-						var defse="";
-						var numes=0;
-						$('.cls_metas2').each(function(){
-							numes++;
-							metam += $(this).attr("name")+"="+escape($(this).val())+"&"+"regiao_id_"+numes+"="+escape($("#regiao_id_"+numes).val())+"&"+"meta_valor_"+numes+"="+escape($("#meta_valor_"+numes).val())+"&";
-							if($("#def_sem_"+numes).prop("checked")==true){
-								defse += "def_sem_"+numes+"=Y&";
-							}else{
-								defse += "def_sem_"+numes+"=N&";
-							}
-							seman += "sem1_valor_"+numes+"="+escape($("#sem1_valor_"+numes).val())+"&";
-							seman += "sem2_valor_"+numes+"="+escape($("#sem2_valor_"+numes).val())+"&";
-							seman += "sem3_valor_"+numes+"="+escape($("#sem3_valor_"+numes).val())+"&";
-							seman += "sem4_valor_"+numes+"="+escape($("#sem4_valor_"+numes).val())+"&";
-							seman += "sem5_valor_"+numes+"="+escape($("#sem5_valor_"+numes).val())+"&";
-						});
-						$.ajax({
-						   type: "POST",
-						   url:  metaAjaxUrl,
-						   dataType: "json",
-						   data: "flag=" + valor2 + "&response_format=json&" + mdados + metam + seman + defse + "&numes=" + numes,
-						   success: function(response){
-						 		if(response && response.ok===true){
-									$( "#dialog-edit-metas" ).dialog( "close" );
-									msgbox(valor2=="I"?"<br><table align='center'><tr><td>Meta(s) " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Meta editada com sucesso !</td></tr></table><br>", {
-										Fechar: function(){
-											$( this ).dialog( "close" );
-											AbrirMetasAdmin();
-										}
-									});
-								}else if(response && response.code=="duplicate"){
-									alert("Meta já cadastrada!");
-								}else{
-									alert((response && response.message) ? response.message : "Erro ao salvar a meta.");
-								}
-							},
-							error: function(xhr){
-								alert(LerMensagemAjaxErro(xhr, "Erro ao salvar a meta."));
-							}
-						});
+	var tt = "";
+	var tu = "";
+	var resetMetaDialog = function(){
+		$("#meta_id").val("");
+		$("#meta_name_1").val("");
+		$("#regiao_id_1").val("");
+		$("#meta_valor_1").val("");
+		$("#meta_valor_1").attr("readonly",false);
+		$("#def_sem_1").prop("checked",false);
+		$("#sem1_valor_1").val("").hide();
+		$("#sem2_valor_1").val("").hide();
+		$("#sem3_valor_1").val("").hide();
+		$("#sem4_valor_1").val("").hide();
+		$("#sem5_valor_1").val("").hide();
+		$("#metas_1").html("");
+		$("#metas_num").val("1");
+		$("#inp1_1").show();
+	};
+	var coletarPayloadMeta = function(){
+		var payload = {};
+		var invalido = false;
 
-					},
-					Sair: function() {
-						$( this ).dialog( "close" );
-					}
-				},
-				close: function( event, ui ) {
-					resetMetaDialog();
-				}
-			});
-		};
-		if(valor2=="I"){
-			tt="Nova Meta";
-			tu="criada(s)";
-			$(".validateMetas").text("Crie Um " + tt);
-			resetMetaDialog();
-			$("#regiao_id_1").val("");
-			abrirDialogMeta();
-			return;
-		}else if(valor2=="U"){
-			tt="Editar Meta";
-			tu="editada(s)";
-			$(".validateMetas").text("Edite a Meta Abaixo");
-		}
-		$.ajax({
-			type: "POST",
-			url:  metaAjaxUrl,
-			dataType: "json",
-			data: { flag: "E", meta_id: valor1, response_format: "json" },
-			success: function(response){
-				if(!response || response.ok!==true || !response.data){
-					alert((response && response.message) ? response.message : "Erro ao carregar os dados da meta.");
-					return;
-				}
-				var ret = response.data || {};
-
-				if((ret.def_sem || "N")=="Y"){
-					$("#def_sem_1").attr("checked",true);
-					$(".sem_1").show();
-					$("#meta_valor_1").attr("readonly",true);
-				}else{
-					$("#def_sem_1").attr("checked",false);
-					$(".sem_1").hide();
-					$("#meta_valor_1").attr("readonly",false);
-				}
-
-				$("#meta_id").val(ret.meta_id || "");
-				$("#banco_id").val(ret.banco_id || "");
-				$("#meta_mes").val(ret.meta_mes || "");
-				$("#meta_ano").val(ret.meta_ano || "");
-				$("#meta_name_1").val(ret.anda_id || "");
-				$("#regiao_id_1").val(ret.regiao_id || "");
-				$("#meta_valor_1").val(ret.meta_valor || "");
-				$("#sem1_valor_1").val(ret.sem_1 || "");
-				$("#sem2_valor_1").val(ret.sem_2 || "");
-				$("#sem3_valor_1").val(ret.sem_3 || "");
-				$("#sem4_valor_1").val(ret.sem_4 || "");
-				$("#sem5_valor_1").val(ret.sem_5 || "");
-
-				var espe = $("#meta_name_1 option:selected").attr("especie");
-				if(espe==2){
-					$("#meta_valor_1").setMask("decimal");
-					$(".sem_1").setMask("decimal");
-					if((ret.def_sem || "N")=="Y"){
-						somarMeta(1);
-					}
-				}else{
-					$("#meta_valor_1").val(parseInt(ret.meta_valor,10) || 0);
-					$("#sem1_valor_1").val(parseInt(ret.sem_1,10) || 0);
-					$("#sem2_valor_1").val(parseInt(ret.sem_2,10) || 0);
-					$("#sem3_valor_1").val(parseInt(ret.sem_3,10) || 0);
-					$("#sem4_valor_1").val(parseInt(ret.sem_4,10) || 0);
-					$("#sem5_valor_1").val(parseInt(ret.sem_5,10) || 0);
-					$("#meta_valor_1").setMask("integer");
-					$(".sem_1").setMask("integer");
-					if((ret.def_sem || "N")=="Y"){
-						somarMeta(1);
-					}
-				}
-
-				abrirDialogMeta();
-			},
-			error: function(xhr){
-				alert(LerMensagemAjaxErro(xhr, "Erro ao carregar os dados da meta."));
+		$('.cls_meta').each(function(){
+			if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
+				alert("O campo " + $(this).attr("title") + " é obrigatório ");
+				$(this).focus();
+				invalido = true;
+				return false;
 			}
+			payload[$(this).attr("name")] = $(this).val();
 		});
-}
-function fc_del_metas(valor1,valor2){
-var metaAjaxUrl = window.arsMetaAjaxUrl || "ajax/metas";
-		msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a meta <b>" + valor2 + "</b> ?</td></tr></table><br>",{
-			"Sim": function(){
-				var confirmDialog = $(this);
-				$.ajax({
-					type: "POST",
-					url:  metaAjaxUrl,
-					dataType: "json",
-					data: { flag: "D", meta_id: valor1, response_format: "json" },
-					success: function(response){
-						if(response && response.ok===true){
-							confirmDialog.dialog("close");
-							msgbox("<br><table align='center'><tr><td>Meta deletada com sucesso !</td></tr></table><br>",{
+		if(invalido){
+			return false;
+		}
+
+		var numes = 0;
+		$('.cls_metas2').each(function(){
+			numes++;
+			payload[$(this).attr("name")] = $(this).val();
+			payload["regiao_id_" + numes] = $("#regiao_id_" + numes).val();
+			payload["meta_valor_" + numes] = $("#meta_valor_" + numes).val();
+			payload["def_sem_" + numes] = $("#def_sem_" + numes).prop("checked") ? "Y" : "N";
+			payload["sem1_valor_" + numes] = $("#sem1_valor_" + numes).val();
+			payload["sem2_valor_" + numes] = $("#sem2_valor_" + numes).val();
+			payload["sem3_valor_" + numes] = $("#sem3_valor_" + numes).val();
+			payload["sem4_valor_" + numes] = $("#sem4_valor_" + numes).val();
+			payload["sem5_valor_" + numes] = $("#sem5_valor_" + numes).val();
+		});
+		payload.numes = numes;
+
+		return payload;
+	};
+	var abrirDialogMeta = function(){
+		$("#dialog-edit-metas").dialog({
+			title: tt,
+			modal: true,
+			autoOpen: true,
+			height: 400,
+			width: 1080,
+			buttons: {
+				Salvar: function() {
+					var payload = coletarPayloadMeta();
+					if(payload===false){
+						return false;
+					}
+					arsJsonSubmit(
+						valor2=="I" ? "POST" : "PUT",
+						valor2=="I" ? metaResourceBaseUrl : metaResourceUrl($("#meta_id").val()),
+						payload,
+						"Erro ao salvar a meta.",
+						function(){
+							$("#dialog-edit-metas").dialog("close");
+							msgbox(valor2=="I"?"<br><table align='center'><tr><td>Meta(s) " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Meta editada com sucesso !</td></tr></table><br>", {
 								Fechar: function(){
-									$( this ).dialog( "close" );
+									$(this).dialog("close");
 									AbrirMetasAdmin();
 								}
 							});
-						}else{
-							alert((response && response.message) ? response.message : "Erro ao excluir a meta.");
 						}
-					},
-					error: function(xhr){
-						alert(LerMensagemAjaxErro(xhr, "Erro ao excluir a meta."));
-					}
-				});
+					);
+				},
+				Sair: function() {
+					$(this).dialog("close");
+				}
 			},
-			"Não": function(){
-				$( this ).dialog( "close" );
+			close: function() {
+				resetMetaDialog();
 			}
 		});
+	};
+	if(valor2=="I"){
+		tt="Nova Meta";
+		tu="criada(s)";
+		$(".validateMetas").text("Crie Um " + tt);
+		resetMetaDialog();
+		$("#regiao_id_1").val("");
+		abrirDialogMeta();
+		return;
+	}else if(valor2=="U"){
+		tt="Editar Meta";
+		tu="editada(s)";
+		$(".validateMetas").text("Edite a Meta Abaixo");
+	}
+	arsJsonGet(metaResourceUrl(valor1), "Erro ao carregar os dados da meta.", function(ret){
+		if((ret.def_sem || "N")=="Y"){
+			$("#def_sem_1").prop("checked",true);
+			$(".sem_1").show();
+			$("#meta_valor_1").attr("readonly",true);
+		}else{
+			$("#def_sem_1").prop("checked",false);
+			$(".sem_1").hide();
+			$("#meta_valor_1").attr("readonly",false);
+		}
+
+		$("#meta_id").val(ret.meta_id || "");
+		$("#banco_id").val(ret.banco_id || "");
+		$("#meta_mes").val(ret.meta_mes || "");
+		$("#meta_ano").val(ret.meta_ano || "");
+		$("#meta_name_1").val(ret.anda_id || "");
+		$("#regiao_id_1").val(ret.regiao_id || "");
+		$("#meta_valor_1").val(ret.meta_valor || "");
+		$("#sem1_valor_1").val(ret.sem_1 || "");
+		$("#sem2_valor_1").val(ret.sem_2 || "");
+		$("#sem3_valor_1").val(ret.sem_3 || "");
+		$("#sem4_valor_1").val(ret.sem_4 || "");
+		$("#sem5_valor_1").val(ret.sem_5 || "");
+
+		var espe = $("#meta_name_1 option:selected").attr("especie");
+		if(espe==2){
+			$("#meta_valor_1").setMask("decimal");
+			$(".sem_1").setMask("decimal");
+			if((ret.def_sem || "N")=="Y"){
+				somarMeta(1);
+			}
+		}else{
+			$("#meta_valor_1").val(parseInt(ret.meta_valor,10) || 0);
+			$("#sem1_valor_1").val(parseInt(ret.sem_1,10) || 0);
+			$("#sem2_valor_1").val(parseInt(ret.sem_2,10) || 0);
+			$("#sem3_valor_1").val(parseInt(ret.sem_3,10) || 0);
+			$("#sem4_valor_1").val(parseInt(ret.sem_4,10) || 0);
+			$("#sem5_valor_1").val(parseInt(ret.sem_5,10) || 0);
+			$("#meta_valor_1").setMask("integer");
+			$(".sem_1").setMask("integer");
+			if((ret.def_sem || "N")=="Y"){
+				somarMeta(1);
+			}
+		}
+
+		abrirDialogMeta();
+	});
+}
+function fc_del_metas(valor1,valor2){
+	var metaResourceBaseUrl = window.arsMetaResourceBaseUrl || "***REMOVED***/metas";
+	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a meta <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+		"Sim": function(){
+			var confirmDialog = $(this);
+			arsJsonSubmit("DELETE", metaResourceBaseUrl + "/" + valor1, {}, "Erro ao excluir a meta.", function(){
+				confirmDialog.dialog("close");
+				msgbox("<br><table align='center'><tr><td>Meta deletada com sucesso !</td></tr></table><br>",{
+					Fechar: function(){
+						$( this ).dialog( "close" );
+						AbrirMetasAdmin();
+					}
+				});
+			});
+		},
+		"Não": function(){
+			$( this ).dialog( "close" );
+		}
+	});
 }
 function inserir_metas(valor,stt){
 	var crt = parseFloat($("#metas_num").val());
@@ -275,12 +246,12 @@ function somarMeta(valor2){
 		var formatter = new Intl.NumberFormat("pt-BR", {style: "currency",currency: "BRL"});
 		$("#meta_valor_"+valor2).val(formatter.format(mvat).replace("R$",""));
 	}else{
-		var mval = parseFloat((sem1?sem1:0));
-		var mva2 = parseFloat((sem2?sem2:0));
-		var mva3 = parseFloat((sem3?sem3:0));
-		var mva4 = parseFloat((sem4?sem4:0));
-		var mva5 = parseFloat((sem5?sem5:0));
-		var mvat = mval+mva2+mva3+mva4+mva5;
-		$("#meta_valor_"+valor2).val(mvat);
+		var mvali = parseFloat((sem1?sem1:0));
+		var mva2i = parseFloat((sem2?sem2:0));
+		var mva3i = parseFloat((sem3?sem3:0));
+		var mva4i = parseFloat((sem4?sem4:0));
+		var mva5i = parseFloat((sem5?sem5:0));
+		var mvati = mvali+mva2i+mva3i+mva4i+mva5i;
+		$("#meta_valor_"+valor2).val(mvati);
 	}
 }
