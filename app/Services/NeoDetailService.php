@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Repositories\DashboardRepository;
 use App\Repositories\NeoDetailRepository;
 use App\Support\LegacyDate;
+use App\ViewModels\NeoDetailContext;
 
 class NeoDetailService
 {
@@ -75,13 +76,13 @@ class NeoDetailService
 			$context = $this->buildContext($input, $session);
 			if ($context !== null) {
 				return $this->repository->financialDetailsByContext(
-					$context['typeNames'],
-					$context['carteiraCodes'],
-					$context['carteiraMode'],
-					$context['month'],
-					$context['year'],
-					$context['week'],
-					$context['ufCodes']
+					$context->typeNames(),
+					$context->carteiraCodes(),
+					$context->carteiraMode(),
+					$context->month(),
+					$context->year(),
+					$context->week(),
+					$context->ufCodes()
 				);
 			}
 		}
@@ -96,13 +97,13 @@ class NeoDetailService
 			$context = $this->buildContext($input, $session);
 			if ($context !== null) {
 				return $this->repository->andamentoDetailsByContext(
-					$context['typeNames'],
-					$context['carteiraCodes'],
-					$context['carteiraMode'],
-					$context['month'],
-					$context['year'],
-					$context['week'],
-					$context['ufCodes']
+					$context->typeNames(),
+					$context->carteiraCodes(),
+					$context->carteiraMode(),
+					$context->month(),
+					$context->year(),
+					$context->week(),
+					$context->ufCodes()
 				);
 			}
 		}
@@ -138,14 +139,14 @@ class NeoDetailService
 		$carteiraMode = $this->dashboardRepository->findCarteiraConditionByBankId($bankId);
 		$week = $this->resolveWeek($month, $year, $weekKey);
 
-		return array(
-			'typeNames' => $this->splitNeoTypes(isset($metaRow['anda_neo']) ? $metaRow['anda_neo'] : ''),
-			'carteiraCodes' => $carteiraCodes,
-			'carteiraMode' => $carteiraMode,
-			'month' => $month,
-			'year' => $year,
-			'week' => $week,
-			'ufCodes' => $this->resolveRegionFilter($input, $session),
+		return new NeoDetailContext(
+			$this->splitNeoTypes(isset($metaRow['anda_neo']) ? $metaRow['anda_neo'] : ''),
+			$carteiraCodes,
+			$carteiraMode,
+			$month,
+			$year,
+			$week,
+			$this->resolveRegionFilter($input, $session)
 		);
 	}
 

@@ -24,12 +24,12 @@ class GeneralProductionController
 
 	public function weekly(array $input, array $session)
 	{
-		return $this->view->render('geral/weekly', $this->service->buildWeekly($input, $session));
+		return $this->view->render('geral/weekly', $this->service->buildWeekly($input, $session)->toArray());
 	}
 
 	public function monthly(array $input, array $session)
 	{
-		return $this->view->render('geral/monthly', $this->service->buildMonthly($input, $session));
+		return $this->view->render('geral/monthly', $this->service->buildMonthly($input, $session)->toArray());
 	}
 
 	public function webWeekly(Request $request)

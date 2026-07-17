@@ -7,6 +7,10 @@ namespace App\Services;
 use App\Repositories\GeneralProductionNeoRepository;
 use App\Repositories\GeneralProductionRepository;
 use App\Support\LegacyDate;
+use App\ViewModels\GeneralProductionContext;
+use App\ViewModels\GeneralProductionRegionFilter;
+use App\ViewModels\MonthlyProductionViewData;
+use App\ViewModels\WeeklyProductionViewData;
 
 class GeneralProductionService
 {
@@ -30,11 +34,11 @@ class GeneralProductionService
 	{
 		$context = $this->buildContext($input, $session);
 		$regionFilter = $this->resolveRegionFilter($context);
-		$banks = $this->repository->listBanks($context['userSectorId'], $context['startSector'], $context['userClientIds'], false);
-		$monthPadded = str_pad((string) $context['month'], 2, '0', STR_PAD_LEFT);
-		$startOfMonth = '01/' . $monthPadded . '/' . $context['year'];
-		$usefulDaysCurrent = (float) LegacyDate::countBusinessDaysInclusive($startOfMonth, $this->currentEndDate($context['month'], $context['year']));
-		$usefulDaysMonth = (float) LegacyDate::countBusinessDaysInclusive($startOfMonth, $this->lastDayDate($context['month'], $context['year']));
+		$banks = $this->repository->listBanks($context->userSectorId(), $context->startSector(), $context->userClientIds(), false);
+		$monthPadded = str_pad((string) $context->month(), 2, '0', STR_PAD_LEFT);
+		$startOfMonth = '01/' . $monthPadded . '/' . $context->year();
+		$usefulDaysCurrent = (float) LegacyDate::countBusinessDaysInclusive($startOfMonth, $this->currentEndDate($context->month(), $context->year()));
+		$usefulDaysMonth = (float) LegacyDate::countBusinessDaysInclusive($startOfMonth, $this->lastDayDate($context->month(), $context->year()));
 		$rows = array();
 		$totals = array(
 			'metaMonth' => 0.0,
@@ -43,11 +47,11 @@ class GeneralProductionService
 		);
 
 		foreach ($banks as $bank) {
-			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context['month'], $context['year'], $regionFilter['selectedRegionId']);
+			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context->month(), $context->year(), $regionFilter->selectedRegionId());
 			$aggregate = $this->aggregateFinancialMetas($metaRows);
 			$carteiraCodes = $this->repository->listCarteiraCodesByBankId($bank['banco_id']);
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);
-			$sum = $this->neoRepository->sumFinancialByMonth($aggregate['types'], $carteiraCodes, $carteiraMode, $context['month'], $context['year'], $regionFilter['ufs']);
+			$sum = $this->neoRepository->sumFinancialByMonth($aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
 			$metaToday = ($usefulDaysMonth > 0) ? ($aggregate['metaTotal'] / $usefulDaysMonth) * $usefulDaysCurrent : 0.0;
 			$rows[] = array(
 				'name' => $bank['banco_name'],
@@ -70,27 +74,27 @@ class GeneralProductionService
 		$totals['percentMonth'] = $this->percent($totals['realized'], $totals['metaMonth'], 1);
 		$totals['color'] = $this->heatColor($totals['percentToday']);
 
-		return array(
-			'titleArea' => $this->resolveAreaTitle($context['userSectorId'], $context['startSector']),
-			'regionLabel' => $regionFilter['label'],
-			'startDate' => $context['startDate'],
-			'startSector' => $context['startSector'],
-			'regionId' => $regionFilter['selectedRegionId'],
-			'month' => $context['month'],
-			'year' => $context['year'],
+		return new WeeklyProductionViewData(array(
+			'titleArea' => $this->resolveAreaTitle($context->userSectorId(), $context->startSector()),
+			'regionLabel' => $regionFilter->label(),
+			'startDate' => $context->startDate(),
+			'startSector' => $context->startSector(),
+			'regionId' => $regionFilter->selectedRegionId(),
+			'month' => $context->month(),
+			'year' => $context->year(),
 			'rows' => $rows,
 			'totals' => $totals,
 			'contentHeight' => (count($rows) * 30) + 360,
-		);
+		));
 	}
 
 	public function buildMonthly(array $input, array $session)
 	{
 		$context = $this->buildContext($input, $session);
 		$regionFilter = $this->resolveRegionFilter($context);
-		$weekConfig = $this->repository->findWeekByMonthYear($context['month'], $context['year']);
-		$weeks = $this->resolveWeeks($context['month'], $context['year'], $weekConfig);
-		$banks = $this->repository->listBanks($context['userSectorId'], $context['startSector'], $context['userClientIds'], true);
+		$weekConfig = $this->repository->findWeekByMonthYear($context->month(), $context->year());
+		$weeks = $this->resolveWeeks($context->month(), $context->year(), $weekConfig);
+		$banks = $this->repository->listBanks($context->userSectorId(), $context->startSector(), $context->userClientIds(), true);
 		$rows = array();
 		$weekMetaTotals = array_fill(0, count($weeks), 0.0);
 		$weekRealTotals = array_fill(0, count($weeks), 0.0);
@@ -98,7 +102,7 @@ class GeneralProductionService
 		$grandReal = 0.0;
 
 		foreach ($banks as $bank) {
-			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context['month'], $context['year'], $regionFilter['selectedRegionId']);
+			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context->month(), $context->year(), $regionFilter->selectedRegionId());
 			$aggregate = $this->aggregateFinancialMetas($metaRows);
 			$carteiraCodes = $this->repository->listCarteiraCodesByBankId($bank['banco_id']);
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);
@@ -107,7 +111,7 @@ class GeneralProductionService
 
 			foreach ($weeks as $index => $week) {
 				$meta = $this->resolveMonthlyWeekMeta($aggregate, $index, $weeks);
-				$real = $this->neoRepository->sumFinancialByWeek($aggregate['types'], $carteiraCodes, $carteiraMode, $week, $context['month'], $context['year'], $regionFilter['ufs']);
+				$real = $this->neoRepository->sumFinancialByWeek($aggregate['types'], $carteiraCodes, $carteiraMode, $week, $context->month(), $context->year(), $regionFilter->ufs());
 				$percent = $this->percent($real['total'], $meta, 0);
 				$weekData[] = array(
 					'meta' => $meta,
@@ -147,14 +151,14 @@ class GeneralProductionService
 
 		$grandPercent = $this->percent($grandReal, $grandMeta, 0);
 
-		return array(
-			'titleArea' => $this->resolveAreaTitle($context['userSectorId'], $context['startSector']),
-			'regionLabel' => $regionFilter['label'],
-			'startDate' => $context['startDate'],
-			'startSector' => $context['startSector'],
-			'regionId' => $regionFilter['selectedRegionId'],
-			'month' => $context['month'],
-			'year' => $context['year'],
+		return new MonthlyProductionViewData(array(
+			'titleArea' => $this->resolveAreaTitle($context->userSectorId(), $context->startSector()),
+			'regionLabel' => $regionFilter->label(),
+			'startDate' => $context->startDate(),
+			'startSector' => $context->startSector(),
+			'regionId' => $regionFilter->selectedRegionId(),
+			'month' => $context->month(),
+			'year' => $context->year(),
 			'weeks' => $weeks,
 			'rows' => $rows,
 			'totals' => array(
@@ -165,22 +169,22 @@ class GeneralProductionService
 				'icon' => $this->percentIcon($grandPercent, $grandMeta),
 			),
 			'contentHeight' => (count($rows) * 30) + 360,
-		);
+		));
 	}
 
 	private function buildContext(array $input, array $session)
 	{
-		return array(
-			'startDate' => isset($input['startDate']) && $input['startDate'] !== '' ? (string) $input['startDate'] : date('M'),
-			'startSector' => isset($input['startSetor']) ? (string) $input['startSetor'] : '',
-			'month' => isset($input['mes']) ? (int) $input['mes'] : (int) date('m'),
-			'year' => isset($input['ano']) ? (int) $input['ano'] : (int) date('Y'),
-			'userSectorId' => isset($session['usuarioSetor']) ? (int) $session['usuarioSetor'] : 0,
-			'userClientIds' => isset($session['usuarioCliente']) ? (string) $session['usuarioCliente'] : '',
-			'userId' => isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0,
-			'userLevel' => isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '',
-			'userRegionMode' => isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N',
-			'selectedRegionId' => isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0,
+		return new GeneralProductionContext(
+			isset($input['startDate']) && $input['startDate'] !== '' ? $input['startDate'] : date('M'),
+			isset($input['startSetor']) ? $input['startSetor'] : '',
+			isset($input['mes']) ? $input['mes'] : date('m'),
+			isset($input['ano']) ? $input['ano'] : date('Y'),
+			isset($session['usuarioSetor']) ? $session['usuarioSetor'] : 0,
+			isset($session['usuarioCliente']) ? $session['usuarioCliente'] : '',
+			isset($session['usuarioID']) ? $session['usuarioID'] : 0,
+			isset($session['usuarioNivel']) ? $session['usuarioNivel'] : '',
+			isset($session['usuarioRegiaoModo']) ? $session['usuarioRegiaoModo'] : 'N',
+			isset($input['regiao_id']) ? $input['regiao_id'] : 0
 		);
 	}
 
@@ -199,20 +203,15 @@ class GeneralProductionService
 		return ' Todas as Áreas';
 	}
 
-	private function resolveRegionFilter(array $context)
+	private function resolveRegionFilter(GeneralProductionContext $context)
 	{
-		$default = array(
-			'selectedRegionId' => 0,
-			'ufs' => array(),
-			'label' => '',
-		);
+		$default = new GeneralProductionRegionFilter(0, array(), '');
 
-		$userId = (int) $context['userId'];
-		if ($userId <= 0) {
+		if ($context->userId() <= 0) {
 			return $default;
 		}
 
-		$userRegions = $this->regionService->listUserRegions($userId);
+		$userRegions = $this->regionService->listUserRegions($context->userId());
 		$regionIds = array();
 		foreach ($userRegions as $region) {
 			$regionIds[] = (int) $region['regiao_id'];
@@ -222,37 +221,37 @@ class GeneralProductionService
 			return $default;
 		}
 
-		$level = (string) $context['userLevel'];
-		$mode = (string) $context['userRegionMode'];
-		$selectedRegionId = (int) $context['selectedRegionId'];
+		$level = $context->userLevel();
+		$mode = $context->userRegionMode();
+		$selectedRegionId = $context->selectedRegionId();
 
 		if ($level === 'USU' && $mode === 'R') {
 			$selectedRegionId = (int) $regionIds[0];
-			$region = $this->regionService->findUserRegion($userId, $selectedRegionId);
+			$region = $this->regionService->findUserRegion($context->userId(), $selectedRegionId);
 
-			return array(
-				'selectedRegionId' => $selectedRegionId,
-				'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-				'label' => $region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+			return new GeneralProductionRegionFilter(
+				$selectedRegionId,
+				$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+				$region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : ''
 			);
 		}
 
 		if ($level === 'GER' && in_array($mode, array('R', 'T'), true)) {
 			if ($selectedRegionId > 0 && in_array($selectedRegionId, $regionIds, true)) {
-				$region = $this->regionService->findUserRegion($userId, $selectedRegionId);
+				$region = $this->regionService->findUserRegion($context->userId(), $selectedRegionId);
 
-				return array(
-					'selectedRegionId' => $selectedRegionId,
-					'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-					'label' => $region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+				return new GeneralProductionRegionFilter(
+					$selectedRegionId,
+					$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+					$region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : ''
 				);
 			}
 
 			if ($mode === 'R') {
-				return array(
-					'selectedRegionId' => 0,
-					'ufs' => $this->regionService->listUfsByRegionIds($regionIds),
-					'label' => ' | Regi&otilde;es: <b>Todas as vinculadas</b>',
+				return new GeneralProductionRegionFilter(
+					0,
+					$this->regionService->listUfsByRegionIds($regionIds),
+					' | Regi&otilde;es: <b>Todas as vinculadas</b>'
 				);
 			}
 		}

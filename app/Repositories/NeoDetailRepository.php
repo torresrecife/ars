@@ -4,16 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-class NeoDetailRepository
+class NeoDetailRepository extends NeoSqlsrvRepository
 {
-	/** @var mixed */
-	private $connection;
-
-	public function __construct($connection)
-	{
-		$this->connection = $connection;
-	}
-
 	public function financialDetails(array $codes)
 	{
 		$codeList = $this->buildIntList($codes);
@@ -23,30 +15,7 @@ class NeoDetailRepository
 
 		$query = "
 			SELECT
-				p.CodigoProcesso as Codigo,
-				p.Comarca as comarca,
-				p.UFComarca as estado,
-				p.Cartorio as Cartorio,
-				l.CodigoLancamento as CodigoLancamento,
-				p.IdentificadorContratante as IdentificadorContratante,
-				(
-					select top 1 pp.Pessoa
-					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa = 'Réu' and pp.CodigoProcesso = p.CodigoProcesso
-				) as Adverso,
-				(
-					select top 1 pp.Pessoa
-					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa = 'Autor' and pp.CodigoProcesso = p.CodigoProcesso
-				) as Adverso2,
-				p.Area,
-				p.NumeroProcesso as Processo,
-				p.NumeroProcessoCNJ as ProcessoCNJ,
-				p.ContaContratoNeoCobranca as ContaContratoNeoCobranca,
-				l.TipoLancamento as Andamento,
-				l.Valor as valores,
-				FORMAT(l.DataHora_Evento, 'dd/MM/yyyy', 'en-US') as DataEvento,
-				FORMAT(l.DataHora_Evento, 'dd/MM/yyyy', 'en-US') as DataCadastro
+				" . $this->financialProcessColumns() . "
 			FROM v_Processo AS p WITH (NOLOCK)
 			JOIN v_Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
 			WHERE l.CodigoLancamento IN (" . $codeList . ")
@@ -65,45 +34,12 @@ class NeoDetailRepository
 
 		$query = "
 			SELECT
-				a.DataHoraEvento,
-				a.CodigoAndamento,
-				p.CodigoProcesso as Codigo,
-				p.Comarca as comarca,
-				p.UFComarca as estado,
-				p.NumeroProcessoCNJ as Processo,
-				p.ContaContratoNeoCobranca as ContaContratoNeoCobranca,
-				a.TipoAndamentoProcesso as Andamento,
-				FORMAT(a.DataHoraEvento, 'dd/MM/yyyy', 'en-US') as DataEvento,
-				FORMAT(a.DataHora, 'dd/MM/yyyy', 'en-US') as DataCadastro,
-				(
-					select top 1 pp.Pessoa
-					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa = 'Réu' and pp.CodigoProcesso = p.CodigoProcesso
-				) as Adverso,
-				dist.DataAjuizamento as Ajuizamento
+				" . $this->andamentoProcessColumns() . "
 			FROM v_Processo AS p WITH (NOLOCK)
 			JOIN v_Andamento_Processo AS a WITH (NOLOCK) ON a.CodigoProcesso = p.CodigoProcesso
-			OUTER APPLY (
-				SELECT TOP 1 FORMAT(x.DataHoraEvento, 'dd/MM/yyyy', 'en-US') as DataAjuizamento
-				FROM (
-					SELECT ap.DataHoraEvento
-					FROM v_Andamento_Processo as ap WITH (NOLOCK)
-					WHERE ap.CodigoProcesso = p.CodigoProcesso
-					AND ap.TipoAndamentoProcesso = 'Ação distribuída'
-					UNION ALL
-					SELECT ah.DataHoraEvento
-					FROM v_Andamento_Processo_Historico as ah WITH (NOLOCK)
-					WHERE ah.CodigoProcesso = p.CodigoProcesso
-					AND ah.TipoAndamentoProcesso = 'Ação distribuída'
-				) x
-				ORDER BY x.DataHoraEvento DESC
-			) dist
+			" . $this->ajuizamentoApply() . "
 			WHERE a.CodigoAndamento IN (" . $codeList . ")
-			AND p.NumeroContratoNeoCobranca = (
-				SELECT MIN(p2.NumeroContratoNeoCobranca)
-				FROM v_Processo AS p2 WITH (NOLOCK)
-				WHERE p2.CodigoProcesso = p.CodigoProcesso
-			)
+			AND " . $this->minimalContratoCondition() . "
 			ORDER BY a.DataHoraEvento ASC
 		";
 
@@ -119,40 +55,14 @@ class NeoDetailRepository
 
 		$query = "
 			SELECT
-				p.CodigoProcesso as Codigo,
-				p.Comarca as comarca,
-				p.UFComarca as estado,
-				p.Cartorio as Cartorio,
-				l.CodigoLancamento as CodigoLancamento,
-				p.IdentificadorContratante as IdentificadorContratante,
-				(
-					select top 1 pp.Pessoa
-					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa = 'Réu' and pp.CodigoProcesso = p.CodigoProcesso
-				) as Adverso,
-				(
-					select top 1 pp.Pessoa
-					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa = 'Autor' and pp.CodigoProcesso = p.CodigoProcesso
-				) as Adverso2,
-				p.Area,
-				p.NumeroProcesso as Processo,
-				p.NumeroProcessoCNJ as ProcessoCNJ,
-				p.ContaContratoNeoCobranca as ContaContratoNeoCobranca,
-				l.TipoLancamento as Andamento,
-				l.Valor as valores,
-				FORMAT(l.DataHora_Evento, 'dd/MM/yyyy', 'en-US') as DataEvento,
-				FORMAT(l.DataHora_Evento, 'dd/MM/yyyy', 'en-US') as DataCadastro
+				" . $this->financialProcessColumns() . "
 			FROM v_Processo AS p WITH (NOLOCK)
 			JOIN v_Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
 			WHERE l.TipoLancamento IN (" . $typeList . ")
 		";
 
-		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
-
-		$query .= $this->buildUfCondition($ufCodes);
-		$query .= $this->buildWeekCondition('l.DataHora_Evento', $month, $year, $week);
-		$query .= " ORDER BY l.DataHora_Evento ASC";
+		$query .= $this->buildFinancialBaseConditions($carteiraCodes, $carteiraMode, $ufCodes, $month, $year, $week);
+		$query .= ' ORDER BY l.DataHora_Evento ASC';
 
 		return $this->fetchAll($query);
 	}
@@ -166,175 +76,118 @@ class NeoDetailRepository
 
 		$query = "
 			SELECT
-				a.DataHoraEvento,
-				a.CodigoAndamento,
-				p.CodigoProcesso as Codigo,
-				p.Comarca as comarca,
-				p.UFComarca as estado,
-				p.NumeroProcessoCNJ as Processo,
-				p.ContaContratoNeoCobranca as ContaContratoNeoCobranca,
-				a.TipoAndamentoProcesso as Andamento,
-				FORMAT(a.DataHoraEvento, 'dd/MM/yyyy', 'en-US') as DataEvento,
-				FORMAT(a.DataHora, 'dd/MM/yyyy', 'en-US') as DataCadastro,
-				(
-					select top 1 pp.Pessoa
-					from v_Parte_Processo as pp WITH (NOLOCK)
-					where pp.TipoPessoa = 'Réu' and pp.CodigoProcesso = p.CodigoProcesso
-				) as Adverso,
-				dist.DataAjuizamento as Ajuizamento
+				" . $this->andamentoProcessColumns() . "
 			FROM v_Processo AS p WITH (NOLOCK)
 			JOIN v_Andamento_Processo AS a WITH (NOLOCK) ON a.CodigoProcesso = p.CodigoProcesso
+			" . $this->ajuizamentoApply() . "
+			WHERE a.TipoAndamentoProcesso IN (" . $typeList . ")
+			AND p.TipoProcesso NOT IN (N'CARTA PRECATÃƒÆ’Ã¢â‚¬Å“RIA')
+		";
+
+		$query .= $this->buildAndamentoBaseConditions($carteiraCodes, $carteiraMode, $ufCodes, $month, $year, $week);
+		$query .= ' ORDER BY a.DataHoraEvento ASC';
+
+		return $this->fetchAll($query);
+	}
+
+	private function financialProcessColumns()
+	{
+		return "
+			p.CodigoProcesso as Codigo,
+			p.Comarca as comarca,
+			p.UFComarca as estado,
+			p.Cartorio as Cartorio,
+			l.CodigoLancamento as CodigoLancamento,
+			p.IdentificadorContratante as IdentificadorContratante,
+			" . $this->parteSubquery('RÃƒÂ©u', 'Adverso') . ",
+			" . $this->parteSubquery('Autor', 'Adverso2') . ",
+			p.Area,
+			p.NumeroProcesso as Processo,
+			p.NumeroProcessoCNJ as ProcessoCNJ,
+			p.ContaContratoNeoCobranca as ContaContratoNeoCobranca,
+			l.TipoLancamento as Andamento,
+			l.Valor as valores,
+			FORMAT(l.DataHora_Evento, 'dd/MM/yyyy', 'en-US') as DataEvento,
+			FORMAT(l.DataHora_Evento, 'dd/MM/yyyy', 'en-US') as DataCadastro
+		";
+	}
+
+	private function andamentoProcessColumns()
+	{
+		return "
+			a.DataHoraEvento,
+			a.CodigoAndamento,
+			p.CodigoProcesso as Codigo,
+			p.Comarca as comarca,
+			p.UFComarca as estado,
+			p.NumeroProcessoCNJ as Processo,
+			p.ContaContratoNeoCobranca as ContaContratoNeoCobranca,
+			a.TipoAndamentoProcesso as Andamento,
+			FORMAT(a.DataHoraEvento, 'dd/MM/yyyy', 'en-US') as DataEvento,
+			FORMAT(a.DataHora, 'dd/MM/yyyy', 'en-US') as DataCadastro,
+			" . $this->parteSubquery('RÃƒÂ©u', 'Adverso') . ",
+			dist.DataAjuizamento as Ajuizamento
+		";
+	}
+
+	private function parteSubquery($tipoPessoa, $alias)
+	{
+		return "(
+			select top 1 pp.Pessoa
+			from v_Parte_Processo as pp WITH (NOLOCK)
+			where pp.TipoPessoa = '" . str_replace("'", "''", (string) $tipoPessoa) . "'
+			and pp.CodigoProcesso = p.CodigoProcesso
+		) as " . $alias;
+	}
+
+	private function ajuizamentoApply()
+	{
+		return "
 			OUTER APPLY (
 				SELECT TOP 1 FORMAT(x.DataHoraEvento, 'dd/MM/yyyy', 'en-US') as DataAjuizamento
 				FROM (
 					SELECT ap.DataHoraEvento
 					FROM v_Andamento_Processo as ap WITH (NOLOCK)
 					WHERE ap.CodigoProcesso = p.CodigoProcesso
-					AND ap.TipoAndamentoProcesso = 'Ação distribuída'
+					AND ap.TipoAndamentoProcesso = 'AÃƒÂ§ÃƒÂ£o distribuÃƒÂ­da'
 					UNION ALL
 					SELECT ah.DataHoraEvento
 					FROM v_Andamento_Processo_Historico as ah WITH (NOLOCK)
 					WHERE ah.CodigoProcesso = p.CodigoProcesso
-					AND ah.TipoAndamentoProcesso = 'Ação distribuída'
+					AND ah.TipoAndamentoProcesso = 'AÃƒÂ§ÃƒÂ£o distribuÃƒÂ­da'
 				) x
 				ORDER BY x.DataHoraEvento DESC
 			) dist
-			WHERE a.TipoAndamentoProcesso IN (" . $typeList . ")
-			AND p.TipoProcesso NOT IN (N'CARTA PRECATÃ“RIA')
 		";
+	}
 
-		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
+	private function minimalContratoCondition()
+	{
+		return "
+			p.NumeroContratoNeoCobranca = (
+				SELECT MIN(p2.NumeroContratoNeoCobranca)
+				FROM v_Processo AS p2 WITH (NOLOCK)
+				WHERE p2.CodigoProcesso = p.CodigoProcesso
+			)
+		";
+	}
+
+	private function buildFinancialBaseConditions(array $carteiraCodes, $carteiraMode, array $ufCodes, $month, $year, array $week = array())
+	{
+		$query = $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
 		$query .= $this->buildUfCondition($ufCodes);
-		$query .= $this->buildWeekCondition('a.DataHoraEvento', $month, $year, $week);
-		$query .= " AND p.TipoDesdobramento IS NULL AND a.Invalido = 'False'";
-		$query .= " ORDER BY a.DataHoraEvento ASC";
-
-		return $this->fetchAll($query);
-	}
-
-	private function buildIntList(array $codes)
-	{
-		$ids = array();
-		foreach ($codes as $code) {
-			$code = (int) $code;
-			if ($code > 0) {
-				$ids[$code] = $code;
-			}
-		}
-
-		return implode(',', $ids);
-	}
-
-	private function buildCarteiraCondition(array $carteiraCodes, $carteiraMode)
-	{
-		if (empty($carteiraCodes)) {
-			return " AND 1 = 0";
-		}
-
-		if ($carteiraMode === 'LIKE') {
-			return " AND p.Carteira LIKE '%" . str_replace("'", '', implode(',', $carteiraCodes)) . "%'";
-		}
-
-		return " AND p.Carteira IN (" . $this->buildQuotedList($carteiraCodes) . ")";
-	}
-
-	private function buildWeekCondition($field, $month, $year, array $week)
-	{
-		$query = " AND MONTH(" . $field . ") = " . (int) $month;
-		$query .= " AND YEAR(" . $field . ") = " . (int) $year;
-
-		if (isset($week['start'], $week['end'])) {
-			$query .= " AND DAY(" . $field . ") >= " . (int) $week['start'];
-			$query .= " AND DAY(" . $field . ") <= " . (int) $week['end'];
-		}
+		$query .= $this->buildWeekCondition('l.DataHora_Evento', $month, $year, $week);
 
 		return $query;
 	}
 
-	private function buildUfCondition(array $ufCodes)
+	private function buildAndamentoBaseConditions(array $carteiraCodes, $carteiraMode, array $ufCodes, $month, $year, array $week = array())
 	{
-		$quoted = $this->buildQuotedList($this->expandUfCodes($ufCodes));
-		if ($quoted === '') {
-			return '';
-		}
+		$query = $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
+		$query .= $this->buildUfCondition($ufCodes);
+		$query .= $this->buildWeekCondition('a.DataHoraEvento', $month, $year, $week);
+		$query .= " AND p.TipoDesdobramento IS NULL AND a.Invalido = 'False'";
 
-		return " AND p.UFComarca IN (" . $quoted . ")";
-	}
-
-	private function expandUfCodes(array $ufCodes)
-	{
-		$map = array(
-			'AC' => 'Acre',
-			'AL' => 'Alagoas',
-			'AP' => 'Amapá',
-			'AM' => 'Amazonas',
-			'BA' => 'Bahia',
-			'CE' => 'Ceará',
-			'DF' => 'Distrito Federal',
-			'ES' => 'Espírito Santo',
-			'GO' => 'Goiás',
-			'MA' => 'Maranhão',
-			'MT' => 'Mato Grosso',
-			'MS' => 'Mato Grosso do Sul',
-			'MG' => 'Minas Gerais',
-			'PA' => 'Pará',
-			'PB' => 'Paraíba',
-			'PR' => 'Paraná',
-			'PE' => 'Pernambuco',
-			'PI' => 'Piauí',
-			'RJ' => 'Rio de Janeiro',
-			'RN' => 'Rio Grande do Norte',
-			'RS' => 'Rio Grande do Sul',
-			'RO' => 'Rondônia',
-			'RR' => 'Roraima',
-			'SC' => 'Santa Catarina',
-			'SP' => 'São Paulo',
-			'SE' => 'Sergipe',
-			'TO' => 'Tocantins',
-		);
-
-		$values = array();
-		foreach ($ufCodes as $code) {
-			$code = trim((string) $code);
-			if ($code === '') {
-				continue;
-			}
-
-			$upperCode = strtoupper($code);
-			$values[$upperCode] = $upperCode;
-			if (isset($map[$upperCode])) {
-				$values[$map[$upperCode]] = $map[$upperCode];
-			}
-		}
-
-		return array_values($values);
-	}
-
-	private function buildQuotedList(array $values)
-	{
-		$clean = array();
-		foreach ($values as $value) {
-			$value = trim((string) $value);
-			if ($value !== '') {
-				$clean[$value] = "'" . str_replace("'", "''", $value) . "'";
-			}
-		}
-
-		return implode(',', $clean);
-	}
-
-	private function fetchAll($query)
-	{
-		$result = sqlsrv_query($this->connection, $query);
-		if ($result === false) {
-			return array();
-		}
-
-		$rows = array();
-		while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-			$rows[] = $row;
-		}
-
-		return $rows;
+		return $query;
 	}
 }

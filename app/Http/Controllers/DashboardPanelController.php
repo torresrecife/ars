@@ -25,7 +25,7 @@ class DashboardPanelController extends Controller
 	public function index(array $input = array(), array $session = array())
 	{
 		$viewData = $this->service->build($input, $session);
-		return $this->view->render('dashboard/panel', array('viewData' => $viewData));
+		return $this->view->render('dashboard/panel', array('viewData' => $viewData->toArray()));
 	}
 
 	public function webIndex(Request $request)

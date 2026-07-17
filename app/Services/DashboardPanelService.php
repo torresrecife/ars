@@ -7,6 +7,9 @@ namespace App\Services;
 use App\Repositories\DashboardRepository;
 use App\Repositories\NeoPanelRepository;
 use App\Support\LegacyDate;
+use App\ViewModels\DashboardPanelContext;
+use App\ViewModels\DashboardRegionFilter;
+use App\ViewModels\PanelViewData;
 
 class DashboardPanelService
 {
@@ -32,45 +35,43 @@ class DashboardPanelService
 
 	public function build(array $input, array $session = array())
 	{
-		$bankId = isset($input['bank_id']) ? (int) $input['bank_id'] : 0;
-		if ($bankId <= 0) {
-			return array('error' => 'Volte e selecione o Banco!');
+		$context = $this->buildContext($input, $session);
+		if ($context->bankId() <= 0) {
+			return new PanelViewData(array('error' => 'Volte e selecione o Banco!'));
 		}
 
-		$month = isset($input['mes']) ? (int) $input['mes'] : (int) date('m');
-		$year = isset($input['ano']) ? (int) $input['ano'] : (int) date('Y');
-		$bank = $this->dashboardRepository->findBankById($bankId);
+		$bank = $this->dashboardRepository->findBankById($context->bankId());
 		if (!$bank) {
-			return array('error' => 'Banco nao encontrado.');
+			return new PanelViewData(array('error' => 'Banco nao encontrado.'));
 		}
 		if (!$this->neoRepository->isAvailable()) {
-			return array('error' => 'A conexao com o NEO nao esta disponivel neste ambiente.');
+			return new PanelViewData(array('error' => 'A conexao com o NEO nao esta disponivel neste ambiente.'));
 		}
 
-		$weekConfig = $this->dashboardRepository->findWeekByMonthYear($month, $year);
-		$weeks = $this->resolveWeeks($month, $year, $weekConfig);
-		$carteiraMode = $this->dashboardRepository->findCarteiraConditionByBankId($bankId);
-		$carteiraCodes = $this->dashboardRepository->listCarteiraCodesByBankId($bankId);
-		$visibleRegionIds = $this->resolveVisibleRegionIds($session, $bankId, $month, $year);
-		$regionFilter = $this->resolveRegionFilter($input, $session, $visibleRegionIds);
-		$regionTabs = $this->resolveRegionTabs($session, $regionFilter['selectedRegionId'], $visibleRegionIds);
-		$productionRows = $this->buildProductionRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId'], $regionFilter['metaRegionIds']);
-		$financialRows = $this->buildFinancialRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId'], $regionFilter['metaRegionIds']);
-		$prejudiceRows = $this->buildPrejudiceRows($bankId, $month, $year, $weeks, $carteiraCodes, $carteiraMode, $regionFilter['ufs'], $regionFilter['selectedRegionId'], $regionFilter['metaRegionIds']);
+		$weekConfig = $this->dashboardRepository->findWeekByMonthYear($context->month(), $context->year());
+		$weeks = $this->resolveWeeks($context->month(), $context->year(), $weekConfig);
+		$carteiraMode = $this->dashboardRepository->findCarteiraConditionByBankId($context->bankId());
+		$carteiraCodes = $this->dashboardRepository->listCarteiraCodesByBankId($context->bankId());
+		$visibleRegionIds = $this->resolveVisibleRegionIds($context);
+		$regionFilter = $this->resolveRegionFilter($context, $visibleRegionIds);
+		$regionTabs = $this->resolveRegionTabs($context, $regionFilter->selectedRegionId(), $visibleRegionIds);
+		$productionRows = $this->buildProductionRows($context->bankId(), $context->month(), $context->year(), $weeks, $carteiraCodes, $carteiraMode, $regionFilter->ufs(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds());
+		$financialRows = $this->buildFinancialRows($context->bankId(), $context->month(), $context->year(), $weeks, $carteiraCodes, $carteiraMode, $regionFilter->ufs(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds());
+		$prejudiceRows = $this->buildPrejudiceRows($context->bankId(), $context->month(), $context->year(), $weeks, $carteiraCodes, $carteiraMode, $regionFilter->ufs(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds());
 		$summary = $this->buildFinancialSummary($financialRows, $prejudiceRows, $weeks);
 
-		return array(
+		return new PanelViewData(array(
 			'error' => '',
 			'bank' => $bank,
-			'bankId' => $bankId,
-			'areaId' => isset($input['area_id']) ? (string) $input['area_id'] : '',
-			'month' => $month,
-			'year' => $year,
+			'bankId' => $context->bankId(),
+			'areaId' => $context->areaId(),
+			'month' => $context->month(),
+			'year' => $context->year(),
 			'showRegionTabs' => $regionTabs['show'],
 			'regionTabs' => $regionTabs['tabs'],
-			'regionId' => $regionFilter['selectedRegionId'],
-			'regionLabel' => $regionFilter['label'],
-			'startDate' => $this->months[$month] . ' / ' . $year,
+			'regionId' => $regionFilter->selectedRegionId(),
+			'regionLabel' => $regionFilter->label(),
+			'startDate' => $this->months[$context->month()] . ' / ' . $context->year(),
 			'weeks' => $weeks,
 			'productionRows' => $productionRows,
 			'financialRows' => $financialRows,
@@ -78,7 +79,7 @@ class DashboardPanelService
 			'summary' => $summary,
 			'ncol' => (count($weeks) * 3) + 3,
 			'contentHeight' => (count($productionRows) * 30) + (count($financialRows) * 30) + (count($prejudiceRows) * 30) + 260,
-		);
+		));
 	}
 
 	private function buildProductionRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0, array $metaRegionIds = array())
@@ -268,21 +269,29 @@ class DashboardPanelService
 		);
 	}
 
-	private function resolveRegionFilter(array $input, array $session, array $visibleRegionIds = array())
+	private function buildContext(array $input, array $session)
 	{
-		$default = array(
-			'selectedRegionId' => 0,
-			'ufs' => array(),
-			'label' => '',
-			'metaRegionIds' => array(),
+		return new DashboardPanelContext(
+			isset($input['bank_id']) ? $input['bank_id'] : 0,
+			isset($input['area_id']) ? $input['area_id'] : '',
+			isset($input['mes']) ? $input['mes'] : date('m'),
+			isset($input['ano']) ? $input['ano'] : date('Y'),
+			isset($session['usuarioID']) ? $session['usuarioID'] : 0,
+			isset($session['usuarioNivel']) ? $session['usuarioNivel'] : '',
+			isset($session['usuarioRegiaoModo']) ? $session['usuarioRegiaoModo'] : 'N',
+			isset($input['regiao_id']) ? $input['regiao_id'] : 0
 		);
+	}
 
-		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
-		if ($userId <= 0) {
+	private function resolveRegionFilter(DashboardPanelContext $context, array $visibleRegionIds = array())
+	{
+		$default = new DashboardRegionFilter(0, array(), '', array());
+
+		if ($context->userId() <= 0) {
 			return $default;
 		}
 
-		$userRegions = $this->regionService->listUserRegions($userId);
+		$userRegions = $this->regionService->listUserRegions($context->userId());
 		$regionIds = array();
 		foreach ($userRegions as $region) {
 			$regionIds[] = (int) $region['regiao_id'];
@@ -291,9 +300,9 @@ class DashboardPanelService
 			$regionIds = array_values(array_intersect($regionIds, $visibleRegionIds));
 		}
 
-		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
-		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
-		$selectedRegionId = isset($input['regiao_id']) ? (int) $input['regiao_id'] : 0;
+		$level = $context->userLevel();
+		$mode = $context->userRegionMode();
+		$selectedRegionId = $context->selectedRegionId();
 
 		if ($level === 'ADM') {
 			$allRegions = $this->regionService->listActive();
@@ -309,17 +318,16 @@ class DashboardPanelService
 				}
 				$allRegionIds[] = $regionId;
 				if ($selectedRegionId > 0 && (int) $region['regiao_id'] === $selectedRegionId) {
-					return array(
-						'selectedRegionId' => $selectedRegionId,
-						'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-						'label' => ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>',
-						'metaRegionIds' => array($selectedRegionId),
+					return new DashboardRegionFilter(
+						$selectedRegionId,
+						$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+						' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>',
+						array($selectedRegionId)
 					);
 				}
 			}
 
-			$default['metaRegionIds'] = $allRegionIds;
-			return $default;
+			return new DashboardRegionFilter(0, array(), '', $allRegionIds);
 		}
 
 		if (empty($regionIds)) {
@@ -331,25 +339,25 @@ class DashboardPanelService
 			if ($selectedRegionId <= 0) {
 				return $default;
 			}
-			$region = $this->regionService->findUserRegion($userId, $selectedRegionId);
+			$region = $this->regionService->findUserRegion($context->userId(), $selectedRegionId);
 
-			return array(
-				'selectedRegionId' => $selectedRegionId,
-				'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-				'label' => $region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
-				'metaRegionIds' => array($selectedRegionId),
+			return new DashboardRegionFilter(
+				$selectedRegionId,
+				$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+				$region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+				array($selectedRegionId)
 			);
 		}
 
 		if ($level === 'GER' && in_array($mode, array('R', 'T'), true)) {
 			if ($selectedRegionId > 0 && in_array($selectedRegionId, $regionIds, true)) {
-				$region = $this->regionService->findUserRegion($userId, $selectedRegionId);
+				$region = $this->regionService->findUserRegion($context->userId(), $selectedRegionId);
 
-				return array(
-					'selectedRegionId' => $selectedRegionId,
-					'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-					'label' => $region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
-					'metaRegionIds' => array($selectedRegionId),
+				return new DashboardRegionFilter(
+					$selectedRegionId,
+					$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+					$region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+					array($selectedRegionId)
 				);
 			}
 
@@ -358,44 +366,35 @@ class DashboardPanelService
 				if ($selectedRegionId <= 0) {
 					return $default;
 				}
-				$region = $this->regionService->findUserRegion($userId, $selectedRegionId);
+				$region = $this->regionService->findUserRegion($context->userId(), $selectedRegionId);
 
-				return array(
-					'selectedRegionId' => $selectedRegionId,
-					'ufs' => $this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-					'label' => $region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
-					'metaRegionIds' => array($selectedRegionId),
+				return new DashboardRegionFilter(
+					$selectedRegionId,
+					$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+					$region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+					array($selectedRegionId)
 				);
 			}
 
-			return array(
-				'selectedRegionId' => 0,
-				'ufs' => array(),
-				'label' => '',
-				'metaRegionIds' => $regionIds,
-			);
+			return new DashboardRegionFilter(0, array(), '', $regionIds);
 		}
 
 		return $default;
 	}
 
-	private function resolveRegionTabs(array $session, $selectedRegionId, array $visibleRegionIds = array())
+	private function resolveRegionTabs(DashboardPanelContext $context, $selectedRegionId, array $visibleRegionIds = array())
 	{
-		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
-		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
-		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
-
-		if ($userId <= 0) {
+		if ($context->userId() <= 0) {
 			return array(
 				'show' => false,
 				'tabs' => array(),
 			);
 		}
 
-		if ($level === 'ADM') {
+		if ($context->userLevel() === 'ADM') {
 			$userRegions = $this->regionService->listActive();
-		} elseif ($level === 'GER' && in_array($mode, array('R', 'T'), true)) {
-			$userRegions = $this->regionService->listUserRegions($userId);
+		} elseif ($context->userLevel() === 'GER' && in_array($context->userRegionMode(), array('R', 'T'), true)) {
+			$userRegions = $this->regionService->listUserRegions($context->userId());
 		} else {
 			return array(
 				'show' => false,
@@ -411,7 +410,7 @@ class DashboardPanelService
 		}
 
 		$tabs = array();
-		if ($level === 'ADM' || ($level === 'GER' && $mode === 'T')) {
+		if ($context->userLevel() === 'ADM' || ($context->userLevel() === 'GER' && $context->userRegionMode() === 'T')) {
 			$tabs[] = array(
 				'id' => 0,
 				'label' => 'Todas as Regi&otilde;es',
@@ -437,24 +436,21 @@ class DashboardPanelService
 		);
 	}
 
-	private function resolveVisibleRegionIds(array $session, $bankId, $month, $year)
+	private function resolveVisibleRegionIds(DashboardPanelContext $context)
 	{
-		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
-		$mode = isset($session['usuarioRegiaoModo']) ? (string) $session['usuarioRegiaoModo'] : 'N';
-		$userId = isset($session['usuarioID']) ? (int) $session['usuarioID'] : 0;
-		$metaRegionIds = $this->dashboardRepository->listRegionIdsWithMetaRowsByBankMonthYear($bankId, $month, $year);
+		$metaRegionIds = $this->dashboardRepository->listRegionIdsWithMetaRowsByBankMonthYear($context->bankId(), $context->month(), $context->year());
 
 		if (empty($metaRegionIds)) {
 			return array();
 		}
 
-		if ($level === 'ADM') {
+		if ($context->userLevel() === 'ADM') {
 			return $metaRegionIds;
 		}
 
-		if ($userId > 0 && in_array($level, array('GER', 'USU'), true) && in_array($mode, array('R', 'T'), true)) {
+		if ($context->userId() > 0 && in_array($context->userLevel(), array('GER', 'USU'), true) && in_array($context->userRegionMode(), array('R', 'T'), true)) {
 			$userRegionIds = array();
-			foreach ($this->regionService->listUserRegions($userId) as $region) {
+			foreach ($this->regionService->listUserRegions($context->userId()) as $region) {
 				$userRegionIds[] = (int) $region['regiao_id'];
 			}
 

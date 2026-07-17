@@ -4,16 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-class GeneralProductionNeoRepository
+class GeneralProductionNeoRepository extends NeoSqlsrvRepository
 {
-	/** @var mixed */
-	private $connection;
-
-	public function __construct($connection)
-	{
-		$this->connection = $connection;
-	}
-
 	public function sumFinancialByMonth(array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $ufCodes = array())
 	{
 		if ($this->connection === null) {
@@ -25,18 +17,13 @@ class GeneralProductionNeoRepository
 			return array('total' => 0.0, 'codes' => array());
 		}
 
-		$query = "
+		$query = '
 			SELECT l.CodigoLancamento, l.Valor
-			FROM Processo AS p WITH (NOLOCK)
-			JOIN Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
-			WHERE l.TipoLancamento IN (" . $typeList . ")
-		";
-		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode, 'p.Carteira');
-		$query .= $this->buildUfCondition($ufCodes, 'p.UFComarca');
-		$query .= " AND l.StatusLancamento IN ('Pago pela Assessoria','Pendente na Assessoria','Enviado ao Contratante','Aprovado pelo Contratante','Pago pelo Contratante')";
-		$query .= " AND MONTH(l.DataHora_Evento) = " . (int) $month;
-		$query .= " AND YEAR(l.DataHora_Evento) = " . (int) $year;
-		$query .= " GROUP BY l.CodigoLancamento, l.Valor";
+			' . $this->financialMonthFromJoin()
+			. ' WHERE l.TipoLancamento IN (' . $typeList . ')';
+		$query .= $this->buildFinancialBaseConditions($carteiraCodes, $carteiraMode, $ufCodes, 'l.DataHora_Evento', $month, $year);
+		$query .= $this->buildFinancialStatusCondition();
+		$query .= ' GROUP BY l.CodigoLancamento, l.Valor';
 
 		return $this->sumQuery($query, 'Valor', 'CodigoLancamento');
 	}
@@ -52,124 +39,45 @@ class GeneralProductionNeoRepository
 			return array('total' => 0.0, 'codes' => array());
 		}
 
-		$query = "
+		$query = '
 			SELECT l.CodigoLancamento, l.Valor
-			FROM v_Processo AS p WITH (NOLOCK)
-			JOIN v_Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
-			WHERE l.TipoLancamento IN (" . $typeList . ")
-		";
-		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode, 'p.Carteira');
-		$query .= $this->buildUfCondition($ufCodes, 'p.UFComarca');
-		$query .= " AND DAY(l.DataHora_Evento) >= " . (int) $week['start'];
-		$query .= " AND DAY(l.DataHora_Evento) <= " . (int) $week['end'];
-		$query .= " AND MONTH(l.DataHora_Evento) = " . (int) $month;
-		$query .= " AND YEAR(l.DataHora_Evento) = " . (int) $year;
-		$query .= " GROUP BY l.CodigoLancamento, l.Valor";
+			' . $this->financialWeekFromJoin()
+			. ' WHERE l.TipoLancamento IN (' . $typeList . ')';
+		$query .= $this->buildFinancialBaseConditions($carteiraCodes, $carteiraMode, $ufCodes, 'l.DataHora_Evento', $month, $year, $week);
+		$query .= ' GROUP BY l.CodigoLancamento, l.Valor';
 
 		return $this->sumQuery($query, 'Valor', 'CodigoLancamento');
 	}
 
-	private function sumQuery($query, $valueField, $codeField)
+	private function financialMonthFromJoin()
 	{
-		$result = sqlsrv_query($this->connection, $query);
-		if ($result === false) {
-			return array('total' => 0.0, 'codes' => array());
-		}
-
-		$total = 0.0;
-		$codes = array();
-		while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-			$total += isset($row[$valueField]) ? (float) $row[$valueField] : 0.0;
-			if (isset($row[$codeField])) {
-				$codes[(string) $row[$codeField]] = (string) $row[$codeField];
-			}
-		}
-
-		return array('total' => $total, 'codes' => array_values($codes));
+		return "
+			FROM Processo AS p WITH (NOLOCK)
+			JOIN Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
+		";
 	}
 
-	private function buildCarteiraCondition(array $carteiraCodes, $carteiraMode, $field)
+	private function financialWeekFromJoin()
 	{
-		if (empty($carteiraCodes)) {
-			return " AND 1 = 0";
-		}
-
-		if ($carteiraMode === 'LIKE') {
-			return " AND " . $field . " LIKE '%" . str_replace("'", '', implode(',', $carteiraCodes)) . "%'";
-		}
-
-		return " AND " . $field . " IN (" . $this->buildQuotedList($carteiraCodes) . ")";
+		return "
+			FROM v_Processo AS p WITH (NOLOCK)
+			JOIN v_Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
+		";
 	}
 
-	private function buildUfCondition(array $ufCodes, $field)
+	private function buildFinancialBaseConditions(array $carteiraCodes, $carteiraMode, array $ufCodes, $dateField, $month, $year, array $week = array())
 	{
-		$quoted = $this->buildQuotedList($this->expandUfCodes($ufCodes));
-		if ($quoted === '') {
-			return '';
-		}
+		$query = $this->buildCarteiraCondition($carteiraCodes, $carteiraMode, 'p.Carteira');
+		$query .= $this->buildUfCondition($ufCodes, 'p.UFComarca');
+		$query .= empty($week)
+			? $this->buildMonthYearCondition($dateField, $month, $year)
+			: $this->buildWeekCondition($dateField, $month, $year, $week);
 
-		return " AND " . $field . " IN (" . $quoted . ")";
+		return $query;
 	}
 
-	private function expandUfCodes(array $ufCodes)
+	private function buildFinancialStatusCondition()
 	{
-		$map = array(
-			'AC' => 'Acre',
-			'AL' => 'Alagoas',
-			'AP' => 'Amapá',
-			'AM' => 'Amazonas',
-			'BA' => 'Bahia',
-			'CE' => 'Ceará',
-			'DF' => 'Distrito Federal',
-			'ES' => 'Espírito Santo',
-			'GO' => 'Goiás',
-			'MA' => 'Maranhão',
-			'MT' => 'Mato Grosso',
-			'MS' => 'Mato Grosso do Sul',
-			'MG' => 'Minas Gerais',
-			'PA' => 'Pará',
-			'PB' => 'Paraíba',
-			'PR' => 'Paraná',
-			'PE' => 'Pernambuco',
-			'PI' => 'Piauí',
-			'RJ' => 'Rio de Janeiro',
-			'RN' => 'Rio Grande do Norte',
-			'RS' => 'Rio Grande do Sul',
-			'RO' => 'Rondônia',
-			'RR' => 'Roraima',
-			'SC' => 'Santa Catarina',
-			'SP' => 'São Paulo',
-			'SE' => 'Sergipe',
-			'TO' => 'Tocantins',
-		);
-
-		$values = array();
-		foreach ($ufCodes as $code) {
-			$code = trim((string) $code);
-			if ($code === '') {
-				continue;
-			}
-
-			$upperCode = strtoupper($code);
-			$values[$upperCode] = $upperCode;
-			if (isset($map[$upperCode])) {
-				$values[$map[$upperCode]] = $map[$upperCode];
-			}
-		}
-
-		return array_values($values);
-	}
-
-	private function buildQuotedList(array $values)
-	{
-		$clean = array();
-		foreach ($values as $value) {
-			$value = trim((string) $value);
-			if ($value !== '') {
-				$clean[$value] = "'" . str_replace("'", "''", $value) . "'";
-			}
-		}
-
-		return implode(',', $clean);
+		return " AND l.StatusLancamento IN ('Pago pela Assessoria','Pendente na Assessoria','Enviado ao Contratante','Aprovado pelo Contratante','Pago pelo Contratante')";
 	}
 }

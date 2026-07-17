@@ -4,16 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-class NeoPanelRepository
+class NeoPanelRepository extends NeoSqlsrvRepository
 {
-	/** @var mixed */
-	private $connection;
-
-	public function __construct($connection)
-	{
-		$this->connection = $connection;
-	}
-
 	public function isAvailable()
 	{
 		return $this->connection !== null;
@@ -31,13 +23,13 @@ class NeoPanelRepository
 		}
 
 		$codes = array();
-		$codeResult = sqlsrv_query($this->connection, "SELECT a.CodigoAndamento " . $queryBase);
+		$codeResult = sqlsrv_query($this->connection, 'SELECT a.CodigoAndamento ' . $queryBase);
 		while ($codeResult && ($row = sqlsrv_fetch_array($codeResult, SQLSRV_FETCH_ASSOC))) {
 			$codes[] = $row['CodigoAndamento'];
 		}
 
 		$count = 0;
-		$countResult = sqlsrv_query($this->connection, "SELECT 1 as qtd " . $queryBase);
+		$countResult = sqlsrv_query($this->connection, 'SELECT 1 as qtd ' . $queryBase);
 		while ($countResult && ($row = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC))) {
 			$count += (int) $row['qtd'];
 		}
@@ -54,11 +46,9 @@ class NeoPanelRepository
 			return array('total' => 0.0, 'codes' => array());
 		}
 
-		$query = "
+		$query = '
 			SELECT l.CodigoLancamento, l.Valor as qtd2
-			FROM v_Processo AS p WITH (NOLOCK)
-			JOIN v_Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
-		";
+			' . $this->financialFromJoin();
 
 		$where = $this->buildFinancialWhere($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
 		if ($where === '') {
@@ -66,7 +56,7 @@ class NeoPanelRepository
 		}
 
 		$query .= $where;
-		$query .= " GROUP BY l.CodigoLancamento, l.Valor";
+		$query .= ' GROUP BY l.CodigoLancamento, l.Valor';
 
 		$total = 0.0;
 		$codes = array();
@@ -89,19 +79,10 @@ class NeoPanelRepository
 			return '';
 		}
 
-		$query = "
-			FROM v_Andamento_Processo AS a WITH (NOLOCK)
-			JOIN v_Processo AS p WITH (NOLOCK) ON p.CodigoProcesso = a.CodigoProcesso
-			WHERE a.TipoAndamentoProcesso IN (" . $typeList . ")
-			AND p.TipoProcesso NOT IN (N'CARTA PRECATÓRIA')
-		";
-		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
-		$query .= $this->buildUfCondition($ufCodes);
-		$query .= " AND (DAY(a.DataHoraEvento) >= " . (int) $week['start'] . " AND DAY(a.DataHoraEvento) <= " . (int) $week['end'] . ")";
-		$query .= " AND MONTH(a.DataHoraEvento) = " . (int) $month;
-		$query .= " AND YEAR(a.DataHoraEvento) = " . (int) $year;
-		$query .= " AND p.TipoDesdobramento IS NULL AND a.Invalido = 'False'";
-		$query .= " GROUP BY a.CodigoAndamento";
+		$query = $this->productionFromJoin();
+		$query .= ' WHERE a.TipoAndamentoProcesso IN (' . $typeList . ')';
+		$query .= $this->buildProductionBaseConditions($carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		$query .= ' GROUP BY a.CodigoAndamento';
 
 		return $query;
 	}
@@ -113,99 +94,45 @@ class NeoPanelRepository
 			return '';
 		}
 
-		$query = " WHERE l.TipoLancamento IN (" . $typeList . ")";
-		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
-		$query .= $this->buildUfCondition($ufCodes);
-		$query .= " AND (DAY(l.DataHora_Evento) >= " . (int) $week['start'] . " AND DAY(l.DataHora_Evento) <= " . (int) $week['end'] . ")";
-		$query .= " AND MONTH(l.DataHora_Evento) = " . (int) $month;
-		$query .= " AND YEAR(l.DataHora_Evento) = " . (int) $year;
+		$query = ' WHERE l.TipoLancamento IN (' . $typeList . ')';
+		$query .= $this->buildFinancialBaseConditions($carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
 
 		return $query;
 	}
 
-	private function buildCarteiraCondition(array $carteiraCodes, $carteiraMode)
+	private function productionFromJoin()
 	{
-		if (empty($carteiraCodes)) {
-			return " AND 1 = 0";
-		}
-
-		$quotedCodes = $this->buildQuotedList($carteiraCodes);
-		if ($carteiraMode === 'LIKE') {
-			return " AND p.Carteira LIKE '%" . str_replace("'", '', implode(',', $carteiraCodes)) . "%'";
-		}
-
-		return " AND p.Carteira IN (" . $quotedCodes . ")";
+		return "
+			FROM v_Andamento_Processo AS a WITH (NOLOCK)
+			JOIN v_Processo AS p WITH (NOLOCK) ON p.CodigoProcesso = a.CodigoProcesso
+		";
 	}
 
-	private function buildUfCondition(array $ufCodes)
+	private function financialFromJoin()
 	{
-		$quotedCodes = $this->buildQuotedList($this->expandUfCodes($ufCodes));
-		if ($quotedCodes === '') {
-			return '';
-		}
-
-		return " AND p.UFComarca IN (" . $quotedCodes . ")";
+		return "
+			FROM v_Processo AS p WITH (NOLOCK)
+			JOIN v_Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
+		";
 	}
 
-	private function expandUfCodes(array $ufCodes)
+	private function buildProductionBaseConditions(array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
 	{
-		$map = array(
-			'AC' => 'Acre',
-			'AL' => 'Alagoas',
-			'AP' => 'Amapá',
-			'AM' => 'Amazonas',
-			'BA' => 'Bahia',
-			'CE' => 'Ceará',
-			'DF' => 'Distrito Federal',
-			'ES' => 'Espírito Santo',
-			'GO' => 'Goiás',
-			'MA' => 'Maranhão',
-			'MT' => 'Mato Grosso',
-			'MS' => 'Mato Grosso do Sul',
-			'MG' => 'Minas Gerais',
-			'PA' => 'Pará',
-			'PB' => 'Paraíba',
-			'PR' => 'Paraná',
-			'PE' => 'Pernambuco',
-			'PI' => 'Piauí',
-			'RJ' => 'Rio de Janeiro',
-			'RN' => 'Rio Grande do Norte',
-			'RS' => 'Rio Grande do Sul',
-			'RO' => 'Rondônia',
-			'RR' => 'Roraima',
-			'SC' => 'Santa Catarina',
-			'SP' => 'São Paulo',
-			'SE' => 'Sergipe',
-			'TO' => 'Tocantins',
-		);
+		$query = " AND p.TipoProcesso NOT IN (N'CARTA PRECATÃƒâ€œRIA')";
+		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
+		$query .= $this->buildUfCondition($ufCodes);
+		$query .= $this->buildWeekCondition('a.DataHoraEvento', $month, $year, $week);
+		$query .= " AND p.TipoDesdobramento IS NULL AND a.Invalido = 'False'";
 
-		$values = array();
-		foreach ($ufCodes as $code) {
-			$code = trim((string) $code);
-			if ($code === '') {
-				continue;
-			}
-
-			$upperCode = strtoupper($code);
-			$values[$upperCode] = $upperCode;
-			if (isset($map[$upperCode])) {
-				$values[$map[$upperCode]] = $map[$upperCode];
-			}
-		}
-
-		return array_values($values);
+		return $query;
 	}
 
-	private function buildQuotedList(array $values)
+	private function buildFinancialBaseConditions(array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
 	{
-		$clean = array();
-		foreach ($values as $value) {
-			$value = trim((string) $value);
-			if ($value !== '') {
-				$clean[$value] = "'" . str_replace("'", "''", $value) . "'";
-			}
-		}
+		$query = $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
+		$query .= $this->buildUfCondition($ufCodes);
+		$query .= $this->buildWeekCondition('l.DataHora_Evento', $month, $year, $week);
 
-		return implode(',', $clean);
+		return $query;
 	}
 }
