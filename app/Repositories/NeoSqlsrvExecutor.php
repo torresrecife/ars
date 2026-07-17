@@ -46,6 +46,21 @@ class NeoSqlsrvExecutor
 		return $codes;
 	}
 
+	public function countRows($query, $field)
+	{
+		$result = sqlsrv_query($this->connection, $query);
+		if ($result === false) {
+			return 0;
+		}
+
+		$total = 0;
+		while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+			$total += isset($row[$field]) ? (int) $row[$field] : 0;
+		}
+
+		return $total;
+	}
+
 	public function sumAndCollectCodes($query, $valueField, $codeField)
 	{
 		$result = sqlsrv_query($this->connection, $query);
