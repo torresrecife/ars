@@ -8,19 +8,20 @@ use App\Models\Area;
 use App\Models\Banco;
 use App\Models\Carteira;
 use App\Models\Dado;
+use App\Repositories\SqlsrvLookupRepository;
 use Illuminate\Support\Facades\DB;
 
 class ClientAdminRepository
 {
-	/** @var resource|null */
-	private $sqlsrvConnection;
+	/** @var SqlsrvLookupRepository */
+	private $sqlsrvLookupRepository;
 
 	/** @var int */
 	private $lastInsertId = 0;
 
-	public function __construct($sqlsrvConnection = null)
+	public function __construct(SqlsrvLookupRepository $sqlsrvLookupRepository)
 	{
-		$this->sqlsrvConnection = $sqlsrvConnection;
+		$this->sqlsrvLookupRepository = $sqlsrvLookupRepository;
 	}
 
 	public function all()
@@ -88,24 +89,9 @@ class ClientAdminRepository
 
 	public function listCarteiras()
 	{
-		if (!$this->sqlsrvConnection || !function_exists('sqlsrv_query')) {
-			return array();
-		}
-
-		$sql = "SELECT c.CART_Descricao AS Carteira
-			FROM Carteira AS c WITH (NOLOCK)
-			WHERE c.CART_Descricao IS NOT NULL
-			  AND LTRIM(RTRIM(c.CART_Descricao)) <> ''
-			GROUP BY c.CART_Descricao
-			ORDER BY c.CART_Descricao";
-		$query = sqlsrv_query($this->sqlsrvConnection, $sql);
-		if ($query === false) {
-			return array();
-		}
-
 		$rows = array();
-		while ($row = sqlsrv_fetch_array($query, SQLSRV_FETCH_ASSOC)) {
-			$rows[] = $row;
+		foreach ($this->sqlsrvLookupRepository->listCarteiras() as $carteira) {
+			$rows[] = array('Carteira' => $carteira);
 		}
 
 		return $rows;

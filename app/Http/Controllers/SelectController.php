@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Banco;
+use App\Repositories\SqlsrvLookupRepository;
 use Illuminate\Http\Request;
 
 class SelectController extends Controller
 {
-	/** @var mixed */
-	private $sqlsrvConnection;
+	/** @var SqlsrvLookupRepository */
+	private $sqlsrvLookupRepository;
 
-	public function __construct()
+	public function __construct(SqlsrvLookupRepository $sqlsrvLookupRepository)
 	{
-		$this->sqlsrvConnection = app()->bound('legacy.sqlsrv') ? app('legacy.sqlsrv') : null;
+		$this->sqlsrvLookupRepository = $sqlsrvLookupRepository;
 	}
 
 	public function webAjax(Request $request)
@@ -36,36 +37,13 @@ class SelectController extends Controller
 
 	private function appendSqlsrvOptions(array &$options, $flag)
 	{
-		if (!function_exists('sqlsrv_query')) {
-			return;
-		}
-
-		$conexao = $this->sqlsrvConnection;
-		if (!$conexao) {
-			return;
-		}
-
 		if ($flag === '1') {
-			$query = "SELECT t.TIAP_Descricao FROM Tipo_Andamento_Processo AS t WITH (NOLOCK) WHERE t.TIAP_Descricao IS NOT NULL AND ISNULL(t.TIAP_Inativo, 0) = 0 AND ISNULL(t.TIAP_Excluido, 0) = 0 GROUP BY t.TIAP_Descricao ORDER BY t.TIAP_Descricao ASC";
-			$result = sqlsrv_query($conexao, $query);
-			if ($result) {
-				while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-					$descricao = isset($row['TIAP_Descricao']) ? (string) $row['TIAP_Descricao'] : '';
-					if ($descricao !== '') {
-						$options[] = '<option value="' . $this->escape($descricao) . '"> ' . $this->escape($descricao) . '</option>';
-					}
-				}
+			foreach ($this->sqlsrvLookupRepository->listTipoAndamentoProcesso() as $descricao) {
+				$options[] = '<option value="' . $this->escape($descricao) . '"> ' . $this->escape($descricao) . '</option>';
 			}
 		} elseif ($flag === '2') {
-			$query = "SELECT l.TipoLancamento FROM v_Lancamento_Processo AS l WITH (NOLOCK) WHERE l.ClassicaoLancamento LIKE 'Honor%' AND l.TipoLancamento IS NOT NULL GROUP BY l.TipoLancamento ORDER BY l.TipoLancamento ASC";
-			$result = sqlsrv_query($conexao, $query);
-			if ($result) {
-				while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-					$descricao = isset($row['TipoLancamento']) ? (string) $row['TipoLancamento'] : '';
-					if ($descricao !== '') {
-						$options[] = '<option value="' . $this->escape($descricao) . '"> ' . $this->escape($descricao) . '</option>';
-					}
-				}
+			foreach ($this->sqlsrvLookupRepository->listHonorTipoLancamento() as $descricao) {
+				$options[] = '<option value="' . $this->escape($descricao) . '"> ' . $this->escape($descricao) . '</option>';
 			}
 		}
 	}

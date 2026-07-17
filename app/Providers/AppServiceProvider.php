@@ -15,6 +15,7 @@ use App\Repositories\GeneralProductionRepository;
 use App\Repositories\GeneralProductionNeoRepository;
 use App\Repositories\NeoDetailRepository;
 use App\Repositories\NeoPanelRepository;
+use App\Repositories\SqlsrvLookupRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\UserAdminRepository;
 use App\Repositories\WeekRepository;
@@ -82,6 +83,10 @@ class AppServiceProvider extends ServiceProvider
             return new View(base_path());
         });
 
+        $this->app->singleton(SqlsrvLookupRepository::class, function ($app) {
+            return new SqlsrvLookupRepository($app->make('legacy.sqlsrv'));
+        });
+
         $this->app->singleton(AuthService::class, function ($app) {
             return new AuthService(
                 new UserRepository(),
@@ -130,7 +135,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ClientAdminService::class, function ($app) {
             return new ClientAdminService(
                 new ClientAdminRepository(
-                    $app->make('legacy.sqlsrv')
+                    $app->make(SqlsrvLookupRepository::class)
                 )
             );
         });

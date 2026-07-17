@@ -22,17 +22,8 @@ class NeoPanelRepository extends NeoSqlsrvRepository
 			return array('count' => 0, 'codes' => array());
 		}
 
-		$codes = array();
-		$codeResult = sqlsrv_query($this->connection, 'SELECT a.CodigoAndamento ' . $queryBase);
-		while ($codeResult && ($row = sqlsrv_fetch_array($codeResult, SQLSRV_FETCH_ASSOC))) {
-			$codes[] = $row['CodigoAndamento'];
-		}
-
-		$count = 0;
-		$countResult = sqlsrv_query($this->connection, 'SELECT 1 as qtd ' . $queryBase);
-		while ($countResult && ($row = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC))) {
-			$count += (int) $row['qtd'];
-		}
+		$codes = $this->codeQuery('SELECT a.CodigoAndamento ' . $queryBase, 'CodigoAndamento');
+		$count = $this->countQuery('SELECT 1 as qtd ' . $queryBase, 'qtd');
 
 		return array(
 			'count' => $count,
@@ -58,17 +49,11 @@ class NeoPanelRepository extends NeoSqlsrvRepository
 		$query .= $where;
 		$query .= ' GROUP BY l.CodigoLancamento, l.Valor';
 
-		$total = 0.0;
-		$codes = array();
-		$result = sqlsrv_query($this->connection, $query);
-		while ($result && ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))) {
-			$total += (float) $row['qtd2'];
-			$codes[] = $row['CodigoLancamento'];
-		}
+		$summary = $this->sumQuery($query, 'qtd2', 'CodigoLancamento');
 
 		return array(
-			'total' => $total,
-			'codes' => $codes,
+			'total' => $summary['total'],
+			'codes' => $summary['codes'],
 		);
 	}
 

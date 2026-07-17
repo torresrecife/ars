@@ -131,6 +131,11 @@ abstract class NeoSqlsrvRepository
 		return $this->executor->fetchCodes($query, $field);
 	}
 
+	protected function countQuery($query, $field)
+	{
+		return $this->executor->countRows($query, $field);
+	}
+
 	private function expandUfCodes(array $ufCodes)
 	{
 		$values = array();
