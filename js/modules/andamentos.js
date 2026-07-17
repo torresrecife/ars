@@ -228,6 +228,6 @@ var andamentoAjaxUrl = window.arsAndamentoAjaxUrl || "ajax/andamentos";
 					}
 				});
 			},
-			"NÃ£o": function(){ $( this ).dialog( "close" ); }
+			"Não": function(){ $( this ).dialog( "close" ); }
 		});
 }
