@@ -17,7 +17,7 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if (Auth::guard($guard)->check() || ($request->session()->has('usuarioID') && $request->session()->has('usuarioNome'))) {
+        if (Auth::guard($guard)->check()) {
             return redirect(url('index'));
         }
 
