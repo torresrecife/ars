@@ -396,7 +396,7 @@ var userAjaxUrl = window.arsUserAjaxUrl || "ajax/usuarios";
 					}
 				});
 			},
-			"NÃ£o": function(){
+			"Não": function(){
 				$( this ).dialog( "close" );
 			}
 		});

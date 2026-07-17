@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Usuario extends Model
+class Usuario extends Authenticatable
 {
     protected $table = 'usuarios';
     protected $primaryKey = 'id_usu';
@@ -34,6 +34,20 @@ class Usuario extends Model
         'acesso_usu' => 'datetime',
         'data_cad' => 'datetime',
     );
+
+    protected $hidden = array(
+        'senha_usu',
+    );
+
+    public function getAuthPassword()
+    {
+        return (string) $this->senha_usu;
+    }
+
+    public function getRememberTokenName()
+    {
+        return null;
+    }
 
     public function setor()
     {

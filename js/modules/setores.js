@@ -112,7 +112,7 @@ var sectorAjaxUrl = window.arsSectorAjaxUrl || "ajax/setores";
 				}
 			});
 		},
-		"NÃ£o": function(){
+		"Não": function(){
 			$( this ).dialog( "close" );
 		}
 	});

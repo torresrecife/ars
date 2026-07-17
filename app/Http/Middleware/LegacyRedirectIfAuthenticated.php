@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 class LegacyRedirectIfAuthenticated
 {
@@ -13,7 +14,7 @@ class LegacyRedirectIfAuthenticated
 
     public function handle($request, Closure $next)
     {
-        if ($request->session()->has('usuarioID') && $request->session()->has('usuarioNome')) {
+        if (Auth::guard('web')->check() || ($request->session()->has('usuarioID') && $request->session()->has('usuarioNome'))) {
             return redirect($this->indexUrl());
         }
 

@@ -118,6 +118,39 @@ function LerMensagemAjaxErro(xhr, fallback){
 	}
 	return fallback || "Erro na operacao.";
 }
+function validaEmail(email){
+	var valor = $.trim(String(email || ""));
+	if(valor === ""){
+		return "";
+	}
+
+	var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	return regex.test(valor) ? "" : "E-mail invalido.";
+}
+function fc_teste_senha(senha1, senha2, modo){
+	var primeira = String(senha1 || "");
+	var segunda = String(senha2 || "");
+
+	if(modo === "I"){
+		if(primeira === "" || segunda === ""){
+			return "Informe a senha e a confirmacao da senha.";
+		}
+	}
+
+	if(primeira === "" && segunda === ""){
+		return "";
+	}
+
+	if(primeira !== segunda){
+		return "As senhas informadas nao conferem.";
+	}
+
+	if(primeira !== "" && primeira.length < 4){
+		return "A senha deve ter ao menos 4 caracteres.";
+	}
+
+	return "";
+}
 function EnviarPagina(frm, precisaData, are, fla){
 	if(precisaData && $("#startDate").val()==""){
 		mostrarErroData();

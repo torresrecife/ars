@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Repositories\RegionRepository;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Auth;
 
 class AuthService
 {
@@ -66,16 +67,27 @@ class AuthService
 
 	public function attempt($login, $password)
 	{
-		$user = $this->users->findByLogin($login);
-		if (empty($user)) {
+		$credentials = array(
+			'login_usu' => (string) $login,
+			'password' => (string) $password,
+		);
+
+		if (!Auth::guard('web')->attempt($credentials, false)) {
 			return false;
 		}
 
-		if (!$this->verifyPassword($password, $user['senha_usu'])) {
+		$authUser = Auth::guard('web')->user();
+		if ($authUser === null) {
 			return false;
 		}
 
-		if ($this->passwordNeedsRehash($user['senha_usu'])) {
+		$storedHash = method_exists($authUser, 'getAuthPassword')
+			? (string) $authUser->getAuthPassword()
+			: '';
+
+		$user = method_exists($authUser, 'toArray') ? $authUser->toArray() : array();
+
+		if ($this->passwordNeedsRehash($storedHash)) {
 			$newHash = $this->hashPassword($password);
 			if ($newHash) {
 				$this->users->updatePassword($user['id_usu'], $newHash);
@@ -94,6 +106,8 @@ class AuthService
 
 	public function clearUserSession()
 	{
+		Auth::guard('web')->logout();
+
 		if (!$this->hasLaravelSessionStore()) {
 			return;
 		}
@@ -115,6 +129,11 @@ class AuthService
 
 	public function currentUser()
 	{
+		$authUser = Auth::guard('web')->user();
+		if ($authUser !== null) {
+			return method_exists($authUser, 'toArray') ? $authUser->toArray() : false;
+		}
+
 		if (!$this->hasLaravelSessionStore() || !session()->has('usuarioID')) {
 			return false;
 		}
@@ -148,6 +167,13 @@ class AuthService
 				session()->migrate(true);
 			}
 			session($sessionData);
+		}
+
+		if (!Auth::guard('web')->check() || (int) Auth::guard('web')->id() !== (int) $user['id_usu']) {
+			$authUser = \App\Models\Usuario::query()->find((int) $user['id_usu']);
+			if ($authUser) {
+				Auth::guard('web')->login($authUser, false);
+			}
 		}
 
 		return $user;

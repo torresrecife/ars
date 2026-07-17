@@ -132,7 +132,7 @@ var weekAjaxUrl = window.arsWeekAjaxUrl || "ajax/semanas";
 					}
 				});
 			},
-			"NÃ£o": function(){
+			"Não": function(){
 				$( this ).dialog( "close" );
 			}
 		});

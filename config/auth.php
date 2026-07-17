@@ -22,8 +22,8 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'eloquent',
-            'model' => App\User::class,
+            'driver' => 'legacy-eloquent',
+            'model' => App\Models\Usuario::class,
         ],
     ],
 
