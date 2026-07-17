@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Repositories\GeneralProductionNeoRepository;
 use App\Repositories\GeneralProductionRepository;
+use App\Support\LegacyDate;
 
 class GeneralProductionService
 {
@@ -32,8 +33,8 @@ class GeneralProductionService
 		$banks = $this->repository->listBanks($context['userSectorId'], $context['startSector'], $context['userClientIds'], false);
 		$monthPadded = str_pad((string) $context['month'], 2, '0', STR_PAD_LEFT);
 		$startOfMonth = '01/' . $monthPadded . '/' . $context['year'];
-		$usefulDaysCurrent = (float) diasUteis($startOfMonth, $this->currentEndDate($context['month'], $context['year']));
-		$usefulDaysMonth = (float) diasUteis($startOfMonth, $this->lastDayDate($context['month'], $context['year']));
+		$usefulDaysCurrent = (float) LegacyDate::countBusinessDaysInclusive($startOfMonth, $this->currentEndDate($context['month'], $context['year']));
+		$usefulDaysMonth = (float) LegacyDate::countBusinessDaysInclusive($startOfMonth, $this->lastDayDate($context['month'], $context['year']));
 		$rows = array();
 		$totals = array(
 			'metaMonth' => 0.0,
@@ -316,8 +317,9 @@ class GeneralProductionService
 				$start = (int) $weekConfig['ini_' . $index];
 				$end = (int) $weekConfig['fim_' . $index];
 			} else {
-				$start = (int) date('d', strtotime(P_semana($month, $year, $index, 'ini')));
-				$end = (int) date('d', strtotime(P_semana($month, $year, $index, 'fim')));
+				$range = LegacyDate::legacyWeekRange((int) $month, (int) $year, (int) $index);
+				$start = (int) date('d', strtotime($range['start']));
+				$end = (int) date('d', strtotime($range['end']));
 			}
 
 			$weeks[] = array(

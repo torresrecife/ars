@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Repositories\DashboardRepository;
 use App\Repositories\NeoPanelRepository;
+use App\Support\LegacyDate;
 
 class DashboardPanelService
 {
@@ -500,8 +501,9 @@ class DashboardPanelService
 				$start = (int) $weekConfig['ini_' . $index];
 				$end = (int) $weekConfig['fim_' . $index];
 			} else {
-				$start = (int) date('d', strtotime(P_semana($month, $year, $index, 'ini')));
-				$end = (int) date('d', strtotime(P_semana($month, $year, $index, 'fim')));
+				$range = LegacyDate::legacyWeekRange((int) $month, (int) $year, (int) $index);
+				$start = (int) date('d', strtotime($range['start']));
+				$end = (int) date('d', strtotime($range['end']));
 			}
 
 			$weeks[] = array(
