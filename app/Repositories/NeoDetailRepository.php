@@ -149,6 +149,7 @@ class NeoDetailRepository
 		";
 
 		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
+
 		$query .= $this->buildUfCondition($ufCodes);
 		$query .= $this->buildWeekCondition('l.DataHora_Evento', $month, $year, $week);
 		$query .= " ORDER BY l.DataHora_Evento ASC";

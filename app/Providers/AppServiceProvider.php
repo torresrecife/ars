@@ -182,8 +182,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        require_once base_path('inc/functions.php');
-        require_once base_path('inc/somadias.php');
     }
 }
 
