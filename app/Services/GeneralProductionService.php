@@ -7,9 +7,14 @@ namespace App\Services;
 use App\Repositories\GeneralProductionNeoRepository;
 use App\Repositories\GeneralProductionRepository;
 use App\Support\LegacyDate;
+use App\ViewModels\DashboardMetricCell;
 use App\ViewModels\GeneralProductionContext;
 use App\ViewModels\GeneralProductionRegionFilter;
+use App\ViewModels\MonthlyProductionRow;
+use App\ViewModels\MonthlyProductionTotals;
 use App\ViewModels\MonthlyProductionViewData;
+use App\ViewModels\WeeklyProductionRow;
+use App\ViewModels\WeeklyProductionTotals;
 use App\ViewModels\WeeklyProductionViewData;
 
 class GeneralProductionService
@@ -53,16 +58,16 @@ class GeneralProductionService
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);
 			$sum = $this->neoRepository->sumFinancialByMonth($aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
 			$metaToday = ($usefulDaysMonth > 0) ? ($aggregate['metaTotal'] / $usefulDaysMonth) * $usefulDaysCurrent : 0.0;
-			$rows[] = array(
-				'name' => $bank['banco_name'],
-				'metaMonth' => $aggregate['metaTotal'],
-				'metaToday' => $metaToday,
-				'realized' => $sum['total'],
-				'balance' => $sum['total'] - $metaToday,
-				'percentToday' => $this->percent($sum['total'], $metaToday, 1),
-				'percentMonth' => $this->percent($sum['total'], $aggregate['metaTotal'], 1),
-				'color' => $this->heatColor($this->percent($sum['total'], $metaToday, 1)),
-				'codes' => $sum['codes'],
+			$rows[] = new WeeklyProductionRow(
+				$bank['banco_name'],
+				$aggregate['metaTotal'],
+				$metaToday,
+				$sum['total'],
+				$sum['total'] - $metaToday,
+				$this->percent($sum['total'], $metaToday, 1),
+				$this->percent($sum['total'], $aggregate['metaTotal'], 1),
+				$this->heatColor($this->percent($sum['total'], $metaToday, 1)),
+				$sum['codes']
 			);
 			$totals['metaMonth'] += $aggregate['metaTotal'];
 			$totals['metaToday'] += $metaToday;
@@ -83,7 +88,15 @@ class GeneralProductionService
 			'month' => $context->month(),
 			'year' => $context->year(),
 			'rows' => $rows,
-			'totals' => $totals,
+			'totals' => new WeeklyProductionTotals(
+				$totals['metaMonth'],
+				$totals['metaToday'],
+				$totals['realized'],
+				$totals['balance'],
+				$totals['percentToday'],
+				$totals['percentMonth'],
+				$totals['color']
+			),
 			'contentHeight' => (count($rows) * 30) + 360,
 		));
 	}
@@ -113,12 +126,12 @@ class GeneralProductionService
 				$meta = $this->resolveMonthlyWeekMeta($aggregate, $index, $weeks);
 				$real = $this->neoRepository->sumFinancialByWeek($aggregate['types'], $carteiraCodes, $carteiraMode, $week, $context->month(), $context->year(), $regionFilter->ufs());
 				$percent = $this->percent($real['total'], $meta, 0);
-				$weekData[] = array(
-					'meta' => $meta,
-					'real' => $real['total'],
-					'percent' => $percent,
-					'icon' => $this->percentIcon($percent, $meta),
-					'codes' => $real['codes'],
+				$weekData[] = new DashboardMetricCell(
+					$meta,
+					$real['total'],
+					$percent,
+					$this->percentIcon($percent, $meta),
+					$real['codes']
 				);
 				$weekMetaTotals[$index] += $meta;
 				$weekRealTotals[$index] += $real['total'];
@@ -126,13 +139,13 @@ class GeneralProductionService
 			}
 
 			$totalPercent = $this->percent($totalReal, $aggregate['metaTotal'], 0);
-			$rows[] = array(
-				'name' => $bank['banco_name'] . ($bank['banco_class'] ? ' (' . $bank['banco_class'] . ')' : ''),
-				'weekData' => $weekData,
-				'totalMeta' => $aggregate['metaTotal'],
-				'totalReal' => $totalReal,
-				'totalPercent' => $totalPercent,
-				'totalIcon' => $this->percentIcon($totalPercent, $aggregate['metaTotal']),
+			$rows[] = new MonthlyProductionRow(
+				$bank['banco_name'] . ($bank['banco_class'] ? ' (' . $bank['banco_class'] . ')' : ''),
+				$weekData,
+				$aggregate['metaTotal'],
+				$totalReal,
+				$totalPercent,
+				$this->percentIcon($totalPercent, $aggregate['metaTotal'])
 			);
 			$grandMeta += $aggregate['metaTotal'];
 			$grandReal += $totalReal;
@@ -141,11 +154,11 @@ class GeneralProductionService
 		$totalWeekData = array();
 		foreach ($weeks as $index => $week) {
 			$percent = $this->percent($weekRealTotals[$index], $weekMetaTotals[$index], 0);
-			$totalWeekData[] = array(
-				'meta' => $weekMetaTotals[$index],
-				'real' => $weekRealTotals[$index],
-				'percent' => $percent,
-				'icon' => $this->percentIcon($percent, $weekMetaTotals[$index]),
+			$totalWeekData[] = new DashboardMetricCell(
+				$weekMetaTotals[$index],
+				$weekRealTotals[$index],
+				$percent,
+				$this->percentIcon($percent, $weekMetaTotals[$index])
 			);
 		}
 
@@ -161,12 +174,12 @@ class GeneralProductionService
 			'year' => $context->year(),
 			'weeks' => $weeks,
 			'rows' => $rows,
-			'totals' => array(
-				'weeks' => $totalWeekData,
-				'meta' => $grandMeta,
-				'real' => $grandReal,
-				'percent' => $grandPercent,
-				'icon' => $this->percentIcon($grandPercent, $grandMeta),
+			'totals' => new MonthlyProductionTotals(
+				$totalWeekData,
+				$grandMeta,
+				$grandReal,
+				$grandPercent,
+				$this->percentIcon($grandPercent, $grandMeta)
 			),
 			'contentHeight' => (count($rows) * 30) + 360,
 		));
