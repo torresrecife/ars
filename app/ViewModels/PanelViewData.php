@@ -16,6 +16,24 @@ class PanelViewData
 
 	public function toArray()
 	{
-		return $this->payload;
+		return $this->normalize($this->payload);
+	}
+
+	private function normalize($value)
+	{
+		if (is_object($value) && method_exists($value, 'toArray')) {
+			return $this->normalize($value->toArray());
+		}
+
+		if (!is_array($value)) {
+			return $value;
+		}
+
+		$normalized = array();
+		foreach ($value as $key => $item) {
+			$normalized[$key] = $this->normalize($item);
+		}
+
+		return $normalized;
 	}
 }

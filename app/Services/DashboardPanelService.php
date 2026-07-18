@@ -7,7 +7,11 @@ namespace App\Services;
 use App\Repositories\DashboardRepository;
 use App\Repositories\NeoPanelRepository;
 use App\Support\LegacyDate;
+use App\ViewModels\DashboardFinancialSummary;
+use App\ViewModels\DashboardMetricCell;
+use App\ViewModels\DashboardMetricRow;
 use App\ViewModels\DashboardPanelContext;
+use App\ViewModels\DashboardPrejudiceRow;
 use App\ViewModels\DashboardRegionFilter;
 use App\ViewModels\PanelViewData;
 
@@ -106,26 +110,26 @@ class DashboardPanelService
 					$ufCodes
 				);
 				$realValue = (int) $queryResult['count'];
-				$weekData[] = array(
-					'meta' => $metaValue,
-					'real' => $realValue,
-					'percent' => $this->percent($realValue, $metaValue),
-					'icon' => $this->percentIcon($realValue, $metaValue),
-					'codes' => $queryResult['codes'],
+				$weekData[] = new DashboardMetricCell(
+					$metaValue,
+					$realValue,
+					$this->percent($realValue, $metaValue),
+					$this->percentIcon($realValue, $metaValue),
+					$queryResult['codes']
 				);
 				$totalReal += $realValue;
 				$totalCodes = array_merge($totalCodes, $queryResult['codes']);
 			}
 
-			$built[] = array(
-				'andaId' => (int) $row['anda_id'],
-				'name' => $row['nome'],
-				'weekData' => $weekData,
-				'totalMeta' => $totalMeta,
-				'totalReal' => $totalReal,
-				'totalPercent' => $this->percent($totalReal, $totalMeta),
-				'totalIcon' => $this->percentIcon($totalReal, $totalMeta),
-				'totalCodes' => array_values(array_unique($totalCodes)),
+			$built[] = new DashboardMetricRow(
+				(int) $row['anda_id'],
+				$row['nome'],
+				$weekData,
+				$totalMeta,
+				$totalReal,
+				$this->percent($totalReal, $totalMeta),
+				$this->percentIcon($totalReal, $totalMeta),
+				array_values(array_unique($totalCodes))
 			);
 		}
 
@@ -157,26 +161,26 @@ class DashboardPanelService
 					$ufCodes
 				);
 				$realValue = (float) $queryResult['total'];
-				$weekData[] = array(
-					'meta' => $metaValue,
-					'real' => $realValue,
-					'percent' => $this->percent($realValue, $metaValue),
-					'icon' => $this->percentIcon($realValue, $metaValue),
-					'codes' => $queryResult['codes'],
+				$weekData[] = new DashboardMetricCell(
+					$metaValue,
+					$realValue,
+					$this->percent($realValue, $metaValue),
+					$this->percentIcon($realValue, $metaValue),
+					$queryResult['codes']
 				);
 				$totalReal += $realValue;
 				$totalCodes = array_merge($totalCodes, $queryResult['codes']);
 			}
 
-			$built[] = array(
-				'andaId' => (int) $row['anda_id'],
-				'name' => $row['nome'],
-				'weekData' => $weekData,
-				'totalMeta' => $totalMeta,
-				'totalReal' => $totalReal,
-				'totalPercent' => $this->percent($totalReal, $totalMeta),
-				'totalIcon' => $this->percentIcon($totalReal, $totalMeta),
-				'totalCodes' => array_values(array_unique($totalCodes)),
+			$built[] = new DashboardMetricRow(
+				(int) $row['anda_id'],
+				$row['nome'],
+				$weekData,
+				$totalMeta,
+				$totalReal,
+				$this->percent($totalReal, $totalMeta),
+				$this->percentIcon($totalReal, $totalMeta),
+				array_values(array_unique($totalCodes))
 			);
 		}
 
@@ -206,21 +210,23 @@ class DashboardPanelService
 					$ufCodes
 				);
 				$realValue = (float) $queryResult['total'];
-				$weekData[] = array(
-					'meta' => 0.0,
-					'real' => $realValue,
-					'codes' => $queryResult['codes'],
+				$weekData[] = new DashboardMetricCell(
+					0.0,
+					$realValue,
+					0.0,
+					'',
+					$queryResult['codes']
 				);
 				$totalReal += $realValue;
 				$totalCodes = array_merge($totalCodes, $queryResult['codes']);
 			}
 
-			$built[] = array(
-				'andaId' => (int) $row['anda_id'],
-				'name' => $row['nome'],
-				'weekData' => $weekData,
-				'totalReal' => $totalReal,
-				'totalCodes' => array_values(array_unique($totalCodes)),
+			$built[] = new DashboardPrejudiceRow(
+				(int) $row['anda_id'],
+				$row['nome'],
+				$weekData,
+				$totalReal,
+				array_values(array_unique($totalCodes))
 			);
 		}
 
@@ -238,34 +244,36 @@ class DashboardPanelService
 			$weekMeta = 0.0;
 			$weekReal = 0.0;
 			foreach ($financialRows as $row) {
-				$weekMeta += (float) $row['weekData'][$index]['meta'];
-				$weekReal += (float) $row['weekData'][$index]['real'];
+				$rowData = $row->toArray();
+				$weekMeta += (float) $rowData['weekData'][$index]['meta'];
+				$weekReal += (float) $rowData['weekData'][$index]['real'];
 			}
-			$weekTotals[] = array(
-				'meta' => $weekMeta,
-				'real' => $weekReal,
-				'percent' => $this->percent($weekReal, $weekMeta, 1),
-				'icon' => $this->percentIcon($weekReal, $weekMeta),
+			$weekTotals[] = new DashboardMetricCell(
+				$weekMeta,
+				$weekReal,
+				$this->percent($weekReal, $weekMeta, 1),
+				$this->percentIcon($weekReal, $weekMeta)
 			);
 			$metaTotal += $weekMeta;
 			$realTotal += $weekReal;
 		}
 
 		foreach ($prejudiceRows as $row) {
-			$prejudiceTotal += (float) $row['totalReal'];
+			$rowData = $row->toArray();
+			$prejudiceTotal += (float) $rowData['totalReal'];
 		}
 
 		$netRealTotal = $realTotal - $prejudiceTotal;
 
-		return array(
-			'weekTotals' => $weekTotals,
-			'metaTotal' => $metaTotal,
-			'realTotal' => $realTotal,
-			'grandPercent' => $this->percent($realTotal, $metaTotal, 1),
-			'grandIcon' => $this->percentIcon($realTotal, $metaTotal),
-			'netRealTotal' => $netRealTotal,
-			'netPercent' => $this->percent($netRealTotal, $metaTotal, 1),
-			'netIcon' => $this->percentIcon($netRealTotal, $metaTotal),
+		return new DashboardFinancialSummary(
+			$weekTotals,
+			$metaTotal,
+			$realTotal,
+			$this->percent($realTotal, $metaTotal, 1),
+			$this->percentIcon($realTotal, $metaTotal),
+			$netRealTotal,
+			$this->percent($netRealTotal, $metaTotal, 1),
+			$this->percentIcon($netRealTotal, $metaTotal)
 		);
 	}
 
