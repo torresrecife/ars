@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Domain\Metrics\PerformanceMetricFormatter;
 use App\Repositories\DashboardRepository;
 use App\Repositories\NeoPanelRepository;
 use App\Support\LegacyDate;
@@ -29,15 +30,19 @@ class DashboardPanelService
 	/** @var RegionService */
 	private $regionService;
 
-	public function __construct(DashboardRepository $dashboardRepository, NeoPanelRepository $neoRepository, RegionService $regionService, array $months)
+	/** @var PerformanceMetricFormatter */
+	private $metricFormatter;
+
+	public function __construct(DashboardRepository $dashboardRepository, NeoPanelRepository $neoRepository, RegionService $regionService, array $months, PerformanceMetricFormatter $metricFormatter)
 	{
 		$this->dashboardRepository = $dashboardRepository;
 		$this->neoRepository = $neoRepository;
 		$this->regionService = $regionService;
 		$this->months = $months;
+		$this->metricFormatter = $metricFormatter;
 	}
 
-	public function build(array $input, array $session = array())
+	public function build($input, array $session = array())
 	{
 		$context = $this->buildContext($input, $session);
 		if ($context->bankId() <= 0) {
@@ -113,8 +118,8 @@ class DashboardPanelService
 				$weekData[] = new DashboardMetricCell(
 					$metaValue,
 					$realValue,
-					$this->percent($realValue, $metaValue),
-					$this->percentIcon($realValue, $metaValue),
+					$this->metricFormatter->percent($realValue, $metaValue),
+					$this->metricFormatter->percentIcon($realValue, $metaValue),
 					$queryResult['codes']
 				);
 				$totalReal += $realValue;
@@ -127,8 +132,8 @@ class DashboardPanelService
 				$weekData,
 				$totalMeta,
 				$totalReal,
-				$this->percent($totalReal, $totalMeta),
-				$this->percentIcon($totalReal, $totalMeta),
+				$this->metricFormatter->percent($totalReal, $totalMeta),
+				$this->metricFormatter->percentIcon($totalReal, $totalMeta),
 				array_values(array_unique($totalCodes))
 			);
 		}
@@ -164,8 +169,8 @@ class DashboardPanelService
 				$weekData[] = new DashboardMetricCell(
 					$metaValue,
 					$realValue,
-					$this->percent($realValue, $metaValue),
-					$this->percentIcon($realValue, $metaValue),
+					$this->metricFormatter->percent($realValue, $metaValue),
+					$this->metricFormatter->percentIcon($realValue, $metaValue),
 					$queryResult['codes']
 				);
 				$totalReal += $realValue;
@@ -178,8 +183,8 @@ class DashboardPanelService
 				$weekData,
 				$totalMeta,
 				$totalReal,
-				$this->percent($totalReal, $totalMeta),
-				$this->percentIcon($totalReal, $totalMeta),
+				$this->metricFormatter->percent($totalReal, $totalMeta),
+				$this->metricFormatter->percentIcon($totalReal, $totalMeta),
 				array_values(array_unique($totalCodes))
 			);
 		}
@@ -251,8 +256,8 @@ class DashboardPanelService
 			$weekTotals[] = new DashboardMetricCell(
 				$weekMeta,
 				$weekReal,
-				$this->percent($weekReal, $weekMeta, 1),
-				$this->percentIcon($weekReal, $weekMeta)
+				$this->metricFormatter->percent($weekReal, $weekMeta, 1),
+				$this->metricFormatter->percentIcon($weekReal, $weekMeta)
 			);
 			$metaTotal += $weekMeta;
 			$realTotal += $weekReal;
@@ -269,25 +274,27 @@ class DashboardPanelService
 			$weekTotals,
 			$metaTotal,
 			$realTotal,
-			$this->percent($realTotal, $metaTotal, 1),
-			$this->percentIcon($realTotal, $metaTotal),
+			$this->metricFormatter->percent($realTotal, $metaTotal, 1),
+			$this->metricFormatter->percentIcon($realTotal, $metaTotal),
 			$netRealTotal,
-			$this->percent($netRealTotal, $metaTotal, 1),
-			$this->percentIcon($netRealTotal, $metaTotal)
+			$this->metricFormatter->percent($netRealTotal, $metaTotal, 1),
+			$this->metricFormatter->percentIcon($netRealTotal, $metaTotal)
 		);
 	}
 
-	private function buildContext(array $input, array $session)
+	private function buildContext($input, array $session)
 	{
+		$payload = is_object($input) && method_exists($input, 'toArray') ? $input->toArray() : (array) $input;
+
 		return new DashboardPanelContext(
-			isset($input['bank_id']) ? $input['bank_id'] : 0,
-			isset($input['area_id']) ? $input['area_id'] : '',
-			isset($input['mes']) ? $input['mes'] : date('m'),
-			isset($input['ano']) ? $input['ano'] : date('Y'),
+			isset($payload['bank_id']) ? $payload['bank_id'] : 0,
+			isset($payload['area_id']) ? $payload['area_id'] : '',
+			isset($payload['mes']) ? $payload['mes'] : date('m'),
+			isset($payload['ano']) ? $payload['ano'] : date('Y'),
 			isset($session['usuarioID']) ? $session['usuarioID'] : 0,
 			isset($session['usuarioNivel']) ? $session['usuarioNivel'] : '',
 			isset($session['usuarioRegiaoModo']) ? $session['usuarioRegiaoModo'] : 'N',
-			isset($input['regiao_id']) ? $input['regiao_id'] : 0
+			isset($payload['regiao_id']) ? $payload['regiao_id'] : 0
 		);
 	}
 
@@ -618,32 +625,4 @@ class DashboardPanelService
 		return $items;
 	}
 
-	private function percent($real, $meta, $precision = 0)
-	{
-		if ((float) $meta == 0.0) {
-			return 0.0;
-		}
-
-		return (float) number_format(((float) $real / (float) $meta) * 100, $precision, '.', '');
-	}
-
-	private function percentIcon($real, $meta)
-	{
-		if ((float) $meta == 0.0) {
-			return 'circle_grey.png';
-		}
-
-		$percent = ((float) $real / (float) $meta) * 100;
-		if ($percent >= 100 && $percent < 110) {
-			return 'circle_green.png';
-		}
-		if ($percent < 100 && $percent >= 80) {
-			return 'circle_yellow.png';
-		}
-		if ($percent >= 110) {
-			return 'circle_blue.png';
-		}
-
-		return 'circle_red.png';
-	}
 }

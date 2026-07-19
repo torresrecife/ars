@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Data\DashboardPanelInput;
+use App\Http\Requests\DashboardPanelRequest;
 use App\Services\DashboardPanelService;
 use App\Support\View;
-use Illuminate\Http\Request;
 
 class DashboardPanelController extends Controller
 {
@@ -22,14 +23,27 @@ class DashboardPanelController extends Controller
 		$this->view = $view;
 	}
 
-	public function index(array $input = array(), array $session = array())
+	public function index($input = array(), array $session = array())
 	{
-		$viewData = $this->service->build($input, $session);
+		$viewData = $this->service->build($this->resolveInput($input), $session);
+
 		return $this->view->render('dashboard/panel', array('viewData' => $viewData->toArray()));
 	}
 
-	public function webIndex(Request $request)
+	public function webIndex(DashboardPanelRequest $request)
 	{
-		return response($this->index($request->all(), $request->session()->all()));
+		return response($this->index(
+			DashboardPanelInput::fromArray($request->all()),
+			$request->session()->all()
+		));
+	}
+
+	private function resolveInput($input)
+	{
+		if ($input instanceof DashboardPanelInput) {
+			return $input;
+		}
+
+		return DashboardPanelInput::fromArray(is_array($input) ? $input : array());
 	}
 }

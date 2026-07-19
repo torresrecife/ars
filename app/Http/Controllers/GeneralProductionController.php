@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Data\GeneralProductionInput;
+use App\Http\Requests\GeneralProductionRequest;
 use App\Services\GeneralProductionService;
 use App\Support\View;
-use Illuminate\Http\Request;
 
-class GeneralProductionController
+class GeneralProductionController extends Controller
 {
 	/** @var GeneralProductionService */
 	private $service;
@@ -22,23 +23,44 @@ class GeneralProductionController
 		$this->view = $view;
 	}
 
-	public function weekly(array $input, array $session)
+	public function weekly($input = array(), array $session = array())
 	{
-		return $this->view->render('geral/weekly', $this->service->buildWeekly($input, $session)->toArray());
+		return $this->view->render(
+			'geral/weekly',
+			$this->service->buildWeekly($this->resolveInput($input), $session)->toArray()
+		);
 	}
 
-	public function monthly(array $input, array $session)
+	public function monthly($input = array(), array $session = array())
 	{
-		return $this->view->render('geral/monthly', $this->service->buildMonthly($input, $session)->toArray());
+		return $this->view->render(
+			'geral/monthly',
+			$this->service->buildMonthly($this->resolveInput($input), $session)->toArray()
+		);
 	}
 
-	public function webWeekly(Request $request)
+	public function webWeekly(GeneralProductionRequest $request)
 	{
-		return response($this->weekly($request->all(), $request->session()->all()));
+		return response($this->weekly(
+			GeneralProductionInput::fromArray($request->all()),
+			$request->session()->all()
+		));
 	}
 
-	public function webMonthly(Request $request)
+	public function webMonthly(GeneralProductionRequest $request)
 	{
-		return response($this->monthly($request->all(), $request->session()->all()));
+		return response($this->monthly(
+			GeneralProductionInput::fromArray($request->all()),
+			$request->session()->all()
+		));
+	}
+
+	private function resolveInput($input)
+	{
+		if ($input instanceof GeneralProductionInput) {
+			return $input;
+		}
+
+		return GeneralProductionInput::fromArray(is_array($input) ? $input : array());
 	}
 }

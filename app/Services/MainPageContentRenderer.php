@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Data\DashboardPanelInput;
+use App\Data\GeneralProductionInput;
 use App\Http\Controllers\AndamentoAdminController;
 use App\Http\Controllers\ClientAdminController;
 use App\Http\Controllers\DashboardPanelController;
@@ -43,11 +45,11 @@ class MainPageContentRenderer
 	{
 		switch ($controllerName) {
 			case 'dashboard-panel':
-				return app(DashboardPanelController::class)->index($input, $session);
+				return app(DashboardPanelController::class)->index(DashboardPanelInput::fromArray($input), $session);
 			case 'general-production-weekly':
-				return app(GeneralProductionController::class)->weekly($input, $session);
+				return app(GeneralProductionController::class)->weekly(GeneralProductionInput::fromArray($input), $session);
 			case 'general-production-monthly':
-				return app(GeneralProductionController::class)->monthly($input, $session);
+				return app(GeneralProductionController::class)->monthly(GeneralProductionInput::fromArray($input), $session);
 			case 'user-***REMOVED***':
 				return app(UserAdminController::class)->index();
 			case 'sector-***REMOVED***':
