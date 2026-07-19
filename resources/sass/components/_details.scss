@@ -1,0 +1,21 @@
+.detail-table {
+  border-collapse: collapse;
+  font-family: $font-body;
+  font-size: 10pt;
+  color: #333333;
+  margin-top: 20px;
+}
+
+.detail-table__row--interactive:hover {
+  background: #ebebeb;
+  cursor: pointer;
+}
+
+.detail-summary {
+  border-collapse: collapse;
+  font-family: $font-body;
+  font-size: 10pt;
+  color: #333333;
+  font-weight: bold;
+  margin-top: 20px;
+}

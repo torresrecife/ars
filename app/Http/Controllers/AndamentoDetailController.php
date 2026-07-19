@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Data\NeoDetailInput;
+use App\Http\Requests\NeoDetailRequest;
 use App\Services\NeoDetailService;
 use App\Support\View;
-use Illuminate\Http\Request;
 
-class AndamentoDetailController
+class AndamentoDetailController extends Controller
 {
 	/** @var NeoDetailService */
 	private $service;
@@ -22,13 +23,27 @@ class AndamentoDetailController
 		$this->view = $view;
 	}
 
-	public function index(array $input = array(), array $session = array())
+	public function index($input = array(), array $session = array())
 	{
-		return $this->view->render('dados_anda/index', $this->service->andamentoDetailViewData($input, $session));
+		$viewData = $this->service->andamentoDetailViewData($this->resolveInput($input), $session);
+
+		return $this->view->render('dados_anda/index', $viewData->toArray());
 	}
 
-	public function webIndex(Request $request)
+	public function webIndex(NeoDetailRequest $request)
 	{
-		return response($this->index($request->all(), $request->session()->all()));
+		return response($this->index(
+			NeoDetailInput::fromArray($request->all()),
+			$request->session()->all()
+		));
+	}
+
+	private function resolveInput($input)
+	{
+		if ($input instanceof NeoDetailInput) {
+			return $input;
+		}
+
+		return NeoDetailInput::fromArray(is_array($input) ? $input : array());
 	}
 }

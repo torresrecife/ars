@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Data\NeoDetailInput;
 use App\Repositories\DashboardRepository;
 use App\Repositories\NeoDetailRepository;
 use App\Support\LegacyDate;
+use App\ViewModels\AndamentoDetailViewData;
+use App\ViewModels\FinancialDetailViewData;
 use App\ViewModels\NeoDetailContext;
+use App\ViewModels\NeoDetailRow;
 
 class NeoDetailService
 {
@@ -27,53 +31,53 @@ class NeoDetailService
 		$this->regionService = $regionService;
 	}
 
-	public function financialDetailViewData(array $input, array $session = array())
+	public function financialDetailViewData($input, array $session = array())
 	{
-		$rows = $this->resolveFinancialRows($input, $session);
+		$detailInput = $this->resolveInput($input);
+		$rows = $this->resolveFinancialRows($detailInput, $session);
 		$total = 0.0;
 		$count = 0;
+		$viewRows = array();
 
-		foreach ($rows as &$row) {
-			$row['comarca_exibicao'] = $this->formatComarca(isset($row['comarca']) ? $row['comarca'] : '');
-			$row['estado_exibicao'] = isset($row['estado']) ? trim((string) $row['estado']) : '';
-			$row['processo_exibicao'] = $this->formatProcesso(isset($row['Processo']) ? $row['Processo'] : '');
-			$row['processo_cnj_exibicao'] = $this->formatProcesso(isset($row['ProcessoCNJ']) ? $row['ProcessoCNJ'] : '');
-			$total += isset($row['valores']) ? (float) $row['valores'] : 0.0;
+		foreach ($rows as $row) {
+			$payload = $this->decorateFinancialRow($row);
+			$total += isset($payload['valores']) ? (float) $payload['valores'] : 0.0;
 			$count++;
+			$viewRows[] = new NeoDetailRow($payload);
 		}
-		unset($row);
 
-		return array(
-			'rows' => $rows,
-			'bankName' => isset($input['banco_lnc']) ? (string) $input['banco_lnc'] : '',
-			'totalCount' => $count,
-			'totalValue' => $total,
+		return new FinancialDetailViewData(
+			$viewRows,
+			$detailInput->bankNameForFinancial(),
+			$count,
+			$total
 		);
 	}
 
-	public function andamentoDetailViewData(array $input, array $session = array())
+	public function andamentoDetailViewData($input, array $session = array())
 	{
-		$rows = $this->resolveAndamentoRows($input, $session);
+		$detailInput = $this->resolveInput($input);
+		$rows = $this->resolveAndamentoRows($detailInput, $session);
 		$count = 0;
+		$viewRows = array();
 
-		foreach ($rows as &$row) {
-			$row['comarca_exibicao'] = $this->formatComarca(isset($row['comarca']) ? $row['comarca'] : '');
-			$row['estado_exibicao'] = isset($row['estado']) ? trim((string) $row['estado']) : '';
+		foreach ($rows as $row) {
 			$count++;
+			$viewRows[] = new NeoDetailRow($this->decorateAndamentoRow($row));
 		}
-		unset($row);
 
-		return array(
-			'rows' => $rows,
-			'bankName' => isset($input['banco_and']) ? (string) $input['banco_and'] : '',
-			'totalCount' => $count,
+		return new AndamentoDetailViewData(
+			$viewRows,
+			$detailInput->bankNameForAndamento(),
+			$count
 		);
 	}
 
-	private function resolveFinancialRows(array $input, array $session = array())
+	private function resolveFinancialRows(NeoDetailInput $input, array $session = array())
 	{
-		if ($this->hasContextRequest($input)) {
-			$context = $this->buildContext($input, $session);
+		$payload = $input->toArray();
+		if ($this->hasContextRequest($payload)) {
+			$context = $this->buildContext($payload, $session);
 			if ($context !== null) {
 				return $this->repository->financialDetailsByContext(
 					$context->typeNames(),
@@ -87,14 +91,16 @@ class NeoDetailService
 			}
 		}
 
-		$codes = $this->parseCodes(isset($input['codig_lnc']) ? $input['codig_lnc'] : '');
+		$codes = $this->parseCodes(isset($payload['codig_lnc']) ? $payload['codig_lnc'] : '');
+
 		return $this->repository->financialDetails($codes);
 	}
 
-	private function resolveAndamentoRows(array $input, array $session = array())
+	private function resolveAndamentoRows(NeoDetailInput $input, array $session = array())
 	{
-		if ($this->hasContextRequest($input)) {
-			$context = $this->buildContext($input, $session);
+		$payload = $input->toArray();
+		if ($this->hasContextRequest($payload)) {
+			$context = $this->buildContext($payload, $session);
 			if ($context !== null) {
 				return $this->repository->andamentoDetailsByContext(
 					$context->typeNames(),
@@ -108,8 +114,18 @@ class NeoDetailService
 			}
 		}
 
-		$codes = $this->parseCodes(isset($input['codig_and']) ? $input['codig_and'] : '');
+		$codes = $this->parseCodes(isset($payload['codig_and']) ? $payload['codig_and'] : '');
+
 		return $this->repository->andamentoDetails($codes);
+	}
+
+	private function resolveInput($input)
+	{
+		if ($input instanceof NeoDetailInput) {
+			return $input;
+		}
+
+		return NeoDetailInput::fromArray(is_array($input) ? $input : array());
 	}
 
 	private function hasContextRequest(array $input)
@@ -292,6 +308,24 @@ class NeoDetailService
 		}
 
 		return $items;
+	}
+
+	private function decorateFinancialRow(array $row)
+	{
+		$row['comarca_exibicao'] = $this->formatComarca(isset($row['comarca']) ? $row['comarca'] : '');
+		$row['estado_exibicao'] = isset($row['estado']) ? trim((string) $row['estado']) : '';
+		$row['processo_exibicao'] = $this->formatProcesso(isset($row['Processo']) ? $row['Processo'] : '');
+		$row['processo_cnj_exibicao'] = $this->formatProcesso(isset($row['ProcessoCNJ']) ? $row['ProcessoCNJ'] : '');
+
+		return $row;
+	}
+
+	private function decorateAndamentoRow(array $row)
+	{
+		$row['comarca_exibicao'] = $this->formatComarca(isset($row['comarca']) ? $row['comarca'] : '');
+		$row['estado_exibicao'] = isset($row['estado']) ? trim((string) $row['estado']) : '';
+
+		return $row;
 	}
 
 	private function formatComarca($value)
