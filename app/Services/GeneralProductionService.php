@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Domain\Metrics\PerformanceMetricFormatter;
 use App\Repositories\GeneralProductionNeoRepository;
 use App\Repositories\GeneralProductionRepository;
 use App\Support\LegacyDate;
@@ -28,14 +29,18 @@ class GeneralProductionService
 	/** @var RegionService */
 	private $regionService;
 
-	public function __construct(GeneralProductionRepository $repository, GeneralProductionNeoRepository $neoRepository, RegionService $regionService)
+	/** @var PerformanceMetricFormatter */
+	private $metricFormatter;
+
+	public function __construct(GeneralProductionRepository $repository, GeneralProductionNeoRepository $neoRepository, RegionService $regionService, PerformanceMetricFormatter $metricFormatter)
 	{
 		$this->repository = $repository;
 		$this->neoRepository = $neoRepository;
 		$this->regionService = $regionService;
+		$this->metricFormatter = $metricFormatter;
 	}
 
-	public function buildWeekly(array $input, array $session)
+	public function buildWeekly($input, array $session)
 	{
 		$context = $this->buildContext($input, $session);
 		$regionFilter = $this->resolveRegionFilter($context);
@@ -64,9 +69,9 @@ class GeneralProductionService
 				$metaToday,
 				$sum['total'],
 				$sum['total'] - $metaToday,
-				$this->percent($sum['total'], $metaToday, 1),
-				$this->percent($sum['total'], $aggregate['metaTotal'], 1),
-				$this->heatColor($this->percent($sum['total'], $metaToday, 1)),
+				$this->metricFormatter->percent($sum['total'], $metaToday, 1),
+				$this->metricFormatter->percent($sum['total'], $aggregate['metaTotal'], 1),
+				$this->metricFormatter->heatColor($this->metricFormatter->percent($sum['total'], $metaToday, 1)),
 				$sum['codes']
 			);
 			$totals['metaMonth'] += $aggregate['metaTotal'];
@@ -75,9 +80,9 @@ class GeneralProductionService
 		}
 
 		$totals['balance'] = $totals['realized'] - $totals['metaToday'];
-		$totals['percentToday'] = $this->percent($totals['realized'], $totals['metaToday'], 1);
-		$totals['percentMonth'] = $this->percent($totals['realized'], $totals['metaMonth'], 1);
-		$totals['color'] = $this->heatColor($totals['percentToday']);
+		$totals['percentToday'] = $this->metricFormatter->percent($totals['realized'], $totals['metaToday'], 1);
+		$totals['percentMonth'] = $this->metricFormatter->percent($totals['realized'], $totals['metaMonth'], 1);
+		$totals['color'] = $this->metricFormatter->heatColor($totals['percentToday']);
 
 		return new WeeklyProductionViewData(array(
 			'titleArea' => $this->resolveAreaTitle($context->userSectorId(), $context->startSector()),
@@ -101,7 +106,7 @@ class GeneralProductionService
 		));
 	}
 
-	public function buildMonthly(array $input, array $session)
+	public function buildMonthly($input, array $session)
 	{
 		$context = $this->buildContext($input, $session);
 		$regionFilter = $this->resolveRegionFilter($context);
@@ -125,12 +130,12 @@ class GeneralProductionService
 			foreach ($weeks as $index => $week) {
 				$meta = $this->resolveMonthlyWeekMeta($aggregate, $index, $weeks);
 				$real = $this->neoRepository->sumFinancialByWeek($aggregate['types'], $carteiraCodes, $carteiraMode, $week, $context->month(), $context->year(), $regionFilter->ufs());
-				$percent = $this->percent($real['total'], $meta, 0);
+				$percent = $this->metricFormatter->percent($real['total'], $meta, 0);
 				$weekData[] = new DashboardMetricCell(
 					$meta,
 					$real['total'],
 					$percent,
-					$this->percentIcon($percent, $meta),
+					$this->metricFormatter->percentIcon($percent),
 					$real['codes']
 				);
 				$weekMetaTotals[$index] += $meta;
@@ -138,14 +143,14 @@ class GeneralProductionService
 				$totalReal += $real['total'];
 			}
 
-			$totalPercent = $this->percent($totalReal, $aggregate['metaTotal'], 0);
+			$totalPercent = $this->metricFormatter->percent($totalReal, $aggregate['metaTotal'], 0);
 			$rows[] = new MonthlyProductionRow(
 				$bank['banco_name'] . ($bank['banco_class'] ? ' (' . $bank['banco_class'] . ')' : ''),
 				$weekData,
 				$aggregate['metaTotal'],
 				$totalReal,
 				$totalPercent,
-				$this->percentIcon($totalPercent, $aggregate['metaTotal'])
+				$this->metricFormatter->percentIcon($totalPercent)
 			);
 			$grandMeta += $aggregate['metaTotal'];
 			$grandReal += $totalReal;
@@ -153,16 +158,16 @@ class GeneralProductionService
 
 		$totalWeekData = array();
 		foreach ($weeks as $index => $week) {
-			$percent = $this->percent($weekRealTotals[$index], $weekMetaTotals[$index], 0);
+			$percent = $this->metricFormatter->percent($weekRealTotals[$index], $weekMetaTotals[$index], 0);
 			$totalWeekData[] = new DashboardMetricCell(
 				$weekMetaTotals[$index],
 				$weekRealTotals[$index],
 				$percent,
-				$this->percentIcon($percent, $weekMetaTotals[$index])
+				$this->metricFormatter->percentIcon($percent)
 			);
 		}
 
-		$grandPercent = $this->percent($grandReal, $grandMeta, 0);
+		$grandPercent = $this->metricFormatter->percent($grandReal, $grandMeta, 0);
 
 		return new MonthlyProductionViewData(array(
 			'titleArea' => $this->resolveAreaTitle($context->userSectorId(), $context->startSector()),
@@ -179,25 +184,27 @@ class GeneralProductionService
 				$grandMeta,
 				$grandReal,
 				$grandPercent,
-				$this->percentIcon($grandPercent, $grandMeta)
+				$this->metricFormatter->percentIcon($grandPercent)
 			),
 			'contentHeight' => (count($rows) * 30) + 360,
 		));
 	}
 
-	private function buildContext(array $input, array $session)
+	private function buildContext($input, array $session)
 	{
+		$payload = is_object($input) && method_exists($input, 'toArray') ? $input->toArray() : (array) $input;
+
 		return new GeneralProductionContext(
-			isset($input['startDate']) && $input['startDate'] !== '' ? $input['startDate'] : date('M'),
-			isset($input['startSetor']) ? $input['startSetor'] : '',
-			isset($input['mes']) ? $input['mes'] : date('m'),
-			isset($input['ano']) ? $input['ano'] : date('Y'),
+			isset($payload['startDate']) && $payload['startDate'] !== '' ? $payload['startDate'] : date('M'),
+			isset($payload['startSetor']) ? $payload['startSetor'] : '',
+			isset($payload['mes']) ? $payload['mes'] : date('m'),
+			isset($payload['ano']) ? $payload['ano'] : date('Y'),
 			isset($session['usuarioSetor']) ? $session['usuarioSetor'] : 0,
 			isset($session['usuarioCliente']) ? $session['usuarioCliente'] : '',
 			isset($session['usuarioID']) ? $session['usuarioID'] : 0,
 			isset($session['usuarioNivel']) ? $session['usuarioNivel'] : '',
 			isset($session['usuarioRegiaoModo']) ? $session['usuarioRegiaoModo'] : 'N',
-			isset($input['regiao_id']) ? $input['regiao_id'] : 0
+			isset($payload['regiao_id']) ? $payload['regiao_id'] : 0
 		);
 	}
 
@@ -406,48 +413,4 @@ class GeneralProductionService
 		return $distance - $adjustment;
 	}
 
-	private function percent($real, $meta, $precision)
-	{
-		if ((float) $meta == 0.0) {
-			return 0.0;
-		}
-
-		return (float) number_format((((float) $real / (float) $meta) * 100), (int) $precision, '.', '');
-	}
-
-	private function heatColor($percent)
-	{
-		if ((float) $percent == 0.0) {
-			return '#F0F0F0';
-		}
-		if ((float) $percent < 80) {
-			return 'red';
-		}
-		if ((float) $percent < 100) {
-			return '#FFB90F';
-		}
-		if ((float) $percent < 110) {
-			return 'green';
-		}
-
-		return '#1C86EE';
-	}
-
-	private function percentIcon($percent, $meta)
-	{
-		if ((float) $meta == 0.0 || (float) $percent == 0.0) {
-			return 'circle_grey.png';
-		}
-		if ((float) $percent >= 100 && (float) $percent < 110) {
-			return 'circle_green.png';
-		}
-		if ((float) $percent < 100 && (float) $percent >= 80) {
-			return 'circle_yellow.png';
-		}
-		if ((float) $percent >= 110) {
-			return 'circle_blue.png';
-		}
-
-		return 'circle_red.png';
-	}
 }

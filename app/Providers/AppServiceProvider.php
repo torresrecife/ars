@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Domain\Metrics\PerformanceMetricFormatter;
 use App\Infrastructure\Database\SqlsrvConnectionFactory;
 use App\Repositories\MainPageRepository;
 use App\Repositories\MetaRepository;
@@ -87,6 +88,10 @@ class AppServiceProvider extends ServiceProvider
             return new SqlsrvLookupRepository($app->make('legacy.sqlsrv'));
         });
 
+        $this->app->singleton(PerformanceMetricFormatter::class, function () {
+            return new PerformanceMetricFormatter();
+        });
+
         $this->app->singleton(AuthService::class, function ($app) {
             return new AuthService(
                 new UserRepository(),
@@ -151,7 +156,8 @@ class AppServiceProvider extends ServiceProvider
                 new DashboardRepository(),
                 new NeoPanelRepository($app->make('legacy.sqlsrv')),
                 $app->make(RegionService::class),
-                $this->monthsMap()
+                $this->monthsMap(),
+                $app->make(PerformanceMetricFormatter::class)
             );
         });
 
@@ -167,7 +173,8 @@ class AppServiceProvider extends ServiceProvider
             return new GeneralProductionService(
                 new GeneralProductionRepository(),
                 new GeneralProductionNeoRepository($app->make('legacy.sqlsrv')),
-                $app->make(RegionService::class)
+                $app->make(RegionService::class),
+                $app->make(PerformanceMetricFormatter::class)
             );
         });
 
