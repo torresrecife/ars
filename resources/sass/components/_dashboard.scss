@@ -1,0 +1,17 @@
+.dashboard-region-tab {
+  display: inline-block;
+  padding: 4px 10px;
+  margin-right: 6px;
+  border: 1px solid #bdbdbd;
+  text-decoration: none;
+}
+
+.dashboard-region-tab--active {
+  background: $color-primary;
+  color: #ffffff;
+}
+
+.dashboard-region-tab--inactive {
+  background: #f1f1f1;
+  color: #333333;
+}
