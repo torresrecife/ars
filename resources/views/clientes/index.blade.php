@@ -1,4 +1,4 @@
-<div style="margin-top:80px">
+<div class="***REMOVED***-module-offset">
 <script>
 window.arsClientResourceBaseUrl = "{{ url('***REMOVED***/clientes') }}";
 </script>
@@ -24,7 +24,7 @@ window.arsClientResourceBaseUrl = "{{ url('***REMOVED***/clientes') }}";
 		<td class="order">{{ $client['datacad'] }}</td>
 		<td class="order">{{ e($client['area_nome']) }}</td>
 		<td class="order">{{ isset($statusLabels[$client['banco_status']]) ? $statusLabels[$client['banco_status']] : $client['banco_status'] }}</td>
-		<td class="order" style="width:130px">
+		<td class="order ***REMOVED***-action-cell">
 			@include('partials.***REMOVED***-action-buttons', [
 				'display' => 'block',
 				'editAction' => "fc_edit_cliente(" . (int) $client['banco_id'] . ",'U')",
@@ -36,26 +36,18 @@ window.arsClientResourceBaseUrl = "{{ url('***REMOVED***/clientes') }}";
 	</tr>
 @endforeach
 </table>
-<style>
-.bts{font-size:14pt;underlinetext-decoration: underline;cursor:pointer;height:22px;}
-.cliente-carteiras-lista{margin:8px 0 0;}
-.cliente-carteiras-item{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;padding:6px 8px;border:1px solid #d6d6d6;background:#f7f7f7;}
-.cliente-carteiras-nome{display:block;max-width:360px;font-size:9pt;line-height:1.3;}
-.cliente-carteiras-vazio{margin-top:8px;font-size:9pt;color:#666;}
-.cliente-carteiras-remover{margin-left:8px;padding:2px 8px;font-size:9pt;cursor:pointer;}
-</style>
-<div id="dialog-edit-cliente" title="Editar Cliente" style="display:none; text-align:left;">
+<div id="dialog-edit-cliente" title="Editar Cliente" class="***REMOVED***-dialog is-hidden">
 	<p class="validateTips">Edite o Cliente Abaixo</p>
 	<fieldset>
-		<div id="tb_dialog" style="width:520px">
+		<div id="tb_dialog" class="***REMOVED***-dialog-panel">
 			<table>
 				<tr>
-					<td>Nome do Cliente:<br><input type="text" class="cls_cliente" name="banco_name" id="banco_name" value="" obrigatorio="1" title="Nome do banco" style="width:200px" /></td>
-					<td>Texto COD <br><input type="text" class="cls_cliente" name="banco_cod" id="banco_cod" value="" obrigatorio="1" title="Nome do banco" style="width:200px" /></td>
+					<td>Nome do Cliente:<br><input type="text" class="cls_cliente ***REMOVED***-field--standard" name="banco_name" id="banco_name" value="" obrigatorio="1" title="Nome do banco" /></td>
+					<td>Texto COD <br><input type="text" class="cls_cliente ***REMOVED***-field--standard" name="banco_cod" id="banco_cod" value="" obrigatorio="1" title="Nome do banco" /></td>
 				</tr>
 				<tr>
 					<td>Setor:<br>
-						<select class="cls_cliente input-default" name="banco_area" id="banco_area" obrigatorio="1" title="Setor" style="width:200px;height:22px;">
+						<select class="cls_cliente input-default ***REMOVED***-field--standard ***REMOVED***-field--select" name="banco_area" id="banco_area" obrigatorio="1" title="Setor">
 							<option value=""></option>
 							@foreach ($areas as $area)
 								<option value="{{ $area['area_id'] }}">{{ e($area['area_nome']) }}</option>
@@ -63,7 +55,7 @@ window.arsClientResourceBaseUrl = "{{ url('***REMOVED***/clientes') }}";
 						</select>
 					</td>
 					<td>Status:<br>
-						<select class="cls_cliente input-default" name="banco_status" id="banco_status" obrigatorio="1" title="Setor" style="width:200px;height:22px;">
+						<select class="cls_cliente input-default ***REMOVED***-field--standard ***REMOVED***-field--select" name="banco_status" id="banco_status" obrigatorio="1" title="Setor">
 							<option value=""></option>
 							<option value="Y">Ativo</option>
 							<option value="N">Inativo</option>
@@ -71,10 +63,10 @@ window.arsClientResourceBaseUrl = "{{ url('***REMOVED***/clientes') }}";
 					</td>
 				</tr>
 				<tr>
-					<td>Classifica&ccedil;&atilde;o:<br><input type="text" class="cls_cliente" name="banco_class" id="banco_class" value="" obrigatorio="1" title="Classifica&ccedil;&atilde;o" style="width:200px" /></td>
-					<td>Prazo do Simulador/Decisor:<br><input type="text" class="cls_cliente" name="simulador" id="simulador" value="" obrigatorio="1" title="Simulador/Decisor" style="width:200px" /></td>
+					<td>Classifica&ccedil;&atilde;o:<br><input type="text" class="cls_cliente ***REMOVED***-field--standard" name="banco_class" id="banco_class" value="" obrigatorio="1" title="Classifica&ccedil;&atilde;o" /></td>
+					<td>Prazo do Simulador/Decisor:<br><input type="text" class="cls_cliente ***REMOVED***-field--standard" name="simulador" id="simulador" value="" obrigatorio="1" title="Simulador/Decisor" /></td>
 				</tr>
-				<tr><td>Nome Curto:<br><input type="text" class="cls_cliente" name="banco_curto" id="banco_curto" value="" obrigatorio="1" title="Nome Curto" style="width:200px" /></td></tr>
+				<tr><td>Nome Curto:<br><input type="text" class="cls_cliente ***REMOVED***-field--standard" name="banco_curto" id="banco_curto" value="" obrigatorio="1" title="Nome Curto" /></td></tr>
 				<tr>
 					<td colspan="2">Carteiras vinculadas:<br>
 						<div id="cliente-carteiras-vinculadas" class="cliente-carteiras-lista"></div>
@@ -84,7 +76,7 @@ window.arsClientResourceBaseUrl = "{{ url('***REMOVED***/clientes') }}";
 				</tr>
 				<tr>
 					<td colspan="2">Adicionar carteira:<br>
-						<select class="input-default" name="dados_name_pool" id="dados_name_pool" title="Carteira" style="width:400px;height:22px;">
+						<select class="input-default ***REMOVED***-field--large ***REMOVED***-field--select" name="dados_name_pool" id="dados_name_pool" title="Carteira">
 							<option value=""></option>
 							@foreach ($carteiras as $carteira)
 								<option value="{{ e($carteira['Carteira']) }}"> {{ e($carteira['Carteira']) }}</option>
