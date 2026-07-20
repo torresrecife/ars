@@ -1,4 +1,6 @@
 {
     "/build/js/app.js": "/build/js/app.js",
-    "/build/css/app.css": "/build/css/app.css"
+    "/build/css/app.css": "/build/css/app.css",
+    "/build/js/ars-modules.js": "/build/js/ars-modules.js",
+    "/build/js/ars-details.js": "/build/js/ars-details.js"
 }
