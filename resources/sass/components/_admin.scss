@@ -10,6 +10,171 @@
   width: 130px;
 }
 
+.admin-context-title {
+  font-family: $font-body;
+  margin-left: 40px;
+  font-size: 10pt;
+}
+
+.adminlist--full {
+  width: 100%;
+}
+
+.adminlist--metas {
+  width: 72%;
+}
+
+.admin-type-badge {
+  color: #ffffff;
+}
+
+.admin-type-badge--production {
+  background: $color-primary;
+}
+
+.admin-type-badge--financial {
+  background: $color-warning;
+}
+
+.admin-dialog-panel {
+  width: 520px;
+}
+
+.admin-dialog-panel--metas,
+.admin-dialog-table--metas {
+  width: 1030px;
+}
+
+.admin-dialog-panel--metas {
+  min-height: 70px;
+}
+
+.admin-dialog-table {
+  width: 500px;
+}
+
+.admin-field--standard {
+  width: 200px;
+}
+
+.admin-field--large {
+  width: 400px;
+}
+
+.admin-field--select {
+  height: 22px;
+}
+
+.admin-dialog-row-gap {
+  margin-top: 8px;
+}
+
+.bts {
+  font-size: 14pt;
+  text-decoration: underline;
+  cursor: pointer;
+  height: 22px;
+}
+
+.cliente-carteiras-lista,
+.andamento-tipos-lista {
+  margin: 8px 0 0;
+}
+
+.andamento-tipos-lista {
+  width: 100%;
+  text-align: left;
+}
+
+.cliente-carteiras-item,
+.andamento-tipos-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  border: 1px solid #d6d6d6;
+  background: #f7f7f7;
+}
+
+.andamento-tipos-item {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cliente-carteiras-nome,
+.andamento-tipos-nome {
+  display: block;
+  max-width: 360px;
+  font-size: 9pt;
+  line-height: 1.3;
+}
+
+.andamento-tipos-nome {
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.cliente-carteiras-vazio,
+.andamento-tipos-vazio {
+  margin-top: 8px;
+  font-size: 9pt;
+  color: #666666;
+}
+
+.cliente-carteiras-remover,
+.andamento-tipos-remover {
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 9pt;
+  cursor: pointer;
+}
+
+.metas-form-row,
+.metas-form-label,
+.metas-add-button {
+  float: left;
+}
+
+.metas-form-label--meta,
+.metas-field--meta {
+  width: 250px;
+}
+
+.metas-form-label--region {
+  width: 170px;
+}
+
+.metas-field--region {
+  width: 160px;
+}
+
+.metas-form-label--value,
+.metas-form-label--week {
+  width: 80px;
+}
+
+.metas-form-label--manual {
+  width: 90px;
+}
+
+.metas-field--value {
+  width: 120px;
+}
+
+.metas-field--manual {
+  width: 20px;
+}
+
+.metas-field--week {
+  width: 70px;
+}
+
+.metas-field--meta,
+.metas-field--region {
+  height: 22px;
+}
+
 .is-hidden {
   display: none;
 }

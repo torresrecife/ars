@@ -1,11 +1,11 @@
-<div style="margin-top:80px">
+<div class="admin-module-offset">
 <script>
 window.arsAndamentoResourceBaseUrl = "{{ url('admin/andamentos') }}";
 window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 </script>
 <label><h2><u>Andamentos</u></h2></label>
 <div>
-<table class="adminlist" style="width:100%">
+<table class="adminlist adminlist--full">
 	<tr height="30">
 		<td class="order"><b>C&oacute;digo</b></td>
 		<td class="order"><b>Nome</b></td>
@@ -22,10 +22,10 @@ window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 		<td class="order">{{ e($andamento['nome']) }}</td>
 		<td class="order">{{ e($andamento['chave']) }}</td>
 		<td class="order">{{ e($andamento['anda_neo']) }}</td>
-		<td class="order" style="color:#ffffff;background:{{ ((int) $andamento['especie'] === 1 ? '#1C86EE' : '#FFB90F') }}">{{ e($metaTipos[(int) $andamento['especie']]) }}</td>
+		<td class="order admin-type-badge {{ (int) $andamento['especie'] === 1 ? 'admin-type-badge--production' : 'admin-type-badge--financial' }}">{{ e($metaTipos[(int) $andamento['especie']]) }}</td>
 		<td class="order">{{ e($andamento['painel']) }}</td>
 		<td class="order">{{ e($andamento['titulo']) }}</td>
-		<td class="order" style="width:130px">
+		<td class="order admin-action-cell">
 			@include('partials.admin-action-buttons', [
 				'display' => 'block',
 				'editAction' => "fc_edit_andamento(" . (int) $andamento['anda_id'] . ",'U')",
@@ -37,33 +37,26 @@ window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 	</tr>
 @endforeach
 </table>
-<style>
-.andamento-tipos-lista{margin:8px 0 0;width:100%;text-align:left;}
-.andamento-tipos-item{display:flex;align-items:flex-start;justify-content:space-between;width:100%;box-sizing:border-box;margin-bottom:6px;padding:6px 8px;border:1px solid #d6d6d6;background:#f7f7f7;}
-.andamento-tipos-nome{display:block;flex:1 1 auto;max-width:360px;font-size:9pt;line-height:1.3;text-align:left;}
-.andamento-tipos-vazio{margin-top:8px;font-size:9pt;color:#666;}
-.andamento-tipos-remover{margin-left:8px;padding:2px 8px;font-size:9pt;cursor:pointer;}
-</style>
-<div id="dialog-edit-andamento" title="Editar Andamento" style="display:none; text-align:left;">
+<div id="dialog-edit-andamento" title="Editar Andamento" class="admin-dialog is-hidden">
 	<p class="validateTips">Edite o Andamento Abaixo</p>
 	<fieldset>
-		<div id="tb_dialog" style="width:520px">
-			<table style="width:500px">
+		<div id="tb_dialog" class="admin-dialog-panel">
+			<table class="admin-dialog-table">
 				<tr>
-					<td>Nome do Andamento:<br><input type="text" class="cls_andamento" name="nome" id="nome" value="" obrigatorio="1" title="Nome do Andamento" style="width:200px" /></td>
-					<td>Nome Chave: <br><input type="text" class="cls_andamento" name="chave" id="chave" value="" obrigatorio="1" title="Nome da Chave" style="width:200px" /></td>
+					<td>Nome do Andamento:<br><input type="text" class="cls_andamento admin-field--standard" name="nome" id="nome" value="" obrigatorio="1" title="Nome do Andamento" /></td>
+					<td>Nome Chave: <br><input type="text" class="cls_andamento admin-field--standard" name="chave" id="chave" value="" obrigatorio="1" title="Nome da Chave" /></td>
 				</tr>
 				<tr>
 					<td>Painel: <br>
-						<select class="cls_andamento input-default" name="painel" id="painel" onchange="sel_tipo(0,this.value)" obrigatorio="1" title="Painel" style="width:200px;height:22px;">
+						<select class="cls_andamento input-default admin-field--standard admin-field--select" name="painel" id="painel" onchange="sel_tipo(0,this.value)" obrigatorio="1" title="Painel">
 							<option value=""></option><option value="Y">Sim</option><option value="N">N&atilde;o</option>
 						</select>
 					</td>
-					<td>T&iacute;tulo Painel: <br><input type="text" class="cls_andamento" name="titulo" id="titulo" value="" obrigatorio="1" title="Nome do T&iacute;tulo" style="width:200px" /></td>
+					<td>T&iacute;tulo Painel: <br><input type="text" class="cls_andamento admin-field--standard" name="titulo" id="titulo" value="" obrigatorio="1" title="Nome do T&iacute;tulo" /></td>
 				</tr>
 				<tr>
 					<td colspan="2">Tipo: <br>
-						<select class="cls_andamento input-default" name="especie" id="especie" onchange="sel_tipo(0,this.value)" obrigatorio="1" title="Setor" style="width:200px;height:22px;">
+						<select class="cls_andamento input-default admin-field--standard admin-field--select" name="especie" id="especie" onchange="sel_tipo(0,this.value)" obrigatorio="1" title="Setor">
 							<option value=""></option><option value="1">Produ&ccedil;&atilde;o</option><option value="2">Financeiro</option>
 						</select>
 					</td>
@@ -73,8 +66,8 @@ window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 						<div id="andamento-tipos-vinculados" class="andamento-tipos-lista"></div>
 						<div id="andamento-tipos-inputs"></div>
 						<div id="andamento-tipos-vazio" class="andamento-tipos-vazio">Nenhum andamento vinculado.</div>
-						<div style="margin-top:8px">
-							<select class="input-default" name="andam_name_pool" id="andam_name_pool" obrigatorio="1" title="Setor" style="width:400px;height:22px;"></select>
+						<div class="admin-dialog-row-gap">
+							<select class="input-default admin-field--large admin-field--select" name="andam_name_pool" id="andam_name_pool" obrigatorio="1" title="Setor"></select>
 							<button id="inp1_1" class="bts" type="button" onclick="andamentoTiposAdicionar();">+</button>
 						</div>
 					</td>
