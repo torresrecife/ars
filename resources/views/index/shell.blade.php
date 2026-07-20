@@ -9,6 +9,7 @@
 	$helpersJsVersion = is_file(base_path('js/modules/helpers.js')) ? filemtime(base_path('js/modules/helpers.js')) : time();
 	$painelJsVersion = is_file(base_path('js/modules/painel.js')) ? filemtime(base_path('js/modules/painel.js')) : time();
 	$relatorioJsVersion = is_file(base_path('js/modules/relatorio.js')) ? filemtime(base_path('js/modules/relatorio.js')) : time();
+	$compiledModulesAvailable = is_file(public_path('mix-manifest.json')) && is_file(public_path('build/js/ars-modules.js'));
 	$entryUrl = isset($entryUrl) ? (string) $entryUrl : url('index');
 @endphp
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -28,16 +29,20 @@
 	<script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.8.23.custom.min.js"></script>
 	<script type="text/javascript" src="js/jquery.meio.mask.js"></script>
-	<script type="text/javascript" src="js/modules/helpers.js?v={{ $helpersJsVersion }}"></script>
-	<script type="text/javascript" src="js/modules/setores.js?v={{ $setoresJsVersion }}"></script>
-	<script type="text/javascript" src="js/modules/usuarios.js?v={{ $usuariosJsVersion }}"></script>
-	<script type="text/javascript" src="js/modules/semanas.js?v={{ $semanasJsVersion }}"></script>
-	<script type="text/javascript" src="js/modules/regioes.js?v={{ $regioesJsVersion }}"></script>
-	<script type="text/javascript" src="js/modules/clientes.js?v={{ $clientesJsVersion }}"></script>
-	<script type="text/javascript" src="js/modules/andamentos.js?v={{ $andamentosJsVersion }}"></script>
-	<script type="text/javascript" src="js/modules/metas.js?v={{ $metasJsVersion }}"></script>
-	<script type="text/javascript" src="js/modules/painel.js?v={{ $painelJsVersion }}"></script>
-	<script type="text/javascript" src="js/modules/relatorio.js?v={{ $relatorioJsVersion }}"></script>
+	@if ($compiledModulesAvailable)
+		<script type="text/javascript" src="{{ asset('public/' . ltrim(mix('/build/js/ars-modules.js'), '/')) }}"></script>
+	@else
+		<script type="text/javascript" src="js/modules/helpers.js?v={{ $helpersJsVersion }}"></script>
+		<script type="text/javascript" src="js/modules/setores.js?v={{ $setoresJsVersion }}"></script>
+		<script type="text/javascript" src="js/modules/usuarios.js?v={{ $usuariosJsVersion }}"></script>
+		<script type="text/javascript" src="js/modules/semanas.js?v={{ $semanasJsVersion }}"></script>
+		<script type="text/javascript" src="js/modules/regioes.js?v={{ $regioesJsVersion }}"></script>
+		<script type="text/javascript" src="js/modules/clientes.js?v={{ $clientesJsVersion }}"></script>
+		<script type="text/javascript" src="js/modules/andamentos.js?v={{ $andamentosJsVersion }}"></script>
+		<script type="text/javascript" src="js/modules/metas.js?v={{ $metasJsVersion }}"></script>
+		<script type="text/javascript" src="js/modules/painel.js?v={{ $painelJsVersion }}"></script>
+		<script type="text/javascript" src="js/modules/relatorio.js?v={{ $relatorioJsVersion }}"></script>
+	@endif
 </head>
 <body id="minwidth-body">
 	<div class="head_bk"></div>

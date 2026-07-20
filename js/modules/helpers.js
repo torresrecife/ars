@@ -10,15 +10,15 @@ $(function() {
 	}
 
 	$('.date-picker').datepicker( {
-		dayNames: ['Domingo','Segunda','TerÃƒÂ§a','Quarta','Quinta','Sexta','SÃƒÂ¡bado'],
+		dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
 		dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
-		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','SÃƒÂ¡b','Dom'],
-		monthNames: ['Janeiro','Fevereiro','MarÃƒÂ§o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab','Dom'],
+		monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
 		monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
-		nextText: 'PrÃƒÂ³ximo',
+		nextText: 'Próximo',
 		prevText: 'Anterior',
 		closeText: 'OK',
-		currentText: 'MÃƒÂªs atual',
+		currentText: 'Mês atual',
         changeMonth: true,
         changeYear: true,
         showButtonPanel: true,
