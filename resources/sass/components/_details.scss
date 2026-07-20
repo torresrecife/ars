@@ -6,6 +6,18 @@
   margin-top: 20px;
 }
 
+.detail-table--andamento {
+  width: 80%;
+}
+
+.detail-table--financial {
+  width: 70%;
+}
+
+.detail-table__header {
+  background: #ebebeb;
+}
+
 .detail-table__row--interactive:hover {
   background: #ebebeb;
   cursor: pointer;
@@ -18,4 +30,12 @@
   color: #333333;
   font-weight: bold;
   margin-top: 20px;
+}
+
+.detail-summary--andamento {
+  width: 80%;
+}
+
+.detail-summary--financial {
+  width: 70%;
 }

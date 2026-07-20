@@ -54,4 +54,22 @@ class PerformanceMetricFormatter
 
 		return '#1C86EE';
 	}
+
+	public function heatClass($percent)
+	{
+		if ((float) $percent == 0.0) {
+			return 'metric-heat--empty';
+		}
+		if ((float) $percent < 80) {
+			return 'metric-heat--danger';
+		}
+		if ((float) $percent < 100) {
+			return 'metric-heat--warning';
+		}
+		if ((float) $percent < 110) {
+			return 'metric-heat--success';
+		}
+
+		return 'metric-heat--over';
+	}
 }

@@ -30,4 +30,15 @@ class PerformanceMetricFormatterTest extends TestCase
         $this->assertSame('green', $formatter->heatColor(100));
         $this->assertSame('#1C86EE', $formatter->heatColor(120));
     }
+
+    public function test_heat_class_follows_expected_ranges()
+    {
+        $formatter = new PerformanceMetricFormatter();
+
+        $this->assertSame('metric-heat--empty', $formatter->heatClass(0));
+        $this->assertSame('metric-heat--danger', $formatter->heatClass(50));
+        $this->assertSame('metric-heat--warning', $formatter->heatClass(90));
+        $this->assertSame('metric-heat--success', $formatter->heatClass(100));
+        $this->assertSame('metric-heat--over', $formatter->heatClass(120));
+    }
 }

@@ -63,16 +63,19 @@ class GeneralProductionService
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);
 			$sum = $this->neoRepository->sumFinancialByMonth($aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
 			$metaToday = ($usefulDaysMonth > 0) ? ($aggregate['metaTotal'] / $usefulDaysMonth) * $usefulDaysCurrent : 0.0;
+			$percentToday = $this->metricFormatter->percent($sum['total'], $metaToday, 1);
+			$percentMonth = $this->metricFormatter->percent($sum['total'], $aggregate['metaTotal'], 1);
 			$rows[] = new WeeklyProductionRow(
 				$bank['banco_name'],
 				$aggregate['metaTotal'],
 				$metaToday,
 				$sum['total'],
 				$sum['total'] - $metaToday,
-				$this->metricFormatter->percent($sum['total'], $metaToday, 1),
-				$this->metricFormatter->percent($sum['total'], $aggregate['metaTotal'], 1),
-				$this->metricFormatter->heatColor($this->metricFormatter->percent($sum['total'], $metaToday, 1)),
-				$sum['codes']
+				$percentToday,
+				$percentMonth,
+				$this->metricFormatter->heatColor($percentToday),
+				$sum['codes'],
+				$this->metricFormatter->heatClass($percentToday)
 			);
 			$totals['metaMonth'] += $aggregate['metaTotal'];
 			$totals['metaToday'] += $metaToday;
@@ -83,6 +86,7 @@ class GeneralProductionService
 		$totals['percentToday'] = $this->metricFormatter->percent($totals['realized'], $totals['metaToday'], 1);
 		$totals['percentMonth'] = $this->metricFormatter->percent($totals['realized'], $totals['metaMonth'], 1);
 		$totals['color'] = $this->metricFormatter->heatColor($totals['percentToday']);
+		$totals['colorClass'] = $this->metricFormatter->heatClass($totals['percentToday']);
 
 		return new WeeklyProductionViewData(array(
 			'titleArea' => $this->resolveAreaTitle($context->userSectorId(), $context->startSector()),
@@ -100,7 +104,8 @@ class GeneralProductionService
 				$totals['balance'],
 				$totals['percentToday'],
 				$totals['percentMonth'],
-				$totals['color']
+				$totals['color'],
+				$totals['colorClass']
 			),
 			'contentHeight' => (count($rows) * 30) + 360,
 		));

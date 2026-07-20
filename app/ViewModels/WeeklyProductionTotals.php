@@ -27,7 +27,10 @@ class WeeklyProductionTotals
 	/** @var string */
 	private $color;
 
-	public function __construct($metaMonth, $metaToday, $realized, $balance, $percentToday, $percentMonth, $color)
+	/** @var string */
+	private $colorClass;
+
+	public function __construct($metaMonth, $metaToday, $realized, $balance, $percentToday, $percentMonth, $color, $colorClass = '')
 	{
 		$this->metaMonth = (float) $metaMonth;
 		$this->metaToday = (float) $metaToday;
@@ -36,6 +39,7 @@ class WeeklyProductionTotals
 		$this->percentToday = (float) $percentToday;
 		$this->percentMonth = (float) $percentMonth;
 		$this->color = (string) $color;
+		$this->colorClass = (string) $colorClass;
 	}
 
 	public function toArray()
@@ -48,6 +52,7 @@ class WeeklyProductionTotals
 			'percentToday' => $this->percentToday,
 			'percentMonth' => $this->percentMonth,
 			'color' => $this->color,
+			'colorClass' => $this->colorClass,
 		);
 	}
 }

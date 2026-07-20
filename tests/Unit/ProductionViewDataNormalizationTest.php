@@ -94,7 +94,9 @@ class ProductionViewDataNormalizationTest extends TestCase
         $monthlyPayload = $monthly->toArray();
 
         $this->assertSame('Banco X', $weeklyPayload['rows'][0]['name']);
+        $this->assertSame('', $weeklyPayload['rows'][0]['colorClass']);
         $this->assertSame(45.0, $weeklyPayload['totals']['percentMonth']);
+        $this->assertSame('', $weeklyPayload['totals']['colorClass']);
         $this->assertSame(90.0, $monthlyPayload['rows'][0]['weekData'][0]['real']);
         $this->assertSame('circle_yellow.png', $monthlyPayload['totals']['weeks'][0]['icon']);
     }
