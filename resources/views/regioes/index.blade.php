@@ -1,4 +1,4 @@
-<div style="margin-top:80px">
+<div class="***REMOVED***-module-offset">
 <script>
 window.arsRegionResourceBaseUrl = "{{ url('***REMOVED***/regioes') }}";
 </script>
@@ -22,7 +22,7 @@ window.arsRegionResourceBaseUrl = "{{ url('***REMOVED***/regioes') }}";
 		<td class="order">{{ e($region['ufs']) }}</td>
 		<td class="order">{{ (int) $region['total_usuarios'] }}</td>
 		<td class="order">{{ ((string) $region['regiao_status'] === 'Y') ? 'Ativa' : 'Inativa' }}</td>
-		<td class="order" style="width:130px">
+		<td class="order ***REMOVED***-action-cell">
 			@include('partials.***REMOVED***-action-buttons', [
 				'display' => 'block',
 				'editAction' => "fc_edit_regiao(" . (int) $region['regiao_id'] . ",'U')",
@@ -34,11 +34,11 @@ window.arsRegionResourceBaseUrl = "{{ url('***REMOVED***/regioes') }}";
 	</tr>
 @endforeach
 </table>
-<div id="dialog-edit-regiao" title="Editar Regi&atilde;o" style="display:none;text-align:left;">
+<div id="dialog-edit-regiao" title="Editar Regi&atilde;o" class="***REMOVED***-dialog is-hidden">
 	<p class="validateRegiao">Edite a Regi&atilde;o abaixo</p>
 	<fieldset>
 		<div>
-			<table style="width:520px">
+			<table class="***REMOVED***-dialog-table ***REMOVED***-dialog-table--region">
 				<tr>
 					<td width="25%"><label>Nome:</label></td>
 					<td width="75%"><input type="text" class="cls_regiao" name="regiao_nome" id="regiao_nome" value="" obrigatorio="1" title="Nome da Regiao"/></td>
@@ -82,12 +82,3 @@ window.arsRegionResourceBaseUrl = "{{ url('***REMOVED***/regioes') }}";
 </div>
 </div>
 </div>
-<style>
-.regiao-ufs-box{margin-bottom:8px;}
-.regiao-ufs-lista{display:flex;flex-direction:column;gap:6px;}
-.regiao-ufs-item{display:flex;align-items:center;justify-content:space-between;border:1px solid #ccc;padding:6px 8px;background:#f8f8f8;}
-.regiao-ufs-nome{flex:1;padding-right:10px;text-align:left;}
-.regiao-ufs-vazio{color:#666;font-size:11px;padding:4px 0;}
-.regiao-ufs-adicionar{display:flex;align-items:center;gap:6px;}
-.regiao-ufs-adicionar select{width:120px;height:22px;}
-</style>

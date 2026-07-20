@@ -15,7 +15,7 @@
 							<td class="order">{{ (int) $area['area_id'] }}</td>
 							<td class="order">{{ e($area['area_nome']) }}</td>
 							<td class="order">{{ e($area['area_date']) }}</td>
-							<td class="order" style="width:130px">
+							<td class="order ***REMOVED***-action-cell">
 								@include('partials.***REMOVED***-action-buttons', [
 									'display' => 'block',
 									'editAction' => "fc_edit_setor(" . (int) $area['area_id'] . ",'U')",
@@ -31,7 +31,7 @@
 		</div>
 	</div>
 </div>
-<div id="dialog-edit-setor" title="Editar Setor" style="display:none; text-align:left;">
+<div id="dialog-edit-setor" title="Editar Setor" class="***REMOVED***-dialog is-hidden">
 	<p class="validateTips">Edite a &Aacute;rea Abaixo</p>
 	<fieldset>
 		<div>

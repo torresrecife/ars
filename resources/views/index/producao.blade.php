@@ -3,7 +3,7 @@
 		<div class="cpanel">
 			<label><h2>Produção</h2></label>
 			<label for="startSetor">Setor:</label>
-			<select name="startSetor" id="startSetor" class="input-default" style="height:20px;width:200px;">
+			<select name="startSetor" id="startSetor" class="input-default nav-select">
 				<option value="">Todas os Setores</option>
 				@foreach ($areas as $area)
 					<option value="{{ $area['area_id'] }}"{{ ((string) $startSector === (string) $area['area_id']) ? ' selected="selected"' : '' }}>{{ e($area['area_nome']) }}</option>
@@ -11,7 +11,7 @@
 			</select>
 			@if (!empty($showRegionSelector))
 				<label for="regiao_id">&nbsp;Regi&atilde;o:</label>
-				<select name="regiao_id" id="regiao_id" class="input-default" style="height:20px;width:200px;">
+				<select name="regiao_id" id="regiao_id" class="input-default nav-select">
 					<option value="0">Todas as Regi&otilde;es</option>
 					@foreach ($regions as $region)
 						<option value="{{ (int) $region['regiao_id'] }}"{{ ((int) $selectedRegionId === (int) $region['regiao_id']) ? ' selected="selected"' : '' }}>{{ e($region['regiao_nome']) }}</option>

@@ -74,11 +74,11 @@ window.arsMetaResourceBaseUrl = "{{ url('***REMOVED***/metas') }}";
 							</select>
 							<input type="text" class="cls_meta metas-field--value" name="meta_valor_1" id="meta_valor_1" value="" obrigatorio="1" title="Meta total" alt=""/>
 							<input type="checkbox" class="cls_meta metas-field--manual" name="def_sem_1" id="def_sem_1" onclick="definir_sem(this,1);" value="" title="Definir manualmente">
-							<input type="text" class="cls_meta sem_1" name="sem1_valor_1" id="sem1_valor_1" value="" title="Valor da 1ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)" style="display:none;width:70px;">
-							<input type="text" class="cls_meta sem_1" name="sem2_valor_1" id="sem2_valor_1" value="" title="Valor da 2ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)" style="display:none;width:70px;">
-							<input type="text" class="cls_meta sem_1" name="sem3_valor_1" id="sem3_valor_1" value="" title="Valor da 3ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)" style="display:none;width:70px;">
-							<input type="text" class="cls_meta sem_1" name="sem4_valor_1" id="sem4_valor_1" value="" title="Valor da 4ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)" style="display:none;width:70px;">
-							<input type="text" class="cls_meta sem_1" name="sem5_valor_1" id="sem5_valor_1" value="" title="Valor da 5ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)" style="display:none;width:70px;">
+							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem1_valor_1" id="sem1_valor_1" value="" title="Valor da 1ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
+							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem2_valor_1" id="sem2_valor_1" value="" title="Valor da 2ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
+							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem3_valor_1" id="sem3_valor_1" value="" title="Valor da 3ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
+							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem4_valor_1" id="sem4_valor_1" value="" title="Valor da 4ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
+							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem5_valor_1" id="sem5_valor_1" value="" title="Valor da 5ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
 							<button id="inp1_1" class="bts metas-add-button" onclick="inserir_metas($('#meta_name_1').html(),1);">+</button>
 						</div>
 					</div>
