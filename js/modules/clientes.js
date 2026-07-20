@@ -4,12 +4,12 @@ function fc_edit_cliente(valor1,valor2){
 		return clientResourceBaseUrl + "/" + id;
 	};
 	var tt = "";
-	var tu = "";
+	var successMessage = "";
 	var salvarCliente = function(){
 		var invalido = false;
 		$('.cls_cliente').each(function(){
 			if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-				alert("O campo " + $(this).attr("title") + " é obrigatório ");
+				alert(arsFormat("The field :field is required.", {field: $(this).attr("title")}));
 				$(this).focus();
 				invalido = true;
 				return false;
@@ -24,7 +24,7 @@ function fc_edit_cliente(valor1,valor2){
 			$("#dados_name_pool").val("");
 		}
 		if($('.cls_cliente_carteira_input').length==0){
-			alert("Selecione ao menos uma carteira para o cliente.");
+			alert(arsTranslate("Select at least one wallet for the client."));
 			$("#dados_name_pool").focus();
 			return false;
 		}
@@ -49,11 +49,11 @@ function fc_edit_cliente(valor1,valor2){
 			valor2=="I" ? "POST" : "PUT",
 			valor2=="I" ? clientResourceBaseUrl : clientResourceUrl($("#banco_id").val()),
 			payload,
-			"Erro ao salvar o cliente.",
+			arsTranslate("Error saving client."),
 			function(){
 				$("#dialog-edit-cliente").dialog("close");
-				msgbox("<br><table align='center'><tr><td>Cliente " + tu + " com sucesso !</td></tr></table><br>", {
-					Fechar: function(){
+				msgbox("<br><table align='center'><tr><td>" + successMessage + "</td></tr></table><br>", {
+					[arsTranslate("Close")]: function(){
 						$( this ).dialog( "close" );
 						AbrirModulo('clientes');
 					}
@@ -62,9 +62,9 @@ function fc_edit_cliente(valor1,valor2){
 		);
 	};
 	if(valor2=="I"){
-		tt="Novo Cliente";
-		tu="criado";
-		$(".validateTips").text("Crie Um " + tt);
+		tt=arsTranslate("New Client");
+		successMessage=arsTranslate("Client created successfully.");
+		$(".validateTips").text(arsTranslate("Create a new client"));
 		clienteCarteirasReset();
 		$('.cls_cliente').each(function() {
 			$(this).val("");
@@ -77,8 +77,8 @@ function fc_edit_cliente(valor1,valor2){
 			height: 400,
 			width: 600,
 			buttons: {
-				Salvar: salvarCliente,
-				Sair: function() {
+				[arsTranslate("Save")]: salvarCliente,
+				[arsTranslate("Exit")]: function() {
 					$( this ).dialog( "close" );
 				}
 			},
@@ -92,12 +92,12 @@ function fc_edit_cliente(valor1,valor2){
 		});
 		return;
 	}else if(valor2=="U"){
-		tt="Editar Cliente";
-		tu="editado";
-		$(".validateTips").text("Edite o Cliente Abaixo");
+		tt=arsTranslate("Edit Client");
+		successMessage=arsTranslate("Client updated successfully.");
+		$(".validateTips").text(arsTranslate("Edit the client below"));
 	}
 
-	arsJsonGet(clientResourceUrl(valor1), "Erro ao carregar os dados do cliente.", function(ret){
+	arsJsonGet(clientResourceUrl(valor1), arsTranslate("Error loading client data."), function(ret){
 		clienteCarteirasReset();
 		$("#banco_id").val(ret.banco_id || "");
 		$("#banco_name").val(ret.banco_name || "");
@@ -123,8 +123,8 @@ function fc_edit_cliente(valor1,valor2){
 			height: 400,
 			width: 600,
 			buttons: {
-				Salvar: salvarCliente,
-				Sair: function() {
+				[arsTranslate("Save")]: salvarCliente,
+				[arsTranslate("Exit")]: function() {
 					$( this ).dialog( "close" );
 				}
 			},
@@ -169,7 +169,7 @@ function clienteCarteirasAtualizarInputs(){
 function clienteCarteirasAdicionar(){
 	var valor = $("#dados_name_pool").val();
 	if(!valor){
-		alert("Selecione uma carteira para adicionar.");
+		alert(arsTranslate("Select a wallet to add."));
 		return false;
 	}
 	return clienteCarteirasAdicionarValor(valor, false);
@@ -187,14 +187,14 @@ function clienteCarteirasAdicionarValor(valor, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Essa carteira ja esta vinculada ao cliente.");
+			alert(arsTranslate("This wallet is already linked to the client."));
 		}
 		return false;
 	}
 	$("#cliente-carteiras-vinculadas").append(
 		"<div class='cliente-carteiras-item' data-carteira=\"" + clienteCarteirasEscape(carteira) + "\">"
 		+ "<span class='cliente-carteiras-nome'>" + clienteCarteirasEscape(carteira) + "</span>"
-		+ "<button type='button' class='cliente-carteiras-remover' onclick='clienteCarteirasRemover(this);'>Remover</button>"
+		+ "<button type='button' class='cliente-carteiras-remover' onclick='clienteCarteirasRemover(this);'>" + arsTranslate("Remove") + "</button>"
 		+ "</div>"
 	);
 	clienteCarteirasAtualizarInputs();
@@ -210,20 +210,20 @@ function clienteCarteirasRemover(botao){
 }
 function fc_del_cliente(valor1,valor2){
 	var clientResourceBaseUrl = window.arsClientResourceBaseUrl || "admin/clientes";
-	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o servidor <b>" + valor2 + "</b> ?</td></tr></table><br>",{
-		"Sim": function(){
+	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>" + arsFormat("Do you really want to delete the client :name?", {name: "<b>" + valor2 + "</b>"}) + "</td></tr></table><br>",{
+		[arsTranslate("Yes")]: function(){
 			var dialog = $(this);
-			arsJsonSubmit("DELETE", clientResourceBaseUrl + "/" + valor1, {}, "Erro ao excluir o cliente.", function(){
+			arsJsonSubmit("DELETE", clientResourceBaseUrl + "/" + valor1, {}, arsTranslate("Error deleting client."), function(){
 				dialog.dialog("close");
-				msgbox("<br><table align='center'><tr><td>Cliente deletado com sucesso !</td></tr></table><br>",{
-					Fechar: function(){
+				msgbox("<br><table align='center'><tr><td>" + arsTranslate("Client deleted successfully.") + "</td></tr></table><br>",{
+					[arsTranslate("Close")]: function(){
 						$( this ).dialog( "close" );
 						AbrirModulo('clientes');
 					}
 				});
 			});
 		},
-		"Não": function(){
+		[arsTranslate("No")]: function(){
 			$( this ).dialog( "close" );
 		}
 	});

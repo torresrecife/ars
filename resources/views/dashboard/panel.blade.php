@@ -1,7 +1,7 @@
 @if (!empty($viewData['error']))
 <br><br><br><br><br>
 <div class="dashboard-error">{{ $viewData['error'] }}</div>
-<div class="dashboard-error"><input type="button" onclick="javascript:window.history.back()" value="Voltar" class="dashboard-back-button"/></div>
+<div class="dashboard-error"><input type="button" onclick="javascript:window.history.back()" value="{{ __('Back') }}" class="dashboard-back-button"/></div>
 @else
 @php
 	$bank = $viewData['bank'];
@@ -23,7 +23,7 @@
 	$weekCountClass = count($weeks) === 5 ? 'is-five-weeks' : 'is-four-weeks';
 	$splitFinancialTable = !empty($productionRows) && !empty($financialRows);
 @endphp
-<br><div class="dashboard-title">Cliente: <b>{{ $bank['banco_cod'] }}</b>{!! $showRegionTabs ? '' : $regionLabel !!} | M&ecirc;s / Ano: <b>{{ $startDate }}</b> <a href="#" onclick="painelNavegarMes('{{ $bankId }}','p'); return false;">&lt;</a> <a href="#" onclick="painelNavegarMes('{{ $bankId }}','n'); return false;">&gt;</a></div>
+<br><div class="dashboard-title">{{ __('Client') }}: <b>{{ $bank['banco_cod'] }}</b>{!! $showRegionTabs ? '' : $regionLabel !!} | {{ __('Month/Year') }}: <b>{{ $startDate }}</b> <a href="#" onclick="painelNavegarMes('{{ $bankId }}','p'); return false;">&lt;</a> <a href="#" onclick="painelNavegarMes('{{ $bankId }}','n'); return false;">&gt;</a></div>
 @if ($showRegionTabs)
 <div class="dashboard-region-tabs">
 	@foreach ($regionTabs as $tab)
@@ -49,26 +49,26 @@
 <table align="center" height="auto" width="100%" border="0" cellspacing="1" cellpadding="1" id="tb_pro" class="dashboard-table {{ $weekCountClass }}">
 	<tr>
 		<td align="center" rowspan="2" class="dashboard-table__spacer-cell"></td>
-		<td align="center" rowspan="2" class="cls_sema cls_indic">INDICADOR</td>
+		<td align="center" rowspan="2" class="cls_sema cls_indic">{{ __('Indicator') }}</td>
 		@foreach ($weeks as $week)
 			<td align="center" colspan="3" class="cls_sema">{{ $week['label'] }}</td>
 		@endforeach
-		<td align="center" colspan="3" rowspan="1" class="cls_sema cls_vals">TOTAL</td>
+		<td align="center" colspan="3" rowspan="1" class="cls_sema cls_vals">{{ __('Total') }}</td>
 	</tr>
 	<tr>
 		@foreach ($weeks as $week)
-			<td align="center" class="cls_dados cls_vals">META</td>
-			<td align="center" class="cls_dados cls_vals">REALIZADO</td>
-			<td align="center" class="cls_dados cls_vals">FAROL</td>
+			<td align="center" class="cls_dados cls_vals">{{ __('Goal') }}</td>
+			<td align="center" class="cls_dados cls_vals">{{ __('Realized') }}</td>
+			<td align="center" class="cls_dados cls_vals">{{ __('Status Light') }}</td>
 		@endforeach
-		<td align="center" class="cls_dados cls_bk2">META</td>
-		<td align="center" class="cls_dados cls_bk2">REALIZADO</td>
-		<td align="center" class="cls_dados cls_bk2">FAROL</td>
+		<td align="center" class="cls_dados cls_bk2">{{ __('Goal') }}</td>
+		<td align="center" class="cls_dados cls_bk2">{{ __('Realized') }}</td>
+		<td align="center" class="cls_dados cls_bk2">{{ __('Status Light') }}</td>
 	</tr>
 	@foreach ($productionRows as $rowIndex => $row)
 	<tr class="dashboard-table__row">
 		@if ($rowIndex === 0)
-			<td align="center" rowspan="{{ count($productionRows) }}" class="cls_colun"><div class="dashboard-table__side-label"><b>OPERACAO</b></div></td>
+			<td align="center" rowspan="{{ count($productionRows) }}" class="cls_colun"><div class="dashboard-table__side-label"><b>{{ __('Operation') }}</b></div></td>
 		@endif
 		<td class="cls_indic">{{ $row['name'] }}</td>
 		@foreach ($row['weekData'] as $weekIndex => $weekData)
@@ -91,7 +91,7 @@
 	@foreach ($financialRows as $rowIndex => $row)
 	<tr class="dashboard-table__row">
 		@if ($rowIndex === 0)
-			<td align="center" rowspan="{{ count($financialRows) }}" class="cls_colun_2"><div class="dashboard-table__side-label dashboard-table__side-label--financial"><b>FINANCEIRO</b></div></td>
+			<td align="center" rowspan="{{ count($financialRows) }}" class="cls_colun_2"><div class="dashboard-table__side-label dashboard-table__side-label--financial"><b>{{ __('Financial') }}</b></div></td>
 		@endif
 		<td class="cls_indic">{{ $row['name'] }}</td>
 		@foreach ($row['weekData'] as $weekIndex => $weekData)
@@ -107,7 +107,7 @@
 	<tr height="5px"></tr>
 	<tr>
 		<td class="dashboard-table__spacer-cell"></td>
-		<td class="cls_vals2 cls_bk"><b>TOTAL FINANCEIRO</b></td>
+		<td class="cls_vals2 cls_bk"><b>{{ __('Financial Total') }}</b></td>
 		@foreach ($summary['weekTotals'] as $weekTotal)
 			<td align="center" class="cls_vals2 cls_bk dashboard-table__total-meta"><b>{{ number_format($weekTotal['meta'], 2, ',', '.') }}</b></td>
 			<td align="center" class="cls_vals2 cls_bk"><b>{{ number_format($weekTotal['real'], 2, ',', '.') }}</b></td>
@@ -121,7 +121,7 @@
 	@foreach ($prejudiceRows as $row)
 	<tr>
 		<td class="dashboard-table__spacer-cell"></td>
-		<td class="cls_vals2 cls_red"><b>PREJUIZOS</b></td>
+		<td class="cls_vals2 cls_red"><b>{{ __('Losses') }}</b></td>
 		@foreach ($row['weekData'] as $weekIndex => $weekData)
 			<td align="center" class="cls_vals2 cls_red2"><b>0,00</b></td>
 			<td align="center" class="cls_vals2 cls_real cls_red" onclick="painelAbrirDetalhe('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','{{ (int) $weekIndex }}','fat');"><b>{{ number_format($weekData['real'], 2, ',', '.') }}</b></td>

@@ -1,7 +1,7 @@
 <div class="content_body">
 	<div class="cpanel-left">
 		<div class="cpanel">
-			<label><h2>Setores</h2></label>
+			<label><h2>{{ __('Sectors') }}</h2></label>
 			@foreach ($areas as $area)
 				<div class="icon-wrapper">
 					<div class="icon">

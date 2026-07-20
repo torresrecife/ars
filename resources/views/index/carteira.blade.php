@@ -1,17 +1,17 @@
 <div class="content_body">
 	<div class="cpanel-left">
 		<div class="cpanel">
-			<label><h2>Carteira</h2></label>
-			<label for="startDate">M&ecirc;s / Ano:</label>
+			<label><h2>{{ __('Wallet') }}</h2></label>
+			<label for="startDate">{{ __('Month/Year') }}:</label>
 			<input type="text" name="startDate" id="startDate" class="date-picker" readonly="readonly" value="{{ e($monthYearLabel) }}"/>
 			<span id="obg_date"></span>
 			<input type="hidden" name="mes" id="mes" value="{{ (int) $month }}"/>
 			<input type="hidden" name="ano" id="ano" value="{{ (int) $year }}"/>
 			@if (!empty($showRegionSelector))
 				<br><br>
-				<label for="regiao_id">Regi&atilde;o:</label>
+				<label for="regiao_id">{{ __('Region') }}:</label>
 				<select name="regiao_id" id="regiao_id" class="input-default nav-select nav-select--region">
-					<option value="0">Todas as Regi&otilde;es</option>
+					<option value="0">{{ __('All regions') }}</option>
 					@foreach ($regions as $region)
 						<option value="{{ (int) $region['regiao_id'] }}"{{ ((int) $selectedRegionId === (int) $region['regiao_id']) ? ' selected="selected"' : '' }}>{{ e($region['regiao_nome']) }}</option>
 					@endforeach

@@ -2,19 +2,19 @@
 <script>
 window.arsUserResourceBaseUrl = "{{ url('admin/usuarios') }}";
 </script>
-<label><h2><u>Usu&aacute;rios</u></h2></label>
+<label><h2><u>{{ __('Users') }}</u></h2></label>
 <div>
 <table class="adminlist">
 	<tr height="30">
-		<td class="order"><b>C&oacute;digo</b></td>
-		<td class="order"><b>Nome</b></td>
-		<td class="order"><b>Usu&aacute;rio</b></td>
-		<td class="order"><b>N&iacute;vel</b></td>
-		<td class="order"><b>&Uacute;ltimo Acesso</b></td>
-		<td class="order"><b>Data Cadastro</b></td>
-		<td class="order"><b>E-mail</b></td>
-		<td class="order"><b>Status</b></td>
-		<td class="order"><b>Op&ccedil;&otilde;es</b></td>
+		<td class="order"><b>{{ __('Code') }}</b></td>
+		<td class="order"><b>{{ __('Name') }}</b></td>
+		<td class="order"><b>{{ __('User') }}</b></td>
+		<td class="order"><b>{{ __('Level') }}</b></td>
+		<td class="order"><b>{{ __('Last Access') }}</b></td>
+		<td class="order"><b>{{ __('Created At') }}</b></td>
+		<td class="order"><b>{{ __('E-mail') }}</b></td>
+		<td class="order"><b>{{ __('Status') }}</b></td>
+		<td class="order"><b>{{ __('Options') }}</b></td>
 	</tr>
 @foreach ($users as $user)
 	@php
@@ -34,37 +34,37 @@ window.arsUserResourceBaseUrl = "{{ url('admin/usuarios') }}";
 				'display' => 'block',
 				'editAction' => "fc_edit_usu(" . (int) $user['id_usu'] . ",'U')",
 				'deleteAction' => "fc_del_usu(" . (int) $user['id_usu'] . "," . json_encode((string) $user['login_usu']) . ")",
-				'editTitle' => 'Editar Usuario',
-				'deleteTitle' => 'Excluir Usuario',
+				'editTitle' => __('Edit User'),
+				'deleteTitle' => __('Delete User'),
 			])
 		</td>
 	</tr>
 @endforeach
 </table>
-<div id="dialog-edit-usu" title="Editar Usu&aacute;rio" class="admin-dialog admin-dialog--scroll is-hidden">
-	<p class="validateTips">Edite o Usu&aacute;rio Abaixo</p>
+<div id="dialog-edit-usu" title="{{ __('Edit User') }}" class="admin-dialog admin-dialog--scroll is-hidden">
+	<p class="validateTips">{{ __('Edit the user below') }}</p>
 	<fieldset>
 		<div>
 			<table class="admin-dialog-table admin-dialog-table--user">
-				<tr><td width="25%"><label>Nome:</label></td><td width="75%"><input type="text" class="cls_usu" name="nome_usu" id="nome_usu" value="" obrigatorio="1" title="Nome e Sobrenome"/></td></tr>
-				<tr><td><label>Usu&aacute;rio:</label></td><td><input type="text" class="cls_usu" name="login_usu" id="login_usu" value="" obrigatorio="1" title="Usu&aacute;rio"/></td></tr>
-				<tr><td><label>E-mail:</label></td><td><input type="text" class="cls_usu" name="email_usu" id="email_usu" value="" obrigatorio="1" title="E-mail"/></td></tr>
+				<tr><td width="25%"><label>{{ __('Name') }}:</label></td><td width="75%"><input type="text" class="cls_usu" name="nome_usu" id="nome_usu" value="" obrigatorio="1" title="{{ __('Full Name') }}"/></td></tr>
+				<tr><td><label>{{ __('User') }}:</label></td><td><input type="text" class="cls_usu" name="login_usu" id="login_usu" value="" obrigatorio="1" title="{{ __('User') }}"/></td></tr>
+				<tr><td><label>{{ __('E-mail') }}:</label></td><td><input type="text" class="cls_usu" name="email_usu" id="email_usu" value="" obrigatorio="1" title="{{ __('E-mail') }}"/></td></tr>
 				<tr>
-					<td><label>N&iacute;vel:</label></td>
+					<td><label>{{ __('Level') }}:</label></td>
 					<td>
 						<select class="cls_usu" name="nivel_usu" id="nivel_usu" obrigatorio="1" title="Nivel">
 							<option value=""></option>
-							<option value="ADM">Admin</option>
-							<option value="GER">Gerente</option>
-							<option value="USU">Usu&aacute;rio</option>
+							<option value="ADM">{{ __('Admin') }}</option>
+							<option value="GER">{{ __('Manager') }}</option>
+							<option value="USU">{{ __('User') }}</option>
 						</select>
 					</td>
 				</tr>
 				<tr>
-					<td><label>Setor:</label></td>
+					<td><label>{{ __('Sector') }}:</label></td>
 					<td>
 						<select class="cls_usu" name="setor_usu" id="setor_usu" onchange="sel_tipo(1,this.value)" obrigatorio="1" title="Setor">
-							<option value="0">Todos</option>
+							<option value="0">{{ __('All') }}</option>
 							@foreach ($areas as $area)
 								<option value="{{ $area['area_id'] }}">{{ e($area['area_nome']) }}</option>
 							@endforeach
@@ -72,12 +72,12 @@ window.arsUserResourceBaseUrl = "{{ url('admin/usuarios') }}";
 					</td>
 				</tr>
 				<tr>
-					<td><label id="sel_banco">Clientes:</label></td>
+					<td><label id="sel_banco">{{ __('Clients') }}:</label></td>
 					<td>
 						<div class="usuario-clientes-box">
 							<div id="usuario-clientes-vinculados" class="usuario-clientes-lista"></div>
 							<div id="usuario-clientes-inputs"></div>
-							<div id="usuario-clientes-vazio" class="usuario-clientes-vazio">Nenhum cliente vinculado.</div>
+							<div id="usuario-clientes-vazio" class="usuario-clientes-vazio">{{ __('No linked clients.') }}</div>
 						</div>
 						<div class="usuario-clientes-adicionar">
 							<select class="input-default" name="banco_usu_pool" id="banco_usu_pool" title="Cliente"></select>
@@ -86,22 +86,22 @@ window.arsUserResourceBaseUrl = "{{ url('admin/usuarios') }}";
 					</td>
 				</tr>
 				<tr>
-					<td><label>Modo Regi&atilde;o:</label></td>
+					<td><label>{{ __('Region Mode') }}:</label></td>
 					<td>
 						<select class="cls_usu" name="regiao_modo" id="regiao_modo" title="Modo Regiao">
-							<option value="N">Sem filtro regional</option>
-							<option value="R">Regi&otilde;es vinculadas</option>
-							<option value="T">Todas as regi&otilde;es</option>
+							<option value="N">{{ __('No regional filter') }}</option>
+							<option value="R">{{ __('Linked regions') }}</option>
+							<option value="T">{{ __('All regions') }}</option>
 						</select>
 					</td>
 				</tr>
 				<tr id="usuario-regioes-row">
-					<td><label>Regi&otilde;es:</label></td>
+					<td><label>{{ __('Regions') }}:</label></td>
 					<td>
 						<div class="usuario-regioes-box">
 							<div id="usuario-regioes-vinculadas" class="usuario-regioes-lista"></div>
 							<div id="usuario-regioes-inputs"></div>
-							<div id="usuario-regioes-vazio" class="usuario-regioes-vazio">Nenhuma regi&atilde;o vinculada.</div>
+							<div id="usuario-regioes-vazio" class="usuario-regioes-vazio">{{ __('No linked regions.') }}</div>
 						</div>
 						<div class="usuario-regioes-adicionar">
 							<select class="input-default" name="regiao_usu_pool" id="regiao_usu_pool" title="Regiao">
@@ -119,13 +119,13 @@ window.arsUserResourceBaseUrl = "{{ url('admin/usuarios') }}";
 					<td>
 						<select class="cls_usu" name="status_usu" id="status_usu" obrigatorio="1" title="Status">
 							<option value=""></option>
-							<option value="ATI">Ativo</option>
-							<option value="INA">Inativo</option>
+							<option value="ATI">{{ __('Active') }}</option>
+							<option value="INA">{{ __('Inactive') }}</option>
 						</select>
 					</td>
 				</tr>
-				<tr><td><label>Senha</label></td><td><input type="password" class="cls_usu" name="senha_usu1" id="senha_usu1" value="" /></td></tr>
-				<tr><td><label>Repete a Senha</label></td><td><input type="password" class="cls_usu" name="senha_usu2" id="senha_usu2" value="" /></td></tr>
+				<tr><td><label>{{ __('Password') }}</label></td><td><input type="password" class="cls_usu" name="senha_usu1" id="senha_usu1" value="" /></td></tr>
+				<tr><td><label>{{ __('Repeat Password') }}</label></td><td><input type="password" class="cls_usu" name="senha_usu2" id="senha_usu2" value="" /></td></tr>
 			</table>
 			<input type="hidden" class="cls_usu" name="id_usu" id="id_usu" value="" />
 		</div>

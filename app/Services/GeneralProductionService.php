@@ -217,15 +217,15 @@ class GeneralProductionService
 	{
 		if ((int) $userSectorId !== 0) {
 			$name = $this->repository->findAreaNameById($userSectorId);
-			return ' | Setor: <b>' . $name . '</b>';
+			return ' | ' . __('Sector') . ': <b>' . $name . '</b>';
 		}
 
 		if ((string) $startSector !== '') {
 			$name = $this->repository->findAreaNameById($startSector);
-			return ' Setor: <b>' . $name . '</b>';
+			return ' ' . __('Sector') . ': <b>' . $name . '</b>';
 		}
 
-		return ' Todas as Áreas';
+		return ' ' . __('All areas');
 	}
 
 	private function resolveRegionFilter(GeneralProductionContext $context)
@@ -257,7 +257,7 @@ class GeneralProductionService
 			return new GeneralProductionRegionFilter(
 				$selectedRegionId,
 				$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-				$region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : ''
+				$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : ''
 			);
 		}
 
@@ -268,7 +268,7 @@ class GeneralProductionService
 				return new GeneralProductionRegionFilter(
 					$selectedRegionId,
 					$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-					$region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : ''
+					$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : ''
 				);
 			}
 
@@ -276,7 +276,7 @@ class GeneralProductionService
 				return new GeneralProductionRegionFilter(
 					0,
 					$this->regionService->listUfsByRegionIds($regionIds),
-					' | Regi&otilde;es: <b>Todas as vinculadas</b>'
+					' | ' . __('Regions') . ': <b>' . __('All linked') . '</b>'
 				);
 			}
 		}

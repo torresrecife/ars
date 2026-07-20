@@ -4,11 +4,11 @@ function fc_edit_usu(valor1,valor2){
 		return userResourceBaseUrl + "/" + id;
 	};
 	var tt = "";
-	var tu = "";
+	var successMessage = "";
 	if(valor2=="I"){
-		tt="Novo usuário";
-		tu="criado";
-		$(".validateTips").text("Crie Um " + tt);
+		tt=arsTranslate("New User");
+		successMessage=arsTranslate("User created successfully.");
+		$(".validateTips").text(arsTranslate("Create a new user"));
 		usuarioClientesReset();
 		usuarioRegioesReset();
 		$('.cls_usu').each(function() {
@@ -19,9 +19,9 @@ function fc_edit_usu(valor1,valor2){
 		usuarioRegioesAtualizarModo();
 		sel_tipo(1, $("#setor_usu").val());
 	}else if(valor2=="U"){
-		tt="Editar usuário";
-		tu="editado";
-		$(".validateTips").text("Edite o usuário Abaixo");
+		tt=arsTranslate("Edit User");
+		successMessage=arsTranslate("Field updated successfully.");
+		$(".validateTips").text(arsTranslate("Edit the user below"));
 	}
 
 	var abrirDialogUsuario = function(){
@@ -32,11 +32,11 @@ function fc_edit_usu(valor1,valor2){
 			height: 470,
 			width: 520,
 			buttons: {
-				Salvar: function() {
+				[arsTranslate("Save")]: function() {
 					var invalido = false;
 					$('.cls_usu').each(function(){
 						if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-							alert("O campo " + $(this).attr("title") + " é obrigatório ");
+							alert(arsFormat("The field :field is required.", {field: $(this).attr("title")}));
 							$(this).focus();
 							invalido = true;
 							return false;
@@ -46,7 +46,7 @@ function fc_edit_usu(valor1,valor2){
 						return false;
 					}
 					if($('.cls_usuario_cliente_input').length==0){
-						alert("Selecione ao menos um cliente para o usuário.");
+						alert(arsTranslate("Select at least one client for the user."));
 						$("#banco_usu_pool").focus();
 						return false;
 					}
@@ -86,11 +86,11 @@ function fc_edit_usu(valor1,valor2){
 						valor2=="I" ? "POST" : "PUT",
 						valor2=="I" ? userResourceBaseUrl : userResourceUrl($("#id_usu").val()),
 						payload,
-						"Erro ao salvar o usuário.",
+						arsTranslate("Error saving user."),
 						function(){
 							$("#dialog-edit-usu").dialog("close");
-							msgbox(valor2=="I"?"<br><table align='center'><tr><td>usuário " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
-								Fechar: function(){
+							msgbox("<br><table align='center'><tr><td>" + successMessage + "</td></tr></table><br>", {
+								[arsTranslate("Close")]: function(){
 									$( this ).dialog( "close" );
 									AbrirModulo('usuarios');
 								}
@@ -98,7 +98,7 @@ function fc_edit_usu(valor1,valor2){
 						}
 					);
 				},
-				Sair: function() {
+				[arsTranslate("Exit")]: function() {
 					$( this ).dialog( "close" );
 				}
 			},
@@ -121,7 +121,7 @@ function fc_edit_usu(valor1,valor2){
 		return;
 	}
 
-	arsJsonGet(userResourceUrl(valor1), "Erro ao carregar os dados do usuário.", function(ret){
+	arsJsonGet(userResourceUrl(valor1), arsTranslate("Error loading user data."), function(ret){
 		usuarioClientesReset();
 		usuarioRegioesReset();
 		$("#id_usu").val(ret.id_usu || "");
@@ -197,7 +197,7 @@ function usuarioClientesAtualizarPool(){
 function usuarioClientesAdicionar(){
 	var clienteId = $("#banco_usu_pool").val();
 	if(!clienteId){
-		alert("Selecione um cliente para adicionar.");
+		alert(arsTranslate("Select a client to add."));
 		return false;
 	}
 	var clienteNome = $.trim($("#banco_usu_pool option:selected").text());
@@ -216,14 +216,14 @@ function usuarioClientesAdicionarValor(clienteId, clienteNome, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Esse cliente já está vinculado ao usuário.");
+			alert(arsTranslate("This client is already linked to the user."));
 		}
 		return false;
 	}
 	$("#usuario-clientes-vinculados").append(
 		"<div class='usuario-clientes-item' data-cliente-id=\"" + usuarioClientesEscape(id) + "\">"
 		+ "<span class='usuario-clientes-nome'>" + usuarioClientesEscape(clienteNome) + "</span>"
-		+ "<button type='button' class='usuario-clientes-remover' onclick='usuarioClientesRemover(this);'>Remover</button>"
+		+ "<button type='button' class='usuario-clientes-remover' onclick='usuarioClientesRemover(this);'>" + arsTranslate("Remove") + "</button>"
 		+ "</div>"
 	);
 	usuarioClientesAtualizarInputs();
@@ -308,7 +308,7 @@ function usuarioRegioesAtualizarModo(){
 function usuarioRegioesAdicionar(){
 	var regiaoId = $("#regiao_usu_pool").val();
 	if(!regiaoId){
-		alert("Selecione uma regiao para adicionar.");
+		alert(arsTranslate("Select a region to add."));
 		return false;
 	}
 	var regiaoNome = $.trim($("#regiao_usu_pool option:selected").text());
@@ -322,7 +322,7 @@ function usuarioRegioesAdicionarValor(regiaoId, regiaoNome, silencioso){
 	var nivel = $("#nivel_usu").val();
 	if(nivel==="USU" && $(".usuario-regioes-item").length>0){
 		if(!silencioso){
-			alert("Usuario comum pode ter apenas uma regiao vinculada.");
+			alert(arsTranslate("Standard user can have only one linked region."));
 		}
 		return false;
 	}
@@ -334,14 +334,14 @@ function usuarioRegioesAdicionarValor(regiaoId, regiaoNome, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Essa regiao ja esta vinculada ao usuario.");
+			alert(arsTranslate("This region is already linked to the user."));
 		}
 		return false;
 	}
 	$("#usuario-regioes-vinculadas").append(
 		"<div class='usuario-regioes-item' data-regiao-id=\"" + usuarioRegioesEscape(id) + "\">"
 		+ "<span class='usuario-regioes-nome'>" + usuarioRegioesEscape(regiaoNome) + "</span>"
-		+ "<button type='button' class='usuario-regioes-remover' onclick='usuarioRegioesRemover(this);'>Remover</button>"
+		+ "<button type='button' class='usuario-regioes-remover' onclick='usuarioRegioesRemover(this);'>" + arsTranslate("Remove") + "</button>"
 		+ "</div>"
 	);
 	usuarioRegioesAtualizarInputs();
@@ -359,20 +359,20 @@ function usuarioRegioesRemover(botao){
 }
 function fc_del_usu(valor1,valor2){
 	var userResourceBaseUrl = window.arsUserResourceBaseUrl || "admin/usuarios";
-	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o usuário <b>" + valor2 + "</b> ?</td></tr></table><br>",{
-		"Sim": function(){
+	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>" + arsFormat("Do you really want to delete the user :name?", {name: "<b>" + valor2 + "</b>"}) + "</td></tr></table><br>",{
+		[arsTranslate("Yes")]: function(){
 			var dialog = $(this);
-			arsJsonSubmit("DELETE", userResourceBaseUrl + "/" + valor1, {}, "Erro ao excluir o usuário.", function(){
+			arsJsonSubmit("DELETE", userResourceBaseUrl + "/" + valor1, {}, arsTranslate("Error deleting user."), function(){
 				dialog.dialog("close");
-				msgbox("<br><table align='center'><tr><td>usuário deletado com sucesso !</td></tr></table><br>",{
-					Fechar: function(){
+				msgbox("<br><table align='center'><tr><td>" + arsTranslate("User deleted successfully.") + "</td></tr></table><br>",{
+					[arsTranslate("Close")]: function(){
 						$( this ).dialog( "close" );
 						AbrirModulo('usuarios');
 					}
 				});
 			});
 		},
-		"Não": function(){
+		[arsTranslate("No")]: function(){
 			$( this ).dialog( "close" );
 		}
 	});

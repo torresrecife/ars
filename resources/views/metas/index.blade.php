@@ -6,23 +6,23 @@
 <script>
 window.arsMetaResourceBaseUrl = "{{ url('admin/metas') }}";
 </script>
-<br><div class="admin-context-title">Cliente: <b>{{ e((string) $bankCode) }}</b> | M&ecirc;s / Ano: <b>{{ e((string) $startDate) }}</b></div><br>
-<label><h2><u>Metas</u></h2></label>
+<br><div class="admin-context-title">{{ __('Client') }}: <b>{{ e((string) $bankCode) }}</b> | {{ __('Month/Year') }}: <b>{{ e((string) $startDate) }}</b></div><br>
+<label><h2><u>{{ __('Goals') }}</u></h2></label>
 <div>
 <table class="adminlist adminlist--metas">
 	<tr height="30">
-		<td class="order"><b>Cliente</b></td>
-		<td class="order"><b>Regi&atilde;o</b></td>
-		<td class="order"><b>Andamento</b></td>
-		<td class="order"><b>Tipo</b></td>
-		<td class="order"><b>Qtd/Valor</b></td>
-		<td class="order"><b>Op&ccedil;&otilde;es</b></td>
+		<td class="order"><b>{{ __('Client') }}</b></td>
+		<td class="order"><b>{{ __('Region') }}</b></td>
+		<td class="order"><b>{{ __('Progress') }}</b></td>
+		<td class="order"><b>{{ __('Type') }}</b></td>
+		<td class="order"><b>{{ __('Quantity/Value') }}</b></td>
+		<td class="order"><b>{{ __('Options') }}</b></td>
 	</tr>
 @foreach ($metas as $arr)
 	@php $metaValor = ((int) $arr['especie'] === 2) ? number_format((float) $arr['meta_valor'], 2, ',', '.') : number_format((float) $arr['meta_valor'], 0, '', ''); @endphp
 	<tr>
 		<td class="order">{{ e((string) $arr['banco_name']) }}</td>
-		<td class="order">{{ e(isset($arr['regiao_nome']) && $arr['regiao_nome'] !== '' ? (string) $arr['regiao_nome'] : 'Todas as Regiões') }}</td>
+		<td class="order">{{ e(isset($arr['regiao_nome']) && $arr['regiao_nome'] !== '' ? (string) $arr['regiao_nome'] : __('All regions')) }}</td>
 		<td class="order">{{ e((string) $arr['nome']) }}</td>
 		<td class="order admin-type-badge {{ (int) $arr['especie'] === 1 ? 'admin-type-badge--production' : 'admin-type-badge--financial' }}">{{ e((string) $metaTipos[$arr['especie']]) }}</td>
 		<td class="order">{{ $metaValor }}</td>
@@ -31,34 +31,34 @@ window.arsMetaResourceBaseUrl = "{{ url('admin/metas') }}";
 				'display' => 'block',
 				'editAction' => "fc_edit_metas(" . (int) $arr['meta_id'] . ",'U')",
 				'deleteAction' => "fc_del_metas(" . (int) $arr['meta_id'] . "," . json_encode((string) $arr['nome']) . ")",
-				'editTitle' => 'Editar Meta',
-				'deleteTitle' => 'Excluir Meta',
+				'editTitle' => __('Edit Goal'),
+				'deleteTitle' => __('Delete Goal'),
 			])
 		</td>
 	</tr>
 @endforeach
 </table>
-<br><div class="admin-context-title">Total da meta financeira: <b>R$ {{ number_format((float) $totalFinanceiro, 2, ',', '.') }}</b></div><br>
-<div id="dialog-edit-metas" title="Editar Meta" class="admin-dialog is-hidden">
-	<p class="validateMetas">Edite a Meta Abaixo</p>
+<br><div class="admin-context-title">{{ __('Total financial goal') }}: <b>R$ {{ number_format((float) $totalFinanceiro, 2, ',', '.') }}</b></div><br>
+<div id="dialog-edit-metas" title="{{ __('Edit Goal') }}" class="admin-dialog is-hidden">
+	<p class="validateMetas">{{ __('Edit the goal below') }}</p>
 	<fieldset>
 		<div id="tb_dialog" class="admin-dialog-panel admin-dialog-panel--metas">
 			<table align="left" class="admin-dialog-table admin-dialog-table--metas">
 				<tr><td>
-					<div class="metas-form-label metas-form-label--meta">Selecionar as metas</div>
-					<div class="metas-form-label metas-form-label--region">Regi&atilde;o</div>
-					<div class="metas-form-label metas-form-label--value">Valor Total</div>
-					<div class="metas-form-label metas-form-label--manual">Def. manual |.</div>
-					<div class="metas-form-label metas-form-label--week">Sem 1</div>
-					<div class="metas-form-label metas-form-label--week">Sem 2</div>
-					<div class="metas-form-label metas-form-label--week">Sem 3</div>
-					<div class="metas-form-label metas-form-label--week">Sem 4</div>
-					<div class="metas-form-label metas-form-label--week">Sem 5</div>
+					<div class="metas-form-label metas-form-label--meta">{{ __('Select goals') }}</div>
+					<div class="metas-form-label metas-form-label--region">{{ __('Region') }}</div>
+					<div class="metas-form-label metas-form-label--value">{{ __('Total Value') }}</div>
+					<div class="metas-form-label metas-form-label--manual">{{ __('Manual definition') }}</div>
+					<div class="metas-form-label metas-form-label--week">{{ __('Week 1') }}</div>
+					<div class="metas-form-label metas-form-label--week">{{ __('Week 2') }}</div>
+					<div class="metas-form-label metas-form-label--week">{{ __('Week 3') }}</div>
+					<div class="metas-form-label metas-form-label--week">{{ __('Week 4') }}</div>
+					<div class="metas-form-label metas-form-label--week">{{ __('Week 5') }}</div>
 				</td></tr>
 				<tr><td>
 					<div id="metas_0">
 						<div class="metas-form-row">
-							<select class="cls_metas2 input-default metas-field--meta" name="meta_name_1" id="meta_name_1" obrigatorio="1" title="Meta" onchange="my_especie(1);">
+							<select class="cls_metas2 input-default metas-field--meta" name="meta_name_1" id="meta_name_1" obrigatorio="1" title="{{ __('Goal') }}" onchange="my_especie(1);">
 								<option value=""></option>
 								@foreach ($andamentos as $andamento)
 									<option value="{{ (int) $andamento['anda_id'] }}" especie="{{ (int) $andamento['especie'] }}">{{ e((string) $andamento['nome'] . ' (' . $metaTipos[$andamento['especie']] . ')') }}</option>
@@ -66,19 +66,19 @@ window.arsMetaResourceBaseUrl = "{{ url('admin/metas') }}";
 							</select>
 							<select class="cls_meta_regiao input-default metas-field--region" name="regiao_id_1" id="regiao_id_1">
 								@if ($allowGlobalRegion)
-									<option value="">Todas as Regiões</option>
+									<option value="">{{ __('All regions') }}</option>
 								@endif
 								@foreach ($regions as $region)
 									<option value="{{ (int) $region['regiao_id'] }}">{{ e((string) $region['regiao_nome']) }}</option>
 								@endforeach
 							</select>
-							<input type="text" class="cls_meta metas-field--value" name="meta_valor_1" id="meta_valor_1" value="" obrigatorio="1" title="Meta total" alt=""/>
-							<input type="checkbox" class="cls_meta metas-field--manual" name="def_sem_1" id="def_sem_1" onclick="definir_sem(this,1);" value="" title="Definir manualmente">
-							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem1_valor_1" id="sem1_valor_1" value="" title="Valor da 1ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
-							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem2_valor_1" id="sem2_valor_1" value="" title="Valor da 2ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
-							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem3_valor_1" id="sem3_valor_1" value="" title="Valor da 3ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
-							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem4_valor_1" id="sem4_valor_1" value="" title="Valor da 4ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
-							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem5_valor_1" id="sem5_valor_1" value="" title="Valor da 5ª semana" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
+							<input type="text" class="cls_meta metas-field--value" name="meta_valor_1" id="meta_valor_1" value="" obrigatorio="1" title="{{ __('Total goal') }}" alt=""/>
+							<input type="checkbox" class="cls_meta metas-field--manual" name="def_sem_1" id="def_sem_1" onclick="definir_sem(this,1);" value="" title="{{ __('Manual definition') }}">
+							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem1_valor_1" id="sem1_valor_1" value="" title="{{ __('Week 1 value') }}" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
+							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem2_valor_1" id="sem2_valor_1" value="" title="{{ __('Week 2 value') }}" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
+							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem3_valor_1" id="sem3_valor_1" value="" title="{{ __('Week 3 value') }}" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
+							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem4_valor_1" id="sem4_valor_1" value="" title="{{ __('Week 4 value') }}" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
+							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem5_valor_1" id="sem5_valor_1" value="" title="{{ __('Week 5 value') }}" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
 							<button id="inp1_1" class="bts metas-add-button" onclick="inserir_metas($('#meta_name_1').html(),1);">+</button>
 						</div>
 					</div>
