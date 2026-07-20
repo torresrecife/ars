@@ -9,6 +9,8 @@
 
 These files are still the active runtime source for the application shell and old Joomla-era admin layout.
 
+`resources/sass/components/_legacy-shell.scss` now contains the first migrated block from `css/template.css`: document base, shell header, status bar, content frame, control panel icons, and core panel layout. Keep `css/template.css` loaded until these blocks are verified in the compiled build and removed from the legacy file in smaller follow-up cuts.
+
 ## Inline style hotspots
 
 ### High priority
@@ -40,7 +42,7 @@ These files are still the active runtime source for the application shell and ol
 
 ## Recommended migration order
 
-1. Move repeated inline styles from detail views into Sass partials.
-2. Continue moving administrative module inline styles into `resources/sass/components`.
-3. Introduce layout utility classes in Blade and reduce `style=""`.
-4. Only after that, decide whether `css/template.css` should be split or retired.
+1. Verify the migrated `legacy-shell` Sass block after `npm run dev`.
+2. Remove the verified duplicated blocks from `css/template.css`.
+3. Continue migrating remaining active `template.css` areas: login, admin tables, form controls, and remaining toolbar/menu icons.
+4. Retire `css/ars-modern.css` after Mix is mandatory in every environment.
