@@ -41,18 +41,18 @@ class AppServiceProvider extends ServiceProvider
     private function monthsMap()
     {
         return array(
-            1 => 'Janeiro',
-            2 => 'Fevereiro',
-            3 => 'Março',
-            4 => 'Abril',
-            5 => 'Maio',
-            6 => 'Junho',
-            7 => 'Julho',
-            8 => 'Agosto',
-            9 => 'Setembro',
-            10 => 'Outubro',
-            11 => 'Novembro',
-            12 => 'Dezembro',
+            1 => __('January'),
+            2 => __('February'),
+            3 => __('March'),
+            4 => __('April'),
+            5 => __('May'),
+            6 => __('June'),
+            7 => __('July'),
+            8 => __('August'),
+            9 => __('September'),
+            10 => __('October'),
+            11 => __('November'),
+            12 => __('December'),
         );
     }
 

@@ -32,7 +32,7 @@ class UserAdminControllerTest extends TestCase
             array(
                 'ok' => true,
                 'code' => 'loaded',
-                'message' => 'Usuario carregado.',
+                'message' => __('User loaded.'),
                 'data' => array(
                     'id_usu' => 7,
                     'nome_usu' => 'Maria',

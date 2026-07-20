@@ -35,7 +35,7 @@ class ProductionRequestDtoTest extends TestCase
     public function test_general_production_input_normalizes_payload()
     {
         $dto = GeneralProductionInput::fromArray(array(
-            'startDate' => 'Julho / 2026',
+            'startDate' => __('July') . ' / 2026',
             'startSetor' => '3',
             'mes' => 7,
             'ano' => 2026,
@@ -44,7 +44,7 @@ class ProductionRequestDtoTest extends TestCase
 
         $this->assertSame(
             array(
-                'startDate' => 'Julho / 2026',
+                'startDate' => __('July') . ' / 2026',
                 'startSetor' => '3',
                 'mes' => 7,
                 'ano' => 2026,
@@ -72,7 +72,7 @@ class ProductionRequestDtoTest extends TestCase
     public function test_general_production_request_accepts_valid_values()
     {
         $request = GeneralProductionRequest::create('/relatorio', 'GET', array(
-            'startDate' => 'Julho / 2026',
+            'startDate' => __('July') . ' / 2026',
             'startSetor' => '3',
             'mes' => 7,
             'ano' => 2026,

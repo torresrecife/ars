@@ -26,7 +26,7 @@ class MainPageServiceTest extends TestCase
             ->andReturn(array());
 
         $service = new MainPageService($repository, $regionService, array(
-            7 => 'Julho',
+            7 => __('July'),
         ));
 
         $result = $service->build(array(
@@ -46,7 +46,7 @@ class MainPageServiceTest extends TestCase
         $this->assertNull($result->topAction());
         $this->assertSame('view', $result->content()->type());
         $this->assertSame('admin/index', $result->content()->view());
-        $this->assertSame('Julho / 2026', $result->monthYearLabel());
+        $this->assertSame(__('July') . ' / 2026', $result->monthYearLabel());
     }
 
     public function test_build_returns_top_action_for_usuarios_section()
@@ -59,7 +59,7 @@ class MainPageServiceTest extends TestCase
             ->andReturn(array());
 
         $service = new MainPageService($repository, $regionService, array(
-            7 => 'Julho',
+            7 => __('July'),
         ));
 
         $result = $service->build(array(
@@ -75,7 +75,7 @@ class MainPageServiceTest extends TestCase
 
         $this->assertSame('usuarios', $result->currentSection());
         $this->assertNotNull($result->topAction());
-        $this->assertSame('Novo Usuário', $result->topAction()->label());
+        $this->assertSame(__('New User'), $result->topAction()->label());
         $this->assertSame('fc_edit_usu("", "I");', $result->topAction()->javascript());
         $this->assertSame('controller', $result->content()->type());
         $this->assertSame('user-admin', $result->content()->controller());
