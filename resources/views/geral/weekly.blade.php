@@ -1,25 +1,25 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<button type="button" onclick="AbrirRelatorio(0);" class="report-switch">Semanal</button>
-<br><div class="report-title">{!! $titleArea !!}{!! isset($regionLabel) ? $regionLabel : '' !!} | M&ecirc;s / Ano: <b>{{ e($startDate) }}</b> </div><br>
+<button type="button" onclick="AbrirRelatorio(0);" class="report-switch">{{ __('Weekly') }}</button>
+<br><div class="report-title">{!! $titleArea !!}{!! isset($regionLabel) ? $regionLabel : '' !!} | {{ __('Month/Year') }}: <b>{{ e($startDate) }}</b> </div><br>
 <script>
 	window.arsDetailFaturamentoUrl = "{{ url('detalhes/faturamento') }}";
 	window.arsReportContentHeight = {{ (int) $contentHeight }};
 </script>
 <table align="center" height="50%" border="0" cellspacing="3" cellpadding="3" class="report-table report-table--weekly">
 	<tr>
-		<td align="center" colspan="6" class="cls_indic">PRODUCAO - BVAA</td>
+		<td align="center" colspan="6" class="cls_indic">{{ __('Production') }} - BVAA</td>
 		<td align="center" colspan="0"></td>
-		<td align="center" colspan="1" class="cls_indic2">TOTAL</td>
+		<td align="center" colspan="1" class="cls_indic2">{{ __('Total') }}</td>
 	</tr>
 	<tr>
-		<td align="center" class="cls_dados cls_vals">CLIENTE</td>
-		<td align="center" class="cls_dados cls_vals">META/MES</td>
-		<td align="center" class="cls_dados cls_vals">META/HOJE</td>
-		<td align="center" class="cls_dados cls_vals">REALIZADO</td>
-		<td align="center" class="cls_dados cls_vals">SALDO (Parcial)</td>
-		<td align="center" class="cls_dados cls_perc">PERC / HOJE</td>
+		<td align="center" class="cls_dados cls_vals">{{ __('Client') }}</td>
+		<td align="center" class="cls_dados cls_vals">{{ __('Goal/Month') }}</td>
+		<td align="center" class="cls_dados cls_vals">{{ __('Goal/Today') }}</td>
+		<td align="center" class="cls_dados cls_vals">{{ __('Realized') }}</td>
+		<td align="center" class="cls_dados cls_vals">{{ __('Balance (Partial)') }}</td>
+		<td align="center" class="cls_dados cls_perc">{{ __('Percent / Today') }}</td>
 		<td align="center" class="cls_perc2">&nbsp;</td>
-		<td align="center" class="cls_dados cls_perc">PERC / MES</td>
+		<td align="center" class="cls_dados cls_perc">{{ __('Percent / Month') }}</td>
 	</tr>
 	@foreach ($rows as $row)
 	<tr class="report-row">
@@ -40,7 +40,7 @@
 	<input type="hidden" name="regiao_id" value="{{ isset($regionId) ? (int) $regionId : 0 }}" />
 	<tr><td colspan="8"></td></tr>
 	<tr class="cls_dados">
-		<td align="center" class="cls_body"><b>TOTAIS</b></td>
+		<td align="center" class="cls_body"><b>{{ __('Totals') }}</b></td>
 		<td align="center" class="cls_body"><b>R$ {{ number_format($totals['metaMonth'], 2, ',', '.') }}</b></td>
 		<td align="center" class="cls_body"><b>R$ {{ number_format($totals['metaToday'], 2, ',', '.') }}</b></td>
 		<td align="center" class="cls_body"><b>R$ {{ number_format($totals['realized'], 2, ',', '.') }}</b></td>

@@ -57,8 +57,8 @@ class AndamentoAdminService
 		return array(
 			'andamentos' => $this->repository->listAll(),
 			'metaTipos' => array(
-				1 => 'Produção',
-				2 => 'Financeira',
+				1 => __('Production'),
+				2 => __('Financial'),
 			),
 		);
 	}

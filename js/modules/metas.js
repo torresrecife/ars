@@ -39,7 +39,7 @@ function fc_edit_metas(valor1,valor2){
 
 		$('.cls_meta').each(function(){
 			if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-				alert("O campo " + $(this).attr("title") + " é obrigatório ");
+				alert(arsFormat("The field :field is required.", {field: $(this).attr("title")}));
 				$(this).focus();
 				invalido = true;
 				return false;
@@ -75,7 +75,7 @@ function fc_edit_metas(valor1,valor2){
 			height: 400,
 			width: 1080,
 			buttons: {
-				Salvar: function() {
+				[arsTranslate("Save")]: function() {
 					var payload = coletarPayloadMeta();
 					if(payload===false){
 						return false;
@@ -84,11 +84,11 @@ function fc_edit_metas(valor1,valor2){
 						valor2=="I" ? "POST" : "PUT",
 						valor2=="I" ? metaResourceBaseUrl : metaResourceUrl($("#meta_id").val()),
 						payload,
-						"Erro ao salvar a meta.",
+						arsTranslate("Error saving goal."),
 						function(){
 							$("#dialog-edit-metas").dialog("close");
-							msgbox(valor2=="I"?"<br><table align='center'><tr><td>Meta(s) " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Meta editada com sucesso !</td></tr></table><br>", {
-								Fechar: function(){
+							msgbox("<br><table align='center'><tr><td>" + tu + "</td></tr></table><br>", {
+								[arsTranslate("Close")]: function(){
 									$(this).dialog("close");
 									AbrirMetasAdmin();
 								}
@@ -96,7 +96,7 @@ function fc_edit_metas(valor1,valor2){
 						}
 					);
 				},
-				Sair: function() {
+				[arsTranslate("Exit")]: function() {
 					$(this).dialog("close");
 				}
 			},
@@ -106,19 +106,19 @@ function fc_edit_metas(valor1,valor2){
 		});
 	};
 	if(valor2=="I"){
-		tt="Nova Meta";
-		tu="criada(s)";
-		$(".validateMetas").text("Crie Um " + tt);
+		tt=arsTranslate("New Goal");
+		tu=arsTranslate("Goal(s) created successfully.");
+		$(".validateMetas").text(arsTranslate("Create a new goal"));
 		resetMetaDialog();
 		$("#regiao_id_1").val("");
 		abrirDialogMeta();
 		return;
 	}else if(valor2=="U"){
-		tt="Editar Meta";
-		tu="editada(s)";
-		$(".validateMetas").text("Edite a Meta Abaixo");
+		tt=arsTranslate("Edit Goal");
+		tu=arsTranslate("Goal edited successfully.");
+		$(".validateMetas").text(arsTranslate("Edit the goal below"));
 	}
-	arsJsonGet(metaResourceUrl(valor1), "Erro ao carregar os dados da meta.", function(ret){
+	arsJsonGet(metaResourceUrl(valor1), arsTranslate("Error loading goal data."), function(ret){
 		if((ret.def_sem || "N")=="Y"){
 			$("#def_sem_1").prop("checked",true);
 			$(".sem_1").show();
@@ -168,20 +168,20 @@ function fc_edit_metas(valor1,valor2){
 }
 function fc_del_metas(valor1,valor2){
 	var metaResourceBaseUrl = window.arsMetaResourceBaseUrl || "***REMOVED***/metas";
-	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a meta <b>" + valor2 + "</b> ?</td></tr></table><br>",{
-		"Sim": function(){
+	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>" + arsFormat("Do you really want to delete the goal :name?", {name: "<b>" + valor2 + "</b>"}) + "</td></tr></table><br>",{
+		[arsTranslate("Yes")]: function(){
 			var confirmDialog = $(this);
-			arsJsonSubmit("DELETE", metaResourceBaseUrl + "/" + valor1, {}, "Erro ao excluir a meta.", function(){
+			arsJsonSubmit("DELETE", metaResourceBaseUrl + "/" + valor1, {}, arsTranslate("Error deleting goal."), function(){
 				confirmDialog.dialog("close");
-				msgbox("<br><table align='center'><tr><td>Meta deletada com sucesso !</td></tr></table><br>",{
-					Fechar: function(){
+				msgbox("<br><table align='center'><tr><td>" + arsTranslate("Goal deleted successfully.") + "</td></tr></table><br>",{
+					[arsTranslate("Close")]: function(){
 						$( this ).dialog( "close" );
 						AbrirMetasAdmin();
 					}
 				});
 			});
 		},
-		"Não": function(){
+		[arsTranslate("No")]: function(){
 			$( this ).dialog( "close" );
 		}
 	});
@@ -193,10 +193,10 @@ function inserir_metas(valor,stt){
 		crt = crt+1;
 		$("#metas_"+(crt-1)).html(
 		"<div style='float:left'>" +
-		"<select class='cls_metas2 input-default' name='meta_name_"+crt+"' onchange='my_especie("+crt+");' style='width:260px;height:22px;float:left'>"+valor+"</select>" +
+		"<select class='cls_metas2 input-default' name='meta_name_"+crt+"' onchange='my_especie("+crt+");' title='" + arsTranslate("Goal") + "' style='width:260px;height:22px;float:left'>"+valor+"</select>" +
 		"<select class='cls_meta_regiao input-default' name='regiao_id_"+crt+"' id='regiao_id_"+crt+"' style='width:160px;height:22px;float:left'>"+$("#regiao_id_1").html()+"</select>" +
-		"<input type='text' class='cls_meta' name='meta_valor_"+crt+"' id='meta_valor_"+crt+"' value='' obrigatorio='1' style='width:120px;float:left'/>" +
-		"<input type='checkbox' class='cls_meta' name='def_sem_"+crt+"' id='def_sem_"+crt+"' onclick='definir_sem(this,"+crt+");' value='' title='Definir manualmente' style='width:20px;'>" +
+		"<input type='text' class='cls_meta' name='meta_valor_"+crt+"' id='meta_valor_"+crt+"' value='' obrigatorio='1' title='" + arsTranslate("Total goal") + "' style='width:120px;float:left'/>" +
+		"<input type='checkbox' class='cls_meta' name='def_sem_"+crt+"' id='def_sem_"+crt+"' onclick='definir_sem(this,"+crt+");' value='' title='" + arsTranslate("Manual definition") + "' style='width:20px;'>" +
 		"<input type='text' class='cls_meta sem_"+crt+"' name='sem1_valor_"+crt+"' id='sem1_valor_"+crt+"' value='' onkeypress='somarMeta("+crt+")' onblur='somarMeta("+crt+")' style='display:none;width:70px;float:left'/>" +
 		"<input type='text' class='cls_meta sem_"+crt+"' name='sem2_valor_"+crt+"' id='sem2_valor_"+crt+"' value='' onkeypress='somarMeta("+crt+")' onblur='somarMeta("+crt+")' style='display:none;width:70px;float:left'/>" +
 		"<input type='text' class='cls_meta sem_"+crt+"' name='sem3_valor_"+crt+"' id='sem3_valor_"+crt+"' value='' onkeypress='somarMeta("+crt+")' onblur='somarMeta("+crt+")' style='display:none;width:70px;float:left'/>" +

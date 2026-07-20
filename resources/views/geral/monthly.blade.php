@@ -1,6 +1,6 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<button type="button" onclick="AbrirRelatorio(1);" class="report-switch report-switch--monthly">Mensal</button><br>
-<br><div class="report-title">{!! $titleArea !!}{!! isset($regionLabel) ? $regionLabel : '' !!} | M&ecirc;s / Ano: <b>{{ e($startDate) }}</b> </div><br>
+<button type="button" onclick="AbrirRelatorio(1);" class="report-switch report-switch--monthly">{{ __('Monthly') }}</button><br>
+<br><div class="report-title">{!! $titleArea !!}{!! isset($regionLabel) ? $regionLabel : '' !!} | {{ __('Month/Year') }}: <b>{{ e($startDate) }}</b> </div><br>
 @php
 	$weekCountClass = count($weeks) === 4 ? 'is-four-weeks' : 'is-five-weeks';
 @endphp
@@ -10,23 +10,23 @@
 </script>
 <table align="center" height="50%" border="0" cellspacing="3" cellpadding="3" class="report-table report-table--monthly {{ $weekCountClass }}">
 	<tr>
-		<td align="center" rowspan="2" class="cls_sema cls_indic">CLIENTES</td>
+		<td align="center" rowspan="2" class="cls_sema cls_indic">{{ __('Clients') }}</td>
 		@foreach ($weeks as $week)
 			<td align="center" colspan="3" class="cls_sema">{{ $week['label'] }}</td>
 		@endforeach
 		<td class="report-cell--gap"></td>
-		<td align="center" colspan="3" rowspan="1" class="cls_sema cls_vals">TOTAL</td>
+		<td align="center" colspan="3" rowspan="1" class="cls_sema cls_vals">{{ __('Total') }}</td>
 	</tr>
 	<tr>
 		@foreach ($weeks as $week)
-			<td align="center" class="cls_dados cls_vals">META</td>
-			<td align="center" class="cls_dados cls_vals">REALIZADO</td>
-			<td align="center" class="cls_dados cls_vals">PERC.</td>
+			<td align="center" class="cls_dados cls_vals">{{ __('Goal') }}</td>
+			<td align="center" class="cls_dados cls_vals">{{ __('Realized') }}</td>
+			<td align="center" class="cls_dados cls_vals">{{ __('Percent') }}</td>
 		@endforeach
 		<td class=""></td>
-		<td align="center" class="cls_dados cls_bk2">META</td>
-		<td align="center" class="cls_dados cls_bk2">REALIZADO</td>
-		<td align="center" class="cls_dados cls_bk2">FAROL</td>
+		<td align="center" class="cls_dados cls_bk2">{{ __('Goal') }}</td>
+		<td align="center" class="cls_dados cls_bk2">{{ __('Realized') }}</td>
+		<td align="center" class="cls_dados cls_bk2">{{ __('Status Light') }}</td>
 	</tr>
 	@foreach ($rows as $row)
 	<tr class="report-row">
@@ -44,7 +44,7 @@
 	@endforeach
 	<tr height="5px"></tr>
 	<tr>
-		<td class="cls_bk"><b>TOTAL</b></td>
+		<td class="cls_bk"><b>{{ __('Total') }}</b></td>
 		@foreach ($totals['weeks'] as $weekTotal)
 			<td align="center" class="cls_vals2 cls_bk report-cell--total-meta"><b>{{ number_format($weekTotal['meta'], 2, ',', '.') }}</b></td>
 			<td align="center" class="cls_vals2 cls_bk"><b>{{ number_format($weekTotal['real'], 2, ',', '.') }}</b></td>

@@ -1,15 +1,15 @@
 <div class="content_body">
 	<div class="cpanel-left">
 		<div class="cpanel">
-			<label><h2>Administrar Metas</h2></label>
-			<label for="startBanco">Banco:</label>
+			<label><h2>{{ __('Manage Goals') }}</h2></label>
+			<label for="startBanco">{{ __('Bank') }}:</label>
 			<select name="startBanco" id="startBanco" class="input-default nav-select">
 				<option></option>
 				@foreach ($banks as $bank)
 					<option value="{{ $bank['banco_id'] }}">{{ e($bank['banco_name'] . ' (' . $bank['banco_class'] . ')') }}</option>
 				@endforeach
 			</select>
-			<label for="startDate">M&ecirc;s / Ano:</label>
+			<label for="startDate">{{ __('Month/Year') }}:</label>
 			<input type="text" name="startDate" id="startDate" class="date-picker date-picker--legacy" readonly="readonly" value="{{ e($monthYearLabel) }}"/>
 			<span id="obg_date"></span>
 			<input type="hidden" name="mes" id="mes" value="{{ e((string) $month) }}"/>
@@ -18,7 +18,7 @@
 			<div class="icon-wrapper">
 				<div class="icon">
 					<a href="#" id="frm" onclick="AbrirMetasSelecao(); return false;">
-						<img src="css/images/header/icon-48-themes.png" alt="" /><span>Metas</span>
+						<img src="css/images/header/icon-48-themes.png" alt="" /><span>{{ __('Goals') }}</span>
 					</a>
 				</div>
 			</div>

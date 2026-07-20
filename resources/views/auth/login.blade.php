@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="{{ app()->getLocale() === 'en_CA' ? 'en-ca' : 'pt-br' }}">
 <head>
     <meta charset="utf-8">
-    <title>Controle da ARS</title>
+    <title>{{ __('ARS Control') }}</title>
     <link href="{{ url('css/images/favicon.ico') }}" rel="shortcut icon" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" href="{{ url('css/system.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ url('css/template.css') }}" type="text/css" />
@@ -11,43 +11,43 @@
 <body>
     <div id="border-top" class="h_blue">
         <span class="logo"><img src="{{ $legacyBaseUrl }}/css/images/logo.png" alt="Sistema de Peticao" /></span>
-        <span class="title"><a href="#">ARS - NEO JURIDICO</a></span>
+        <span class="title"><a href="#">{{ __('ARS - NEO Legal') }}</a></span>
     </div>
     <div id="content-box">
         <div id="element-box" class="login">
             <div class="m wbg">
-                <h1>Acessar o Painel da ARS</h1>
+                <h1>{{ __('Access the ARS Panel') }}</h1>
                 <div id="system-message-container"></div>
                 <div id="section-box">
                     <div class="m">
                         <form action="{{ url('login') }}" method="post" id="form-login">
                             @csrf
                             <fieldset class="loginform">
-                                <label id="mod-login-username-lbl" for="mod-login-username">Nome de Usuario</label>
+                                <label id="mod-login-username-lbl" for="mod-login-username">{{ __('Username') }}</label>
                                 <input type="text" name="username" id="mod-login-username" class="inputbox" size="15" />
-                                <label id="mod-login-password-lbl" for="mod-login-password">Senha</label>
+                                <label id="mod-login-password-lbl" for="mod-login-password">{{ __('Password') }}</label>
                                 <input type="password" name="passwd" id="mod-login-password" class="inputbox" size="15" />
                                 <div class="button-holder">
                                     <div class="button1">
                                         <div class="next">
-                                            <a href="#" onclick="document.getElementById('form-login').submit(); return false;">Acessar</a>
+                                            <a href="#" onclick="document.getElementById('form-login').submit(); return false;">{{ __('Sign in') }}</a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="clr"></div>
-                                <input type="submit" class="hidebtn" value="Acessar" />
+                                <input type="submit" class="hidebtn" value="{{ __('Sign in') }}" />
                             </fieldset>
                         </form>
-                        <div id="alerta" class="login-alert {{ $alerta === 1 ? '' : 'is-hidden' }}">Usuario ou senha invalidos!</div>
+                        <div id="alerta" class="login-alert {{ $alerta === 1 ? '' : 'is-hidden' }}">{{ __('Invalid username or password!') }}</div>
                         <div class="clr"></div>
                     </div>
                 </div>
-                <p>Use um nome de usuario e senha validos para acessar o Painel de Administracao.</p>
+                <p>{{ __('Use a valid username and password to access the Administration Panel.') }}</p>
                 <div id="lock"></div>
             </div>
         </div>
         <noscript>
-            Atencao! JavaScript deve estar habilitado para o bom funcionamento do backend do ***REMOVED***istrador.
+            {{ __('Warning! JavaScript must be enabled for the ***REMOVED***istration backend to work properly.') }}
         </noscript>
     </div>
     <div id="footer">

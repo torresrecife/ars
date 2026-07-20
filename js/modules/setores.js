@@ -4,16 +4,16 @@ function fc_edit_setor(valor1, valor2){
 		return sectorResourceBaseUrl + "/" + id;
 	};
 	var tt = "";
-	var tu = "";
+	var successMessage = "";
 
 	if(valor2=="I"){
-		tt="Novo Setor";
-		tu="criado";
-		$(".validateTips").text("Crie Um " + tt);
+		tt=arsTranslate("New Sector");
+		successMessage=arsTranslate("Sector created successfully.");
+		$(".validateTips").text(arsTranslate("Create a new sector"));
 	}else if(valor2=="U"){
-		tt="Editar Setor";
-		tu="editado";
-		$(".validateTips").text("Edite o Setor Abaixo");
+		tt=arsTranslate("Edit Sector");
+		successMessage=arsTranslate("Field updated successfully.");
+		$(".validateTips").text(arsTranslate("Edit the sector below"));
 	}
 
 	var abrirDialogSetor = function(){
@@ -24,12 +24,12 @@ function fc_edit_setor(valor1, valor2){
 			height: 440,
 			width: 450,
 			buttons: {
-				Salvar: function() {
+				[arsTranslate("Save")]: function() {
 					var payload = {};
 					var invalido = false;
 					$('.cls_setor').each(function(){
 						if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-							alert("O campo " + $(this).attr("title") + " e obrigatorio ");
+							alert(arsFormat("The field :field is required.", {field: $(this).attr("title")}));
 							$(this).focus();
 							invalido = true;
 							return false;
@@ -44,11 +44,11 @@ function fc_edit_setor(valor1, valor2){
 						valor2=="I" ? "POST" : "PUT",
 						valor2=="I" ? sectorResourceBaseUrl : sectorResourceUrl($("#id_setor").val()),
 						payload,
-						"Erro ao salvar o setor.",
+						arsTranslate("Error saving sector."),
 						function(){
 							$("#dialog-edit-setor").dialog("close");
-							msgbox(valor2=="I" ? "<br><table align='center'><tr><td>Setor " + tu + " com sucesso !</td></tr></table><br>" : "<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
-								Fechar: function(){
+							msgbox("<br><table align='center'><tr><td>" + successMessage + "</td></tr></table><br>", {
+								[arsTranslate("Close")]: function(){
 									$(this).dialog("close");
 									AbrirModulo('setores');
 								}
@@ -56,7 +56,7 @@ function fc_edit_setor(valor1, valor2){
 						}
 					);
 				},
-				Sair: function() {
+				[arsTranslate("Exit")]: function() {
 					$(this).dialog("close");
 				}
 			},
@@ -76,7 +76,7 @@ function fc_edit_setor(valor1, valor2){
 		return;
 	}
 
-	arsJsonGet(sectorResourceUrl(valor1), "Erro ao carregar os dados do setor.", function(ret){
+	arsJsonGet(sectorResourceUrl(valor1), arsTranslate("Error loading sector data."), function(ret){
 		$("#id_setor").val(ret.area_id || "");
 		$("#nome_setor").val(ret.area_nome || "");
 		abrirDialogSetor();
@@ -85,20 +85,20 @@ function fc_edit_setor(valor1, valor2){
 
 function fc_del_setor(valor1, valor2){
 	var sectorResourceBaseUrl = window.arsSectorResourceBaseUrl || "***REMOVED***/setores";
-	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o setor <b>" + valor2 + "</b> ?</td></tr></table><br>",{
-		"Sim": function(){
+	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>" + arsFormat("Do you really want to delete the sector :name?", {name: "<b>" + valor2 + "</b>"}) + "</td></tr></table><br>",{
+		[arsTranslate("Yes")]: function(){
 			var dialog = $(this);
-			arsJsonSubmit("DELETE", sectorResourceBaseUrl + "/" + valor1, {}, "Erro ao excluir o setor.", function(){
+			arsJsonSubmit("DELETE", sectorResourceBaseUrl + "/" + valor1, {}, arsTranslate("Error deleting sector."), function(){
 				dialog.dialog("close");
-				msgbox("<br><table align='center'><tr><td>Setor deletado com sucesso !</td></tr></table><br>",{
-					Fechar: function(){
+				msgbox("<br><table align='center'><tr><td>" + arsTranslate("Sector deleted successfully.") + "</td></tr></table><br>",{
+					[arsTranslate("Close")]: function(){
 						$(this).dialog("close");
 						AbrirModulo('setores');
 					}
 				});
 			});
 		},
-		"Não": function(){
+		[arsTranslate("No")]: function(){
 			$(this).dialog("close");
 		}
 	});

@@ -10,15 +10,15 @@ $(function() {
 	}
 
 	$('.date-picker').datepicker( {
-		dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
-		dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
-		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab','Dom'],
-		monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
-		monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
-		nextText: 'Próximo',
-		prevText: 'Anterior',
+		dayNames: arsTranslate("Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday").split(","),
+		dayNamesMin: arsTranslate("Su,Mo,Tu,We,Th,Fr,Sa").split(","),
+		dayNamesShort: arsTranslate("Sun,Mon,Tue,Wed,Thu,Fri,Sat").split(","),
+		monthNames: arsTranslate("January,February,March,April,May,June,July,August,September,October,November,December").split(","),
+		monthNamesShort: arsTranslate("Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec").split(","),
+		nextText: arsTranslate("Next"),
+		prevText: arsTranslate("Previous"),
 		closeText: 'OK',
-		currentText: 'Mês atual',
+		currentText: arsTranslate("Current month"),
         changeMonth: true,
         changeYear: true,
         showButtonPanel: true,
@@ -44,10 +44,26 @@ function msgbox(msg, bts){
 			title: 'Alerta'
 		});
 }
+function arsTranslate(key){
+	if(window.arsTranslations && window.arsTranslations[key]){
+		return window.arsTranslations[key];
+	}
+	return key;
+}
+function arsFormat(key, replacements){
+	var message = arsTranslate(key);
+	replacements = replacements || {};
+	for(var name in replacements){
+		if(Object.prototype.hasOwnProperty.call(replacements, name)){
+			message = message.replace(new RegExp(":" + name, "g"), replacements[name]);
+		}
+	}
+	return message;
+}
 function mostrarErroData(){
 	$("#startDate").css("border","1px solid red");
 	$("#obg_date").fadeIn();
-	$("#obg_date").html("Inseir o mÃƒÆ’Ã‚Âªs / ano!");
+	$("#obg_date").html(arsTranslate("Enter the month / year!"));
 	setTimeout(function(){
 		$("#startDate").css("border","1px solid #ccc");
 		$("#obg_date").fadeOut();
@@ -116,7 +132,7 @@ function LerMensagemAjaxErro(xhr, fallback){
 			}
 		}catch(e){}
 	}
-	return fallback || "Erro na operacao.";
+	return fallback || arsTranslate("Error in operation.");
 }
 function arsAjax(options){
 	return $.ajax($.extend({
@@ -130,13 +146,13 @@ function arsJsonGet(url, fallbackMessage, onLoaded){
 		url: url,
 		success: function(response){
 			if(!response || response.ok !== true || typeof onLoaded !== "function"){
-				alert((response && response.message) ? response.message : (fallbackMessage || "Erro ao carregar os dados."));
+				alert((response && response.message) ? response.message : (fallbackMessage || arsTranslate("Unable to load data.")));
 				return;
 			}
 			onLoaded(response.data || {}, response);
 		},
 		error: function(xhr){
-			alert(LerMensagemAjaxErro(xhr, fallbackMessage || "Erro ao carregar os dados."));
+			alert(LerMensagemAjaxErro(xhr, fallbackMessage || arsTranslate("Unable to load data.")));
 		}
 	});
 }
@@ -147,7 +163,7 @@ function arsJsonSubmit(method, url, payload, fallbackMessage, onSuccess){
 		data: payload || {},
 		success: function(response){
 			if(!response || response.ok !== true){
-				alert((response && response.message) ? response.message : (fallbackMessage || "Erro na operacao."));
+				alert((response && response.message) ? response.message : (fallbackMessage || arsTranslate("Error in operation.")));
 				return;
 			}
 			if(typeof onSuccess === "function"){
@@ -155,7 +171,7 @@ function arsJsonSubmit(method, url, payload, fallbackMessage, onSuccess){
 			}
 		},
 		error: function(xhr){
-			alert(LerMensagemAjaxErro(xhr, fallbackMessage || "Erro na operacao."));
+			alert(LerMensagemAjaxErro(xhr, fallbackMessage || arsTranslate("Error in operation.")));
 		}
 	});
 }
@@ -166,7 +182,7 @@ function validaEmail(email){
 	}
 
 	var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-	return regex.test(valor) ? "" : "E-mail invalido.";
+	return regex.test(valor) ? "" : arsTranslate("Invalid e-mail.");
 }
 function fc_teste_senha(senha1, senha2, modo){
 	var primeira = String(senha1 || "");
@@ -174,7 +190,7 @@ function fc_teste_senha(senha1, senha2, modo){
 
 	if(modo === "I"){
 		if(primeira === "" || segunda === ""){
-			return "Informe a senha e a confirmacao da senha.";
+			return arsTranslate("Enter the password and password confirmation.");
 		}
 	}
 
@@ -183,11 +199,11 @@ function fc_teste_senha(senha1, senha2, modo){
 	}
 
 	if(primeira !== segunda){
-		return "As senhas informadas nao conferem.";
+		return arsTranslate("The passwords do not match.");
 	}
 
 	if(primeira !== "" && primeira.length < 4){
-		return "A senha deve ter ao menos 4 caracteres.";
+		return arsTranslate("The password must have at least 4 characters.");
 	}
 
 	return "";

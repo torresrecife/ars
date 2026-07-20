@@ -1,18 +1,18 @@
 <div class="content_body">
 	<div class="cpanel-left">
 		<div class="cpanel">
-			<label><h2>Produção</h2></label>
-			<label for="startSetor">Setor:</label>
+			<label><h2>{{ __('Production') }}</h2></label>
+			<label for="startSetor">{{ __('Sector') }}:</label>
 			<select name="startSetor" id="startSetor" class="input-default nav-select">
-				<option value="">Todas os Setores</option>
+				<option value="">{{ __('All sectors') }}</option>
 				@foreach ($areas as $area)
 					<option value="{{ $area['area_id'] }}"{{ ((string) $startSector === (string) $area['area_id']) ? ' selected="selected"' : '' }}>{{ e($area['area_nome']) }}</option>
 				@endforeach
 			</select>
 			@if (!empty($showRegionSelector))
-				<label for="regiao_id">&nbsp;Regi&atilde;o:</label>
+				<label for="regiao_id">{{ __('Region') }}:</label>
 				<select name="regiao_id" id="regiao_id" class="input-default nav-select">
-					<option value="0">Todas as Regi&otilde;es</option>
+					<option value="0">{{ __('All regions') }}</option>
 					@foreach ($regions as $region)
 						<option value="{{ (int) $region['regiao_id'] }}"{{ ((int) $selectedRegionId === (int) $region['regiao_id']) ? ' selected="selected"' : '' }}>{{ e($region['regiao_nome']) }}</option>
 					@endforeach
@@ -20,7 +20,7 @@
 			@else
 				<input type="hidden" name="regiao_id" id="regiao_id" value="{{ (int) $selectedRegionId }}"/>
 			@endif
-			<label for="startDate">&nbsp;M&ecirc;s / Ano:</label>
+			<label for="startDate">{{ __('Month/Year') }}:</label>
 			<input type="text" name="startDate" id="startDate" class="date-picker" readonly="readonly" value="{{ e($monthYearLabel) }}"/>
 			<span id="obg_date"></span>
 			<input type="hidden" name="mes" id="mes" value="{{ (int) $month }}"/>
@@ -29,7 +29,7 @@
 			<div class="icon-wrapper">
 				<div class="icon">
 					<a href="#" id="frm" onclick="EnviarPagina('relatorio',true,'',''); return false;">
-						<img src="css/images/header/icon-48-themes.png" alt="" /><span>Relatório</span>
+						<img src="css/images/header/icon-48-themes.png" alt="" /><span>{{ __('Report') }}</span>
 					</a>
 				</div>
 			</div>

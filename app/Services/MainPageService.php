@@ -104,13 +104,13 @@ class MainPageService
 	private function resolveTopAction($currentSection)
 	{
 		$actions = array(
-			'usuarios' => new MainPageTopAction('newuser', 'Novo Usuário', 'fc_edit_usu("", "I");'),
-			'setores' => new MainPageTopAction('newsetor', 'Novo Setor', 'fc_edit_setor("", "I");'),
-			'clientes' => new MainPageTopAction('newsetor', 'Novo Cliente', 'fc_edit_cliente("", "I");'),
-			'andamentos' => new MainPageTopAction('newsetor', 'Novo Andamento', 'fc_edit_andamento("", "I");'),
-			'metas-***REMOVED***' => new MainPageTopAction('newsetor', 'Nova Meta', 'fc_edit_metas("", "I");'),
-			'semanas' => new MainPageTopAction('newsetor', 'Nova Semana', 'fc_edit_sem("", "I");'),
-			'regioes' => new MainPageTopAction('newsetor', 'Nova Região', 'fc_edit_regiao("", "I");'),
+			'usuarios' => new MainPageTopAction('newuser', __('New User'), 'fc_edit_usu("", "I");'),
+			'setores' => new MainPageTopAction('newsetor', __('New Sector'), 'fc_edit_setor("", "I");'),
+			'clientes' => new MainPageTopAction('newsetor', __('New Client'), 'fc_edit_cliente("", "I");'),
+			'andamentos' => new MainPageTopAction('newsetor', __('New Progress'), 'fc_edit_andamento("", "I");'),
+			'metas-***REMOVED***' => new MainPageTopAction('newsetor', __('New Goal'), 'fc_edit_metas("", "I");'),
+			'semanas' => new MainPageTopAction('newsetor', __('New Week'), 'fc_edit_sem("", "I");'),
+			'regioes' => new MainPageTopAction('newsetor', __('New Region'), 'fc_edit_regiao("", "I");'),
 		);
 
 		return isset($actions[$currentSection]) ? $actions[$currentSection] : null;

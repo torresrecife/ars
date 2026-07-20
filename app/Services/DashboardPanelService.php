@@ -336,7 +336,7 @@ class DashboardPanelService
 					return new DashboardRegionFilter(
 						$selectedRegionId,
 						$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-						' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>',
+						' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>',
 						array($selectedRegionId)
 					);
 				}
@@ -359,7 +359,7 @@ class DashboardPanelService
 			return new DashboardRegionFilter(
 				$selectedRegionId,
 				$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-				$region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+				$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : '',
 				array($selectedRegionId)
 			);
 		}
@@ -371,7 +371,7 @@ class DashboardPanelService
 				return new DashboardRegionFilter(
 					$selectedRegionId,
 					$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-					$region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+					$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : '',
 					array($selectedRegionId)
 				);
 			}
@@ -386,7 +386,7 @@ class DashboardPanelService
 				return new DashboardRegionFilter(
 					$selectedRegionId,
 					$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-					$region ? ' | Regi&atilde;o: <b>' . $region['regiao_nome'] . '</b>' : '',
+					$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : '',
 					array($selectedRegionId)
 				);
 			}
@@ -428,7 +428,7 @@ class DashboardPanelService
 		if ($context->userLevel() === 'ADM' || ($context->userLevel() === 'GER' && $context->userRegionMode() === 'T')) {
 			$tabs[] = array(
 				'id' => 0,
-				'label' => 'Todas as Regi&otilde;es',
+				'label' => __('All regions'),
 				'active' => (int) $selectedRegionId === 0,
 			);
 		}

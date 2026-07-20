@@ -12,22 +12,21 @@
 <table align="center" id="tbf1" border="1" cellspacing="5" cellpadding="5" bordercolor="#ccc" class="detail-table detail-table--financial">
 <tr class="detail-table__header">
 <th align="center" class="comFiltro"><b>N.</b></th>
-<th align="center" class="comFiltro"><b>Código</b></th>
-<th align="center" class="comFiltro"><b>Autor</b></th>
-<th align="center" class="comFiltro"><b>Réu</b></th>
-<th align="center" class="comFiltro"><b>Processo</b></th>
-<th align="center" class="comFiltro"><b>Processo CNJ</b></th>
-<th align="center" class="comFiltro"><b>Conta</b></th>
-<th align="center" class="comFiltro"><b>Comarca</b></th>
+<th align="center" class="comFiltro"><b>{{ __('Code') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('Plaintiff') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('Defendant') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('Case') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('CNJ Case') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('Account') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('County') }}</b></th>
 <th align="center" class="comFiltro"><b>UF</b></th>
-<th align="center" class="comFiltro"><b>Cartório</b></th>
-<th align="center" class="comFiltro"><b>Cod Lançamento</b></th>
-<th align="center" class="comFiltro"><b>N. Contratante</b></th>
-<th align="center" class="comFiltro"><b>Andamento</b></th>
-<th align="center" class="comFiltro"><b>Valor</b></th>
-<th align="center" class="comFiltro"><b>D.Evento</b></th>
-<th align="center" class="comFiltro"><b>D.Cadastro</b></th>
-</tr>
+<th align="center" class="comFiltro"><b>{{ __('Registry Office') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('Entry Code') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('Contractor No.') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('Progress') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('Value') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('Event Date') }}</b></th>
+<th align="center" class="comFiltro"><b>{{ __('Created Date') }}</b></th></tr>
 @foreach ($rows as $row)
 <tr>
 <td align="center" class="cls_td">{{ $index++ }}</td>
@@ -51,10 +50,10 @@
 </table>
 <table align="center" border="0" cellspacing="2" cellpadding="2" class="detail-summary detail-summary--financial">
 <tr>
-<td align="left">Banco: {{ e((string) $bankName) }}</td>
-<td align="left"><span class="titulo_r" id="id_sel">Total Selecionado: {{ $totalCount }}</span></td>
-<td align="right"><div id="id_crs">Valor Total: <b>{{ number_format($totalValue, 2, ',', '.') }}</b></div></td>
-<td align="right">Lançamentos</td>
+<td align="left">{{ __('Bank') }}: {{ e((string) $bankName) }}</td>
+<td align="left"><span class="titulo_r" id="id_sel">{{ __('Selected Total') }}: {{ $totalCount }}</span></td>
+<td align="right"><div id="id_crs">{{ __('Total Value') }}: <b>{{ number_format($totalValue, 2, ',', '.') }}</b></div></td>
+<td align="right">{{ __('Entries') }}</td>
 </tr>
 </table>
 <br>

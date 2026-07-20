@@ -2,7 +2,7 @@ function andamentoTiposReset(mensagemVazio){
 	$("#andamento-tipos-vinculados").html("");
 	$("#andamento-tipos-inputs").html("");
 	$("#andamento-tipos-vazio").show();
-	$("#andamento-tipos-vazio").text(mensagemVazio || "Nenhum andamento vinculado.");
+	$("#andamento-tipos-vazio").text(mensagemVazio || arsTranslate("No linked progress items."));
 	andamentoTiposAtualizarPool();
 }
 function andamentoTiposEscape(valor){
@@ -23,7 +23,7 @@ function andamentoTiposAtualizarInputs(){
 	if($(".andamento-tipos-item").length>0){
 		$("#andamento-tipos-vazio").hide();
 	}else{
-		$("#andamento-tipos-vazio").text("Nenhum andamento vinculado.");
+		$("#andamento-tipos-vazio").text(arsTranslate("No linked progress items."));
 		$("#andamento-tipos-vazio").show();
 	}
 	andamentoTiposAtualizarPool();
@@ -52,7 +52,7 @@ function andamentoTiposAtualizarPool(){
 function andamentoTiposAdicionar(){
 	var tipo = $("#andam_name_pool").val();
 	if(!tipo){
-		alert("Selecione um andamento para adicionar.");
+		alert(arsTranslate("Select a progress item to add."));
 		return false;
 	}
 	return andamentoTiposAdicionarValor(tipo, false);
@@ -70,14 +70,14 @@ function andamentoTiposAdicionarValor(tipo, silencioso){
 	});
 	if(existe){
 		if(!silencioso){
-			alert("Esse andamento já está vinculado.");
+			alert(arsTranslate("This progress item is already linked."));
 		}
 		return false;
 	}
 	$("#andamento-tipos-vinculados").append(
 		"<div class='andamento-tipos-item' data-tipo=\"" + andamentoTiposEscape(valor) + "\">"
 		+ "<span class='andamento-tipos-nome'>" + andamentoTiposEscape(valor) + "</span>"
-		+ "<button type='button' class='andamento-tipos-remover' onclick='andamentoTiposRemover(this);'>Remover</button>"
+		+ "<button type='button' class='andamento-tipos-remover' onclick='andamentoTiposRemover(this);'>" + arsTranslate("Remove") + "</button>"
 		+ "</div>"
 	);
 	andamentoTiposAtualizarInputs();
@@ -97,15 +97,15 @@ function fc_edit_andamento(valor1,valor2){
 		return andamentoResourceBaseUrl + "/" + id;
 	};
 	var tt = "";
-	var tu = "";
+	var successMessage = "";
 	if(valor2=="I"){
-		tt="Novo Andamento";
-		tu="criado";
-		$(".validateTips").text("Crie Um " + tt);
+		tt=arsTranslate("New Progress");
+		successMessage=arsTranslate("Progress created successfully.");
+		$(".validateTips").text(arsTranslate("Create a new progress"));
 	}else if(valor2=="U"){
-		tt="Editar Andamento";
-		tu="editado";
-		$(".validateTips").text("Edite o Andamento Abaixo");
+		tt=arsTranslate("Edit Progress");
+		successMessage=arsTranslate("Field updated successfully.");
+		$(".validateTips").text(arsTranslate("Edit the progress below"));
 	}
 	var abrirDialogAndamento = function(ret){
 		ret = ret || {};
@@ -115,13 +115,13 @@ function fc_edit_andamento(valor1,valor2){
 		$("#especie").val(ret.especie || "");
 		$("#painel").val(ret.painel || "");
 		$("#titulo").val(ret.titulo || "");
-		andamentoTiposReset(valor2=="I" ? "Nenhum andamento vinculado." : "Carregando andamentos vinculados...");
+		andamentoTiposReset(valor2=="I" ? arsTranslate("No linked progress items.") : arsTranslate("Loading linked progress items..."));
 		if($.isArray(ret.tipos) && ret.tipos.length>0){
 			$.each(ret.tipos, function(_, tipo){
 				andamentoTiposAdicionarValor(tipo, true);
 			});
 		}else if(valor2=="U"){
-			andamentoTiposReset("Nenhum andamento vinculado.");
+			andamentoTiposReset(arsTranslate("No linked progress items."));
 		}
 		var especieAtual = String(ret.especie || $("#especie").val() || "");
 		sel_tipo(0, especieAtual, function(){
@@ -136,12 +136,12 @@ function fc_edit_andamento(valor1,valor2){
 			height: 400,
 			width: 600,
 			buttons:{
-				Salvar: function(){
+				[arsTranslate("Save")]: function(){
 					var mdados = {};
 					var invalido = false;
 					$(".cls_andamento").each(function(){
 						if($(this).val()=="" && $(this).attr("obrigatorio")=="1"){
-							alert("O campo " + $(this).attr("title") + " é obrigatório ");
+							alert(arsFormat("The field :field is required.", {field: $(this).attr("title")}));
 							$(this).focus();
 							invalido = true;
 							return false;
@@ -157,7 +157,7 @@ function fc_edit_andamento(valor1,valor2){
 						}
 					});
 					if(mandam.length===0){
-						alert("Selecione ao menos um andamento vinculado.");
+						alert(arsTranslate("Select at least one linked progress item."));
 						$("#andam_name_pool").focus();
 						return false;
 					}
@@ -165,20 +165,20 @@ function fc_edit_andamento(valor1,valor2){
 						valor2=="I" ? "POST" : "PUT",
 						valor2=="I" ? andamentoResourceBaseUrl : andamentoResourceUrl($("#anda_id").val()),
 						$.extend({}, mdados, { anda_neo: mandam.join(",") }),
-						"Erro ao salvar o andamento.",
+						arsTranslate("Error saving progress."),
 						function(){
 							$("#dialog-edit-andamento").dialog("close");
-							msgbox(valor2=="I"?"<br><table align='center'><tr><td>Andamento " + tu + " com sucesso !</td></tr></table><br>":"<br><table align='center'><tr><td>Campo editado com sucesso !</td></tr></table><br>", {
-								Fechar: function(){ $(this).dialog("close"); AbrirModulo('andamentos'); }
+							msgbox("<br><table align='center'><tr><td>" + successMessage + "</td></tr></table><br>", {
+								[arsTranslate("Close")]: function(){ $(this).dialog("close"); AbrirModulo('andamentos'); }
 							});
 						}
 					);
 				},
-				Sair: function() { $(this).dialog("close"); }
+				[arsTranslate("Exit")]: function() { $(this).dialog("close"); }
 			},
 			close: function(){
 				$(".cls_andamento").each(function(){ $(this).val(""); });
-				andamentoTiposReset("Nenhum andamento vinculado.");
+				andamentoTiposReset(arsTranslate("No linked progress items."));
 				$("#andam_name_pool").html("").data("optionsHtml", "");
 			}
 		});
@@ -187,22 +187,22 @@ function fc_edit_andamento(valor1,valor2){
 		abrirDialogAndamento({});
 		return;
 	}
-	arsJsonGet(andamentoResourceUrl(valor1), "Erro ao carregar os dados do andamento.", function(ret){
+	arsJsonGet(andamentoResourceUrl(valor1), arsTranslate("Error loading progress data."), function(ret){
 		abrirDialogAndamento(ret || {});
 	});
 }
 function fc_del_andamento(valor1,valor2){
 	var andamentoResourceBaseUrl = window.arsAndamentoResourceBaseUrl || "***REMOVED***/andamentos";
-	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar o andamento <b>" + valor2 + "</b> ?</td></tr></table><br>",{
-		"Sim": function(){
+	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>" + arsFormat("Do you really want to delete the progress :name?", {name: "<b>" + valor2 + "</b>"}) + "</td></tr></table><br>",{
+		[arsTranslate("Yes")]: function(){
 			var dialog = $(this);
-			arsJsonSubmit("DELETE", andamentoResourceBaseUrl + "/" + valor1, {}, "Erro ao excluir o andamento.", function(){
+			arsJsonSubmit("DELETE", andamentoResourceBaseUrl + "/" + valor1, {}, arsTranslate("Error deleting progress."), function(){
 				dialog.dialog("close");
-				msgbox("<br><table align='center'><tr><td>Andamento deletado com sucesso !</td></tr></table><br>",{
-					Fechar: function(){ $(this).dialog("close"); AbrirModulo('andamentos'); }
+				msgbox("<br><table align='center'><tr><td>" + arsTranslate("Progress deleted successfully.") + "</td></tr></table><br>",{
+					[arsTranslate("Close")]: function(){ $(this).dialog("close"); AbrirModulo('andamentos'); }
 				});
 			});
 		},
-		"Não": function(){ $(this).dialog("close"); }
+		[arsTranslate("No")]: function(){ $(this).dialog("close"); }
 	});
 }
