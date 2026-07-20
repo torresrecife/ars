@@ -28,18 +28,18 @@ class WeekController extends Controller
 		return $this->view->render('semanas/index', array(
 			'weeks' => $this->weekService->all(),
 			'months' => array(
-				1 => 'Janeiro',
-				2 => 'Fevereiro',
-				3 => 'Março',
-				4 => 'Abril',
-				5 => 'Maio',
-				6 => 'Junho',
-				7 => 'Julho',
-				8 => 'Agosto',
-				9 => 'Setembro',
-				10 => 'Outubro',
-				11 => 'Novembro',
-				12 => 'Dezembro',
+				1 => __('January'),
+				2 => __('February'),
+				3 => __('March'),
+				4 => __('April'),
+				5 => __('May'),
+				6 => __('June'),
+				7 => __('July'),
+				8 => __('August'),
+				9 => __('September'),
+				10 => __('October'),
+				11 => __('November'),
+				12 => __('December'),
 			),
 		));
 	}
@@ -48,15 +48,15 @@ class WeekController extends Controller
 	{
 		$row = $this->weekService->findById((int) $id);
 		if (!$row) {
-			return $this->apiJsonResponse(false, 'not_found', 'Semana nao encontrada.', array(), 404);
+			return $this->apiJsonResponse(false, 'not_found', __('Week not found.'), array(), 404);
 		}
 
-		return $this->apiJsonResponse(true, 'loaded', 'Semana carregada.', $row);
+		return $this->apiJsonResponse(true, 'loaded', __('Week loaded.'), $row);
 	}
 
 	public function store(WeekStoreRequest $request)
 	{
-		return $this->mapWriteResultToJson($this->weekService->createFromRequest($request->all()), 'Semana criada com sucesso.');
+		return $this->mapWriteResultToJson($this->weekService->createFromRequest($request->all()), __('Week created successfully.'));
 	}
 
 	public function update(WeekUpdateRequest $request, $id)
@@ -64,14 +64,14 @@ class WeekController extends Controller
 		$input = $request->all();
 		$input['id_sem'] = (int) $id;
 
-		return $this->mapWriteResultToJson($this->weekService->updateFromRequest($input), 'Semana atualizada com sucesso.');
+		return $this->mapWriteResultToJson($this->weekService->updateFromRequest($input), __('Week updated successfully.'));
 	}
 
 	public function destroy($id)
 	{
 		return $this->weekService->delete((int) $id)
-			? $this->apiJsonResponse(true, 'success', 'Semana excluida com sucesso.')
-			: $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
+			? $this->apiJsonResponse(true, 'success', __('Week deleted successfully.'))
+			: $this->apiJsonResponse(false, 'error', __('Operation failed.'), array(), 500);
 	}
 
 	private function mapWriteResultToJson($result, $successMessage)
@@ -80,9 +80,9 @@ class WeekController extends Controller
 			return $this->apiJsonResponse(true, 'success', $successMessage);
 		}
 		if ((string) $result === '2') {
-			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.', array(), 409);
+			return $this->apiJsonResponse(false, 'duplicate', __('Duplicate record.'), array(), 409);
 		}
 
-		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
+		return $this->apiJsonResponse(false, 'error', __('Operation failed.'), array(), 500);
 	}
 }

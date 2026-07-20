@@ -1,35 +1,35 @@
-# ARS - Acompanhamento de Resultados Setoriais
+# ARS - Sector Results Tracking
 
-Sistema ARS Online em processo de migração e modernização para Laravel.
+ARS Online is an ***REMOVED***istrative and operational system currently being modernized into a cleaner Laravel application.
 
-Este repositório contém a aplicação ***REMOVED***istrativa e operacional do ARS, com módulos de autenticação, painel, produção, relatórios, metas e cadastros ***REMOVED***istrativos. O projeto ainda possui alguns pontos de compatibilidade com a estrutura legada, mas a direção arquitetural é Laravel puro: rotas, controllers, policies, FormRequests, Eloquent/Query Builder, Blade, Sass e Laravel Mix.
+The project includes authentication, dashboards, production views, reports, goals, and ***REMOVED***istrative modules for users, clients, sectors, regions, weeks, progress items, and operational targets. Some compatibility points from the legacy PHP application still exist, but the intended architecture is Laravel-first: routes, controllers, policies, FormRequests, Eloquent/Query Builder, Blade, Sass, Laravel Mix, JSON endpoints, and named service/view model contracts.
 
-## Visão Geral
+## Overview
 
-O ARS centraliza fluxos operacionais relacionados a clientes, carteiras, metas, andamentos, regiões, semanas e produção. Parte dos dados locais fica no banco MySQL da aplicação e parte das consultas operacionais/faturamento integra com o banco SQL Server do Sistema Jurídico Externo.
+ARS centralizes operational flows related to clients, wallets, goals, progress items, regions, weeks, and production. Local application data is stored in MySQL, while production and financial operational data is read from an external SQL Server database used by the NEO Legal system.
 
-Principais áreas:
+Main areas:
 
-- `login` e autenticação Laravel sobre a tabela `usuarios`;
-- navegação autenticada em `index`, `carteiras`, `painel`, `producao` e `relatorio`;
-- ***REMOVED***istração de usuários, clientes, setores, regiões, semanas, andamentos e metas;
-- painel de produção por cliente/carteira/região;
-- relatórios mensal e semanal;
-- detalhes de andamentos e faturamento vindos do SQL Server/Sistema Jurídico Externo.
+- Laravel authentication over the `usuarios` table.
+- Authenticated navigation through `index`, `carteiras`, `painel`, `producao`, and `relatorio`.
+- Administrative modules for users, clients, sectors, regions, weeks, progress items, and goals.
+- Production dashboard by client, wallet, region, and area.
+- Monthly and weekly reports.
+- Progress and billing details loaded from the external SQL Server integration.
 
 ## Stack
 
 - PHP `^7.2.5|^8.0`
 - Laravel `6.20`
-- MySQL para dados locais do ARS
-- SQL Server para integração com Sistema Jurídico Externo
+- MySQL for local ARS data
+- SQL Server for NEO Legal integration
 - PHPUnit `8/9`
-- Node `16.x` recomendado no ambiente atual
+- Node `16.x` recommended for the current environment
 - npm `8.x`
 - Laravel Mix `5`
 - Sass
 
-Versões atualmente usadas em produção/local Linux:
+Known working Node/npm versions:
 
 ```bash
 node -v
@@ -39,57 +39,58 @@ npm -v
 # 8.19.4
 ```
 
-## Estrutura Principal
+## Project Structure
 
-- `app/Http/Controllers`: entrypoints HTTP e controllers ***REMOVED***istrativos.
-- `app/Services`: regras de aplicação e montagem de payloads/view models.
-- `app/Repositories`: acesso a MySQL local e integrações SQL Server.
-- `app/Models`: models Eloquent.
-- `app/Policies`: autorização por módulo/recurso.
-- `app/ViewModels`: contratos de saída nomeados para telas e relatórios.
-- `app/Domain`: regras pequenas de domínio, formatadores e objetos auxiliares.
-- `resources/views`: views Blade.
-- `resources/sass`: Sass modularizado.
-- `resources/js`: entrada JS do Mix.
-- `js/modules`: JavaScript legado modularizado por tela.
-- `routes/web.php`: rotas web Laravel.
-- `database/migrations`: migrations da base local.
-- `tests`: testes unitários e HTTP.
+- `app/Http/Controllers`: HTTP entrypoints and ***REMOVED***istrative controllers.
+- `app/Services`: application rules, payload assembly, and view model orchestration.
+- `app/Repositories`: MySQL access and SQL Server integration.
+- `app/Models`: Eloquent models.
+- `app/Policies`: module/resource authorization.
+- `app/ViewModels`: named output contracts for screens and reports.
+- `app/Domain`: small domain helpers, formatters, and support objects.
+- `resources/views`: Blade views.
+- `resources/lang`: JSON translation files.
+- `resources/sass`: modular Sass source.
+- `resources/js`: Laravel Mix JavaScript entrypoint.
+- `js/modules`: modularized legacy JavaScript by screen/module.
+- `routes/web.php`: Laravel web routes.
+- `database/migrations`: local database migrations.
+- `tests`: unit and HTTP tests.
 
-## Configuração Local
+## Local Setup
 
-1. Instale as dependências PHP:
+Install PHP dependencies:
 
 ```bash
 composer install
 ```
 
-2. Crie o `.env`:
+Create the local `.env` file and application key:
 
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-3. Configure no `.env` a URL do subdiretório:
+Configure the application URL. In the current hybrid Apache setup, the app is usually served from a subdirectory:
 
 ```env
 APP_URL=http://bvaa.test/ars
 ```
 
-4. Configure o banco local MySQL:
+Configure the local MySQL database:
 
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=ars_laravel
-DB_USERNAME=seu_usuario
-DB_PASSWORD=sua_senha
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
 DB_CHARSET=utf8mb4
 ```
 
-5. Configure a integração SQL Server/Sistema Jurídico Externo:
+Configure the SQL Server integration used by the external NEO Legal system:
 
 ```env
 SQLSRV_DB_HOST=
@@ -100,57 +101,170 @@ SQLSRV_DB_PASSWORD=
 SQLSRV_DB_CHARSET=UTF-8
 ```
 
-6. Rode as migrations quando necessário:
+Run migrations when needed:
 
 ```bash
 php artisan migrate
 ```
 
-## Frontend e Build
+## Localization
 
-Instale as dependências JS:
+The system language is configured through `.env`. There is no runtime language switch button in the UI.
+
+Default configuration:
+
+```env
+APP_LOCALE=en_CA
+APP_FALLBACK_LOCALE=en_CA
+APP_FAKER_LOCALE=pt_BR
+```
+
+Supported application locales:
+
+- `en_CA`: default English locale.
+- `pt_BR`: Brazilian Portuguese locale.
+
+Translation files are JSON-based:
+
+```text
+resources/lang/en_CA.json
+resources/lang/pt_BR.json
+```
+
+The project uses English strings as translation keys:
+
+```php
+__('Users')
+__('Create a new user')
+__('Error saving client.')
+```
+
+For Portuguese output, add or update the corresponding key in `resources/lang/pt_BR.json`:
+
+```json
+{
+    "Users": "Usuarios",
+    "Create a new user": "Crie um novo usuario",
+    "Error saving client.": "Erro ao salvar o cliente."
+}
+```
+
+The English file usually maps each key to itself:
+
+```json
+{
+    "Users": "Users",
+    "Create a new user": "Create a new user",
+    "Error saving client.": "Error saving client."
+}
+```
+
+JavaScript translations are exposed by the main shell view through:
+
+```js
+window.arsTranslations
+```
+
+Client-side modules should use:
+
+```js
+arsTranslate("Save")
+arsTranslate("Error saving user.")
+arsFormat("The field :field is required.", { field: fieldName })
+```
+
+jQuery UI dialog buttons must use computed object keys so the visible button label can be translated:
+
+```js
+buttons: {
+    [arsTranslate("Save")]: function () {
+        // submit form
+    },
+    [arsTranslate("Exit")]: function () {
+        $(this).dialog("close");
+    }
+}
+```
+
+Confirmation dialogs follow the same pattern:
+
+```js
+{
+    [arsTranslate("Yes")]: function () {
+        // confirmed action
+    },
+    [arsTranslate("No")]: function () {
+        $(this).dialog("close");
+    }
+}
+```
+
+When adding a new JavaScript-facing string, add it in three places:
+
+1. The `$arsTranslations` array in `resources/views/index/shell.blade.php`.
+2. `resources/lang/en_CA.json`.
+3. `resources/lang/pt_BR.json`.
+
+After changing locale configuration in production, clear cached configuration:
+
+```bash
+php artisan config:clear
+php artisan cache:clear
+```
+
+If configuration caching is used, rebuild it:
+
+```bash
+php artisan config:cache
+```
+
+## Frontend and Build
+
+Install JavaScript dependencies:
 
 ```bash
 npm install
 ```
 
-Build de desenvolvimento:
+Development build:
 
 ```bash
 npm run dev
 ```
 
-Build de produção:
+Production build:
 
 ```bash
 npm run prod
 ```
 
-O Sass principal fica em:
+Main Sass entrypoint:
 
 ```text
 resources/sass/app.scss
 ```
 
-O Mix gera:
+Laravel Mix generates:
 
 ```text
 public/build/css/app.css
 public/build/js/app.js
+public/build/js/ars-modules.js
+public/build/js/ars-details.js
 public/mix-manifest.json
 ```
 
-Observação importante: no estado atual, o Apache ainda serve a raiz do projeto em `/ars`, não apenas `public`. Por isso o layout carrega o build em `/ars/public/build/...`. Quando o DocumentRoot passar a apontar para `public`, esse ajuste deve ser revisto para o padrão Laravel normal.
+Important current deployment note: some environments still serve the project directly from `/ars` instead of using `public` as the Apache `DocumentRoot`. Because of that, the layout currently loads compiled assets from `/ars/public/build/...`. When the web server is moved to the standard Laravel `public` document root, asset paths should be reviewed and normalized.
 
-## Rotas Principais
+## Main Routes
 
-Rotas públicas/guest:
+Guest routes:
 
 - `GET /`
 - `GET /login`
 - `POST /login`
 
-Rotas autenticadas:
+Authenticated routes:
 
 - `GET /index`
 - `GET /logout`
@@ -161,7 +275,7 @@ Rotas autenticadas:
 - `GET /***REMOVED***`
 - `GET /metas`
 
-Módulos ***REMOVED***istrativos:
+Administrative screen routes:
 
 - `GET /usuarios`
 - `GET /clientes`
@@ -170,7 +284,7 @@ Módulos ***REMOVED***istrativos:
 - `GET /semanas`
 - `GET /regioes`
 
-Endpoints ***REMOVED***istrativos REST/JSON:
+Administrative REST/JSON endpoints:
 
 - `/***REMOVED***/usuarios`
 - `/***REMOVED***/clientes`
@@ -180,17 +294,17 @@ Endpoints ***REMOVED***istrativos REST/JSON:
 - `/***REMOVED***/regioes`
 - `/***REMOVED***/metas`
 
-## Autenticação e Autorização
+## Authentication and Authorization
 
-A autenticação já usa fluxo Laravel com `auth` e `guest`. A autorização dos módulos ***REMOVED***istrativos usa policies/gates por recurso.
+Authentication uses Laravel `auth` and `guest` middleware. Authorization for ***REMOVED***istrative modules is handled through policies/gates by resource.
 
-Perfis observados no sistema:
+Known user levels:
 
-- `ADM`: ***REMOVED***istração completa.
-- `GER`: gestão com restrições por módulo/região.
-- `USU`: usuário operacional com acesso mais limitado.
+- `ADM`: full ***REMOVED***istration.
+- `GER`: management access with module/region restrictions.
+- `USU`: operational user with limited access.
 
-A tabela principal de autenticação é configurada por:
+The authentication table and behavior are configured with:
 
 ```env
 AUTH_USER_TABLE=usuarios
@@ -198,14 +312,14 @@ AUTH_CASE_SENSITIVE=false
 AUTH_VALIDATE_ALWAYS=true
 ```
 
-## Bancos de Dados
+## Databases
 
-O projeto trabalha com duas fontes:
+The project uses two data sources:
 
-- MySQL local: dados próprios do ARS, cadastros, metas, usuários, regiões, semanas, setores e clientes.
-- SQL Server/Sistema Jurídico Externo: dados externos de produção, andamentos, lançamentos, faturamento e detalhes operacionais.
+- Local MySQL: ARS-owned data, including users, clients, sectors, regions, weeks, progress items, and goals.
+- External SQL Server: NEO Legal production, financial, progress, billing, and operational detail data.
 
-A integração SQL Server está concentrada em repositories/services próprios, incluindo:
+SQL Server integration should remain concentrated in dedicated repositories/services, including:
 
 - `NeoSqlsrvExecutor`
 - `NeoSqlsrvRepository`
@@ -214,37 +328,43 @@ A integração SQL Server está concentrada em repositories/services próprios, 
 - `GeneralProductionNeoRepository`
 - `SqlsrvLookupRepository`
 
-Evite chamadas diretas a `sqlsrv_query(...)` fora dessa camada.
+Avoid direct `sqlsrv_query(...)` calls outside the SQL Server integration layer.
 
-## Testes
+## Tests
 
-Rodar a suíte completa:
+Run the full test suite:
 
 ```bash
 php vendor/phpunit/phpunit/phpunit
 ```
 
-Rodar testes filtrados:
+Run filtered tests:
 
 ```bash
 php vendor/phpunit/phpunit/phpunit --filter "MetaControllerTest|ClientAdminControllerTest"
 ```
 
-Limpar views compiladas:
+Clear compiled views:
 
 ```bash
 php artisan view:clear
 ```
 
-Verificar sintaxe PHP de um arquivo:
+Check PHP syntax for a file:
 
 ```bash
 php -l app/Services/GeneralProductionService.php
 ```
 
-## Deploy
+Validate JavaScript syntax for a module:
 
-Fluxo recomendado em produção:
+```bash
+node --check js/modules/usuarios.js
+```
+
+## Deployment
+
+Recommended production flow:
 
 ```bash
 composer install --no-dev --optimize-autoloader
@@ -256,20 +376,20 @@ php artisan view:clear
 php artisan cache:clear
 ```
 
-Se houver alteração de schema:
+If schema changes are included:
 
 ```bash
 php artisan migrate --force
 ```
 
-Permissões necessárias para Laravel:
+Required Laravel writable directories:
 
 ```bash
 sudo chown -R www-data:www-data storage bootstrap/cache
 sudo chmod -R ug+rw storage bootstrap/cache
 ```
 
-Se o `composer install` for executado pelo usuário do Apache:
+If `composer install` must be executed as the Apache user:
 
 ```bash
 sudo -u www-data composer install --no-dev --optimize-autoloader
@@ -277,66 +397,68 @@ sudo -u www-data composer install --no-dev --optimize-autoloader
 
 ## Apache
 
-No estado ideal Laravel, o VirtualHost deve apontar o DocumentRoot para:
+The ideal Laravel VirtualHost should point `DocumentRoot` to:
 
 ```text
 /var/www/html/ars/public
 ```
 
-No estado híbrido atual, o projeto ainda pode estar sendo servido diretamente por:
+Some current environments may still serve the project directly from:
 
 ```text
 /var/www/html/ars
 ```
 
-Nesse caso, é necessário garantir:
+In the hybrid setup, make sure:
 
-- `mod_rewrite` ativo;
-- `AllowOverride All` para o diretório do projeto;
-- `.htaccess` roteando para `index.php`;
-- `APP_URL` com o subdiretório correto, por exemplo `http://bvaa.test/ars`.
+- `mod_rewrite` is enabled.
+- `AllowOverride All` is configured for the project directory.
+- `.htaccess` routes requests to `index.php`.
+- `APP_URL` includes the correct subdirectory, for example `http://bvaa.test/ars`.
 
-## Estado da Modernização
+## Modernization Status
 
-Já foram avançados vários cortes importantes:
+Already completed or partially completed:
 
-- remoção gradual de wrappers físicos `.php`;
-- navegação principal em rotas Laravel;
-- autenticação baseada em Laravel;
-- policies nos módulos ***REMOVED***istrativos;
-- endpoints REST/JSON para módulos ***REMOVED***istrativos;
-- frontend ***REMOVED***istrativo migrando para client AJAX comum;
-- views ***REMOVED***istrativas e operacionais em Blade;
-- repositories migrados para Eloquent/Query Builder onde possível;
-- integração SQL Server centralizada em camada do Sistema Jurídico Externo;
-- DTOs/view models em fluxos de painel, relatórios e detalhes;
-- Sass/Laravel Mix introduzidos de forma incremental.
+- Gradual removal of physical `.php` wrappers.
+- Main navigation through Laravel routes.
+- Laravel-based authentication.
+- Policies for ***REMOVED***istrative modules.
+- REST/JSON endpoints for ***REMOVED***istrative modules.
+- Administrative frontend using a common AJAX client.
+- Administrative and operational views migrated to Blade.
+- Repositories migrated to Eloquent/Query Builder where practical.
+- SQL Server integration centralized in a NEO integration layer.
+- DTOs/view models introduced for dashboards, reports, and details.
+- Sass/Laravel Mix introduced incrementally.
+- JSON-based localization introduced with `.env` locale selection.
 
-Ainda existem pontos de compatibilidade:
+Remaining compatibility areas:
 
-- alguns arquivos `.php` físicos legados;
-- alguns helpers visuais/JS herdados;
-- parte do CSS legado em `css/template.css` e `css/system.css`;
-- algumas views ***REMOVED***istrativas com inline styles residuais;
-- DocumentRoot ainda híbrido em alguns ambientes.
+- Some physical legacy PHP files may still exist.
+- Some inherited visual and JavaScript helpers remain.
+- Part of the legacy CSS still exists in `css/template.css` and `css/system.css`.
+- Some inline styles may still exist in older views.
+- Some environments still use a hybrid Apache document root.
 
-## Convenções de Evolução
+## Evolution Guidelines
 
-Ao continuar a migração, prefira:
+When continuing the migration, prefer:
 
-- rotas Laravel explícitas em `routes/web.php`;
-- controllers pequenos;
-- FormRequests para validação;
-- policies para autorização;
-- services para regra de aplicação;
-- repositories apenas para acesso a dados;
-- DTOs/view models para contratos de entrada/saída;
-- Blade + partials/components para HTML reutilizável;
-- Sass em `resources/sass`;
-- evitar protocolo legado `0/1/2` em respostas novas;
-- evitar SQL manual fora da camada de integração apropriada.
+- Explicit Laravel routes in `routes/web.php`.
+- Small controllers.
+- FormRequests for validation.
+- Policies for authorization.
+- Services for application rules.
+- Repositories only for data access.
+- DTOs/view models for input and output contracts.
+- Blade partials/components for reusable HTML.
+- Sass in `resources/sass`.
+- JSON responses instead of legacy `0/1/2` protocols.
+- No manual SQL outside the correct integration layer.
+- English translation keys with localized values in JSON files.
 
-## Comandos Úteis
+## Useful Commands
 
 ```bash
 php artisan route:list
@@ -348,6 +470,6 @@ npm run dev
 npm run prod
 ```
 
-## Licença
+## License
 
-Projeto proprietário.
+Proprietary project.

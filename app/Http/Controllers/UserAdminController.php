@@ -33,15 +33,15 @@ class UserAdminController extends Controller
 		$payload = $this->service->editPayload((int) $id);
 		$data = $payload !== '' ? json_decode($payload, true) : null;
 		if (!is_array($data)) {
-			return $this->apiJsonResponse(false, 'not_found', 'Usuario nao encontrado.', array(), 404);
+			return $this->apiJsonResponse(false, 'not_found', __('User not found.'), array(), 404);
 		}
 
-		return $this->apiJsonResponse(true, 'loaded', 'Usuario carregado.', $data);
+		return $this->apiJsonResponse(true, 'loaded', __('User loaded.'), $data);
 	}
 
 	public function store(UserStoreRequest $request)
 	{
-		return $this->mapWriteResultToJson($this->service->create($request->all()), 'Usuario criado com sucesso.');
+		return $this->mapWriteResultToJson($this->service->create($request->all()), __('User created successfully.'));
 	}
 
 	public function update(UserUpdateRequest $request, $id)
@@ -49,12 +49,12 @@ class UserAdminController extends Controller
 		$input = $request->all();
 		$input['id_usu'] = (int) $id;
 
-		return $this->mapWriteResultToJson($this->service->update($input), 'Usuario atualizado com sucesso.');
+		return $this->mapWriteResultToJson($this->service->update($input), __('User updated successfully.'));
 	}
 
 	public function destroy($id)
 	{
-		return $this->mapWriteResultToJson($this->service->delete((int) $id), 'Usuario excluido com sucesso.');
+		return $this->mapWriteResultToJson($this->service->delete((int) $id), __('User deleted successfully.'));
 	}
 
 	private function mapWriteResultToJson($result, $successMessage)
@@ -63,9 +63,9 @@ class UserAdminController extends Controller
 			return $this->apiJsonResponse(true, 'success', $successMessage);
 		}
 		if ((string) $result === '2') {
-			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.', array(), 409);
+			return $this->apiJsonResponse(false, 'duplicate', __('Duplicate record.'), array(), 409);
 		}
 
-		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
+		return $this->apiJsonResponse(false, 'error', __('Operation failed.'), array(), 500);
 	}
 }
