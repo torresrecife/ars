@@ -259,8 +259,12 @@ class DashboardPanelService
 				$this->metricFormatter->percent($weekReal, $weekMeta, 1),
 				$this->metricFormatter->percentIcon($weekReal, $weekMeta)
 			);
-			$metaTotal += $weekMeta;
 			$realTotal += $weekReal;
+		}
+
+		foreach ($financialRows as $row) {
+			$rowData = $row->toArray();
+			$metaTotal += (float) $rowData['totalMeta'];
 		}
 
 		foreach ($prejudiceRows as $row) {
