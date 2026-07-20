@@ -3,11 +3,11 @@
 		<div class="cpanel">
 			<label><h2>Carteira(s)</h2></label>
 			@foreach ($banks as $bank)
-				<div class="icon-wrapper" style="height:100%">
+				<div class="icon-wrapper icon-wrapper--full-height">
 					<div class="icon">
 						<a href="#" onclick="AbrirPainel('{{ e($hidArea) }}','{{ (int) $bank['banco_id'] }}'); return false;" class="clspet" grupo="0">
 							<img src="css/images/header/icon-48-module.png" alt="" />
-							<span style="position:relative;margin-top:0px">&nbsp; {{ e($bank['banco_name']) }} &nbsp;</span>
+							<span class="icon-label">&nbsp; {{ e($bank['banco_name']) }} &nbsp;</span>
 						</a>
 					</div>
 				</div>

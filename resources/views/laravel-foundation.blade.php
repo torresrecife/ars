@@ -4,10 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $appName }} - Laravel Base</title>
+    <link rel="stylesheet" href="{{ url('css/ars-modern.css') }}" type="text/css" />
 </head>
-<body style="font-family: Arial, sans-serif; margin: 40px;">
-    <h1 style="margin: 0 0 12px;">{{ $appName }}</h1>
-    <p style="margin: 0 0 8px;">Base Laravel carregada com sucesso.</p>
-    <p style="margin: 0; color: #555;">Framework: {{ $frameworkVersion }}</p>
+<body class="foundation-page">
+    <h1 class="foundation-title">{{ $appName }}</h1>
+    <p class="foundation-text">Base Laravel carregada com sucesso.</p>
+    <p class="foundation-muted">Framework: {{ $frameworkVersion }}</p>
 </body>
 </html>

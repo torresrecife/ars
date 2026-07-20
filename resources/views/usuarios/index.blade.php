@@ -1,4 +1,4 @@
-<div style="margin-top:80px">
+<div class="admin-module-offset">
 <script>
 window.arsUserResourceBaseUrl = "{{ url('admin/usuarios') }}";
 </script>
@@ -29,7 +29,7 @@ window.arsUserResourceBaseUrl = "{{ url('admin/usuarios') }}";
 		<td class="order">{{ strftime('%d/%m/%Y %H:%M:%S', strtotime($user['data_cad'])) }}</td>
 		<td class="order">{{ e($user['email_usu']) }}</td>
 		<td class="order">{{ e($user['status_usu']) }}</td>
-		<td class="order" style="width:130px">
+		<td class="order admin-action-cell">
 			@include('partials.admin-action-buttons', [
 				'display' => 'block',
 				'editAction' => "fc_edit_usu(" . (int) $user['id_usu'] . ",'U')",
@@ -41,11 +41,11 @@ window.arsUserResourceBaseUrl = "{{ url('admin/usuarios') }}";
 	</tr>
 @endforeach
 </table>
-<div id="dialog-edit-usu" title="Editar Usu&aacute;rio" style="display:none;text-align:left;overflow-y: scroll;">
+<div id="dialog-edit-usu" title="Editar Usu&aacute;rio" class="admin-dialog admin-dialog--scroll is-hidden">
 	<p class="validateTips">Edite o Usu&aacute;rio Abaixo</p>
 	<fieldset>
 		<div>
-			<table style="width:460px">
+			<table class="admin-dialog-table admin-dialog-table--user">
 				<tr><td width="25%"><label>Nome:</label></td><td width="75%"><input type="text" class="cls_usu" name="nome_usu" id="nome_usu" value="" obrigatorio="1" title="Nome e Sobrenome"/></td></tr>
 				<tr><td><label>Usu&aacute;rio:</label></td><td><input type="text" class="cls_usu" name="login_usu" id="login_usu" value="" obrigatorio="1" title="Usu&aacute;rio"/></td></tr>
 				<tr><td><label>E-mail:</label></td><td><input type="text" class="cls_usu" name="email_usu" id="email_usu" value="" obrigatorio="1" title="E-mail"/></td></tr>
@@ -133,21 +133,3 @@ window.arsUserResourceBaseUrl = "{{ url('admin/usuarios') }}";
 </div>
 </div>
 </div>
-<style>
-.usuario-clientes-box{margin-bottom:8px;}
-.usuario-clientes-lista{display:flex;flex-direction:column;gap:6px;}
-.usuario-clientes-item{display:flex;align-items:center;justify-content:space-between;border:1px solid #ccc;padding:6px 8px;background:#f8f8f8;}
-.usuario-clientes-nome{flex:1;padding-right:10px;}
-.usuario-clientes-vazio{color:#666;font-size:11px;padding:4px 0;}
-.usuario-clientes-remover{margin-left:8px;}
-.usuario-clientes-adicionar{display:flex;align-items:center;gap:6px;}
-.usuario-clientes-adicionar select{width:320px;height:22px;}
-.usuario-regioes-box{margin-bottom:8px;}
-.usuario-regioes-lista{display:flex;flex-direction:column;gap:6px;}
-.usuario-regioes-item{display:flex;align-items:center;justify-content:space-between;border:1px solid #ccc;padding:6px 8px;background:#f8f8f8;}
-.usuario-regioes-nome{flex:1;padding-right:10px;text-align:left;}
-.usuario-regioes-vazio{color:#666;font-size:11px;padding:4px 0;}
-.usuario-regioes-remover{margin-left:8px;}
-.usuario-regioes-adicionar{display:flex;align-items:center;gap:6px;}
-.usuario-regioes-adicionar select{width:320px;height:22px;}
-</style>

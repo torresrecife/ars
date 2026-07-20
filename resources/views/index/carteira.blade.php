@@ -10,7 +10,7 @@
 			@if (!empty($showRegionSelector))
 				<br><br>
 				<label for="regiao_id">Regi&atilde;o:</label>
-				<select name="regiao_id" id="regiao_id" class="input-default" style="height:20px;width:220px;">
+				<select name="regiao_id" id="regiao_id" class="input-default nav-select nav-select--region">
 					<option value="0">Todas as Regi&otilde;es</option>
 					@foreach ($regions as $region)
 						<option value="{{ (int) $region['regiao_id'] }}"{{ ((int) $selectedRegionId === (int) $region['regiao_id']) ? ' selected="selected"' : '' }}>{{ e($region['regiao_nome']) }}</option>
@@ -21,11 +21,11 @@
 			@endif
 			<br><br><br>
 			@foreach ($banks as $bank)
-				<div class="icon-wrapper" style="height:100%">
+				<div class="icon-wrapper icon-wrapper--full-height">
 					<div class="icon">
 						<a href="#" onclick="AbrirPainel('{{ e((string) $hidArea) }}','{{ $bank['banco_id'] }}'); return false;" class="clspet" grupo="0">
 							<img src="css/images/header/icon-48-module.png" alt="" />
-							<span style="position:relative;margin-top:0px"> &nbsp; {{ e($bank['banco_name'] . ($bank['banco_class'] ? ' (' . $bank['banco_class'] . ')' : '')) }} &nbsp; </span>
+							<span class="icon-label"> &nbsp; {{ e($bank['banco_name'] . ($bank['banco_class'] ? ' (' . $bank['banco_class'] . ')' : '')) }} &nbsp; </span>
 						</a>
 					</div>
 				</div>

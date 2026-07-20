@@ -38,6 +38,7 @@
   text-align: center;
 }
 .admin-dialog { text-align: left; }
+.admin-dialog--scroll { overflow-y: scroll; }
 .admin-module-offset { margin-top: 80px; }
 .admin-action-cell { width: 130px; }
 .admin-context-title {
@@ -55,9 +56,24 @@
 .admin-dialog-table--metas { width: 1030px; }
 .admin-dialog-panel--metas { min-height: 70px; }
 .admin-dialog-table { width: 500px; }
+.admin-dialog-table--region { width: 520px; }
+.admin-dialog-table--user { width: 460px; }
+.admin-dialog-table--week { width: 400px; }
 .admin-field--standard { width: 200px; }
 .admin-field--large { width: 400px; }
 .admin-field--select { height: 22px; }
+.admin-field--fluid { width: 90%; }
+.admin-code-field {
+  border: 0;
+  background: #ffffff;
+  width: 50px;
+}
+.admin-label-cell { width: 50px; }
+.admin-week-cell {
+  background: #436EEE;
+  color: #ffffff;
+}
+.admin-week-cell--optional { background: #1E90FF; }
 .admin-dialog-row-gap { margin-top: 8px; }
 .bts {
   font-size: 14pt;
@@ -66,13 +82,29 @@
   height: 22px;
 }
 .cliente-carteiras-lista,
-.andamento-tipos-lista { margin: 8px 0 0; }
+.andamento-tipos-lista,
+.usuario-clientes-lista,
+.usuario-regioes-lista,
+.regiao-ufs-lista { margin: 8px 0 0; }
+.usuario-clientes-box,
+.usuario-regioes-box,
+.regiao-ufs-box { margin-bottom: 8px; }
+.usuario-clientes-lista,
+.usuario-regioes-lista,
+.regiao-ufs-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 .andamento-tipos-lista {
   width: 100%;
   text-align: left;
 }
 .cliente-carteiras-item,
-.andamento-tipos-item {
+.andamento-tipos-item,
+.usuario-clientes-item,
+.usuario-regioes-item,
+.regiao-ufs-item {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -81,33 +113,77 @@
   border: 1px solid #d6d6d6;
   background: #f7f7f7;
 }
+.usuario-clientes-item,
+.usuario-regioes-item,
+.regiao-ufs-item {
+  align-items: center;
+  background: #f8f8f8;
+}
 .andamento-tipos-item {
   width: 100%;
   box-sizing: border-box;
 }
 .cliente-carteiras-nome,
-.andamento-tipos-nome {
+.andamento-tipos-nome,
+.usuario-clientes-nome,
+.usuario-regioes-nome,
+.regiao-ufs-nome {
   display: block;
   max-width: 360px;
   font-size: 9pt;
   line-height: 1.3;
 }
+.usuario-clientes-nome,
+.usuario-regioes-nome,
+.regiao-ufs-nome {
+  flex: 1;
+  padding-right: 10px;
+}
+.usuario-regioes-nome,
+.regiao-ufs-nome { text-align: left; }
 .andamento-tipos-nome {
   flex: 1 1 auto;
   text-align: left;
 }
 .cliente-carteiras-vazio,
-.andamento-tipos-vazio {
+.andamento-tipos-vazio,
+.usuario-clientes-vazio,
+.usuario-regioes-vazio,
+.regiao-ufs-vazio {
   margin-top: 8px;
   font-size: 9pt;
   color: #666666;
 }
+.usuario-clientes-vazio,
+.usuario-regioes-vazio,
+.regiao-ufs-vazio {
+  font-size: 11px;
+  padding: 4px 0;
+}
 .cliente-carteiras-remover,
-.andamento-tipos-remover {
+.andamento-tipos-remover,
+.usuario-clientes-remover,
+.usuario-regioes-remover {
   margin-left: 8px;
   padding: 2px 8px;
   font-size: 9pt;
   cursor: pointer;
+}
+.usuario-clientes-adicionar,
+.usuario-regioes-adicionar,
+.regiao-ufs-adicionar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.usuario-clientes-adicionar select,
+.usuario-regioes-adicionar select {
+  width: 320px;
+  height: 22px;
+}
+.regiao-ufs-adicionar select {
+  width: 120px;
+  height: 22px;
 }
 .metas-form-row,
 .metas-form-label,
@@ -124,6 +200,37 @@
 .metas-field--week { width: 70px; }
 .metas-field--meta,
 .metas-field--region { height: 22px; }
+.nav-select {
+  height: 20px;
+  width: 200px;
+}
+.nav-select--region { width: 220px; }
+.date-picker--legacy { font-family: Tahoma, Arial, sans-serif; }
+.icon-wrapper--full-height { height: 100%; }
+.icon-label {
+  position: relative;
+  margin-top: 0;
+}
+.login-alert {
+  color: red;
+  text-align: center;
+}
+.force-password-dialog table { width: 100%; }
+.force-password-dialog td {
+  padding: 4px 6px;
+  vertical-align: middle;
+}
+.force-password-dialog .cls_usu { width: 180px; }
+.foundation-page {
+  font-family: Arial, sans-serif;
+  margin: 40px;
+}
+.foundation-title { margin: 0 0 12px; }
+.foundation-text { margin: 0 0 8px; }
+.foundation-muted {
+  margin: 0;
+  color: #555555;
+}
 .dashboard-back-button {
   cursor: pointer;
   height: 30px;

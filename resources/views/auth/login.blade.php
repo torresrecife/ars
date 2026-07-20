@@ -6,6 +6,7 @@
     <link href="{{ url('css/images/favicon.ico') }}" rel="shortcut icon" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" href="{{ url('css/system.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ url('css/template.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ url('css/ars-modern.css') }}" type="text/css" />
 </head>
 <body>
     <div id="border-top" class="h_blue">
@@ -37,7 +38,7 @@
                                 <input type="submit" class="hidebtn" value="Acessar" />
                             </fieldset>
                         </form>
-                        <div id="alerta" style="display:{{ $alerta === 1 ? 'block' : 'none' }};color:red;text-align:center">Usuario ou senha invalidos!</div>
+                        <div id="alerta" class="login-alert {{ $alerta === 1 ? '' : 'is-hidden' }}">Usuario ou senha invalidos!</div>
                         <div class="clr"></div>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-<div style="margin-top:80px">
+<div class="admin-module-offset">
 <script>
 window.arsWeekResourceBaseUrl = "{{ url('admin/semanas') }}";
 </script>
@@ -9,11 +9,11 @@ window.arsWeekResourceBaseUrl = "{{ url('admin/semanas') }}";
 		<td class="order"><b>C&oacute;digo</b></td>
 		<td class="order"><b>M&ecirc;s</b></td>
 		<td class="order"><b>Ano</b></td>
-		<td class="order" style="background:#436EEE;color:#ffffff"><b>1&ordf; Semana</b></td>
-		<td class="order" style="background:#436EEE;color:#ffffff"><b>2&ordf; Semana</b></td>
-		<td class="order" style="background:#436EEE;color:#ffffff"><b>3&ordf; Semana</b></td>
-		<td class="order" style="background:#436EEE;color:#ffffff"><b>4&ordf; Semana</b></td>
-		<td class="order" style="background:#1E90FF;color:#ffffff"><b>5&ordf; Semana</b></td>
+		<td class="order admin-week-cell"><b>1&ordf; Semana</b></td>
+		<td class="order admin-week-cell"><b>2&ordf; Semana</b></td>
+		<td class="order admin-week-cell"><b>3&ordf; Semana</b></td>
+		<td class="order admin-week-cell"><b>4&ordf; Semana</b></td>
+		<td class="order admin-week-cell admin-week-cell--optional"><b>5&ordf; Semana</b></td>
 		<td class="order"><b>Alterado em</b></td>
 		<td class="order"><b>Cadastrado em</b></td>
 		<td class="order"><b>Configura&ccedil;&otilde;es</b></td>
@@ -23,14 +23,14 @@ window.arsWeekResourceBaseUrl = "{{ url('admin/semanas') }}";
 		<td class="order">{{ $arr['semanas_id'] }}</td>
 		<td class="order">{{ isset($months[$arr['mes']]) ? $months[$arr['mes']] : $arr['mes'] }}</td>
 		<td class="order">{{ $arr['ano'] }}</td>
-		<td class="order" style="background:#436EEE;color:#ffffff">{!! $arr['ini_1'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_1'] !!}</td>
-		<td class="order" style="background:#436EEE;color:#ffffff">{!! $arr['ini_2'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_2'] !!}</td>
-		<td class="order" style="background:#436EEE;color:#ffffff">{!! $arr['ini_3'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_3'] !!}</td>
-		<td class="order" style="background:#436EEE;color:#ffffff">{!! $arr['ini_4'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_4'] !!}</td>
-		<td class="order" style="background:#1E90FF;color:#ffffff">{!! ($arr['ini_5'] ? $arr['ini_5'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_5'] : '-') !!}</td>
+		<td class="order admin-week-cell">{!! $arr['ini_1'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_1'] !!}</td>
+		<td class="order admin-week-cell">{!! $arr['ini_2'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_2'] !!}</td>
+		<td class="order admin-week-cell">{!! $arr['ini_3'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_3'] !!}</td>
+		<td class="order admin-week-cell">{!! $arr['ini_4'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_4'] !!}</td>
+		<td class="order admin-week-cell admin-week-cell--optional">{!! ($arr['ini_5'] ? $arr['ini_5'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_5'] : '-') !!}</td>
 		<td class="order">{{ $arr['dataalt'] }}</td>
 		<td class="order">{{ $arr['datacad'] }}</td>
-		<td class="order" style="width:130px">
+		<td class="order admin-action-cell">
 			@include('partials.admin-action-buttons', [
 				'display' => 'block',
 				'editAction' => "fc_edit_sem(" . (int) $arr['semanas_id'] . ",'U')",
@@ -42,49 +42,49 @@ window.arsWeekResourceBaseUrl = "{{ url('admin/semanas') }}";
 	</tr>
 @endforeach
 </table>
-<div id="dialog-edit-sem" title="Editar Semana" style="display:none;text-align:left;overflow-y: scroll;">
+<div id="dialog-edit-sem" title="Editar Semana" class="admin-dialog admin-dialog--scroll is-hidden">
 	<p class="validateTips">Edite a Semana Abaixo</p>
 	<fieldset>
 		<div>
-			<table style="width:400px">
+			<table class="admin-dialog-table admin-dialog-table--week">
 				<tr>
 					<td><label>C&oacute;digo:</label></td>
-					<td colspan="3"><input type="text" class="cls_sem" name="id_sem" id="id_sem" style="border:0;background:#fff;width:50px" title="Id da semana" readonly="readonly" /></td>
+					<td colspan="3"><input type="text" class="cls_sem admin-code-field" name="id_sem" id="id_sem" title="Id da semana" readonly="readonly" /></td>
 				</tr>
 				<tr>
-					<td style="width:50px"><label>M&ecirc;s/Ano:</label></td>
-					<td style="width:50px"><input type="text" class="cls_sem" name="mes_sem" id="mes_sem" style="width:90%" title="M&ecirc;s" alt="integer"/></td>
-					<td align="center" style="width:50px">/</td>
-					<td style="width:50px"><input type="text" class="cls_sem" name="ano_sem" id="ano_sem" style="width:90%" title="Ano" maxlength="4"/></td>
+					<td class="admin-label-cell"><label>M&ecirc;s/Ano:</label></td>
+					<td class="admin-label-cell"><input type="text" class="cls_sem admin-field--fluid" name="mes_sem" id="mes_sem" title="M&ecirc;s" alt="integer"/></td>
+					<td align="center" class="admin-label-cell">/</td>
+					<td class="admin-label-cell"><input type="text" class="cls_sem admin-field--fluid" name="ano_sem" id="ano_sem" title="Ano" maxlength="4"/></td>
 				<tr>
 					<td><label>1&ordf; Semana:</label></td>
-					<td><input type="text" class="cls_sem" name="ini1_sem" id="ini1_sem" style="width:90%" title="1&ordf; Semana in&iacute;cio" alt="integer"/></td>
-					<td align="center" style="width:50px">&agrave;</td>
-					<td><input type="text" class="cls_sem" name="fim1_sem" id="fim1_sem" style="width:90%" title="1&ordf; Semana fim" alt="integer"/></td>
+					<td><input type="text" class="cls_sem admin-field--fluid" name="ini1_sem" id="ini1_sem" title="1&ordf; Semana in&iacute;cio" alt="integer"/></td>
+					<td align="center" class="admin-label-cell">&agrave;</td>
+					<td><input type="text" class="cls_sem admin-field--fluid" name="fim1_sem" id="fim1_sem" title="1&ordf; Semana fim" alt="integer"/></td>
 				</tr>
 				<tr>
 					<td><label>2&ordf; Semana:</label></td>
-					<td><input type="text" class="cls_sem" name="ini2_sem" id="ini2_sem" style="width:90%" title="2&ordf; Semana in&iacute;cio" alt="integer"/></td>
-					<td align="center" style="width:50px">&agrave;</td>
-					<td><input type="text" class="cls_sem" name="fim2_sem" id="fim2_sem" style="width:90%" title="2&ordf; Semana fim" alt="integer"/></td>
+					<td><input type="text" class="cls_sem admin-field--fluid" name="ini2_sem" id="ini2_sem" title="2&ordf; Semana in&iacute;cio" alt="integer"/></td>
+					<td align="center" class="admin-label-cell">&agrave;</td>
+					<td><input type="text" class="cls_sem admin-field--fluid" name="fim2_sem" id="fim2_sem" title="2&ordf; Semana fim" alt="integer"/></td>
 				</tr>
 				<tr>
 					<td><label>3&ordf; Semana:</label></td>
-					<td><input type="text" class="cls_sem" name="ini3_sem" id="ini3_sem" style="width:90%" title="3&ordf; Semana in&iacute;cio" alt="integer"/></td>
-					<td align="center" style="width:50px">&agrave;</td>
-					<td><input type="text" class="cls_sem" name="fim3_sem" id="fim3_sem" style="width:90%" title="3&ordf; Semana fim" alt="integer"/></td>
+					<td><input type="text" class="cls_sem admin-field--fluid" name="ini3_sem" id="ini3_sem" title="3&ordf; Semana in&iacute;cio" alt="integer"/></td>
+					<td align="center" class="admin-label-cell">&agrave;</td>
+					<td><input type="text" class="cls_sem admin-field--fluid" name="fim3_sem" id="fim3_sem" title="3&ordf; Semana fim" alt="integer"/></td>
 				</tr>
 				<tr>
 					<td><label>4&ordf; Semana:</label></td>
-					<td><input type="text" class="cls_sem" name="ini4_sem" id="ini4_sem" style="width:90%" title="4&ordf; Semana in&iacute;cio" alt="integer"/></td>
-					<td align="center" style="width:50px">&agrave;</td>
-					<td><input type="text" class="cls_sem" name="fim4_sem" id="fim4_sem" style="width:90%" title="4&ordf; Semana fim" alt="integer"/></td>
+					<td><input type="text" class="cls_sem admin-field--fluid" name="ini4_sem" id="ini4_sem" title="4&ordf; Semana in&iacute;cio" alt="integer"/></td>
+					<td align="center" class="admin-label-cell">&agrave;</td>
+					<td><input type="text" class="cls_sem admin-field--fluid" name="fim4_sem" id="fim4_sem" title="4&ordf; Semana fim" alt="integer"/></td>
 				</tr>
 				<tr>
 					<td><label>5&ordf; Semana:</label></td>
-					<td><input type="text" class="cls_sem" name="ini5_sem" id="ini5_sem" style="width:90%" title="5&ordf; Semana in&iacute;cio" alt="integer"/></td>
-					<td align="center" style="width:50px">&agrave;</td>
-					<td><input type="text" class="cls_sem" name="fim5_sem" id="fim5_sem" style="width:90%" title="5&ordf; Semana fim" alt="integer"/></td>
+					<td><input type="text" class="cls_sem admin-field--fluid" name="ini5_sem" id="ini5_sem" title="5&ordf; Semana in&iacute;cio" alt="integer"/></td>
+					<td align="center" class="admin-label-cell">&agrave;</td>
+					<td><input type="text" class="cls_sem admin-field--fluid" name="fim5_sem" id="fim5_sem" title="5&ordf; Semana fim" alt="integer"/></td>
 				</tr>
 			</table>
 		</div>

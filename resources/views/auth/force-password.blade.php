@@ -8,11 +8,7 @@
     <script type="text/javascript" src="{{ url('js/jquery-ui-1.8.23.custom.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url('css/template.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ url('css/custom-theme/jquery-ui-1.8.23.custom.css') }}">
-    <style type="text/css">
-    #dialog-new-pass table { width: 100%; }
-    #dialog-new-pass td { padding: 4px 6px; vertical-align: middle; }
-    #dialog-new-pass .cls_usu { width: 180px; }
-    </style>
+    <link rel="stylesheet" href="{{ url('css/ars-modern.css') }}" type="text/css" />
 </head>
 <body>
 <script>
@@ -85,7 +81,7 @@ function new_pass(){
 $(function(){ new_pass(); });
 </script>
 
-<div id="dialog-new-pass" title="Nova senha" style="display:none; text-align:left;">
+<div id="dialog-new-pass" title="Nova senha" class="admin-dialog force-password-dialog is-hidden">
     <p class="validateTips">Alteracao de senha obrigatoria!</p>
     <fieldset>
         <table>

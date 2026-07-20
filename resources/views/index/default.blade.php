@@ -7,7 +7,7 @@
 					<div class="icon">
 						<a href="#" onclick="AbrirCarteiras('{{ $area['area_id'] }}'); return false;" class="clspet" grupo="0">
 							<img src="css/images/header/icon-48-section.png" alt="" />
-							<span style="position:relative;margin-top:0px"> &nbsp; {{ e($area['area_nome']) }} &nbsp; </span>
+							<span class="icon-label"> &nbsp; {{ e($area['area_nome']) }} &nbsp; </span>
 						</a>
 					</div>
 				</div>
