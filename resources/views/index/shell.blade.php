@@ -20,6 +20,11 @@
 	<link href="css/images/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 	<link rel="stylesheet" href="css/template.css" type="text/css" />
 	<link rel="stylesheet" href="css/custom-theme/jquery-ui.css">
+	@if (is_file(public_path('mix-manifest.json')) && is_file(public_path('build/css/app.css')))
+		<link rel="stylesheet" href="{{ asset('public/' . ltrim(mix('/build/css/app.css'), '/')) }}">
+	@else
+		<link rel="stylesheet" href="{{ asset('css/ars-modern.css') }}">
+	@endif
 	<script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.8.23.custom.min.js"></script>
 	<script type="text/javascript" src="js/jquery.meio.mask.js"></script>
@@ -58,11 +63,6 @@
 			<div class="clr"></div>
 		</div>
 	</div>
-	<style>
-	.ui-datepicker { display: none; }
-	.ui-datepicker-calendar { display: none; }
-	#obg_date { float:left; position:absolute; color:red; margin-left:86px; display:none }
-	</style>
 	<div id="content-box">
 		<div id="element-box">
 			<div class="m wbg">
@@ -72,7 +72,7 @@
 			</div>
 		</div>
 	</div>
-<form name="form_ars" action="{{ e($entryUrl) }}" method="POST" id="form_ars" style="display:none">
+<form name="form_ars" action="{{ e($entryUrl) }}" method="POST" id="form_ars" class="is-hidden">
 	@csrf
 	<input type="hidden" name="area_id" id="area_id" value="{{ e($pageData->state()->areaId()) }}" />
 	<input type="hidden" name="bank_id" id="bank_id" value="{{ e($pageData->state()->bankId()) }}" />

@@ -4,8 +4,159 @@
   border: 1px dotted $color-border;
 }
 
+.report-switch--monthly {
+  position: relative;
+}
+
 .report-title {
   font-family: $font-body;
   margin-left: 40px;
   font-size: 10pt;
+}
+
+.report-table {
+  font-family: $font-body;
+  font-size: 8pt;
+  border-collapse: collapse;
+  background: $color-surface;
+}
+
+.report-table--weekly {
+  width: 60%;
+}
+
+.report-table--monthly {
+  width: 99%;
+}
+
+.report-row {
+  height: 30px;
+}
+
+.report-cell--padded {
+  padding-left: 5px;
+}
+
+.report-cell--meta {
+  background: $color-muted;
+}
+
+.report-cell--total-meta {
+  background: #F2F5A9;
+}
+
+.report-cell--black-text {
+  color: #000000;
+}
+
+.report-cell--gap {
+  width: 0.5%;
+}
+
+.report-table td.cls_dados {
+  border-left-width: 1px;
+  border: 1px dotted $color-border;
+  height: 30px;
+  background: #DBDBDB;
+}
+
+.report-table td.cls_body {
+  border-left-width: 1px;
+  border: 1px dotted $color-border;
+  height: 30px;
+}
+
+.report-table--monthly td.cls_body {
+  text-align: right;
+  padding-right: 5px;
+}
+
+.report-table .cls_sema {
+  background: #cccccc;
+  font-weight: bold;
+  border: 1px dotted $color-border;
+}
+
+.report-table .box {
+  margin-left: 5px;
+  float: left;
+}
+
+.report-table--weekly .cls_vals {
+  width: 6%;
+}
+
+.report-table--monthly.is-four-weeks .cls_vals,
+.report-table--monthly.is-four-weeks .cls_vals2 {
+  width: 4%;
+}
+
+.report-table--monthly.is-five-weeks .cls_vals,
+.report-table--monthly.is-five-weeks .cls_vals2 {
+  width: 5%;
+}
+
+.report-table .cls_vals2 {
+  height: 25px;
+  border: 1px dotted $color-border;
+  text-align: right;
+  padding-right: 5px;
+}
+
+.report-table .cls_indic {
+  height: 30px;
+  width: 13%;
+  border: 1px dotted $color-border;
+}
+
+.report-table .cls_indic2 {
+  height: 30px;
+  width: 3%;
+  border: 1px dotted $color-border;
+}
+
+.report-table .cls_perc {
+  width: 3%;
+}
+
+.report-table .cls_perc2 {
+  width: 0.5%;
+}
+
+.report-table .cls_real {
+  font-weight: bold;
+  color: #8B4513;
+  cursor: pointer;
+}
+
+.report-table .cls_real:hover {
+  background: #ebebeb;
+}
+
+.report-table .cls_bk {
+  background: #F5F6CE;
+}
+
+.report-table .cls_bk2 {
+  background: #F2F3C5;
+}
+
+.metric-heat--empty {
+  background: $color-muted;
+}
+
+.metric-heat--danger {
+  background: red;
+}
+
+.metric-heat--warning {
+  background: $color-warning;
+}
+
+.metric-heat--success {
+  background: green;
+}
+
+.metric-heat--over {
+  background: $color-primary;
 }

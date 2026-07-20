@@ -15,3 +15,153 @@
   background: #f1f1f1;
   color: #333333;
 }
+
+.dashboard-error {
+  font-size: 18px;
+  height: 50px;
+  text-align: center;
+}
+
+.dashboard-back-button {
+  cursor: pointer;
+  height: 30px;
+  width: 100px;
+}
+
+.dashboard-title {
+  font-family: $font-body;
+  margin-left: 40px;
+  font-size: 10pt;
+}
+
+.dashboard-region-tabs {
+  font-family: $font-body;
+  margin: 8px 0 12px 40px;
+  font-size: 10pt;
+}
+
+.dashboard-table {
+  font-family: $font-ui;
+  font-size: 8pt;
+  border-collapse: collapse;
+}
+
+.dashboard-table td {
+  border-left-width: 1px;
+  border: 1px dotted $color-border;
+}
+
+.dashboard-table .cls_dados {
+  background: #DBDBDB;
+  height: 18px;
+}
+
+.dashboard-table .cls_sema {
+  background: #cccccc;
+  font-weight: bold;
+  height: 18px;
+}
+
+.dashboard-table .cls_sema2 {
+  background: #cccccc;
+  font-weight: bold;
+}
+
+.dashboard-table .cls_colun {
+  width: 2%;
+  background: $color-primary;
+}
+
+.dashboard-table .cls_colun_2 {
+  width: 2%;
+  background: $color-warning;
+}
+
+.dashboard-table .box,
+.dashboard-total-table .box {
+  margin-left: 5px;
+  float: left;
+}
+
+.dashboard-table.is-five-weeks .cls_vals,
+.dashboard-table.is-five-weeks .cls_vals2 {
+  width: 4%;
+}
+
+.dashboard-table.is-four-weeks .cls_vals,
+.dashboard-table.is-four-weeks .cls_vals2 {
+  width: 5%;
+}
+
+.dashboard-table .cls_vals2 {
+  height: 25px;
+  border-top: 1px dotted $color-border;
+  border-bottom: 1px dotted $color-border;
+}
+
+.dashboard-table .cls_indic {
+  width: 13%;
+  padding-left: 5px;
+}
+
+.dashboard-table .cls_real:hover {
+  background: #ebebeb;
+  cursor: pointer;
+}
+
+.dashboard-table .cls_bk {
+  background: #F5F6CE;
+}
+
+.dashboard-table .cls_bk2 {
+  background: #F2F3C5;
+}
+
+.dashboard-table .cls_red {
+  background: #ffdede;
+}
+
+.dashboard-table .cls_red2 {
+  background: #f5d5d5;
+}
+
+.dashboard-table__spacer-cell {
+  border: 0;
+  width: 5px;
+}
+
+.dashboard-table__row {
+  height: 30px;
+}
+
+.dashboard-table__metric-meta {
+  background: $color-muted;
+}
+
+.dashboard-table__total-meta {
+  background: #F2F5A9;
+}
+
+.dashboard-table__side-label {
+  color: #ffffff;
+  transform: rotate(270deg);
+  width: 20px;
+}
+
+.dashboard-table__side-label--financial {
+  margin-top: 20px;
+}
+
+.dashboard-total-table {
+  font-family: $font-body;
+  font-size: 8pt;
+  border-collapse: collapse;
+}
+
+.dashboard-total-table__muted {
+  background: $color-muted;
+}
+
+.dashboard-total-table__plain {
+  background: #ffffff;
+}

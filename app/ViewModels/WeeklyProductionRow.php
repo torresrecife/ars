@@ -30,10 +30,13 @@ class WeeklyProductionRow
 	/** @var string */
 	private $color;
 
+	/** @var string */
+	private $colorClass;
+
 	/** @var array */
 	private $codes;
 
-	public function __construct($name, $metaMonth, $metaToday, $realized, $balance, $percentToday, $percentMonth, $color, array $codes)
+	public function __construct($name, $metaMonth, $metaToday, $realized, $balance, $percentToday, $percentMonth, $color, array $codes, $colorClass = '')
 	{
 		$this->name = (string) $name;
 		$this->metaMonth = (float) $metaMonth;
@@ -43,6 +46,7 @@ class WeeklyProductionRow
 		$this->percentToday = (float) $percentToday;
 		$this->percentMonth = (float) $percentMonth;
 		$this->color = (string) $color;
+		$this->colorClass = (string) $colorClass;
 		$this->codes = array_values($codes);
 	}
 
@@ -57,6 +61,7 @@ class WeeklyProductionRow
 			'percentToday' => $this->percentToday,
 			'percentMonth' => $this->percentMonth,
 			'color' => $this->color,
+			'colorClass' => $this->colorClass,
 			'codes' => $this->codes,
 		);
 	}

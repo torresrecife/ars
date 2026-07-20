@@ -5,3 +5,9 @@ function relatorioAbrirDetalhe(valor1,valor2){
 	$("#form_ars").attr("target","_blank");
 	$("#form_ars").submit();
 }
+
+$(function () {
+	if (window.arsReportContentHeight) {
+		$("#content-box").css("height", parseInt(window.arsReportContentHeight, 10) + "px");
+	}
+});

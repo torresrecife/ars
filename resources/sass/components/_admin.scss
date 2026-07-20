@@ -9,3 +9,20 @@
 .***REMOVED***-action-cell {
   width: 130px;
 }
+
+.is-hidden {
+  display: none;
+}
+
+.ui-datepicker,
+.ui-datepicker-calendar {
+  display: none;
+}
+
+#obg_date {
+  float: left;
+  position: absolute;
+  color: red;
+  margin-left: 86px;
+  display: none;
+}
