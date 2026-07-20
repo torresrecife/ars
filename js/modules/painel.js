@@ -69,6 +69,6 @@ $(function(){
 		height: "auto",
 		"min-height": Math.max(alturaMinima, alturaConteudo)
 	});
-	$("#element-box").css("height", alturaTela - 45);
+	// $("#element-box").css("height", alturaTela - 45);
 	$("#content-box .***REMOVED***form").css("height", "auto");
 });
