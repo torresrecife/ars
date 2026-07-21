@@ -9,14 +9,35 @@ class NeoSqlsrvExecutor
 	/** @var mixed */
 	private $connection;
 
+	/** @var array */
+	private static $stats = array(
+		'queries' => 0,
+		'errors' => 0,
+		'time_ms' => 0.0,
+	);
+
 	public function __construct($connection)
 	{
 		$this->connection = $connection;
 	}
 
+	public static function resetStats()
+	{
+		self::$stats = array(
+			'queries' => 0,
+			'errors' => 0,
+			'time_ms' => 0.0,
+		);
+	}
+
+	public static function stats()
+	{
+		return self::$stats;
+	}
+
 	public function fetchAll($query)
 	{
-		$result = sqlsrv_query($this->connection, $query);
+		$result = $this->runQuery($query);
 		if ($result === false) {
 			return array();
 		}
@@ -31,7 +52,7 @@ class NeoSqlsrvExecutor
 
 	public function fetchCodes($query, $field)
 	{
-		$result = sqlsrv_query($this->connection, $query);
+		$result = $this->runQuery($query);
 		if ($result === false) {
 			return array();
 		}
@@ -48,7 +69,7 @@ class NeoSqlsrvExecutor
 
 	public function countRows($query, $field)
 	{
-		$result = sqlsrv_query($this->connection, $query);
+		$result = $this->runQuery($query);
 		if ($result === false) {
 			return 0;
 		}
@@ -63,7 +84,7 @@ class NeoSqlsrvExecutor
 
 	public function sumAndCollectCodes($query, $valueField, $codeField)
 	{
-		$result = sqlsrv_query($this->connection, $query);
+		$result = $this->runQuery($query);
 		if ($result === false) {
 			return array('total' => 0.0, 'codes' => array());
 		}
@@ -81,5 +102,20 @@ class NeoSqlsrvExecutor
 			'total' => $total,
 			'codes' => array_values($codes),
 		);
+	}
+
+	private function runQuery($query)
+	{
+		$startedAt = microtime(true);
+		$result = sqlsrv_query($this->connection, $query);
+		$elapsedMs = (microtime(true) - $startedAt) * 1000;
+
+		self::$stats['queries']++;
+		self::$stats['time_ms'] += $elapsedMs;
+		if ($result === false) {
+			self::$stats['errors']++;
+		}
+
+		return $result;
 	}
 }
