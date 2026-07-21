@@ -80,16 +80,4 @@ class MetaController extends Controller
 			? $this->apiJsonResponse(true, 'success', 'Meta excluida com sucesso.')
 			: $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
 	}
-
-	private function mapWriteResultToJson($result, $successMessage)
-	{
-		if ((string) $result === '1') {
-			return $this->apiJsonResponse(true, 'success', $successMessage);
-		}
-		if ((string) $result === '2') {
-			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.', array(), 409);
-		}
-
-		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
-	}
 }

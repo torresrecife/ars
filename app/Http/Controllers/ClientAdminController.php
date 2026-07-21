@@ -71,16 +71,4 @@ class ClientAdminController extends Controller
 	{
 		return $this->mapWriteResultToJson($this->service->delete((int) $id), 'Cliente excluido com sucesso.');
 	}
-
-	private function mapWriteResultToJson($result, $successMessage)
-	{
-		if ((string) $result === '1') {
-			return $this->apiJsonResponse(true, 'success', $successMessage);
-		}
-		if ((string) $result === '2') {
-			return $this->apiJsonResponse(false, 'duplicate', 'Registro duplicado.', array(), 409);
-		}
-
-		return $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
-	}
 }

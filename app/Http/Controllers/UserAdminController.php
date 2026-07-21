@@ -56,16 +56,4 @@ class UserAdminController extends Controller
 	{
 		return $this->mapWriteResultToJson($this->service->delete((int) $id), __('User deleted successfully.'));
 	}
-
-	private function mapWriteResultToJson($result, $successMessage)
-	{
-		if ((string) $result === '1') {
-			return $this->apiJsonResponse(true, 'success', $successMessage);
-		}
-		if ((string) $result === '2') {
-			return $this->apiJsonResponse(false, 'duplicate', __('Duplicate record.'), array(), 409);
-		}
-
-		return $this->apiJsonResponse(false, 'error', __('Operation failed.'), array(), 500);
-	}
 }
