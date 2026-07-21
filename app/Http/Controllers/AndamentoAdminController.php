@@ -32,15 +32,15 @@ class AndamentoAdminController extends Controller
 	{
 		$payload = json_decode($this->service->editPayload((int) $id), true);
 		if (!is_array($payload) || empty($payload['anda_id'])) {
-			return $this->apiJsonResponse(false, 'not_found', 'Andamento nao encontrado.', array(), 404);
+			return $this->apiJsonResponse(false, 'not_found', __('Progress not found.'), array(), 404);
 		}
 
-		return $this->apiJsonResponse(true, 'loaded', 'Andamento carregado.', $payload);
+		return $this->apiJsonResponse(true, 'loaded', __('Progress loaded.'), $payload);
 	}
 
 	public function store(AndamentoStoreRequest $request)
 	{
-		return $this->mapWriteResultToJson($this->service->create($request->all()), 'Andamento criado com sucesso.');
+		return $this->mapWriteResultToJson($this->service->create($request->all()), __('Progress created successfully.'));
 	}
 
 	public function update(AndamentoUpdateRequest $request, $id)
@@ -48,11 +48,11 @@ class AndamentoAdminController extends Controller
 		$input = $request->all();
 		$input['anda_id'] = (int) $id;
 
-		return $this->mapWriteResultToJson($this->service->update($input), 'Andamento atualizado com sucesso.');
+		return $this->mapWriteResultToJson($this->service->update($input), __('Progress updated successfully.'));
 	}
 
 	public function destroy($id)
 	{
-		return $this->mapWriteResultToJson($this->service->delete((int) $id), 'Andamento excluido com sucesso.');
+		return $this->mapWriteResultToJson($this->service->delete((int) $id), __('Progress deleted successfully.'));
 	}
 }

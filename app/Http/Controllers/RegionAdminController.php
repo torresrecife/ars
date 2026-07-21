@@ -33,15 +33,15 @@ class RegionAdminController extends Controller
 		$payload = $this->service->editPayload((int) $id);
 		$data = $payload !== '' ? json_decode($payload, true) : null;
 		if (!is_array($data)) {
-			return $this->apiJsonResponse(false, 'not_found', 'Regiao nao encontrada.', array(), 404);
+			return $this->apiJsonResponse(false, 'not_found', __('Region not found.'), array(), 404);
 		}
 
-		return $this->apiJsonResponse(true, 'loaded', 'Regiao carregada.', $data);
+		return $this->apiJsonResponse(true, 'loaded', __('Region loaded.'), $data);
 	}
 
 	public function store(RegionStoreRequest $request)
 	{
-		return $this->mapWriteResultToJson($this->service->create($request->all()), 'Regiao criada com sucesso.');
+		return $this->mapWriteResultToJson($this->service->create($request->all()), __('Region created successfully.'));
 	}
 
 	public function update(RegionUpdateRequest $request, $id)
@@ -49,16 +49,16 @@ class RegionAdminController extends Controller
 		$input = $request->all();
 		$input['regiao_id'] = (int) $id;
 
-		return $this->mapWriteResultToJson($this->service->update($input), 'Regiao atualizada com sucesso.');
+		return $this->mapWriteResultToJson($this->service->update($input), __('Region updated successfully.'));
 	}
 
 	public function destroy($id)
 	{
 		$result = $this->service->delete((int) $id);
 		if ($result === '3') {
-			return $this->apiJsonResponse(false, 'linked_users', 'Existem usuarios vinculados a esta regiao.', array(), 409);
+			return $this->apiJsonResponse(false, 'linked_users', __('There are users linked to this region.'), array(), 409);
 		}
 
-		return $this->mapWriteResultToJson($result, 'Regiao excluida com sucesso.');
+		return $this->mapWriteResultToJson($result, __('Region deleted successfully.'));
 	}
 }

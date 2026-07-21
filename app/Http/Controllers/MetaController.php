@@ -47,7 +47,7 @@ class MetaController extends Controller
 			'allowGlobalRegion' => $regionSelection['allowGlobal'],
 			'totalFinanceiro' => $this->metaService->totalFinancialMeta($metas),
 			'lin' => count($metas),
-			'metaTipos' => array(1 => 'Produção', 2 => 'Financeira'),
+			'metaTipos' => array(1 => __('Production'), 2 => __('Financial')),
 		));
 	}
 
@@ -55,15 +55,15 @@ class MetaController extends Controller
 	{
 		$row = $this->metaService->findById((int) $id);
 		if (!$row) {
-			return $this->apiJsonResponse(false, 'not_found', 'Meta nao encontrada.', array(), 404);
+			return $this->apiJsonResponse(false, 'not_found', __('Goal not found.'), array(), 404);
 		}
 
-		return $this->apiJsonResponse(true, 'loaded', 'Meta carregada.', $row);
+		return $this->apiJsonResponse(true, 'loaded', __('Goal loaded.'), $row);
 	}
 
 	public function store(MetaStoreRequest $request)
 	{
-		return $this->mapWriteResultToJson($this->metaService->createManyFromRequest($request->all()), 'Meta criada com sucesso.');
+		return $this->mapWriteResultToJson($this->metaService->createManyFromRequest($request->all()), __('Goal(s) created successfully.'));
 	}
 
 	public function update(MetaUpdateRequest $request, $id)
@@ -71,13 +71,13 @@ class MetaController extends Controller
 		$input = $request->all();
 		$input['meta_id'] = (int) $id;
 
-		return $this->mapWriteResultToJson($this->metaService->updateManyFromRequest($input), 'Meta atualizada com sucesso.');
+		return $this->mapWriteResultToJson($this->metaService->updateManyFromRequest($input), __('Goal edited successfully.'));
 	}
 
 	public function destroy($id)
 	{
 		return $this->metaService->delete((int) $id)
-			? $this->apiJsonResponse(true, 'success', 'Meta excluida com sucesso.')
-			: $this->apiJsonResponse(false, 'error', 'Falha na operacao.', array(), 500);
+			? $this->apiJsonResponse(true, 'success', __('Goal deleted successfully.'))
+			: $this->apiJsonResponse(false, 'error', __('Operation failed.'), array(), 500);
 	}
 }

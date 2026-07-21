@@ -245,5 +245,17 @@
     "Go back and select the client.": "Go back and select the client.",
     "Client not found.": "Client not found.",
     "The NEO connection is not available in this environment.": "The NEO connection is not available in this environment.",
-    "User session not found.": "User session not found."
+    "User session not found.": "User session not found.",
+    "Progress not found.": "Progress not found.",
+    "Progress loaded.": "Progress loaded.",
+    "Progress created successfully.": "Progress created successfully.",
+    "Progress updated successfully.": "Progress updated successfully.",
+    "Client loaded.": "Client loaded.",
+    "Goal not found.": "Goal not found.",
+    "Goal loaded.": "Goal loaded.",
+    "Region not found.": "Region not found.",
+    "Region loaded.": "Region loaded.",
+    "There are users linked to this region.": "There are users linked to this region.",
+    "Sector not found.": "Sector not found.",
+    "Sector loaded.": "Sector loaded."
 }
