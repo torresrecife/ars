@@ -28,7 +28,7 @@ class AddPanelReportIndexes extends Migration
         });
 
         Schema::table('dados', function (Blueprint $table) {
-            $table->index(array('banco_id', 'dados_cod'), 'idx_dados_banco_cod');
+            $table->index(array('banco_id'), 'idx_dados_banco_id');
             $table->index(array('carteira_id'), 'idx_dados_carteira_id');
         });
 
@@ -52,7 +52,7 @@ class AddPanelReportIndexes extends Migration
         });
 
         Schema::table('dados', function (Blueprint $table) {
-            $table->dropIndex('idx_dados_banco_cod');
+            $table->dropIndex('idx_dados_banco_id');
             $table->dropIndex('idx_dados_carteira_id');
         });
 
