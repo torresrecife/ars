@@ -32,9 +32,9 @@ return [
     ],
 
     'performance' => [
-        'panel_cache_ttl_seconds' => (int) env('APP_PANEL_CACHE_TTL', 300),
-        'report_cache_ttl_seconds' => (int) env('APP_REPORT_CACHE_TTL', 300),
-        'neo_result_cache_ttl_seconds' => (int) env('APP_NEO_RESULT_CACHE_TTL', 900),
+        'panel_cache_ttl_seconds' => (int) env('APP_PANEL_CACHE_TTL', 120),
+        'report_cache_ttl_seconds' => (int) env('APP_REPORT_CACHE_TTL', 120),
+        'neo_result_cache_ttl_seconds' => (int) env('APP_NEO_RESULT_CACHE_TTL', 180),
         'neo_query_log_enabled' => (bool) env('APP_NEO_QUERY_LOG', false),
     ],
 
