@@ -34,26 +34,14 @@ use App\Services\SectorAdminService;
 use App\Services\UserAdminService;
 use App\Services\WeekService;
 use App\Support\View;
+use App\Support\MonthMap;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     private function monthsMap()
     {
-        return array(
-            1 => __('January'),
-            2 => __('February'),
-            3 => __('March'),
-            4 => __('April'),
-            5 => __('May'),
-            6 => __('June'),
-            7 => __('July'),
-            8 => __('August'),
-            9 => __('September'),
-            10 => __('October'),
-            11 => __('November'),
-            12 => __('December'),
-        );
+        return MonthMap::localized();
     }
 
     private function sqlsrvConnection()

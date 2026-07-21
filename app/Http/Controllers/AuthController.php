@@ -19,15 +19,9 @@ class AuthController extends Controller
 
     public function showLogin(Request $request)
     {
-        $legacyIndexUrl = url('index');
-        $legacyLoginUrl = url('login');
-
         return response()->view('auth.login', [
             'alerta' => (int) $request->query('alerta', 0),
-            'legacyIndexUrl' => $legacyIndexUrl,
-            'legacyLoginUrl' => $legacyLoginUrl,
-            'legacyBaseUrl' => $this->legacyBaseUrl($legacyLoginUrl),
-        ]);
+        ] + $this->legacyViewUrls());
     }
 
     public function login(Request $request)
@@ -42,15 +36,9 @@ class AuthController extends Controller
         }
 
         if ($this->authService->requiresPasswordChange($user)) {
-            $legacyIndexUrl = url('index');
-            $legacyLoginUrl = url('login');
-
             return response()->view('auth.force-password', [
                 'userId' => (int) $user['id_usu'],
-                'legacyIndexUrl' => $legacyIndexUrl,
-                'legacyLoginUrl' => $legacyLoginUrl,
-                'legacyBaseUrl' => $this->legacyBaseUrl($legacyLoginUrl),
-            ]);
+            ] + $this->legacyViewUrls());
         }
 
         $this->authService->refreshUserAccess($user['id_usu']);
@@ -100,5 +88,17 @@ class AuthController extends Controller
         }
 
         return $directory;
+    }
+
+    private function legacyViewUrls()
+    {
+        $legacyIndexUrl = url('index');
+        $legacyLoginUrl = url('login');
+
+        return array(
+            'legacyIndexUrl' => $legacyIndexUrl,
+            'legacyLoginUrl' => $legacyLoginUrl,
+            'legacyBaseUrl' => $this->legacyBaseUrl($legacyLoginUrl),
+        );
     }
 }
