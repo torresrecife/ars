@@ -100,20 +100,22 @@ abstract class NeoSqlsrvRepository
 
 	protected function buildMonthYearCondition($field, $month, $year)
 	{
-		return ' AND MONTH(' . $field . ') = ' . (int) $month
-			. ' AND YEAR(' . $field . ') = ' . (int) $year;
+		$range = $this->monthDateRange((int) $month, (int) $year);
+
+		return ' AND ' . $field . " >= '" . $range['start'] . "'"
+			. ' AND ' . $field . " < '" . $range['end'] . "'";
 	}
 
 	protected function buildWeekCondition($field, $month, $year, array $week = array())
 	{
-		$query = $this->buildMonthYearCondition($field, $month, $year);
-
 		if (isset($week['start'], $week['end'])) {
-			$query .= ' AND DAY(' . $field . ') >= ' . (int) $week['start'];
-			$query .= ' AND DAY(' . $field . ') <= ' . (int) $week['end'];
+			$range = $this->weekDateRange((int) $month, (int) $year, (int) $week['start'], (int) $week['end']);
+
+			return ' AND ' . $field . " >= '" . $range['start'] . "'"
+				. ' AND ' . $field . " < '" . $range['end'] . "'";
 		}
 
-		return $query;
+		return $this->buildMonthYearCondition($field, $month, $year);
 	}
 
 	protected function fetchAll($query)
@@ -153,5 +155,34 @@ abstract class NeoSqlsrvRepository
 		}
 
 		return array_values($values);
+	}
+
+	private function monthDateRange($month, $year)
+	{
+		$month = max(1, min(12, (int) $month));
+		$year = max(1900, (int) $year);
+		$start = new \DateTimeImmutable(sprintf('%04d-%02d-01 00:00:00', $year, $month));
+
+		return array(
+			'start' => $start->format('Y-m-d H:i:s'),
+			'end' => $start->modify('+1 month')->format('Y-m-d H:i:s'),
+		);
+	}
+
+	private function weekDateRange($month, $year, $startDay, $endDay)
+	{
+		$month = max(1, min(12, (int) $month));
+		$year = max(1900, (int) $year);
+		$lastDay = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+		$startDay = max(1, min($lastDay, (int) $startDay));
+		$endDay = max($startDay, min($lastDay, (int) $endDay));
+
+		$start = new \DateTimeImmutable(sprintf('%04d-%02d-%02d 00:00:00', $year, $month, $startDay));
+		$end = new \DateTimeImmutable(sprintf('%04d-%02d-%02d 00:00:00', $year, $month, $endDay));
+
+		return array(
+			'start' => $start->format('Y-m-d H:i:s'),
+			'end' => $end->modify('+1 day')->format('Y-m-d H:i:s'),
+		);
 	}
 }
