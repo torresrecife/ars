@@ -18,12 +18,12 @@ class RegionAdminControllerTest extends TestCase
         $service->shouldReceive('editPayload')
             ->once()
             ->with(4)
-            ->andReturn(json_encode(array(
+            ->andReturn(array(
                 'regiao_id' => 4,
                 'regiao_nome' => 'Sul',
                 'regiao_slug' => 'sul',
                 'ufs' => array('PR', 'SC'),
-            )));
+            ));
 
         $controller = new RegionAdminController($service, app(View::class));
         $response = $controller->show(4);

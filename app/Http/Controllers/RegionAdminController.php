@@ -30,8 +30,7 @@ class RegionAdminController extends Controller
 
 	public function show($id)
 	{
-		$payload = $this->service->editPayload((int) $id);
-		$data = $payload !== '' ? json_decode($payload, true) : null;
+		$data = $this->service->editPayload((int) $id);
 		if (!is_array($data)) {
 			return $this->apiJsonResponse(false, 'not_found', __('Region not found.'), array(), 404);
 		}

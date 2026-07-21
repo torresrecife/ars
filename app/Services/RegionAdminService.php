@@ -28,18 +28,18 @@ class RegionAdminService
 	{
 		$row = $this->repository->findById($id);
 		if (!$row) {
-			return '';
+			return null;
 		}
 
 		$ufs = $this->repository->listUfsByRegionId((int) $row['regiao_id']);
 
-		return json_encode(array(
+		return array(
 			'regiao_id' => (int) $row['regiao_id'],
 			'regiao_nome' => (string) $row['regiao_nome'],
 			'regiao_slug' => (string) $row['regiao_slug'],
 			'regiao_status' => (string) $row['regiao_status'],
 			'ufs' => $ufs,
-		));
+		);
 	}
 
 	public function create(array $input)

@@ -29,18 +29,12 @@ class SectorAdminController extends Controller
 
 	public function show($id)
 	{
-		$payload = $this->service->editPayload((int) $id);
-		if ($payload === '') {
+		$data = $this->service->editPayload((int) $id);
+		if (!is_array($data) || empty($data['area_id'])) {
 			return $this->apiJsonResponse(false, 'not_found', __('Sector not found.'), array(), 404);
 		}
 
-		$parts = explode('-|-', $payload);
-
-		return $this->apiJsonResponse(true, 'loaded', __('Sector loaded.'), array(
-			'area_id' => isset($parts[0]) ? (int) $parts[0] : 0,
-			'area_nome' => isset($parts[1]) ? (string) $parts[1] : '',
-			'area_date' => isset($parts[2]) ? (string) $parts[2] : '',
-		));
+		return $this->apiJsonResponse(true, 'loaded', __('Sector loaded.'), $data);
 	}
 
 	public function store(Request $request)

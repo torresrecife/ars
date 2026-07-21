@@ -18,11 +18,11 @@ class UserAdminControllerTest extends TestCase
         $service->shouldReceive('editPayload')
             ->once()
             ->with(7)
-            ->andReturn(json_encode(array(
+            ->andReturn(array(
                 'id_usu' => 7,
                 'nome_usu' => 'Maria',
                 'login_usu' => 'maria',
-            )));
+            ));
 
         $controller = new UserAdminController($service, app(View::class));
         $response = $controller->show(7);

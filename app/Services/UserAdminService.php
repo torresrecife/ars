@@ -33,7 +33,7 @@ class UserAdminService
 	{
 		$row = $this->repository->findById($id);
 		if (!$row) {
-			return '';
+			return null;
 		}
 
 		$clientIds = array();
@@ -61,7 +61,7 @@ class UserAdminService
 			);
 		}
 
-		return json_encode(array(
+		return array(
 			'id_usu' => (int) $row['id_usu'],
 			'nome_usu' => (string) $row['nome_usu'],
 			'login_usu' => (string) $row['login_usu'],
@@ -75,7 +75,7 @@ class UserAdminService
 			'region_ids' => $regionIds,
 			'regions' => $regions,
 			'status_usu' => (string) $row['status_usu'],
-		));
+		);
 	}
 
 	public function create(array $input)
