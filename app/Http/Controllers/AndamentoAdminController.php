@@ -30,7 +30,7 @@ class AndamentoAdminController extends Controller
 
 	public function show($id)
 	{
-		$payload = json_decode($this->service->editPayload((int) $id), true);
+		$payload = $this->service->editPayload((int) $id);
 		if (!is_array($payload) || empty($payload['anda_id'])) {
 			return $this->apiJsonResponse(false, 'not_found', __('Progress not found.'), array(), 404);
 		}

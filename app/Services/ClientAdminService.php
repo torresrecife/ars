@@ -41,7 +41,7 @@ class ClientAdminService
 	{
 		$row = $this->repository->findById($id);
 		if (!$row) {
-			return '';
+			return null;
 		}
 
 		$dadosRows = $this->repository->listDadosByBancoId($id);
@@ -50,7 +50,18 @@ class ClientAdminService
 			$dadosCodes[] = $dadosRow['dados_cod'];
 		}
 
-		return implode('-|-', array_values($row)) . '-|-' . implode('|||', $dadosCodes) . '-|-';
+		return array(
+			'banco_id' => isset($row['banco_id']) ? (int) $row['banco_id'] : 0,
+			'banco_name' => isset($row['banco_name']) ? (string) $row['banco_name'] : '',
+			'banco_cod' => isset($row['banco_cod']) ? (string) $row['banco_cod'] : '',
+			'banco_creator' => isset($row['banco_creator']) ? (string) $row['banco_creator'] : '',
+			'banco_area' => isset($row['banco_area']) ? (int) $row['banco_area'] : 0,
+			'banco_status' => isset($row['banco_status']) ? (string) $row['banco_status'] : '',
+			'banco_class' => isset($row['banco_class']) ? (string) $row['banco_class'] : '',
+			'simulador' => isset($row['simulador']) ? (string) $row['simulador'] : '',
+			'banco_curto' => isset($row['banco_curto']) ? (string) $row['banco_curto'] : '',
+			'dados_codes' => $dadosCodes,
+		);
 	}
 
 	public function create(array $input)

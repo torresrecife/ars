@@ -20,16 +20,7 @@ class AndamentoAdminService
 	{
 		$row = $this->repository->findById($id);
 		if (!$row) {
-			return json_encode(array(
-				'anda_id' => '',
-				'nome' => '',
-				'chave' => '',
-				'anda_neo' => '',
-				'especie' => '',
-				'painel' => '',
-				'titulo' => '',
-				'tipos' => array(),
-			));
+			return null;
 		}
 
 		$tipos = array();
@@ -40,7 +31,7 @@ class AndamentoAdminService
 			}
 		}
 
-		return json_encode(array(
+		return array(
 			'anda_id' => (int) $row['anda_id'],
 			'nome' => (string) $row['nome'],
 			'chave' => (string) $row['chave'],
@@ -49,7 +40,7 @@ class AndamentoAdminService
 			'painel' => (string) $row['painel'],
 			'titulo' => (string) $row['titulo'],
 			'tipos' => $tipos,
-		));
+		);
 	}
 
 	public function indexData()

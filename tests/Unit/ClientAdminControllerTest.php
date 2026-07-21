@@ -18,7 +18,18 @@ class ClientAdminControllerTest extends TestCase
         $service->shouldReceive('editPayload')
             ->once()
             ->with(5)
-            ->andReturn('5-|-Cliente XP-|-XP01-|-admin-|-2-|-Y-|-A-|-10-|-XP-|-001|||002');
+            ->andReturn(array(
+                'banco_id' => 5,
+                'banco_name' => 'Cliente XP',
+                'banco_cod' => 'XP01',
+                'banco_creator' => 'admin',
+                'banco_area' => 2,
+                'banco_status' => 'Y',
+                'banco_class' => 'A',
+                'simulador' => '10',
+                'banco_curto' => 'XP',
+                'dados_codes' => array('001', '002'),
+            ));
 
         $controller = new ClientAdminController($service, app(View::class));
         $response = $controller->show(5);

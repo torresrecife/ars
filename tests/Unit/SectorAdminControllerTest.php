@@ -14,7 +14,11 @@ class SectorAdminControllerTest extends TestCase
     public function test_show_returns_loaded_json_payload()
     {
         $service = Mockery::mock(SectorAdminService::class);
-        $service->shouldReceive('editPayload')->once()->with(3)->andReturn('3-|-Operacional-|-2026-07-17');
+        $service->shouldReceive('editPayload')->once()->with(3)->andReturn(array(
+            'area_id' => 3,
+            'area_nome' => 'Operacional',
+            'area_date' => '2026-07-17',
+        ));
 
         $controller = new SectorAdminController($service, app(View::class));
         $response = $controller->show(3);

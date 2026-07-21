@@ -27,16 +27,14 @@ class SectorAdminService
 	{
 		$row = $this->repository->findById($areaId);
 		if (!$row) {
-			return '';
+			return null;
 		}
 
-		$ordered = array(
-			isset($row['area_id']) ? $row['area_id'] : '',
-			isset($row['area_nome']) ? $row['area_nome'] : '',
-			isset($row['area_date']) ? $row['area_date'] : '',
+		return array(
+			'area_id' => isset($row['area_id']) ? (int) $row['area_id'] : 0,
+			'area_nome' => isset($row['area_nome']) ? (string) $row['area_nome'] : '',
+			'area_date' => isset($row['area_date']) ? (string) $row['area_date'] : '',
 		);
-
-		return implode('-|-', $ordered) . '-|-';
 	}
 
 	public function create(array $input)

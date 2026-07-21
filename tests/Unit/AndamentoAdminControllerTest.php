@@ -18,12 +18,12 @@ class AndamentoAdminControllerTest extends TestCase
         $service->shouldReceive('editPayload')
             ->once()
             ->with(6)
-            ->andReturn(json_encode(array(
+            ->andReturn(array(
                 'anda_id' => 6,
                 'nome' => 'Ajuizamento',
                 'chave' => 'AJUI',
                 'tipos' => array('X', 'Y'),
-            )));
+            ));
 
         $controller = new AndamentoAdminController($service, app(View::class));
         $response = $controller->show(6);
