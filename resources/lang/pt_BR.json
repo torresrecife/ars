@@ -203,5 +203,17 @@
     "Go back and select the client.": "Volte e selecione o Banco!",
     "Client not found.": "Banco não encontrado.",
     "The NEO connection is not available in this environment.": "A conexão com o NEO não está disponível neste ambiente.",
-    "User session not found.": "Sessão de usuário não encontrada."
+    "User session not found.": "Sessão de usuário não encontrada.",
+    "Progress not found.": "Andamento nao encontrado.",
+    "Progress loaded.": "Andamento carregado.",
+    "Progress created successfully.": "Andamento criado com sucesso.",
+    "Progress updated successfully.": "Andamento atualizado com sucesso.",
+    "Client loaded.": "Cliente carregado.",
+    "Goal not found.": "Meta nao encontrada.",
+    "Goal loaded.": "Meta carregada.",
+    "Region not found.": "Regiao nao encontrada.",
+    "Region loaded.": "Regiao carregada.",
+    "There are users linked to this region.": "Existem usuarios vinculados a esta regiao.",
+    "Sector not found.": "Setor nao encontrado.",
+    "Sector loaded.": "Setor carregado."
 }

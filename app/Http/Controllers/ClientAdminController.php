@@ -32,7 +32,7 @@ class ClientAdminController extends Controller
 	{
 		$payload = $this->service->editPayload((int) $id);
 		if ($payload === '') {
-			return $this->apiJsonResponse(false, 'not_found', 'Cliente nao encontrado.', array(), 404);
+			return $this->apiJsonResponse(false, 'not_found', __('Client not found.'), array(), 404);
 		}
 
 		$parts = explode('-|-', $payload);
@@ -51,12 +51,12 @@ class ClientAdminController extends Controller
 			})) : array(),
 		);
 
-		return $this->apiJsonResponse(true, 'loaded', 'Cliente carregado.', $data);
+		return $this->apiJsonResponse(true, 'loaded', __('Client loaded.'), $data);
 	}
 
 	public function store(ClientStoreRequest $request)
 	{
-		return $this->mapWriteResultToJson($this->service->create($request->all()), 'Cliente criado com sucesso.');
+		return $this->mapWriteResultToJson($this->service->create($request->all()), __('Client created successfully.'));
 	}
 
 	public function update(ClientUpdateRequest $request, $id)
@@ -64,11 +64,11 @@ class ClientAdminController extends Controller
 		$input = $request->all();
 		$input['banco_id'] = (int) $id;
 
-		return $this->mapWriteResultToJson($this->service->update($input), 'Cliente atualizado com sucesso.');
+		return $this->mapWriteResultToJson($this->service->update($input), __('Client updated successfully.'));
 	}
 
 	public function destroy($id)
 	{
-		return $this->mapWriteResultToJson($this->service->delete((int) $id), 'Cliente excluido com sucesso.');
+		return $this->mapWriteResultToJson($this->service->delete((int) $id), __('Client deleted successfully.'));
 	}
 }
