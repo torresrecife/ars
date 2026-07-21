@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Domain\Metrics\PerformanceMetricFormatter;
 use App\Repositories\GeneralProductionNeoRepository;
 use App\Repositories\GeneralProductionRepository;
+use App\Repositories\NeoSqlsrvExecutor;
 use App\Support\LegacyDate;
 use App\ViewModels\DashboardMetricCell;
 use App\ViewModels\GeneralProductionContext;
@@ -17,6 +18,8 @@ use App\ViewModels\MonthlyProductionViewData;
 use App\ViewModels\WeeklyProductionRow;
 use App\ViewModels\WeeklyProductionTotals;
 use App\ViewModels\WeeklyProductionViewData;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class GeneralProductionService
 {
@@ -43,6 +46,33 @@ class GeneralProductionService
 	public function buildWeekly($input, array $session)
 	{
 		$context = $this->buildContext($input, $session);
+		$cacheKey = $this->cacheKey('weekly', $context);
+		$ttl = max(0, (int) config('app.performance.report_cache_ttl_seconds', 300));
+		if ($ttl > 0) {
+			$cached = Cache::get($cacheKey);
+			if (is_array($cached)) {
+				$this->logPerformance('general.weekly', $context, true, array());
+
+				return new WeeklyProductionViewData($cached);
+			}
+		}
+
+		NeoSqlsrvExecutor::resetStats();
+		$startedAt = microtime(true);
+		$payload = $this->buildWeeklyPayload($context);
+		$elapsedMs = (microtime(true) - $startedAt) * 1000;
+		if ($ttl > 0) {
+			Cache::put($cacheKey, $payload, $ttl);
+		}
+		$this->logPerformance('general.weekly', $context, false, array(
+			'elapsed_ms' => round($elapsedMs, 2),
+		) + NeoSqlsrvExecutor::stats());
+
+		return new WeeklyProductionViewData($payload);
+	}
+
+	private function buildWeeklyPayload(GeneralProductionContext $context)
+	{
 		$regionFilter = $this->resolveRegionFilter($context);
 		$banks = $this->repository->listBanks($context->userSectorId(), $context->startSector(), $context->userClientIds(), false);
 		$monthPadded = str_pad((string) $context->month(), 2, '0', STR_PAD_LEFT);
@@ -88,7 +118,7 @@ class GeneralProductionService
 		$totals['color'] = $this->metricFormatter->heatColor($totals['percentToday']);
 		$totals['colorClass'] = $this->metricFormatter->heatClass($totals['percentToday']);
 
-		return new WeeklyProductionViewData(array(
+		return array(
 			'titleArea' => $this->resolveAreaTitle($context->userSectorId(), $context->startSector()),
 			'regionLabel' => $regionFilter->label(),
 			'startDate' => $context->startDate(),
@@ -108,12 +138,39 @@ class GeneralProductionService
 				$totals['colorClass']
 			),
 			'contentHeight' => (count($rows) * 30) + 360,
-		));
+		);
 	}
 
 	public function buildMonthly($input, array $session)
 	{
 		$context = $this->buildContext($input, $session);
+		$cacheKey = $this->cacheKey('monthly', $context);
+		$ttl = max(0, (int) config('app.performance.report_cache_ttl_seconds', 300));
+		if ($ttl > 0) {
+			$cached = Cache::get($cacheKey);
+			if (is_array($cached)) {
+				$this->logPerformance('general.monthly', $context, true, array());
+
+				return new MonthlyProductionViewData($cached);
+			}
+		}
+
+		NeoSqlsrvExecutor::resetStats();
+		$startedAt = microtime(true);
+		$payload = $this->buildMonthlyPayload($context);
+		$elapsedMs = (microtime(true) - $startedAt) * 1000;
+		if ($ttl > 0) {
+			Cache::put($cacheKey, $payload, $ttl);
+		}
+		$this->logPerformance('general.monthly', $context, false, array(
+			'elapsed_ms' => round($elapsedMs, 2),
+		) + NeoSqlsrvExecutor::stats());
+
+		return new MonthlyProductionViewData($payload);
+	}
+
+	private function buildMonthlyPayload(GeneralProductionContext $context)
+	{
 		$regionFilter = $this->resolveRegionFilter($context);
 		$weekConfig = $this->repository->findWeekByMonthYear($context->month(), $context->year());
 		$weeks = $this->resolveWeeks($context->month(), $context->year(), $weekConfig);
@@ -174,7 +231,7 @@ class GeneralProductionService
 
 		$grandPercent = $this->metricFormatter->percent($grandReal, $grandMeta, 0);
 
-		return new MonthlyProductionViewData(array(
+		return array(
 			'titleArea' => $this->resolveAreaTitle($context->userSectorId(), $context->startSector()),
 			'regionLabel' => $regionFilter->label(),
 			'startDate' => $context->startDate(),
@@ -192,7 +249,39 @@ class GeneralProductionService
 				$this->metricFormatter->percentIcon($grandPercent)
 			),
 			'contentHeight' => (count($rows) * 30) + 360,
-		));
+		);
+	}
+
+	private function cacheKey($mode, GeneralProductionContext $context)
+	{
+		return 'general_production:' . $mode . ':' . md5(json_encode(array(
+			'start_date' => $context->startDate(),
+			'start_sector' => $context->startSector(),
+			'month' => $context->month(),
+			'year' => $context->year(),
+			'user_sector_id' => $context->userSectorId(),
+			'user_client_ids' => $context->userClientIds(),
+			'user_id' => $context->userId(),
+			'user_level' => $context->userLevel(),
+			'user_region_mode' => $context->userRegionMode(),
+			'region_id' => $context->selectedRegionId(),
+		)));
+	}
+
+	private function logPerformance($channel, GeneralProductionContext $context, $cacheHit, array $metrics)
+	{
+		if (!config('app.performance.neo_query_log_enabled', false)) {
+			return;
+		}
+
+		Log::info($channel, array(
+			'cache_hit' => (bool) $cacheHit,
+			'start_sector' => $context->startSector(),
+			'month' => $context->month(),
+			'year' => $context->year(),
+			'user_id' => $context->userId(),
+			'region_id' => $context->selectedRegionId(),
+		) + $metrics);
 	}
 
 	private function buildContext($input, array $session)

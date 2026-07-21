@@ -31,6 +31,27 @@ class NeoPanelRepository extends NeoSqlsrvRepository
 		);
 	}
 
+	public function listProductionEventsByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
+	{
+		if (!$this->isAvailable()) {
+			return array();
+		}
+
+		$typeList = $this->buildQuotedList($typeNames);
+		if ($typeList === '') {
+			return array();
+		}
+
+		$query = '
+			SELECT a.TipoAndamentoProcesso as type_name, a.CodigoAndamento as code
+			' . $this->productionFromJoin()
+			. ' WHERE a.TipoAndamentoProcesso IN (' . $typeList . ')';
+		$query .= $this->buildProductionBaseConditions($carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		$query .= ' GROUP BY a.TipoAndamentoProcesso, a.CodigoAndamento';
+
+		return $this->fetchAll($query);
+	}
+
 	public function sumFinancialByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
 	{
 		if (!$this->isAvailable()) {
@@ -55,6 +76,26 @@ class NeoPanelRepository extends NeoSqlsrvRepository
 			'total' => $summary['total'],
 			'codes' => $summary['codes'],
 		);
+	}
+
+	public function listFinancialEventsByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
+	{
+		if (!$this->isAvailable()) {
+			return array();
+		}
+
+		$where = $this->buildFinancialWhere($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		if ($where === '') {
+			return array();
+		}
+
+		$query = '
+			SELECT l.TipoLancamento as type_name, l.CodigoLancamento as code, l.Valor as value
+			' . $this->financialFromJoin();
+		$query .= $where;
+		$query .= ' GROUP BY l.TipoLancamento, l.CodigoLancamento, l.Valor';
+
+		return $this->fetchAll($query);
 	}
 
 	private function buildProductionBaseQuery(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())

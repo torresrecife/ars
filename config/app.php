@@ -31,6 +31,12 @@ return [
         'neo_replica_wait_end_minute' => (int) env('APP_NEO_WAIT_END_MINUTE', 3),
     ],
 
+    'performance' => [
+        'panel_cache_ttl_seconds' => (int) env('APP_PANEL_CACHE_TTL', 300),
+        'report_cache_ttl_seconds' => (int) env('APP_REPORT_CACHE_TTL', 300),
+        'neo_query_log_enabled' => (bool) env('APP_NEO_QUERY_LOG', false),
+    ],
+
     'providers' => [
 
         Illuminate\Auth\AuthServiceProvider::class,

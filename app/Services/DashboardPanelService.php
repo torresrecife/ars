@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Domain\Metrics\PerformanceMetricFormatter;
 use App\Repositories\DashboardRepository;
 use App\Repositories\NeoPanelRepository;
+use App\Repositories\NeoSqlsrvExecutor;
 use App\Support\LegacyDate;
 use App\ViewModels\DashboardFinancialSummary;
 use App\ViewModels\DashboardMetricCell;
@@ -15,6 +16,8 @@ use App\ViewModels\DashboardPanelContext;
 use App\ViewModels\DashboardPrejudiceRow;
 use App\ViewModels\DashboardRegionFilter;
 use App\ViewModels\PanelViewData;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class DashboardPanelService
 {
@@ -57,6 +60,35 @@ class DashboardPanelService
 			return new PanelViewData(array('error' => __('The NEO connection is not available in this environment.')));
 		}
 
+		$cacheKey = $this->cacheKey($context);
+		$ttl = max(0, (int) config('app.performance.panel_cache_ttl_seconds', 300));
+		if ($ttl > 0) {
+			$cached = Cache::get($cacheKey);
+			if (is_array($cached)) {
+				$this->logPerformance('dashboard.panel', $context, true, array());
+
+				return new PanelViewData($cached);
+			}
+		}
+
+		NeoSqlsrvExecutor::resetStats();
+		$startedAt = microtime(true);
+		$payload = $this->buildPayload($context, $bank);
+		$elapsedMs = (microtime(true) - $startedAt) * 1000;
+
+		if ($ttl > 0) {
+			Cache::put($cacheKey, $payload, $ttl);
+		}
+
+		$this->logPerformance('dashboard.panel', $context, false, array(
+			'elapsed_ms' => round($elapsedMs, 2),
+		) + NeoSqlsrvExecutor::stats());
+
+		return new PanelViewData($payload);
+	}
+
+	private function buildPayload(DashboardPanelContext $context, array $bank)
+	{
 		$weekConfig = $this->dashboardRepository->findWeekByMonthYear($context->month(), $context->year());
 		$weeks = $this->resolveWeeks($context->month(), $context->year(), $weekConfig);
 		$carteiraMode = $this->dashboardRepository->findCarteiraConditionByBankId($context->bankId());
@@ -69,7 +101,7 @@ class DashboardPanelService
 		$prejudiceRows = $this->buildPrejudiceRows($context->bankId(), $context->month(), $context->year(), $weeks, $carteiraCodes, $carteiraMode, $regionFilter->ufs(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds());
 		$summary = $this->buildFinancialSummary($financialRows, $prejudiceRows, $weeks);
 
-		return new PanelViewData(array(
+		return array(
 			'error' => '',
 			'bank' => $bank,
 			'bankId' => $context->bankId(),
@@ -88,33 +120,72 @@ class DashboardPanelService
 			'summary' => $summary,
 			'ncol' => (count($weeks) * 3) + 3,
 			'contentHeight' => (count($productionRows) * 30) + (count($financialRows) * 30) + (count($prejudiceRows) * 30) + 260,
-		));
+		);
+	}
+
+	private function cacheKey(DashboardPanelContext $context)
+	{
+		return 'dashboard_panel:' . md5(json_encode(array(
+			'bank_id' => $context->bankId(),
+			'area_id' => $context->areaId(),
+			'month' => $context->month(),
+			'year' => $context->year(),
+			'user_id' => $context->userId(),
+			'user_level' => $context->userLevel(),
+			'user_region_mode' => $context->userRegionMode(),
+			'region_id' => $context->selectedRegionId(),
+		)));
+	}
+
+	private function logPerformance($channel, DashboardPanelContext $context, $cacheHit, array $metrics)
+	{
+		if (!config('app.performance.neo_query_log_enabled', false)) {
+			return;
+		}
+
+		Log::info($channel, array(
+			'cache_hit' => (bool) $cacheHit,
+			'bank_id' => $context->bankId(),
+			'area_id' => $context->areaId(),
+			'month' => $context->month(),
+			'year' => $context->year(),
+			'user_id' => $context->userId(),
+			'region_id' => $context->selectedRegionId(),
+		) + $metrics);
 	}
 
 	private function buildProductionRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0, array $metaRegionIds = array())
 	{
 		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 1, array(), array(), $regionId, $metaRegionIds);
 		$rows = $this->groupMetaRowsByAnda($rows, $weeks);
+		$typeSets = $this->mapRowTypes($rows);
 		$built = array();
+		$weekLookups = array();
+
+		foreach ($weeks as $index => $week) {
+			$events = $this->neoRepository->listProductionEventsByWeek(
+				$this->collectUniqueTypes($typeSets),
+				$carteiraCodes,
+				$carteiraMode,
+				$week,
+				$month,
+				$year,
+				$ufCodes
+			);
+			$weekLookups[$index] = $this->buildProductionLookup($events);
+		}
 
 		foreach ($rows as $row) {
 			$weekData = array();
 			$totalReal = 0;
 			$totalCodes = array();
 			$totalMeta = (int) round(isset($row['totalMeta']) ? (float) $row['totalMeta'] : (float) $row['meta_valor']);
+			$rowTypes = isset($typeSets[(int) $row['anda_id']]) ? $typeSets[(int) $row['anda_id']] : array();
 
 			foreach ($weeks as $index => $week) {
 				$metaValue = isset($row['weekMeta'][$index]) ? (float) $row['weekMeta'][$index] : $this->resolveWeekMeta($row, $index, $weeks);
-				$queryResult = $this->neoRepository->countProductionByWeek(
-					$this->splitNeoTypes(isset($row['anda_neo']) ? $row['anda_neo'] : ''),
-					$carteiraCodes,
-					$carteiraMode,
-					$week,
-					$month,
-					$year,
-					$ufCodes
-				);
-				$realValue = (int) $queryResult['count'];
+				$queryResult = $this->aggregateProductionLookup($weekLookups[$index], $rowTypes);
+				$realValue = count($queryResult['codes']);
 				$weekData[] = new DashboardMetricCell(
 					$metaValue,
 					$realValue,
@@ -146,25 +217,33 @@ class DashboardPanelService
 		$exclude = array('CUSTAS POR FALHA OPERACIONAL');
 		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, $exclude, array(), $regionId, $metaRegionIds);
 		$rows = $this->groupMetaRowsByAnda($rows, $weeks);
+		$typeSets = $this->mapRowTypes($rows);
 		$built = array();
+		$weekLookups = array();
+
+		foreach ($weeks as $index => $week) {
+			$events = $this->neoRepository->listFinancialEventsByWeek(
+				$this->collectUniqueTypes($typeSets),
+				$carteiraCodes,
+				$carteiraMode,
+				$week,
+				$month,
+				$year,
+				$ufCodes
+			);
+			$weekLookups[$index] = $this->buildFinancialLookup($events);
+		}
 
 		foreach ($rows as $row) {
 			$weekData = array();
 			$totalReal = 0.0;
 			$totalCodes = array();
 			$totalMeta = isset($row['totalMeta']) ? (float) $row['totalMeta'] : (float) $row['meta_valor'];
+			$rowTypes = isset($typeSets[(int) $row['anda_id']]) ? $typeSets[(int) $row['anda_id']] : array();
 
 			foreach ($weeks as $index => $week) {
 				$metaValue = isset($row['weekMeta'][$index]) ? (float) $row['weekMeta'][$index] : $this->resolveWeekMeta($row, $index, $weeks);
-				$queryResult = $this->neoRepository->sumFinancialByWeek(
-					$this->splitNeoTypes(isset($row['anda_neo']) ? $row['anda_neo'] : ''),
-					$carteiraCodes,
-					$carteiraMode,
-					$week,
-					$month,
-					$year,
-					$ufCodes
-				);
+				$queryResult = $this->aggregateFinancialLookup($weekLookups[$index], $rowTypes);
 				$realValue = (float) $queryResult['total'];
 				$weekData[] = new DashboardMetricCell(
 					$metaValue,
@@ -197,23 +276,31 @@ class DashboardPanelService
 		$include = array('CUSTAS POR FALHA OPERACIONAL');
 		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, array(), $include, $regionId, $metaRegionIds);
 		$rows = $this->groupMetaRowsByAnda($rows, $weeks);
+		$typeSets = $this->mapRowTypes($rows);
 		$built = array();
+		$weekLookups = array();
+
+		foreach ($weeks as $index => $week) {
+			$events = $this->neoRepository->listFinancialEventsByWeek(
+				$this->collectUniqueTypes($typeSets),
+				$carteiraCodes,
+				$carteiraMode,
+				$week,
+				$month,
+				$year,
+				$ufCodes
+			);
+			$weekLookups[$index] = $this->buildFinancialLookup($events);
+		}
 
 		foreach ($rows as $row) {
 			$weekData = array();
 			$totalReal = 0.0;
 			$totalCodes = array();
+			$rowTypes = isset($typeSets[(int) $row['anda_id']]) ? $typeSets[(int) $row['anda_id']] : array();
 
-			foreach ($weeks as $week) {
-				$queryResult = $this->neoRepository->sumFinancialByWeek(
-					$this->splitNeoTypes(isset($row['anda_neo']) ? $row['anda_neo'] : ''),
-					$carteiraCodes,
-					$carteiraMode,
-					$week,
-					$month,
-					$year,
-					$ufCodes
-				);
+			foreach ($weeks as $index => $week) {
+				$queryResult = $this->aggregateFinancialLookup($weekLookups[$index], $rowTypes);
 				$realValue = (float) $queryResult['total'];
 				$weekData[] = new DashboardMetricCell(
 					0.0,
@@ -503,6 +590,114 @@ class DashboardPanelService
 		}
 
 		return array_values($grouped);
+	}
+
+	private function mapRowTypes(array $rows)
+	{
+		$mapped = array();
+		foreach ($rows as $row) {
+			$andaId = isset($row['anda_id']) ? (int) $row['anda_id'] : 0;
+			if ($andaId <= 0) {
+				continue;
+			}
+
+			$mapped[$andaId] = $this->splitNeoTypes(isset($row['anda_neo']) ? $row['anda_neo'] : '');
+		}
+
+		return $mapped;
+	}
+
+	private function collectUniqueTypes(array $typeSets)
+	{
+		$unique = array();
+		foreach ($typeSets as $types) {
+			foreach ($types as $type) {
+				$unique[$type] = $type;
+			}
+		}
+
+		return array_values($unique);
+	}
+
+	private function buildProductionLookup(array $events)
+	{
+		$lookup = array();
+		foreach ($events as $event) {
+			$type = isset($event['type_name']) ? trim((string) $event['type_name']) : '';
+			$code = isset($event['code']) ? (string) $event['code'] : '';
+			if ($type === '' || $code === '') {
+				continue;
+			}
+
+			$lookup[$type][$code] = $code;
+		}
+
+		return $lookup;
+	}
+
+	private function aggregateProductionLookup(array $lookup, array $rowTypes)
+	{
+		$codes = array();
+		foreach ($rowTypes as $type) {
+			if (!isset($lookup[$type])) {
+				continue;
+			}
+
+			foreach ($lookup[$type] as $code) {
+				$codes[(string) $code] = (string) $code;
+			}
+		}
+
+		return array('codes' => array_values($codes));
+	}
+
+	private function buildFinancialLookup(array $events)
+	{
+		$lookup = array();
+		foreach ($events as $event) {
+			$type = isset($event['type_name']) ? trim((string) $event['type_name']) : '';
+			$code = isset($event['code']) ? (string) $event['code'] : '';
+			$value = isset($event['value']) ? (float) $event['value'] : 0.0;
+			if ($type === '' || $code === '') {
+				continue;
+			}
+
+			$lookup[$type][] = array(
+				'code' => $code,
+				'value' => $value,
+			);
+		}
+
+		return $lookup;
+	}
+
+	private function aggregateFinancialLookup(array $lookup, array $rowTypes)
+	{
+		$total = 0.0;
+		$codes = array();
+		$seen = array();
+
+		foreach ($rowTypes as $type) {
+			if (!isset($lookup[$type])) {
+				continue;
+			}
+
+			foreach ($lookup[$type] as $entry) {
+				$key = (string) $entry['code'] . '|' . number_format((float) $entry['value'], 2, '.', '');
+				if (isset($seen[$key])) {
+					continue;
+				}
+
+				$seen[$key] = true;
+				$total += (float) $entry['value'];
+				$codes[(string) $entry['code']] = (string) $entry['code'];
+			}
+		}
+
+		return array(
+			'total' => $total,
+			'codes' => array_values($codes),
+		);
 	}
 
 	private function resolveWeeks($month, $year, $weekConfig)
