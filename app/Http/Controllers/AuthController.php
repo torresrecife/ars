@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\AuthService;
+use App\Support\WriteResult;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -73,7 +74,8 @@ class AuthController extends Controller
             return $this->apiJsonResponse(false, 'forbidden', __('Invalid user for password change.'), array(), 403);
         }
 
-        if (!$this->authService->updatePasswordAndAccess($idUsuario, $novaSenha)) {
+        $result = $this->authService->updatePasswordAndAccess($idUsuario, $novaSenha);
+        if (!$result instanceof WriteResult || !$result->isSuccess()) {
             return $this->apiJsonResponse(false, 'update_failed', __('Unable to change password.'), array(), 409);
         }
 

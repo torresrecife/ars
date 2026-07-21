@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Repositories\RegionRepository;
 use App\Repositories\UserRepository;
+use App\Support\WriteResult;
 use Illuminate\Support\Facades\Auth;
 
 class AuthService
@@ -208,10 +209,12 @@ class AuthService
 	{
 		$hash = $this->hashPassword($password);
 		if (!$hash) {
-			return false;
+			return WriteResult::error();
 		}
 
-		return $this->users->updatePasswordAndAccess($id, $hash);
+		return $this->users->updatePasswordAndAccess($id, $hash)
+			? WriteResult::success()
+			: WriteResult::error();
 	}
 
 	public function findUserByLogin($login)
