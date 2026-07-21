@@ -91,7 +91,7 @@ class GeneralProductionService
 			$aggregate = $this->aggregateFinancialMetas($metaRows);
 			$carteiraCodes = $this->repository->listCarteiraCodesByBankId($bank['banco_id']);
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);
-			$events = $this->neoRepository->listFinancialMonthEvents($aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
+			$events = $this->loadFinancialMonthEvents($bank['banco_id'], $aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
 			$sum = $this->aggregateFinancialEvents($events, $aggregate['types']);
 			$metaToday = ($usefulDaysMonth > 0) ? ($aggregate['metaTotal'] / $usefulDaysMonth) * $usefulDaysCurrent : 0.0;
 			$percentToday = $this->metricFormatter->percent($sum['total'], $metaToday, 1);
@@ -187,7 +187,7 @@ class GeneralProductionService
 			$aggregate = $this->aggregateFinancialMetas($metaRows);
 			$carteiraCodes = $this->repository->listCarteiraCodesByBankId($bank['banco_id']);
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);
-			$events = $this->neoRepository->listFinancialWeekMonthEvents($aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
+			$events = $this->loadFinancialWeekMonthEvents($bank['banco_id'], $aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
 			$weeksLookup = $this->buildWeekFinancialLookup($events, $weeks, $aggregate['types']);
 			$weekData = array();
 			$totalReal = 0.0;
@@ -493,6 +493,51 @@ class GeneralProductionService
 		}
 
 		return null;
+	}
+
+	private function loadFinancialMonthEvents($bankId, array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $ufCodes = array())
+	{
+		$ttl = max(0, (int) config('app.performance.neo_result_cache_ttl_seconds', 900));
+		if ($ttl <= 0) {
+			return $this->neoRepository->listFinancialMonthEvents($typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes);
+		}
+
+		$key = $this->neoCacheKey('report_financial_month', $bankId, $typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes);
+
+		return Cache::remember($key, now()->addSeconds($ttl), function () use ($typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes) {
+			return $this->neoRepository->listFinancialMonthEvents($typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes);
+		});
+	}
+
+	private function loadFinancialWeekMonthEvents($bankId, array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $ufCodes = array())
+	{
+		$ttl = max(0, (int) config('app.performance.neo_result_cache_ttl_seconds', 900));
+		if ($ttl <= 0) {
+			return $this->neoRepository->listFinancialWeekMonthEvents($typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes);
+		}
+
+		$key = $this->neoCacheKey('report_financial_week_month', $bankId, $typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes);
+
+		return Cache::remember($key, now()->addSeconds($ttl), function () use ($typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes) {
+			return $this->neoRepository->listFinancialWeekMonthEvents($typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes);
+		});
+	}
+
+	private function neoCacheKey($prefix, $bankId, array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $ufCodes = array())
+	{
+		sort($typeNames);
+		sort($carteiraCodes);
+		sort($ufCodes);
+
+		return $prefix . ':' . md5(json_encode(array(
+			'bank_id' => (int) $bankId,
+			'types' => array_values($typeNames),
+			'carteira_codes' => array_values($carteiraCodes),
+			'carteira_mode' => (string) $carteiraMode,
+			'month' => (int) $month,
+			'year' => (int) $year,
+			'ufs' => array_values($ufCodes),
+		)));
 	}
 
 	private function currentEndDate($month, $year)

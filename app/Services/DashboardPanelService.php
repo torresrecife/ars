@@ -163,7 +163,8 @@ class DashboardPanelService
 		$weekLookups = array();
 
 		foreach ($weeks as $index => $week) {
-			$events = $this->neoRepository->listProductionEventsByWeek(
+			$events = $this->loadProductionWeekEvents(
+				$bankId,
 				$this->collectUniqueTypes($typeSets),
 				$carteiraCodes,
 				$carteiraMode,
@@ -222,7 +223,8 @@ class DashboardPanelService
 		$weekLookups = array();
 
 		foreach ($weeks as $index => $week) {
-			$events = $this->neoRepository->listFinancialEventsByWeek(
+			$events = $this->loadFinancialWeekEvents(
+				$bankId,
 				$this->collectUniqueTypes($typeSets),
 				$carteiraCodes,
 				$carteiraMode,
@@ -281,7 +283,8 @@ class DashboardPanelService
 		$weekLookups = array();
 
 		foreach ($weeks as $index => $week) {
-			$events = $this->neoRepository->listFinancialEventsByWeek(
+			$events = $this->loadFinancialWeekEvents(
+				$bankId,
 				$this->collectUniqueTypes($typeSets),
 				$carteiraCodes,
 				$carteiraMode,
@@ -698,6 +701,55 @@ class DashboardPanelService
 			'total' => $total,
 			'codes' => array_values($codes),
 		);
+	}
+
+	private function loadProductionWeekEvents($bankId, array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
+	{
+		$ttl = max(0, (int) config('app.performance.neo_result_cache_ttl_seconds', 900));
+		if ($ttl <= 0) {
+			return $this->neoRepository->listProductionEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		}
+
+		$key = $this->neoCacheKey('panel_production_week', $bankId, $typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes, $week);
+
+		return Cache::remember($key, now()->addSeconds($ttl), function () use ($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes) {
+			return $this->neoRepository->listProductionEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		});
+	}
+
+	private function loadFinancialWeekEvents($bankId, array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
+	{
+		$ttl = max(0, (int) config('app.performance.neo_result_cache_ttl_seconds', 900));
+		if ($ttl <= 0) {
+			return $this->neoRepository->listFinancialEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		}
+
+		$key = $this->neoCacheKey('panel_financial_week', $bankId, $typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes, $week);
+
+		return Cache::remember($key, now()->addSeconds($ttl), function () use ($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes) {
+			return $this->neoRepository->listFinancialEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		});
+	}
+
+	private function neoCacheKey($prefix, $bankId, array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $ufCodes = array(), array $week = array())
+	{
+		sort($typeNames);
+		sort($carteiraCodes);
+		sort($ufCodes);
+
+		return $prefix . ':' . md5(json_encode(array(
+			'bank_id' => (int) $bankId,
+			'types' => array_values($typeNames),
+			'carteira_codes' => array_values($carteiraCodes),
+			'carteira_mode' => (string) $carteiraMode,
+			'month' => (int) $month,
+			'year' => (int) $year,
+			'ufs' => array_values($ufCodes),
+			'week' => array(
+				'start' => isset($week['start']) ? (int) $week['start'] : 0,
+				'end' => isset($week['end']) ? (int) $week['end'] : 0,
+			),
+		)));
 	}
 
 	private function resolveWeeks($month, $year, $weekConfig)
