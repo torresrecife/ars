@@ -91,7 +91,8 @@ class GeneralProductionService
 			$aggregate = $this->aggregateFinancialMetas($metaRows);
 			$carteiraCodes = $this->repository->listCarteiraCodesByBankId($bank['banco_id']);
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);
-			$sum = $this->neoRepository->sumFinancialByMonth($aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
+			$events = $this->neoRepository->listFinancialMonthEvents($aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
+			$sum = $this->aggregateFinancialEvents($events, $aggregate['types']);
 			$metaToday = ($usefulDaysMonth > 0) ? ($aggregate['metaTotal'] / $usefulDaysMonth) * $usefulDaysCurrent : 0.0;
 			$percentToday = $this->metricFormatter->percent($sum['total'], $metaToday, 1);
 			$percentMonth = $this->metricFormatter->percent($sum['total'], $aggregate['metaTotal'], 1);
@@ -186,12 +187,14 @@ class GeneralProductionService
 			$aggregate = $this->aggregateFinancialMetas($metaRows);
 			$carteiraCodes = $this->repository->listCarteiraCodesByBankId($bank['banco_id']);
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);
+			$events = $this->neoRepository->listFinancialWeekMonthEvents($aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
+			$weeksLookup = $this->buildWeekFinancialLookup($events, $weeks, $aggregate['types']);
 			$weekData = array();
 			$totalReal = 0.0;
 
 			foreach ($weeks as $index => $week) {
 				$meta = $this->resolveMonthlyWeekMeta($aggregate, $index, $weeks);
-				$real = $this->neoRepository->sumFinancialByWeek($aggregate['types'], $carteiraCodes, $carteiraMode, $week, $context->month(), $context->year(), $regionFilter->ufs());
+				$real = isset($weeksLookup[$index]) ? $weeksLookup[$index] : array('total' => 0.0, 'codes' => array());
 				$percent = $this->metricFormatter->percent($real['total'], $meta, 0);
 				$weekData[] = new DashboardMetricCell(
 					$meta,
@@ -402,6 +405,94 @@ class GeneralProductionService
 			'weeks' => $semanas,
 			'types' => array_values($types),
 		);
+	}
+
+	private function aggregateFinancialEvents(array $events, array $types)
+	{
+		$allowedTypes = array_fill_keys($types, true);
+		$total = 0.0;
+		$codes = array();
+		$seen = array();
+
+		foreach ($events as $event) {
+			$type = isset($event['type_name']) ? trim((string) $event['type_name']) : '';
+			$code = isset($event['code']) ? (string) $event['code'] : '';
+			$value = isset($event['value']) ? (float) $event['value'] : 0.0;
+			if ($type === '' || $code === '' || !isset($allowedTypes[$type])) {
+				continue;
+			}
+
+			$key = $type . '|' . $code . '|' . number_format($value, 2, '.', '');
+			if (isset($seen[$key])) {
+				continue;
+			}
+
+			$seen[$key] = true;
+			$total += $value;
+			$codes[$code] = $code;
+		}
+
+		return array(
+			'total' => $total,
+			'codes' => array_values($codes),
+		);
+	}
+
+	private function buildWeekFinancialLookup(array $events, array $weeks, array $types)
+	{
+		$lookup = array();
+		foreach ($weeks as $index => $week) {
+			$lookup[$index] = array(
+				'total' => 0.0,
+				'codes' => array(),
+				'seen' => array(),
+			);
+		}
+
+		$allowedTypes = array_fill_keys($types, true);
+		foreach ($events as $event) {
+			$type = isset($event['type_name']) ? trim((string) $event['type_name']) : '';
+			$code = isset($event['code']) ? (string) $event['code'] : '';
+			$value = isset($event['value']) ? (float) $event['value'] : 0.0;
+			$day = isset($event['day_number']) ? (int) $event['day_number'] : 0;
+			if ($type === '' || $code === '' || $day <= 0 || !isset($allowedTypes[$type])) {
+				continue;
+			}
+
+			$weekIndex = $this->resolveWeekIndexByDay($weeks, $day);
+			if ($weekIndex === null) {
+				continue;
+			}
+
+			$key = $type . '|' . $code . '|' . number_format($value, 2, '.', '');
+			if (isset($lookup[$weekIndex]['seen'][$key])) {
+				continue;
+			}
+
+			$lookup[$weekIndex]['seen'][$key] = true;
+			$lookup[$weekIndex]['total'] += $value;
+			$lookup[$weekIndex]['codes'][$code] = $code;
+		}
+
+		foreach ($lookup as $index => $weekData) {
+			$lookup[$index] = array(
+				'total' => $weekData['total'],
+				'codes' => array_values($weekData['codes']),
+			);
+		}
+
+		return $lookup;
+	}
+
+	private function resolveWeekIndexByDay(array $weeks, $day)
+	{
+		foreach ($weeks as $index => $week) {
+			if ($day >= (int) $week['start'] && $day <= (int) $week['end']) {
+				return $index;
+			}
+		}
+
+		return null;
 	}
 
 	private function currentEndDate($month, $year)
