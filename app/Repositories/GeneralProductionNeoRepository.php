@@ -28,6 +28,28 @@ class GeneralProductionNeoRepository extends NeoSqlsrvRepository
 		return $this->sumQuery($query, 'Valor', 'CodigoLancamento');
 	}
 
+	public function listFinancialMonthEvents(array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $ufCodes = array())
+	{
+		if ($this->connection === null) {
+			return array();
+		}
+
+		$typeList = $this->buildQuotedList($typeNames);
+		if ($typeList === '') {
+			return array();
+		}
+
+		$query = '
+			SELECT l.TipoLancamento as type_name, l.CodigoLancamento as code, l.Valor as value
+			' . $this->financialMonthFromJoin()
+			. ' WHERE l.TipoLancamento IN (' . $typeList . ')';
+		$query .= $this->buildFinancialBaseConditions($carteiraCodes, $carteiraMode, $ufCodes, 'l.DataHora_Evento', $month, $year);
+		$query .= $this->buildFinancialStatusCondition();
+		$query .= ' GROUP BY l.TipoLancamento, l.CodigoLancamento, l.Valor';
+
+		return $this->fetchAll($query);
+	}
+
 	public function sumFinancialByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
 	{
 		if ($this->connection === null) {
@@ -47,6 +69,27 @@ class GeneralProductionNeoRepository extends NeoSqlsrvRepository
 		$query .= ' GROUP BY l.CodigoLancamento, l.Valor';
 
 		return $this->sumQuery($query, 'Valor', 'CodigoLancamento');
+	}
+
+	public function listFinancialWeekMonthEvents(array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $ufCodes = array())
+	{
+		if ($this->connection === null) {
+			return array();
+		}
+
+		$typeList = $this->buildQuotedList($typeNames);
+		if ($typeList === '') {
+			return array();
+		}
+
+		$query = '
+			SELECT l.TipoLancamento as type_name, l.CodigoLancamento as code, l.Valor as value, DAY(l.DataHora_Evento) as day_number
+			' . $this->financialWeekFromJoin()
+			. ' WHERE l.TipoLancamento IN (' . $typeList . ')';
+		$query .= $this->buildFinancialBaseConditions($carteiraCodes, $carteiraMode, $ufCodes, 'l.DataHora_Evento', $month, $year);
+		$query .= ' GROUP BY l.TipoLancamento, l.CodigoLancamento, l.Valor, DAY(l.DataHora_Evento)';
+
+		return $this->fetchAll($query);
 	}
 
 	private function financialMonthFromJoin()
