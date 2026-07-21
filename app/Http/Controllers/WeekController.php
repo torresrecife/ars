@@ -57,8 +57,6 @@ class WeekController extends Controller
 
 	public function destroy($id)
 	{
-		return $this->weekService->delete((int) $id)
-			? $this->apiJsonResponse(true, 'success', __('Week deleted successfully.'))
-			: $this->apiJsonResponse(false, 'error', __('Operation failed.'), array(), 500);
+		return $this->mapWriteResultToJson($this->weekService->delete((int) $id), __('Week deleted successfully.'));
 	}
 }

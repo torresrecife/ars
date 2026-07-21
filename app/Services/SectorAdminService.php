@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\SectorAdminRepository;
+use App\Support\WriteResult;
 
 class SectorAdminService
 {
@@ -41,14 +42,14 @@ class SectorAdminService
 	{
 		$name = isset($input['area_nome']) ? trim((string) $input['area_nome']) : '';
 		if ($name === '') {
-			return '0';
+			return WriteResult::error();
 		}
 
 		if ($this->repository->existsByName($name)) {
-			return '2';
+			return WriteResult::duplicate();
 		}
 
-		return $this->repository->insert($name) ? '1' : '0';
+		return $this->repository->insert($name) ? WriteResult::success() : WriteResult::error();
 	}
 
 	public function update(array $input)
@@ -56,18 +57,18 @@ class SectorAdminService
 		$areaId = isset($input['area_id']) ? (int) $input['area_id'] : 0;
 		$name = isset($input['area_nome']) ? trim((string) $input['area_nome']) : '';
 		if ($areaId <= 0 || $name === '') {
-			return '0';
+			return WriteResult::error();
 		}
 
 		if ($this->repository->existsByName($name, $areaId)) {
-			return '2';
+			return WriteResult::duplicate();
 		}
 
-		return $this->repository->update($areaId, $name) ? '1' : '0';
+		return $this->repository->update($areaId, $name) ? WriteResult::success() : WriteResult::error();
 	}
 
 	public function delete($areaId)
 	{
-		return $this->repository->delete($areaId) ? '1' : '0';
+		return $this->repository->delete($areaId) ? WriteResult::success() : WriteResult::error();
 	}
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\WeekStoreRequest;
 use App\Http\Requests\WeekUpdateRequest;
 use App\Services\WeekService;
 use App\Support\View;
+use App\Support\WriteResult;
 use Mockery;
 use Tests\TestCase;
 
@@ -32,7 +33,7 @@ class WeekControllerTest extends TestCase
     public function test_store_returns_success_json_payload()
     {
         $service = Mockery::mock(WeekService::class);
-        $service->shouldReceive('createFromRequest')->once()->andReturn('1');
+        $service->shouldReceive('createFromRequest')->once()->andReturn(WriteResult::success());
 
         $controller = new WeekController($service, app(View::class));
         $request = WeekStoreRequest::create('/***REMOVED***/semanas', 'POST', array(
@@ -62,7 +63,7 @@ class WeekControllerTest extends TestCase
             ->with(Mockery::on(function ($input) {
                 return isset($input['id_sem']) && (int) $input['id_sem'] === 8;
             }))
-            ->andReturn('1');
+            ->andReturn(WriteResult::success());
 
         $controller = new WeekController($service, app(View::class));
         $request = WeekUpdateRequest::create('/***REMOVED***/semanas/8', 'PUT', array(
@@ -87,7 +88,7 @@ class WeekControllerTest extends TestCase
     public function test_destroy_returns_success_json_payload()
     {
         $service = Mockery::mock(WeekService::class);
-        $service->shouldReceive('delete')->once()->with(8)->andReturn(true);
+        $service->shouldReceive('delete')->once()->with(8)->andReturn(WriteResult::success());
 
         $controller = new WeekController($service, app(View::class));
         $response = $controller->destroy(8);

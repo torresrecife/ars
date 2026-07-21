@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\WeekRepository;
+use App\Support\WriteResult;
 
 class WeekService
 {
@@ -30,10 +31,10 @@ class WeekService
 	{
 		$data = $this->normalizeWeekPayload($input);
 		if ($this->repository->existsByMonthYear($data['mes'], $data['ano'])) {
-			return 2;
+			return WriteResult::duplicate();
 		}
 
-		return $this->repository->insert($data) ? 1 : 3;
+		return $this->repository->insert($data) ? WriteResult::success() : WriteResult::error();
 	}
 
 	public function updateFromRequest(array $input)
@@ -42,15 +43,15 @@ class WeekService
 		$data = $this->normalizeWeekPayload($input);
 
 		if ($this->repository->existsByMonthYear($data['mes'], $data['ano'], $weekId)) {
-			return 2;
+			return WriteResult::duplicate();
 		}
 
-		return $this->repository->update($weekId, $data) ? 1 : 3;
+		return $this->repository->update($weekId, $data) ? WriteResult::success() : WriteResult::error();
 	}
 
 	public function delete($weekId)
 	{
-		return $this->repository->delete($weekId);
+		return $this->repository->delete($weekId) ? WriteResult::success() : WriteResult::error();
 	}
 
 	private function normalizeWeekPayload(array $input)

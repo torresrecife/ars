@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Repositories\MetaRepository;
 use App\Services\RegionService;
+use App\Support\WriteResult;
 
 class MetaService
 {
@@ -83,15 +84,15 @@ class MetaService
 			$data = $this->extractMetaPayload($input, $index);
 			$key = $this->duplicateKey($data);
 			if (isset($seen[$key]) || $this->repository->existsDuplicate($data)) {
-				return '2';
+				return WriteResult::duplicate();
 			}
 			$seen[$key] = true;
 			if (!$this->repository->insert($data)) {
-				return '0';
+				return WriteResult::error();
 			}
 		}
 
-		return '1';
+		return WriteResult::success();
 	}
 
 	public function updateManyFromRequest(array $input)
@@ -104,20 +105,20 @@ class MetaService
 			$data = $this->extractMetaPayload($input, $index);
 			$key = $this->duplicateKey($data);
 			if (isset($seen[$key]) || $this->repository->existsDuplicate($data, $metaId)) {
-				return '2';
+				return WriteResult::duplicate();
 			}
 			$seen[$key] = true;
 			if (!$this->repository->update($metaId, $data)) {
-				return '0';
+				return WriteResult::error();
 			}
 		}
 
-		return '1';
+		return WriteResult::success();
 	}
 
 	public function delete($metaId)
 	{
-		return $this->repository->delete($metaId);
+		return $this->repository->delete($metaId) ? WriteResult::success() : WriteResult::error();
 	}
 
 	public function totalFinancialMeta(array $metas)

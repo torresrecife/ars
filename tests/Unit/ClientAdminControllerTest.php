@@ -7,6 +7,7 @@ use App\Http\Requests\ClientStoreRequest;
 use App\Http\Requests\ClientUpdateRequest;
 use App\Services\ClientAdminService;
 use App\Support\View;
+use App\Support\WriteResult;
 use Mockery;
 use Tests\TestCase;
 
@@ -42,7 +43,7 @@ class ClientAdminControllerTest extends TestCase
     public function test_store_returns_success_json_payload()
     {
         $service = Mockery::mock(ClientAdminService::class);
-        $service->shouldReceive('create')->once()->andReturn('1');
+        $service->shouldReceive('create')->once()->andReturn(WriteResult::success());
 
         $controller = new ClientAdminController($service, app(View::class));
         $request = ClientStoreRequest::create('/***REMOVED***/clientes', 'POST', array(
@@ -69,7 +70,7 @@ class ClientAdminControllerTest extends TestCase
             ->with(Mockery::on(function ($input) {
                 return isset($input['banco_id']) && (int) $input['banco_id'] === 5;
             }))
-            ->andReturn('1');
+            ->andReturn(WriteResult::success());
 
         $controller = new ClientAdminController($service, app(View::class));
         $request = ClientUpdateRequest::create('/***REMOVED***/clientes/5', 'PUT', array(
@@ -91,7 +92,7 @@ class ClientAdminControllerTest extends TestCase
     public function test_destroy_returns_success_json_payload()
     {
         $service = Mockery::mock(ClientAdminService::class);
-        $service->shouldReceive('delete')->once()->with(5)->andReturn('1');
+        $service->shouldReceive('delete')->once()->with(5)->andReturn(WriteResult::success());
 
         $controller = new ClientAdminController($service, app(View::class));
         $response = $controller->destroy(5);

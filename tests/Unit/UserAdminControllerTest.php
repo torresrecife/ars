@@ -7,6 +7,7 @@ use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Services\UserAdminService;
 use App\Support\View;
+use App\Support\WriteResult;
 use Mockery;
 use Tests\TestCase;
 
@@ -53,7 +54,7 @@ class UserAdminControllerTest extends TestCase
                     && $input['nome_usu'] === 'Maria'
                     && $input['login_usu'] === 'maria';
             }))
-            ->andReturn('1');
+            ->andReturn(WriteResult::success());
 
         $controller = new UserAdminController($service, app(View::class));
         $request = UserStoreRequest::create('/***REMOVED***/usuarios', 'POST', array(
@@ -84,7 +85,7 @@ class UserAdminControllerTest extends TestCase
             ->with(Mockery::on(function ($input) {
                 return isset($input['id_usu']) && (int) $input['id_usu'] === 9;
             }))
-            ->andReturn('1');
+            ->andReturn(WriteResult::success());
 
         $controller = new UserAdminController($service, app(View::class));
         $request = UserUpdateRequest::create('/***REMOVED***/usuarios/9', 'PUT', array(
@@ -109,7 +110,7 @@ class UserAdminControllerTest extends TestCase
         $service->shouldReceive('delete')
             ->once()
             ->with(9)
-            ->andReturn('1');
+            ->andReturn(WriteResult::success());
 
         $controller = new UserAdminController($service, app(View::class));
         $response = $controller->destroy(9);

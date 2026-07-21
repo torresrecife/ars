@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Http\Controllers\SectorAdminController;
 use App\Services\SectorAdminService;
 use App\Support\View;
+use App\Support\WriteResult;
 use Illuminate\Http\Request;
 use Mockery;
 use Tests\TestCase;
@@ -31,7 +32,7 @@ class SectorAdminControllerTest extends TestCase
     public function test_store_returns_success_json_payload()
     {
         $service = Mockery::mock(SectorAdminService::class);
-        $service->shouldReceive('create')->once()->andReturn('1');
+        $service->shouldReceive('create')->once()->andReturn(WriteResult::success());
 
         $controller = new SectorAdminController($service, app(View::class));
         $request = Request::create('/***REMOVED***/setores', 'POST', array('area_nome' => 'Operacional'));
@@ -50,7 +51,7 @@ class SectorAdminControllerTest extends TestCase
             ->with(Mockery::on(function ($input) {
                 return isset($input['area_id']) && (int) $input['area_id'] === 3;
             }))
-            ->andReturn('1');
+            ->andReturn(WriteResult::success());
 
         $controller = new SectorAdminController($service, app(View::class));
         $request = Request::create('/***REMOVED***/setores/3', 'PUT', array('area_nome' => 'Operacional'));
@@ -64,7 +65,7 @@ class SectorAdminControllerTest extends TestCase
     public function test_destroy_returns_success_json_payload()
     {
         $service = Mockery::mock(SectorAdminService::class);
-        $service->shouldReceive('delete')->once()->with(3)->andReturn('1');
+        $service->shouldReceive('delete')->once()->with(3)->andReturn(WriteResult::success());
 
         $controller = new SectorAdminController($service, app(View::class));
         $response = $controller->destroy(3);
