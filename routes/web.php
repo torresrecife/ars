@@ -16,32 +16,32 @@ Route::middleware('auth')->group(function () {
     Route::match(['get', 'post'], '/detalhes/andamentos', 'AndamentoDetailController@webIndex')->name('detalhes.andamentos');
     Route::match(['get', 'post'], '/detalhes/faturamento', 'FinancialDetailController@webIndex')->name('detalhes.faturamento');
 
-    Route::get('/carteiras', 'HomeController@webCarteiras')->name('carteiras');
-    Route::get('/painel', 'HomeController@webPainel')->name('painel');
-    Route::get('/producao', 'HomeController@webProducao')->name('producao');
+    Route::get('/carteiras', 'HomeController@webSectionPage')->defaults('section', 'carteiras')->name('carteiras');
+    Route::get('/painel', 'HomeController@webSectionPage')->defaults('section', 'painel')->name('painel');
+    Route::get('/producao', 'HomeController@webSectionPage')->defaults('section', 'producao')->name('producao');
     Route::get('/relatorio', 'HomeController@webRelatorio')->name('relatorio');
     Route::middleware('can:access-***REMOVED***')->group(function () {
-        Route::get('/***REMOVED***', 'HomeController@webAdmin')->name('***REMOVED***');
+        Route::get('/***REMOVED***', 'HomeController@webSectionPage')->defaults('section', '***REMOVED***')->name('***REMOVED***');
         Route::get('/metas', 'HomeController@webMetas')->middleware('can:viewAny,App\\Models\\MetaAndamento')->name('metas');
     });
 
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Usuario'), function () {
-        Route::get('/usuarios', 'HomeController@webUsuarios')->name('usuarios');
+        Route::get('/usuarios', 'HomeController@webSectionPage')->defaults('section', 'usuarios')->name('usuarios');
     });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Area'), function () {
-        Route::get('/setores', 'HomeController@webSetores')->name('setores');
+        Route::get('/setores', 'HomeController@webSectionPage')->defaults('section', 'setores')->name('setores');
     });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Banco'), function () {
-        Route::get('/clientes', 'HomeController@webClientes')->name('clientes');
+        Route::get('/clientes', 'HomeController@webSectionPage')->defaults('section', 'clientes')->name('clientes');
     });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Andamento'), function () {
-        Route::get('/andamentos', 'HomeController@webAndamentos')->name('andamentos');
+        Route::get('/andamentos', 'HomeController@webSectionPage')->defaults('section', 'andamentos')->name('andamentos');
     });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Semana'), function () {
-        Route::get('/semanas', 'HomeController@webSemanas')->name('semanas');
+        Route::get('/semanas', 'HomeController@webSectionPage')->defaults('section', 'semanas')->name('semanas');
     });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Regiao'), function () {
-        Route::get('/regioes', 'HomeController@webRegioes')->name('regioes');
+        Route::get('/regioes', 'HomeController@webSectionPage')->defaults('section', 'regioes')->name('regioes');
     });
 
     Route::prefix('***REMOVED***')->as('***REMOVED***.')->group(function () {

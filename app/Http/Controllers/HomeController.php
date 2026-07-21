@@ -45,95 +45,22 @@ class HomeController extends Controller
 
 	public function webIndex(Request $request)
 	{
-		$this->ensureLegacyEnvironment();
-
-		return response($this->renderPage($request->all(), $request->session()->all(), url('index')));
+		return $this->webPageResponse($request);
 	}
 
 	public function webSectionPage(Request $request, $section)
 	{
-		$this->ensureLegacyEnvironment();
-
-		$input = $request->all();
-		$input['section'] = (string) $section;
-
-		return response($this->renderPage($input, $request->session()->all(), url('index')));
-	}
-
-	public function webCarteiras(Request $request)
-	{
-		return $this->webSectionPage($request, 'carteiras');
-	}
-
-	public function webPainel(Request $request)
-	{
-		return $this->webSectionPage($request, 'painel');
-	}
-
-	public function webProducao(Request $request)
-	{
-		return $this->webSectionPage($request, 'producao');
+		return $this->webPageResponse($request, (string) $section);
 	}
 
 	public function webRelatorio(Request $request)
 	{
-		$input = $request->all();
-		$section = (isset($input['geral']) && (string) $input['geral'] === '1')
-			? 'relatorio-semanal'
-			: 'relatorio-mensal';
-
-		return $this->webSectionPage($request, $section);
-	}
-
-	public function webAdmin(Request $request)
-	{
-		return $this->webSectionPage($request, '***REMOVED***');
-	}
-
-	public function webUsuarios(Request $request)
-	{
-		return $this->webSectionPage($request, 'usuarios');
-	}
-
-	public function webSetores(Request $request)
-	{
-		return $this->webSectionPage($request, 'setores');
-	}
-
-	public function webClientes(Request $request)
-	{
-		return $this->webSectionPage($request, 'clientes');
-	}
-
-	public function webAndamentos(Request $request)
-	{
-		return $this->webSectionPage($request, 'andamentos');
+		return $this->webPageResponse($request, $this->resolveReportSection($request->all()));
 	}
 
 	public function webMetas(Request $request)
 	{
-		$input = $request->all();
-		$hasMetaContext = false;
-
-		if (isset($input['startBanco']) && (int) $input['startBanco'] > 0) {
-			$hasMetaContext = true;
-		}
-
-		if (isset($input['banco_id']) && (int) $input['banco_id'] > 0) {
-			$hasMetaContext = true;
-		}
-
-		return $this->webSectionPage($request, $hasMetaContext ? 'metas-***REMOVED***' : 'metas-select');
-	}
-
-	public function webSemanas(Request $request)
-	{
-		return $this->webSectionPage($request, 'semanas');
-	}
-
-	public function webRegioes(Request $request)
-	{
-		return $this->webSectionPage($request, 'regioes');
+		return $this->webPageResponse($request, $this->resolveMetasSection($request->all()));
 	}
 
 	public function health()
@@ -159,11 +86,38 @@ class HomeController extends Controller
 		));
 	}
 
+	private function webPageResponse(Request $request, $section = null)
+	{
+		$this->ensureLegacyEnvironment();
+
+		$input = $request->all();
+		if ($section !== null && $section !== '') {
+			$input['section'] = (string) $section;
+		}
+
+		return response($this->renderPage($input, $request->session()->all(), url('index')));
+	}
+
+	private function resolveReportSection(array $input)
+	{
+		return (isset($input['geral']) && (string) $input['geral'] === '1')
+			? 'relatorio-semanal'
+			: 'relatorio-mensal';
+	}
+
+	private function resolveMetasSection(array $input)
+	{
+		$startBanco = isset($input['startBanco']) ? (int) $input['startBanco'] : 0;
+		$bankId = isset($input['banco_id']) ? (int) $input['banco_id'] : 0;
+
+		return ($startBanco > 0 || $bankId > 0) ? 'metas-***REMOVED***' : 'metas-select';
+	}
+
 	private function ensureLegacyEnvironment()
 	{
 		$user = $this->authService->currentUser();
 		if (empty($user)) {
-			throw new \RuntimeException('Sessao de usuario nao encontrada.');
+			throw new \RuntimeException(__('User session not found.'));
 		}
 
 		$this->authService->syncSessionContext($user);

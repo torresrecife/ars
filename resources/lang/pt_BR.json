@@ -194,5 +194,14 @@
     "User loaded.": "Usuário carregado.",
     "User updated successfully.": "Usuário atualizado com sucesso.",
     "Duplicate record.": "Registro duplicado.",
-    "Operation failed.": "Falha na operação."
+    "Operation failed.": "Falha na operação.",
+    "Session expired.": "Sessão expirada.",
+    "Invalid data.": "Dados invalidos.",
+    "Invalid user for password change.": "Usuário inválido para alteração da senha.",
+    "Unable to change password.": "Não foi possível alterar a senha.",
+    "Password changed successfully.": "Senha alterada com sucesso.",
+    "Go back and select the client.": "Volte e selecione o Banco!",
+    "Client not found.": "Banco não encontrado.",
+    "The NEO connection is not available in this environment.": "A conexão com o NEO não está disponível neste ambiente.",
+    "User session not found.": "Sessão de usuário não encontrada."
 }

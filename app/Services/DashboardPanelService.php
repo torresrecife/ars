@@ -46,15 +46,15 @@ class DashboardPanelService
 	{
 		$context = $this->buildContext($input, $session);
 		if ($context->bankId() <= 0) {
-			return new PanelViewData(array('error' => 'Volte e selecione o Banco!'));
+			return new PanelViewData(array('error' => __('Go back and select the client.')));
 		}
 
 		$bank = $this->dashboardRepository->findBankById($context->bankId());
 		if (!$bank) {
-			return new PanelViewData(array('error' => 'Banco nao encontrado.'));
+			return new PanelViewData(array('error' => __('Client not found.')));
 		}
 		if (!$this->neoRepository->isAvailable()) {
-			return new PanelViewData(array('error' => 'A conexao com o NEO nao esta disponivel neste ambiente.'));
+			return new PanelViewData(array('error' => __('The NEO connection is not available in this environment.')));
 		}
 
 		$weekConfig = $this->dashboardRepository->findWeekByMonthYear($context->month(), $context->year());

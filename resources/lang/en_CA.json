@@ -236,5 +236,14 @@
     "User loaded.": "User loaded.",
     "User updated successfully.": "User updated successfully.",
     "Duplicate record.": "Duplicate record.",
-    "Operation failed.": "Operation failed."
+    "Operation failed.": "Operation failed.",
+    "Session expired.": "Session expired.",
+    "Invalid data.": "Invalid data.",
+    "Invalid user for password change.": "Invalid user for password change.",
+    "Unable to change password.": "Unable to change password.",
+    "Password changed successfully.": "Password changed successfully.",
+    "Go back and select the client.": "Go back and select the client.",
+    "Client not found.": "Client not found.",
+    "The NEO connection is not available in this environment.": "The NEO connection is not available in this environment.",
+    "User session not found.": "User session not found."
 }
