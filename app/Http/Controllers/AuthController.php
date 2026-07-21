@@ -59,26 +59,27 @@ class AuthController extends Controller
     {
         $currentUser = $this->authService->currentUser();
         if (empty($currentUser)) {
-            return $this->apiJsonResponse(false, 'unauthenticated', 'Sessao expirada.', array(), 401);
+            return $this->apiJsonResponse(false, 'unauthenticated', __('Session expired.'), array(), 401);
         }
 
         $idUsuario = (int) $request->input('id_usu', 0);
         $novaSenha = (string) $request->input('senha_usu1', '');
 
         if ($idUsuario <= 0 || $novaSenha === '') {
-            return $this->apiJsonResponse(false, 'invalid_payload', 'Dados invalidos.', array(), 422);
+            return $this->apiJsonResponse(false, 'invalid_payload', __('Invalid data.'), array(), 422);
         }
 
         if ((int) $currentUser['id_usu'] !== $idUsuario) {
-            return $this->apiJsonResponse(false, 'forbidden', 'Usuario invalido para alteracao da senha.', array(), 403);
+            return $this->apiJsonResponse(false, 'forbidden', __('Invalid user for password change.'), array(), 403);
         }
 
         if (!$this->authService->updatePasswordAndAccess($idUsuario, $novaSenha)) {
-            return $this->apiJsonResponse(false, 'update_failed', 'Nao foi possivel alterar a senha.', array(), 409);
+            return $this->apiJsonResponse(false, 'update_failed', __('Unable to change password.'), array(), 409);
         }
 
-        return $this->apiJsonResponse(true, 'updated', 'Senha alterada com sucesso.');
+        return $this->apiJsonResponse(true, 'updated', __('Password changed successfully.'));
     }
+
     private function legacyBaseUrl($legacyUrl)
     {
         $directory = rtrim(str_replace('\\', '/', dirname((string) $legacyUrl)), '/');
