@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\RegionAdminRepository;
+use App\Support\WriteResult;
 
 class RegionAdminService
 {
@@ -46,51 +47,55 @@ class RegionAdminService
 	{
 		$payload = $this->normalizePayload($input, false);
 		if ($payload === false) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		if ($this->repository->findBySlug($payload['regiao_slug'])) {
-			return '2';
+			return WriteResult::duplicate();
 		}
 
 		if (!$this->repository->insert($payload)) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		$regionId = $this->repository->lastInsertId();
 		if ($regionId <= 0) {
-			return '0';
+			return WriteResult::error();
 		}
 
-		return $this->repository->replaceUfs($regionId, $payload['ufs']) ? '1' : '0';
+		return $this->repository->replaceUfs($regionId, $payload['ufs'])
+			? WriteResult::success()
+			: WriteResult::error();
 	}
 
 	public function update(array $input)
 	{
 		$payload = $this->normalizePayload($input, true);
 		if ($payload === false) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		if ($this->repository->findBySlug($payload['regiao_slug'], $payload['regiao_id'])) {
-			return '2';
+			return WriteResult::duplicate();
 		}
 
 		if (!$this->repository->update($payload)) {
-			return '0';
+			return WriteResult::error();
 		}
 
-		return $this->repository->replaceUfs($payload['regiao_id'], $payload['ufs']) ? '1' : '0';
+		return $this->repository->replaceUfs($payload['regiao_id'], $payload['ufs'])
+			? WriteResult::success()
+			: WriteResult::error();
 	}
 
 	public function delete($id)
 	{
 		$result = $this->repository->delete($id);
 		if ($result === 'LINKED_USERS') {
-			return '3';
+			return WriteResult::linkedUsers();
 		}
 
-		return $result ? '1' : '0';
+		return $result ? WriteResult::success() : WriteResult::error();
 	}
 
 	private function normalizePayload(array $input, $isUpdate)

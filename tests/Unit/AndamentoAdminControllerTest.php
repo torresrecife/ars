@@ -7,6 +7,7 @@ use App\Http\Requests\AndamentoStoreRequest;
 use App\Http\Requests\AndamentoUpdateRequest;
 use App\Services\AndamentoAdminService;
 use App\Support\View;
+use App\Support\WriteResult;
 use Mockery;
 use Tests\TestCase;
 
@@ -36,7 +37,7 @@ class AndamentoAdminControllerTest extends TestCase
     public function test_store_returns_success_json_payload()
     {
         $service = Mockery::mock(AndamentoAdminService::class);
-        $service->shouldReceive('create')->once()->andReturn('1');
+        $service->shouldReceive('create')->once()->andReturn(WriteResult::success());
 
         $controller = new AndamentoAdminController($service, app(View::class));
         $request = AndamentoStoreRequest::create('/admin/andamentos', 'POST', array(
@@ -62,7 +63,7 @@ class AndamentoAdminControllerTest extends TestCase
             ->with(Mockery::on(function ($input) {
                 return isset($input['anda_id']) && (int) $input['anda_id'] === 6;
             }))
-            ->andReturn('1');
+            ->andReturn(WriteResult::success());
 
         $controller = new AndamentoAdminController($service, app(View::class));
         $request = AndamentoUpdateRequest::create('/admin/andamentos/6', 'PUT', array(
@@ -83,7 +84,7 @@ class AndamentoAdminControllerTest extends TestCase
     public function test_destroy_returns_success_json_payload()
     {
         $service = Mockery::mock(AndamentoAdminService::class);
-        $service->shouldReceive('delete')->once()->with(6)->andReturn('1');
+        $service->shouldReceive('delete')->once()->with(6)->andReturn(WriteResult::success());
 
         $controller = new AndamentoAdminController($service, app(View::class));
         $response = $controller->destroy(6);

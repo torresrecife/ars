@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\AndamentoAdminRepository;
+use App\Support\WriteResult;
 
 class AndamentoAdminService
 {
@@ -58,14 +59,14 @@ class AndamentoAdminService
 	{
 		$payload = $this->normalizePayload($input);
 		if ($payload === false) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		if ($this->repository->existsByKeyOrName($payload['nome'], $payload['chave'])) {
-			return '2';
+			return WriteResult::duplicate();
 		}
 
-		return $this->repository->insert($payload) ? '1' : '0';
+		return $this->repository->insert($payload) ? WriteResult::success() : WriteResult::error();
 	}
 
 	public function update(array $input)
@@ -73,19 +74,19 @@ class AndamentoAdminService
 		$payload = $this->normalizePayload($input);
 		$andamentoId = isset($input['anda_id']) ? (int) $input['anda_id'] : 0;
 		if ($payload === false || $andamentoId <= 0) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		if ($this->repository->existsByKeyOrName($payload['nome'], $payload['chave'], $andamentoId)) {
-			return '2';
+			return WriteResult::duplicate();
 		}
 
-		return $this->repository->update($andamentoId, $payload) ? '1' : '0';
+		return $this->repository->update($andamentoId, $payload) ? WriteResult::success() : WriteResult::error();
 	}
 
 	public function delete($id)
 	{
-		return $this->repository->delete($id) ? '1' : '0';
+		return $this->repository->delete($id) ? WriteResult::success() : WriteResult::error();
 	}
 
 	private function normalizePayload(array $input)

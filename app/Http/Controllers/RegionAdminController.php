@@ -53,11 +53,12 @@ class RegionAdminController extends Controller
 
 	public function destroy($id)
 	{
-		$result = $this->service->delete((int) $id);
-		if ($result === '3') {
-			return $this->apiJsonResponse(false, 'linked_users', __('There are users linked to this region.'), array(), 409);
-		}
-
-		return $this->mapWriteResultToJson($result, __('Region deleted successfully.'));
+		return $this->mapWriteResultToJson(
+			$this->service->delete((int) $id),
+			__('Region deleted successfully.'),
+			null,
+			null,
+			__('There are users linked to this region.')
+		);
 	}
 }

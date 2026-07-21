@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\UserAdminRepository;
+use App\Support\WriteResult;
 
 class UserAdminService
 {
@@ -82,46 +83,48 @@ class UserAdminService
 	{
 		$payload = $this->normalizePayload($input, false);
 		if ($payload === false) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		if ($this->repository->findByLogin($payload['login_usu'])) {
-			return '2';
+			return WriteResult::duplicate();
 		}
 
 		if (!$this->repository->insert($payload)) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		$userId = $this->repository->lastInsertId();
 		if ($userId > 0 && !$this->regionService->syncUserRegions($userId, $payload['region_ids'])) {
-			return '0';
+			return WriteResult::error();
 		}
 
-		return '1';
+		return WriteResult::success();
 	}
 
 	public function update(array $input)
 	{
 		$payload = $this->normalizePayload($input, true);
 		if ($payload === false) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		if ($this->repository->findByLogin($payload['login_usu'], $payload['id_usu'])) {
-			return '2';
+			return WriteResult::duplicate();
 		}
 
 		if (!$this->repository->update($payload)) {
-			return '0';
+			return WriteResult::error();
 		}
 
-		return $this->regionService->syncUserRegions($payload['id_usu'], $payload['region_ids']) ? '1' : '0';
+		return $this->regionService->syncUserRegions($payload['id_usu'], $payload['region_ids'])
+			? WriteResult::success()
+			: WriteResult::error();
 	}
 
 	public function delete($id)
 	{
-		return $this->repository->delete($id) ? '1' : '0';
+		return $this->repository->delete($id) ? WriteResult::success() : WriteResult::error();
 	}
 
 	private function normalizePayload(array $input, $isUpdate)

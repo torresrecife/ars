@@ -7,6 +7,7 @@ use App\Http\Requests\MetaStoreRequest;
 use App\Http\Requests\MetaUpdateRequest;
 use App\Services\MetaService;
 use App\Support\View;
+use App\Support\WriteResult;
 use Mockery;
 use Tests\TestCase;
 
@@ -38,7 +39,7 @@ class MetaControllerTest extends TestCase
     public function test_store_returns_success_json_payload()
     {
         $service = Mockery::mock(MetaService::class);
-        $service->shouldReceive('createManyFromRequest')->once()->andReturn('1');
+        $service->shouldReceive('createManyFromRequest')->once()->andReturn(WriteResult::success());
 
         $controller = new MetaController($service, app(View::class));
         $request = MetaStoreRequest::create('/admin/metas', 'POST', array(
@@ -71,7 +72,7 @@ class MetaControllerTest extends TestCase
             ->with(Mockery::on(function ($input) {
                 return isset($input['meta_id']) && (int) $input['meta_id'] === 11;
             }))
-            ->andReturn('1');
+            ->andReturn(WriteResult::success());
 
         $controller = new MetaController($service, app(View::class));
         $request = MetaUpdateRequest::create('/admin/metas/11', 'PUT', array(
@@ -99,7 +100,7 @@ class MetaControllerTest extends TestCase
     public function test_destroy_returns_success_json_payload()
     {
         $service = Mockery::mock(MetaService::class);
-        $service->shouldReceive('delete')->once()->with(11)->andReturn(true);
+        $service->shouldReceive('delete')->once()->with(11)->andReturn(WriteResult::success());
 
         $controller = new MetaController($service, app(View::class));
         $response = $controller->destroy(11);

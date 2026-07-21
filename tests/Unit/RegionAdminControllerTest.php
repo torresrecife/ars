@@ -7,6 +7,7 @@ use App\Http\Requests\RegionStoreRequest;
 use App\Http\Requests\RegionUpdateRequest;
 use App\Services\RegionAdminService;
 use App\Support\View;
+use App\Support\WriteResult;
 use Mockery;
 use Tests\TestCase;
 
@@ -36,7 +37,7 @@ class RegionAdminControllerTest extends TestCase
     public function test_store_returns_success_json_payload()
     {
         $service = Mockery::mock(RegionAdminService::class);
-        $service->shouldReceive('create')->once()->andReturn('1');
+        $service->shouldReceive('create')->once()->andReturn(WriteResult::success());
 
         $controller = new RegionAdminController($service, app(View::class));
         $request = RegionStoreRequest::create('/admin/regioes', 'POST', array(
@@ -60,7 +61,7 @@ class RegionAdminControllerTest extends TestCase
             ->with(Mockery::on(function ($input) {
                 return isset($input['regiao_id']) && (int) $input['regiao_id'] === 4;
             }))
-            ->andReturn('1');
+            ->andReturn(WriteResult::success());
 
         $controller = new RegionAdminController($service, app(View::class));
         $request = RegionUpdateRequest::create('/admin/regioes/4', 'PUT', array(
@@ -76,10 +77,10 @@ class RegionAdminControllerTest extends TestCase
         $this->assertSame('success', $response->getData(true)['code']);
     }
 
-    public function test_destroy_returns_linked_users_conflict_when_service_returns_three()
+    public function test_destroy_returns_linked_users_conflict_when_service_returns_linked_users_result()
     {
         $service = Mockery::mock(RegionAdminService::class);
-        $service->shouldReceive('delete')->once()->with(4)->andReturn('3');
+        $service->shouldReceive('delete')->once()->with(4)->andReturn(WriteResult::linkedUsers());
 
         $controller = new RegionAdminController($service, app(View::class));
         $response = $controller->destroy(4);

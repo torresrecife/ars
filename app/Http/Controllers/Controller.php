@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\WriteResult;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
@@ -10,13 +11,16 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    protected function mapWriteResultToJson($result, $successMessage, $duplicateMessage = null, $errorMessage = null)
+    protected function mapWriteResultToJson(WriteResult $result, $successMessage, $duplicateMessage = null, $errorMessage = null, $linkedUsersMessage = null)
     {
-        if ((string) $result === '1') {
+        if ($result->isSuccess()) {
             return $this->apiJsonResponse(true, 'success', (string) $successMessage);
         }
-        if ((string) $result === '2') {
+        if ($result->isDuplicate()) {
             return $this->apiJsonResponse(false, 'duplicate', (string) ($duplicateMessage ?: __('Duplicate record.')), array(), 409);
+        }
+        if ($result->isLinkedUsers()) {
+            return $this->apiJsonResponse(false, 'linked_users', (string) ($linkedUsersMessage ?: __('There are linked users.')), array(), 409);
         }
 
         return $this->apiJsonResponse(false, 'error', (string) ($errorMessage ?: __('Operation failed.')), array(), 500);

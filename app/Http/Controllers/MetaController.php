@@ -76,8 +76,6 @@ class MetaController extends Controller
 
 	public function destroy($id)
 	{
-		return $this->metaService->delete((int) $id)
-			? $this->apiJsonResponse(true, 'success', __('Goal deleted successfully.'))
-			: $this->apiJsonResponse(false, 'error', __('Operation failed.'), array(), 500);
+		return $this->mapWriteResultToJson($this->metaService->delete((int) $id), __('Goal deleted successfully.'));
 	}
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\ClientAdminRepository;
+use App\Support\WriteResult;
 
 class ClientAdminService
 {
@@ -68,34 +69,34 @@ class ClientAdminService
 	{
 		$payload = $this->normalizePayload($input);
 		if ($payload === false) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		if (!$this->repository->insertBank($payload)) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		$bancoId = $this->repository->getLastInsertId();
 		if ($bancoId <= 0) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		if (!$this->repository->createCarteira($bancoId, $payload['banco_creator'])) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		$carteiraId = $this->repository->findCarteiraIdByBanco($bancoId);
 		if ($carteiraId <= 0) {
-			return '0';
+			return WriteResult::error();
 		}
 
 		foreach ($this->extractDadosCodes($input) as $dadosCod) {
 			if (!$this->repository->insertDados($carteiraId, $bancoId, $dadosCod, $payload['banco_creator'])) {
-				return '0';
+				return WriteResult::error();
 			}
 		}
 
-		return '1';
+		return WriteResult::success();
 	}
 
 	public function update(array $input)
@@ -109,23 +110,23 @@ class ClientAdminService
 		));
 		if ($payload === false || $payload['banco_id'] <= 0) {
 			$this->debug('update.invalid_payload', $input);
-			return '0';
+			return WriteResult::error();
 		}
 
 		if (!$this->repository->updateBank($payload)) {
 			$this->debug('update.updateBank_failed', $payload);
-			return '0';
+			return WriteResult::error();
 		}
 
 		if (!$this->repository->deleteDadosByBanco($payload['banco_id'])) {
 			$this->debug('update.deleteDados_failed', $payload['banco_id']);
-			return '0';
+			return WriteResult::error();
 		}
 
 		$carteiraId = $this->repository->findCarteiraIdByBanco($payload['banco_id']);
 		if ($carteiraId <= 0) {
 			$this->debug('update.carteira_not_found', $payload['banco_id']);
-			return '0';
+			return WriteResult::error();
 		}
 
 		$dadosCodes = $this->extractDadosCodes($input);
@@ -137,7 +138,7 @@ class ClientAdminService
 					'carteira_id' => $carteiraId,
 					'dados_cod' => $dadosCod,
 				));
-				return '0';
+				return WriteResult::error();
 			}
 		}
 
@@ -146,12 +147,12 @@ class ClientAdminService
 			'codes_count' => count($dadosCodes),
 		));
 
-		return '1';
+		return WriteResult::success();
 	}
 
 	public function delete($id)
 	{
-		return $this->repository->deleteBankCascade($id) ? '1' : '0';
+		return $this->repository->deleteBankCascade($id) ? WriteResult::success() : WriteResult::error();
 	}
 
 	private function normalizePayload(array $input)
