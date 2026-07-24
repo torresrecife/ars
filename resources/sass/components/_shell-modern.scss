@@ -263,7 +263,7 @@
 }
 
 .ars-shell__content-area {
-  padding: 24px;
+  padding: 16px;
   min-width: 0;
 }
 
@@ -275,16 +275,6 @@
   box-shadow: 0 8px 24px rgba(27, 45, 63, .05);
   padding: 20px;
   overflow: hidden;
-}
-
-.ars-shell__content-card--flat {
-  min-height: 0;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
-  overflow: visible;
 }
 
 .ars-shell__content {
