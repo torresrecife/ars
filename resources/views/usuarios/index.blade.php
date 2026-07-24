@@ -60,11 +60,7 @@
 						<td class="order">
 							<div class="admin-table-actions">
 								<a href="{{ route('usuarios.edit', (int) $user['id_usu']) }}" class="admin-link-button">{{ __('Edit') }}</a>
-								<form method="post" action="{{ route('usuarios.destroy.page', (int) $user['id_usu']) }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the user :name?', ['name' => $user['login_usu']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
-									@csrf
-									@method('DELETE')
-									<button type="submit" class="admin-link-button admin-link-button--danger">{{ __('Delete') }}</button>
-								</form>
+								<a href="{{ route('usuarios.confirm-delete', (int) $user['id_usu']) }}" class="admin-link-button admin-link-button--danger">{{ __('Delete') }}</a>
 							</div>
 						</td>
 					</tr>

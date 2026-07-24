@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
         Route::match(['put', 'patch'], '/metas/{id}', 'MetaController@updatePage')->name('metas.update.page');
     });
     Route::group(array('middleware' => 'can:delete,App\\Models\\MetaAndamento'), function () {
+        Route::get('/metas/{id}/excluir', 'MetaController@confirmDeletePage')->name('metas.confirm-delete');
         Route::delete('/metas/{id}', 'MetaController@destroyPage')->name('metas.destroy.page');
     });
 
@@ -50,6 +51,7 @@ Route::middleware('auth')->group(function () {
         Route::match(['put', 'patch'], '/usuarios/{id}', 'UserAdminController@updatePage')->name('usuarios.update.page');
     });
     Route::group(array('middleware' => 'can:delete,App\\Models\\Usuario'), function () {
+        Route::get('/usuarios/{id}/excluir', 'UserAdminController@confirmDeletePage')->name('usuarios.confirm-delete');
         Route::delete('/usuarios/{id}', 'UserAdminController@destroyPage')->name('usuarios.destroy.page');
     });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Area'), function () {
@@ -64,6 +66,7 @@ Route::middleware('auth')->group(function () {
         Route::match(['put', 'patch'], '/setores/{id}', 'SectorAdminController@updatePage')->name('setores.update.page');
     });
     Route::group(array('middleware' => 'can:delete,App\\Models\\Area'), function () {
+        Route::get('/setores/{id}/excluir', 'SectorAdminController@confirmDeletePage')->name('setores.confirm-delete');
         Route::delete('/setores/{id}', 'SectorAdminController@destroyPage')->name('setores.destroy.page');
     });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Banco'), function () {
@@ -78,6 +81,7 @@ Route::middleware('auth')->group(function () {
         Route::match(['put', 'patch'], '/clientes/{id}', 'ClientAdminController@updatePage')->name('clientes.update.page');
     });
     Route::group(array('middleware' => 'can:delete,App\\Models\\Banco'), function () {
+        Route::get('/clientes/{id}/excluir', 'ClientAdminController@confirmDeletePage')->name('clientes.confirm-delete');
         Route::delete('/clientes/{id}', 'ClientAdminController@destroyPage')->name('clientes.destroy.page');
     });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Andamento'), function () {
@@ -92,6 +96,7 @@ Route::middleware('auth')->group(function () {
         Route::match(['put', 'patch'], '/andamentos/{id}', 'AndamentoAdminController@updatePage')->name('andamentos.update');
     });
     Route::group(array('middleware' => 'can:delete,App\\Models\\Andamento'), function () {
+        Route::get('/andamentos/{id}/excluir', 'AndamentoAdminController@confirmDeletePage')->name('andamentos.confirm-delete');
         Route::delete('/andamentos/{id}', 'AndamentoAdminController@destroyPage')->name('andamentos.destroy');
     });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Semana'), function () {
@@ -106,6 +111,7 @@ Route::middleware('auth')->group(function () {
         Route::match(['put', 'patch'], '/semanas/{id}', 'WeekController@updatePage')->name('semanas.update.page');
     });
     Route::group(array('middleware' => 'can:delete,App\\Models\\Semana'), function () {
+        Route::get('/semanas/{id}/excluir', 'WeekController@confirmDeletePage')->name('semanas.confirm-delete');
         Route::delete('/semanas/{id}', 'WeekController@destroyPage')->name('semanas.destroy.page');
     });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Regiao'), function () {
@@ -120,6 +126,7 @@ Route::middleware('auth')->group(function () {
         Route::match(['put', 'patch'], '/regioes/{id}', 'RegionAdminController@updatePage')->name('regioes.update.page');
     });
     Route::group(array('middleware' => 'can:delete,App\\Models\\Regiao'), function () {
+        Route::get('/regioes/{id}/excluir', 'RegionAdminController@confirmDeletePage')->name('regioes.confirm-delete');
         Route::delete('/regioes/{id}', 'RegionAdminController@destroyPage')->name('regioes.destroy.page');
     });
 

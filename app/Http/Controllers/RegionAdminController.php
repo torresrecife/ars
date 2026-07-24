@@ -120,6 +120,22 @@ class RegionAdminController extends Controller
 		);
 	}
 
+	public function confirmDeletePage(Request $request, $id)
+	{
+		$data = $this->service->editPayload((int) $id);
+		if (!is_array($data) || empty($data['regiao_id'])) {
+			abort(404, __('Region not found.'));
+		}
+
+		return $this->renderShellPage($request, 'shared/confirm-delete', array(
+			'pageTitle' => __('Delete Region'),
+			'message' => __('Review the selected region before confirming permanent deletion.'),
+			'itemName' => (string) $data['regiao_nome'],
+			'formAction' => route('regioes.destroy.page', (int) $id),
+			'backUrl' => url('regioes'),
+		));
+	}
+
 	public function show($id)
 	{
 		$data = $this->service->editPayload((int) $id);

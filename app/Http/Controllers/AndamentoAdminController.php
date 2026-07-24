@@ -120,6 +120,22 @@ class AndamentoAdminController extends Controller
 		);
 	}
 
+	public function confirmDeletePage(Request $request, $id)
+	{
+		$payload = $this->service->editPayload((int) $id);
+		if (!is_array($payload) || empty($payload['anda_id'])) {
+			abort(404, __('Progress not found.'));
+		}
+
+		return $this->renderShellPage($request, 'shared/confirm-delete', array(
+			'pageTitle' => __('Delete Progress'),
+			'message' => __('Review the selected progress item before confirming permanent deletion.'),
+			'itemName' => (string) $payload['nome'],
+			'formAction' => route('andamentos.destroy', (int) $id),
+			'backUrl' => url('andamentos'),
+		));
+	}
+
 	public function show($id)
 	{
 		$payload = $this->service->editPayload((int) $id);

@@ -108,6 +108,22 @@ class ClientAdminController extends Controller
 		);
 	}
 
+	public function confirmDeletePage(Request $request, $id)
+	{
+		$payload = $this->service->editPayload((int) $id);
+		if (!is_array($payload) || empty($payload['banco_id'])) {
+			abort(404, __('Client not found.'));
+		}
+
+		return $this->renderShellPage($request, 'shared/confirm-delete', array(
+			'pageTitle' => __('Delete Client'),
+			'message' => __('Review the selected client before confirming permanent deletion.'),
+			'itemName' => (string) $payload['banco_name'],
+			'formAction' => route('clientes.destroy.page', (int) $id),
+			'backUrl' => url('clientes'),
+		));
+	}
+
 	public function show($id)
 	{
 		$data = $this->service->editPayload((int) $id);

@@ -157,6 +157,29 @@ class WeekController extends Controller
 		);
 	}
 
+	public function confirmDeletePage(Request $request, $id)
+	{
+		$row = $this->weekService->findById((int) $id);
+		if (!$row || empty($row['semanas_id'])) {
+			abort(404, __('Week not found.'));
+		}
+
+		$itemName = sprintf(
+			'%s / %s',
+			isset(MonthMap::localized()[(int) $row['mes_sem']]) ? MonthMap::localized()[(int) $row['mes_sem']] : (string) $row['mes_sem'],
+			(string) $row['ano_sem']
+		);
+
+		return $this->renderShellPage($request, 'shared/confirm-delete', array(
+			'pageTitle' => __('Delete Week'),
+			'message' => __('Review the selected week range before confirming permanent deletion.'),
+			'itemName' => $itemName,
+			'formAction' => route('semanas.destroy.page', (int) $id),
+			'backUrl' => url('semanas'),
+			'months' => MonthMap::localized(),
+		));
+	}
+
 	private function renderShellPage(Request $request, $viewName, array $viewData)
 	{
 		$user = $this->authService->currentUser();
