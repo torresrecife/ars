@@ -626,7 +626,7 @@ class DashboardPanelService
 	{
 		$lookup = array();
 		foreach ($events as $event) {
-			$type = isset($event['type_name']) ? trim((string) $event['type_name']) : '';
+			$type = isset($event['type_name']) ? $this->normalizeTypeName((string) $event['type_name']) : '';
 			$code = isset($event['code']) ? (string) $event['code'] : '';
 			if ($type === '' || $code === '') {
 				continue;
@@ -642,12 +642,14 @@ class DashboardPanelService
 	{
 		$codes = array();
 		foreach ($rowTypes as $type) {
-			if (!isset($lookup[$type])) {
-				continue;
-			}
+			foreach ($lookup as $lookupType => $typeCodes) {
+				if (!$this->typeKeysMatch($type, $lookupType)) {
+					continue;
+				}
 
-			foreach ($lookup[$type] as $code) {
-				$codes[(string) $code] = (string) $code;
+				foreach ($typeCodes as $code) {
+					$codes[(string) $code] = (string) $code;
+				}
 			}
 		}
 
@@ -658,7 +660,7 @@ class DashboardPanelService
 	{
 		$lookup = array();
 		foreach ($events as $event) {
-			$type = isset($event['type_name']) ? trim((string) $event['type_name']) : '';
+			$type = isset($event['type_name']) ? $this->normalizeTypeName((string) $event['type_name']) : '';
 			$code = isset($event['code']) ? (string) $event['code'] : '';
 			$value = isset($event['value']) ? (float) $event['value'] : 0.0;
 			if ($type === '' || $code === '') {
@@ -681,19 +683,21 @@ class DashboardPanelService
 		$seen = array();
 
 		foreach ($rowTypes as $type) {
-			if (!isset($lookup[$type])) {
-				continue;
-			}
-
-			foreach ($lookup[$type] as $entry) {
-				$key = (string) $entry['code'] . '|' . number_format((float) $entry['value'], 2, '.', '');
-				if (isset($seen[$key])) {
+			foreach ($lookup as $lookupType => $entries) {
+				if (!$this->typeKeysMatch($type, $lookupType)) {
 					continue;
 				}
 
-				$seen[$key] = true;
-				$total += (float) $entry['value'];
-				$codes[(string) $entry['code']] = (string) $entry['code'];
+				foreach ($entries as $entry) {
+					$key = (string) $entry['code'] . '|' . number_format((float) $entry['value'], 2, '.', '');
+					if (isset($seen[$key])) {
+						continue;
+					}
+
+					$seen[$key] = true;
+					$total += (float) $entry['value'];
+					$codes[(string) $entry['code']] = (string) $entry['code'];
+				}
 			}
 		}
 
@@ -874,6 +878,49 @@ class DashboardPanelService
 		}
 
 		return $items;
+	}
+
+	private function normalizeTypeName($value)
+	{
+		$value = trim((string) $value);
+		if ($value === '') {
+			return '';
+		}
+
+		$ascii = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value);
+		if (is_string($ascii) && $ascii !== '') {
+			$value = $ascii;
+		}
+
+		$value = strtolower($value);
+		$value = preg_replace('/[^a-z0-9]+/', '', $value);
+
+		return trim((string) $value);
+	}
+
+	private function typeKeysMatch($left, $right)
+	{
+		$left = $this->normalizeTypeName($left);
+		$right = $this->normalizeTypeName($right);
+		if ($left === '' || $right === '') {
+			return false;
+		}
+
+		if ($left === $right) {
+			return true;
+		}
+
+		if (strlen($left) >= 6 && strlen($right) >= 6) {
+			if (strpos($left, $right) !== false || strpos($right, $left) !== false) {
+				return true;
+			}
+
+			if (function_exists('levenshtein') && levenshtein($left, $right) <= 2) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }
