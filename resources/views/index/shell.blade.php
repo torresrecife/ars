@@ -123,6 +123,7 @@
 	$currentSection = $pageData->currentSection();
 	$currentState = $pageData->state();
 	$currentUser = $pageData->user();
+	$currentLevel = (string) $currentUser->level();
 	$currentMonthLabel = $pageData->monthYearLabel();
 	$pageTitleMap = [
 		'inicio' => __('Home'),
@@ -166,16 +167,34 @@
 		['key' => 'producao', 'label' => __('Production'), 'url' => $buildShellUrl('producao', $baseQuery + ['startSetor' => $currentState->startSetor()]), 'active' => $currentSection === 'producao'],
 		['key' => 'relatorio', 'label' => __('Report'), 'url' => $buildShellUrl('relatorio', $baseQuery + ['startSetor' => $currentState->startSetor(), 'geral' => $currentSection === 'relatorio-semanal' ? 1 : 0]), 'active' => $isReportActive],
 	];
-	$adminLinks = [
-		['key' => 'admin', 'label' => __('Admin'), 'url' => url('admin'), 'active' => $currentSection === 'admin'],
-		['key' => 'metas', 'label' => __('Goals'), 'url' => url('metas'), 'active' => $isGoalsActive],
-		['key' => 'usuarios', 'label' => __('Users'), 'url' => url('usuarios'), 'active' => $currentSection === 'usuarios'],
-		['key' => 'clientes', 'label' => __('Clients'), 'url' => url('clientes'), 'active' => $currentSection === 'clientes'],
-		['key' => 'setores', 'label' => __('Sectors'), 'url' => url('setores'), 'active' => $currentSection === 'setores'],
-		['key' => 'andamentos', 'label' => __('Progress'), 'url' => url('andamentos'), 'active' => $currentSection === 'andamentos'],
-		['key' => 'regioes', 'label' => __('Regions'), 'url' => url('regioes'), 'active' => $currentSection === 'regioes'],
-		['key' => 'semanas', 'label' => __('Weeks'), 'url' => url('semanas'), 'active' => $currentSection === 'semanas'],
-	];
+	if ($currentLevel === 'USU') {
+		$navLinks = array_values(array_filter($navLinks, function ($link) {
+			return $link['key'] === 'inicio';
+		}));
+	} elseif ($currentLevel === 'GER') {
+		$navLinks = array_values(array_filter($navLinks, function ($link) {
+			return in_array($link['key'], array('inicio', 'producao', 'relatorio'), true);
+		}));
+	}
+
+	$adminLinks = array();
+	if ($currentLevel === 'ADM') {
+		$adminLinks = [
+			['key' => 'admin', 'label' => __('Admin'), 'url' => url('admin'), 'active' => $currentSection === 'admin'],
+			['key' => 'metas', 'label' => __('Goals'), 'url' => url('metas'), 'active' => $isGoalsActive],
+			['key' => 'usuarios', 'label' => __('Users'), 'url' => url('usuarios'), 'active' => $currentSection === 'usuarios'],
+			['key' => 'clientes', 'label' => __('Clients'), 'url' => url('clientes'), 'active' => $currentSection === 'clientes'],
+			['key' => 'setores', 'label' => __('Sectors'), 'url' => url('setores'), 'active' => $currentSection === 'setores'],
+			['key' => 'andamentos', 'label' => __('Progress'), 'url' => url('andamentos'), 'active' => $currentSection === 'andamentos'],
+			['key' => 'regioes', 'label' => __('Regions'), 'url' => url('regioes'), 'active' => $currentSection === 'regioes'],
+			['key' => 'semanas', 'label' => __('Weeks'), 'url' => url('semanas'), 'active' => $currentSection === 'semanas'],
+		];
+	} elseif ($currentLevel === 'GER') {
+		$adminLinks = [
+			['key' => 'admin', 'label' => __('Admin'), 'url' => url('admin'), 'active' => $currentSection === 'admin'],
+			['key' => 'metas', 'label' => __('Goals'), 'url' => url('metas'), 'active' => $isGoalsActive],
+		];
+	}
 	$shellIcons = [
 		'inicio' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>',
 		'carteiras' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v12H3z"/><path d="M3 10h18"/><path d="M16 15h3"/></svg>',
