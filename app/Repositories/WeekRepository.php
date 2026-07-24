@@ -8,20 +8,33 @@ use App\Models\Semana;
 
 class WeekRepository
 {
-	public function all()
+	public function paginate($perPage = 20, $search = '')
 	{
-		return Semana::query()
-			->orderBy('semanas_id')
-			->get()
-			->map(function (Semana $week) {
+		$query = Semana::query();
+
+		$search = trim((string) $search);
+		if ($search !== '') {
+			$query->where(function ($query) use ($search) {
+				$query->where('mes', 'like', '%' . $search . '%')
+					->orWhere('ano', 'like', '%' . $search . '%');
+			});
+		}
+
+		$paginator = $query
+			->orderByDesc('ano')
+			->orderByDesc('mes')
+			->orderByDesc('semanas_id')
+			->paginate((int) $perPage);
+
+		$paginator->setCollection($paginator->getCollection()->map(function (Semana $week) {
 				$row = $week->toArray();
 				$row['datacad'] = $week->data_cad ? $week->data_cad->format('d/m/Y H:i:s') : '';
-				$row['dataalt'] = $week->data_cad ? $week->data_cad->format('d/m/Y H:i:s') : '';
+				$row['dataalt'] = $week->data_arlt ? $week->data_arlt->format('d/m/Y H:i:s') : '';
 
 				return $row;
-			})
-			->values()
-			->all();
+			})->values());
+
+		return $paginator;
 	}
 
 	public function findById($weekId)

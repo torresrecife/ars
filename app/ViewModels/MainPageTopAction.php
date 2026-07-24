@@ -15,11 +15,15 @@ class MainPageTopAction
 	/** @var string */
 	private $javascript;
 
-	public function __construct($className, $label, $javascript)
+	/** @var string */
+	private $href;
+
+	public function __construct($className, $label, $javascript = '', $href = '')
 	{
 		$this->className = (string) $className;
 		$this->label = (string) $label;
 		$this->javascript = (string) $javascript;
+		$this->href = (string) $href;
 	}
 
 	public function className()
@@ -37,12 +41,18 @@ class MainPageTopAction
 		return $this->javascript;
 	}
 
+	public function href()
+	{
+		return $this->href;
+	}
+
 	public function toArray()
 	{
 		return array(
 			'class' => $this->className,
 			'label' => $this->label,
 			'js' => $this->javascript,
+			'href' => $this->href,
 		);
 	}
 }

@@ -1,92 +1,103 @@
-<div class="admin-module-offset">
-<script>
-window.arsWeekResourceBaseUrl = "{{ url('admin/semanas') }}";
-</script>
-<label><h2><u>{{ __('Weeks') }}</u></h2></label>
-<div>
-<table class="adminlist">
-	<tr height="30">
-		<td class="order"><b>{{ __('Code') }}</b></td>
-		<td class="order"><b>{{ __('Month') }}</b></td>
-		<td class="order"><b>{{ __('Year') }}</b></td>
-		<td class="order admin-week-cell"><b>{{ __('1st Week') }}</b></td>
-		<td class="order admin-week-cell"><b>{{ __('2nd Week') }}</b></td>
-		<td class="order admin-week-cell"><b>{{ __('3rd Week') }}</b></td>
-		<td class="order admin-week-cell"><b>{{ __('4th Week') }}</b></td>
-		<td class="order admin-week-cell admin-week-cell--optional"><b>{{ __('5th Week') }}</b></td>
-		<td class="order"><b>{{ __('Updated At') }}</b></td>
-		<td class="order"><b>{{ __('Created At') }}</b></td>
-		<td class="order"><b>{{ __('Settings') }}</b></td>
-	</tr>
-@foreach ($weeks as $arr)
-	<tr>
-		<td class="order">{{ $arr['semanas_id'] }}</td>
-		<td class="order">{{ isset($months[$arr['mes']]) ? $months[$arr['mes']] : $arr['mes'] }}</td>
-		<td class="order">{{ $arr['ano'] }}</td>
-		<td class="order admin-week-cell">{!! $arr['ini_1'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_1'] !!}</td>
-		<td class="order admin-week-cell">{!! $arr['ini_2'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_2'] !!}</td>
-		<td class="order admin-week-cell">{!! $arr['ini_3'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_3'] !!}</td>
-		<td class="order admin-week-cell">{!! $arr['ini_4'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_4'] !!}</td>
-		<td class="order admin-week-cell admin-week-cell--optional">{!! ($arr['ini_5'] ? $arr['ini_5'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_5'] : '-') !!}</td>
-		<td class="order">{{ $arr['dataalt'] }}</td>
-		<td class="order">{{ $arr['datacad'] }}</td>
-		<td class="order admin-action-cell">
-			@include('partials.admin-action-buttons', [
-				'display' => 'block',
-				'editAction' => "fc_edit_sem(" . (int) $arr['semanas_id'] . ",'U')",
-				'deleteAction' => "fc_del_sem(" . (int) $arr['semanas_id'] . "," . json_encode((string) $arr['mes']) . ")",
-				'editTitle' => __('Edit Week'),
-				'deleteTitle' => __('Delete Week'),
-			])
-		</td>
-	</tr>
-@endforeach
+<div class="admin-page admin-page--flat admin-module-offset">
+@if (session('status'))
+	<div class="admin-flash admin-flash--success">{{ session('status') }}</div>
+@endif
+
+@if (session('error'))
+	<div class="admin-flash admin-flash--error">{{ session('error') }}</div>
+@endif
+
+<div class="admin-page__toolbar admin-page__toolbar--between">
+	<form method="get" action="{{ route('semanas') }}" class="admin-form-inline admin-search-form">
+		<input type="text" name="q" value="{{ e($search ?? '') }}" class="admin-form-input admin-search-input" placeholder="{{ __('Search weeks...') }}" />
+		<button type="submit" class="admin-button admin-button--primary">{{ __('Search') }}</button>
+		@if (!empty($search))
+			<a href="{{ route('semanas') }}" class="admin-button admin-button--secondary">{{ __('Clear') }}</a>
+		@endif
+	</form>
+</div>
+<div class="admin-surface admin-surface--table">
+<table class="adminlist adminlist--full adminlist--modern">
+	<colgroup>
+		<col class="admin-col admin-col--code" />
+		<col class="admin-col admin-col--name" />
+		<col class="admin-col admin-col--code" />
+		<col class="admin-col admin-col--week" />
+		<col class="admin-col admin-col--week" />
+		<col class="admin-col admin-col--week" />
+		<col class="admin-col admin-col--week" />
+		<col class="admin-col admin-col--week" />
+		<col class="admin-col admin-col--datetime" />
+		<col class="admin-col admin-col--datetime" />
+		<col class="admin-col admin-col--actions" />
+	</colgroup>
+	<thead>
+		<tr>
+			<th class="order">{{ __('Code') }}</th>
+			<th class="order">{{ __('Month') }}</th>
+			<th class="order">{{ __('Year') }}</th>
+			<th class="order">{{ __('1st Week') }}</th>
+			<th class="order">{{ __('2nd Week') }}</th>
+			<th class="order">{{ __('3rd Week') }}</th>
+			<th class="order">{{ __('4th Week') }}</th>
+			<th class="order">{{ __('5th Week') }}</th>
+			<th class="order">{{ __('Updated At') }}</th>
+			<th class="order">{{ __('Created At') }}</th>
+			<th class="order">{{ __('Settings') }}</th>
+		</tr>
+	</thead>
+	<tbody>
+	@foreach ($weeks as $arr)
+		<tr>
+			<td class="order">{{ $arr['semanas_id'] }}</td>
+			<td class="order">{{ isset($months[$arr['mes']]) ? $months[$arr['mes']] : $arr['mes'] }}</td>
+			<td class="order">{{ $arr['ano'] }}</td>
+			<td class="order">{!! $arr['ini_1'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_1'] !!}</td>
+			<td class="order">{!! $arr['ini_2'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_2'] !!}</td>
+			<td class="order">{!! $arr['ini_3'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_3'] !!}</td>
+			<td class="order">{!! $arr['ini_4'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_4'] !!}</td>
+			<td class="order">{!! ($arr['ini_5'] ? $arr['ini_5'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_5'] : '-') !!}</td>
+			<td class="order">{{ $arr['dataalt'] }}</td>
+			<td class="order">{{ $arr['datacad'] }}</td>
+			<td class="order">
+				<div class="admin-table-actions">
+					<a href="{{ route('semanas.edit', (int) $arr['semanas_id']) }}" class="admin-link-button">{{ __('Edit') }}</a>
+					<form method="post" action="{{ route('semanas.destroy.page', (int) $arr['semanas_id']) }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the week :name?', ['name' => (isset($months[$arr['mes']]) ? $months[$arr['mes']] : $arr['mes']) . ' / ' . $arr['ano']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
+						@csrf
+						@method('DELETE')
+						<button type="submit" class="admin-link-button admin-link-button--danger">{{ __('Delete') }}</button>
+					</form>
+				</div>
+			</td>
+		</tr>
+	@endforeach
+	</tbody>
 </table>
-<div id="dialog-edit-sem" title="{{ __('Edit Week') }}" class="admin-dialog admin-dialog--scroll is-hidden">
-	<p class="validateTips">{{ __('Edit the week below') }}</p>
-	<fieldset>
-		<div>
-			<table class="admin-dialog-table admin-dialog-table--week">
-				<tr>
-					<td><label>{{ __('Code') }}:</label></td>
-					<td colspan="3"><input type="text" class="cls_sem admin-code-field" name="id_sem" id="id_sem" title="{{ __('Week ID') }}" readonly="readonly" /></td>
-				</tr>
-				<tr>
-					<td class="admin-label-cell"><label>{{ __('Month/Year') }}:</label></td>
-					<td class="admin-label-cell"><input type="text" class="cls_sem admin-field--fluid" name="mes_sem" id="mes_sem" title="{{ __('Month') }}" alt="integer"/></td>
-					<td align="center" class="admin-label-cell">/</td>
-					<td class="admin-label-cell"><input type="text" class="cls_sem admin-field--fluid" name="ano_sem" id="ano_sem" title="{{ __('Year') }}" maxlength="4"/></td>
-				<tr>
-					<td><label>{{ __('1st Week') }}:</label></td>
-					<td><input type="text" class="cls_sem admin-field--fluid" name="ini1_sem" id="ini1_sem" title="{{ __('1st Week start') }}" alt="integer"/></td>
-					<td align="center" class="admin-label-cell">&agrave;</td>
-					<td><input type="text" class="cls_sem admin-field--fluid" name="fim1_sem" id="fim1_sem" title="{{ __('1st Week end') }}" alt="integer"/></td>
-				</tr>
-				<tr>
-					<td><label>{{ __('2nd Week') }}:</label></td>
-					<td><input type="text" class="cls_sem admin-field--fluid" name="ini2_sem" id="ini2_sem" title="{{ __('2nd Week start') }}" alt="integer"/></td>
-					<td align="center" class="admin-label-cell">&agrave;</td>
-					<td><input type="text" class="cls_sem admin-field--fluid" name="fim2_sem" id="fim2_sem" title="{{ __('2nd Week end') }}" alt="integer"/></td>
-				</tr>
-				<tr>
-					<td><label>{{ __('3rd Week') }}:</label></td>
-					<td><input type="text" class="cls_sem admin-field--fluid" name="ini3_sem" id="ini3_sem" title="{{ __('3rd Week start') }}" alt="integer"/></td>
-					<td align="center" class="admin-label-cell">&agrave;</td>
-					<td><input type="text" class="cls_sem admin-field--fluid" name="fim3_sem" id="fim3_sem" title="{{ __('3rd Week end') }}" alt="integer"/></td>
-				</tr>
-				<tr>
-					<td><label>{{ __('4th Week') }}:</label></td>
-					<td><input type="text" class="cls_sem admin-field--fluid" name="ini4_sem" id="ini4_sem" title="{{ __('4th Week start') }}" alt="integer"/></td>
-					<td align="center" class="admin-label-cell">&agrave;</td>
-					<td><input type="text" class="cls_sem admin-field--fluid" name="fim4_sem" id="fim4_sem" title="{{ __('4th Week end') }}" alt="integer"/></td>
-				</tr>
-				<tr>
-					<td><label>{{ __('5th Week') }}:</label></td>
-					<td><input type="text" class="cls_sem admin-field--fluid" name="ini5_sem" id="ini5_sem" title="{{ __('5th Week start') }}" alt="integer"/></td>
-					<td align="center" class="admin-label-cell">&agrave;</td>
-					<td><input type="text" class="cls_sem admin-field--fluid" name="fim5_sem" id="fim5_sem" title="{{ __('5th Week end') }}" alt="integer"/></td>
-				</tr>
-			</table>
+</div>
+@if (method_exists($weeks, 'hasPages') && $weeks->hasPages())
+	<div class="admin-pagination">
+		<div class="admin-pagination__summary">
+			{{ __('Showing :from to :to of :total items', ['from' => $weeks->firstItem(), 'to' => $weeks->lastItem(), 'total' => $weeks->total()]) }}
 		</div>
-	</fieldset>
+		<div class="admin-pagination__links">
+			@if ($weeks->onFirstPage())
+				<span class="admin-pagination__link is-disabled">{{ __('Previous') }}</span>
+			@else
+				<a href="{{ $weeks->appends(request()->except('page'))->previousPageUrl() }}" class="admin-pagination__link">{{ __('Previous') }}</a>
+			@endif
+			@foreach ($weeks->appends(request()->except('page'))->getUrlRange(max(1, $weeks->currentPage() - 2), min($weeks->lastPage(), $weeks->currentPage() + 2)) as $page => $url)
+				@if ($page === $weeks->currentPage())
+					<span class="admin-pagination__link is-active">{{ $page }}</span>
+				@else
+					<a href="{{ $url }}" class="admin-pagination__link">{{ $page }}</a>
+				@endif
+			@endforeach
+			@if ($weeks->hasMorePages())
+				<a href="{{ $weeks->appends(request()->except('page'))->nextPageUrl() }}" class="admin-pagination__link">{{ __('Next') }}</a>
+			@else
+				<span class="admin-pagination__link is-disabled">{{ __('Next') }}</span>
+			@endif
+		</div>
+	</div>
+@endif
 </div>

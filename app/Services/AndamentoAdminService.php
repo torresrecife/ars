@@ -46,11 +46,45 @@ class AndamentoAdminService
 
 	public function indexData()
 	{
+		$search = trim((string) request()->query('q', ''));
+
 		return array(
-			'andamentos' => $this->repository->listAll(),
+			'andamentos' => $this->repository->paginate(20, $search),
+			'search' => $search,
 			'metaTipos' => array(
 				1 => __('Production'),
 				2 => __('Financial'),
+			),
+		);
+	}
+
+	public function formData(array $values = array())
+	{
+		$defaults = array(
+			'anda_id' => 0,
+			'nome' => '',
+			'chave' => '',
+			'anda_neo' => '',
+			'especie' => '',
+			'painel' => 'N',
+			'titulo' => '',
+			'tipos' => array(),
+		);
+
+		$data = array_merge($defaults, $values);
+		if (empty($data['tipos']) && !empty($data['anda_neo'])) {
+			$data['tipos'] = $this->splitTipos((string) $data['anda_neo']);
+		}
+
+		return array(
+			'andamento' => $data,
+			'metaTipos' => array(
+				1 => __('Production'),
+				2 => __('Financial'),
+			),
+			'yesNoOptions' => array(
+				'Y' => __('Yes'),
+				'N' => __('No'),
 			),
 		);
 	}
@@ -105,5 +139,18 @@ class AndamentoAdminService
 			'painel' => isset($input['painel']) ? trim((string) $input['painel']) : '',
 			'titulo' => isset($input['titulo']) ? trim((string) $input['titulo']) : '',
 		);
+	}
+
+	private function splitTipos($value)
+	{
+		$tipos = array();
+		foreach (explode(',', (string) $value) as $tipo) {
+			$tipo = trim($tipo);
+			if ($tipo !== '') {
+				$tipos[] = $tipo;
+			}
+		}
+
+		return $tipos;
 	}
 }

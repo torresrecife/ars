@@ -8,16 +8,24 @@ use App\Models\Area;
 
 class SectorAdminRepository
 {
-	public function listAll()
+	public function paginate($perPage = 20, $search = '')
 	{
-		return Area::query()
+		$query = Area::query();
+
+		$search = trim((string) $search);
+		if ($search !== '') {
+			$query->where('area_nome', 'like', '%' . $search . '%');
+		}
+
+		$paginator = $query
 			->orderBy('area_id')
-			->get()
-			->map(function (Area $area) {
+			->paginate((int) $perPage);
+
+		$paginator->setCollection($paginator->getCollection()->map(function (Area $area) {
 				return $area->toArray();
-			})
-			->values()
-			->all();
+			})->values());
+
+		return $paginator;
 	}
 
 	public function findById($areaId)

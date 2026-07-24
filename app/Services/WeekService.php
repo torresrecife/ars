@@ -19,12 +19,38 @@ class WeekService
 
 	public function all()
 	{
-		return $this->repository->all();
+		$search = trim((string) request()->query('q', ''));
+
+		return array(
+			'weeks' => $this->repository->paginate(20, $search),
+			'search' => $search,
+		);
 	}
 
 	public function findById($weekId)
 	{
 		return $this->repository->findById($weekId);
+	}
+
+	public function formData(array $values = array())
+	{
+		return array(
+			'week' => array(
+				'semanas_id' => isset($values['semanas_id']) ? (int) $values['semanas_id'] : 0,
+				'mes' => isset($values['mes']) ? (int) $values['mes'] : 0,
+				'ano' => isset($values['ano']) ? (string) $values['ano'] : '',
+				'ini_1' => isset($values['ini_1']) ? (int) $values['ini_1'] : 0,
+				'fim_1' => isset($values['fim_1']) ? (int) $values['fim_1'] : 0,
+				'ini_2' => isset($values['ini_2']) ? (int) $values['ini_2'] : 0,
+				'fim_2' => isset($values['fim_2']) ? (int) $values['fim_2'] : 0,
+				'ini_3' => isset($values['ini_3']) ? (int) $values['ini_3'] : 0,
+				'fim_3' => isset($values['fim_3']) ? (int) $values['fim_3'] : 0,
+				'ini_4' => isset($values['ini_4']) ? (int) $values['ini_4'] : 0,
+				'fim_4' => isset($values['fim_4']) ? (int) $values['fim_4'] : 0,
+				'ini_5' => isset($values['ini_5']) ? (int) $values['ini_5'] : 0,
+				'fim_5' => isset($values['fim_5']) ? (int) $values['fim_5'] : 0,
+			),
+		);
 	}
 
 	public function createFromRequest(array $input)

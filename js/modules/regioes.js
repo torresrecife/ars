@@ -88,6 +88,19 @@ function regiaoUfsRemover(botao){
 	regiaoUfsAtualizarValor();
 	return false;
 }
+function regiaoFormInit(ufs){
+	regiaoUfsReset();
+	if(!ufs || !ufs.length){
+		regiaoUfsAtualizarValor();
+		return;
+	}
+	for(var i=0;i<ufs.length;i++){
+		if(ufs[i]!=""){
+			regiaoUfsAdicionarValor(ufs[i], true);
+		}
+	}
+	regiaoUfsAtualizarValor();
+}
 function fc_edit_regiao(valor1,valor2){
 	var regiaoResourceBaseUrl = window.arsRegionResourceBaseUrl || "admin/regioes";
 	var regiaoResourceUrl = function(id){

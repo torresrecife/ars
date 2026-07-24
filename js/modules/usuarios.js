@@ -162,12 +162,19 @@ function usuarioClientesEscape(valor){
 }
 function usuarioClientesAtualizarInputs(){
 	var html = "";
+	var ids = [];
 	$(".usuario-clientes-item").each(function(index){
 		var clienteId = $(this).attr("data-cliente-id");
 		var numero = index + 1;
+		if(clienteId){
+			ids.push(clienteId);
+		}
 		html += "<input type='hidden' class='cls_usuario_cliente_input' name='banco_usu_" + numero + "' value=\"" + usuarioClientesEscape(clienteId) + "\" />";
 	});
 	$("#usuario-clientes-inputs").html(html);
+	if($("#banco_neo").length){
+		$("#banco_neo").val(ids.join(","));
+	}
 	if($(".usuario-clientes-item").length>0){
 		$("#usuario-clientes-vazio").hide();
 	}else{
@@ -252,12 +259,19 @@ function usuarioRegioesEscape(valor){
 }
 function usuarioRegioesAtualizarInputs(){
 	var html = "";
+	var ids = [];
 	$(".usuario-regioes-item").each(function(index){
 		var regiaoId = $(this).attr("data-regiao-id");
 		var numero = index + 1;
+		if(regiaoId){
+			ids.push(regiaoId);
+		}
 		html += "<input type='hidden' class='cls_usuario_regiao_input' name='regiao_usu_" + numero + "' value=\"" + usuarioRegioesEscape(regiaoId) + "\" />";
 	});
 	$("#usuario-regioes-inputs").html(html);
+	if($("#regiao_neo").length){
+		$("#regiao_neo").val(ids.join(","));
+	}
 	if($(".usuario-regioes-item").length>0){
 		$("#usuario-regioes-vazio").hide();
 	}else{
@@ -356,6 +370,55 @@ function usuarioRegioesRemover(botao){
 	usuarioRegioesAtualizarInputs();
 	usuarioRegioesAtualizarModo();
 	return false;
+}
+function userFormInit(setorId, clientIds, clients, regionIds, regions){
+	var setorAtual = $.trim(String(setorId || "0"));
+	var clientIdList = $.isArray(clientIds) ? clientIds : [];
+	var clientList = $.isArray(clients) ? clients : [];
+	var regionIdList = $.isArray(regionIds) ? regionIds : [];
+	var regionList = $.isArray(regions) ? regions : [];
+
+	usuarioClientesReset();
+	usuarioRegioesReset();
+
+	$("#setor_usu").off("change.userForm").on("change.userForm", function(){
+		usuarioClientesReset();
+		sel_tipo(1, $(this).val(), function(){
+			usuarioClientesAtualizarInputs();
+		});
+	});
+
+	$("#nivel_usu").off("change.userForm").on("change.userForm", usuarioRegioesAtualizarModo);
+	$("#regiao_modo").off("change.userForm").on("change.userForm", usuarioRegioesAtualizarModo);
+
+	if($("#regiao_usu_pool").length){
+		$("#regiao_usu_pool").data("optionsHtml", $("#regiao_usu_pool").html());
+	}
+
+	$.each(regionList, function(_, region){
+		usuarioRegioesAdicionarValor(String(region.id), region.name, true);
+	});
+	usuarioRegioesAtualizarInputs();
+	usuarioRegioesAtualizarModo();
+
+	sel_tipo(1, setorAtual, function(){
+		var byId = {};
+		for(var i = 0; i < clientList.length; i++){
+			byId[String(clientList[i].id)] = clientList[i].name;
+		}
+		for(var j = 0; j < clientIdList.length; j++){
+			var clientId = String(clientIdList[j]);
+			var clientName = byId[clientId];
+			if(!clientName){
+				var option = $("#banco_usu_pool option[value='" + clientId.replace(/'/g, "\\'") + "']");
+				clientName = $.trim(option.text());
+			}
+			if(clientName){
+				usuarioClientesAdicionarValor(clientId, clientName, true);
+			}
+		}
+		usuarioClientesAtualizarInputs();
+	});
 }
 function fc_del_usu(valor1,valor2){
 	var userResourceBaseUrl = window.arsUserResourceBaseUrl || "admin/usuarios";

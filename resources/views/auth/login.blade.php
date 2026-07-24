@@ -4,54 +4,53 @@
     <meta charset="utf-8">
     <title>{{ __('ARS Control') }}</title>
     <link href="{{ url('css/images/favicon.ico') }}" rel="shortcut icon" type="image/vnd.microsoft.icon" />
-    <link rel="stylesheet" href="{{ url('css/system.css') }}" type="text/css" />
-    <link rel="stylesheet" href="{{ url('css/template.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ url('css/ars-modern.css') }}" type="text/css" />
 </head>
-<body>
-    <div id="border-top" class="h_blue">
-        <span class="logo"><img src="{{ $legacyBaseUrl }}/css/images/logo.png" alt="Sistema de Peticao" /></span>
-        <span class="title"><a href="#">{{ __('ARS - NEO Legal') }}</a></span>
-    </div>
-    <div id="content-box">
-        <div id="element-box" class="login">
-            <div class="m wbg">
-                <h1>{{ __('Access the ARS Panel') }}</h1>
-                <div id="system-message-container"></div>
-                <div id="section-box">
-                    <div class="m">
-                        <form action="{{ url('login') }}" method="post" id="form-login">
-                            @csrf
-                            <fieldset class="loginform">
-                                <label id="mod-login-username-lbl" for="mod-login-username">{{ __('Username') }}</label>
-                                <input type="text" name="username" id="mod-login-username" class="inputbox" size="15" />
-                                <label id="mod-login-password-lbl" for="mod-login-password">{{ __('Password') }}</label>
-                                <input type="password" name="passwd" id="mod-login-password" class="inputbox" size="15" />
-                                <div class="button-holder">
-                                    <div class="button1">
-                                        <div class="next">
-                                            <a href="#" onclick="document.getElementById('form-login').submit(); return false;">{{ __('Sign in') }}</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="clr"></div>
-                                <input type="submit" class="hidebtn" value="{{ __('Sign in') }}" />
-                            </fieldset>
-                        </form>
-                        <div id="alerta" class="login-alert {{ $alerta === 1 ? '' : 'is-hidden' }}">{{ __('Invalid username or password!') }}</div>
-                        <div class="clr"></div>
+<body class="auth-page">
+    <div class="auth-layout">
+        <section class="auth-layout__hero">
+            <div class="auth-layout__hero-inner">
+                <div class="auth-layout__brand">
+                    <span class="auth-layout__brand-mark">
+                        <img src="{{ $legacyBaseUrl }}/css/images/logo.png" alt="{{ __('ARS - NEO Legal') }}" />
+                    </span>
+                    <div class="auth-layout__brand-text">
+                        <strong>ARS</strong>
+                        <span>{{ __('ARS - NEO Legal') }}</span>
                     </div>
                 </div>
-                <p>{{ __('Use a valid username and password to access the Administration Panel.') }}</p>
-                <div id="lock"></div>
+                <div class="auth-layout__hero-copy">
+                    <h1>{{ __('Access the ARS Panel') }}</h1>
+                    <p>{{ __('Use a valid username and password to access the Administration Panel.') }}</p>
+                </div>
             </div>
-        </div>
-        <noscript>
-            {{ __('Warning! JavaScript must be enabled for the administration backend to work properly.') }}
-        </noscript>
-    </div>
-    <div id="footer">
-        <p class="copyright"><a href="#">BVAA</a> - Desenvolvido por: @TTorres.</p>
+        </section>
+        <section class="auth-layout__panel">
+            <div class="auth-card">
+                <div class="auth-card__header">
+                    <h2>{{ __('Sign in') }}</h2>
+                    <p>{{ __('Administrative workspace') }}</p>
+                </div>
+                <div id="system-message-container"></div>
+                <form action="{{ url('login') }}" method="post" id="form-login" class="auth-form">
+                    @csrf
+                    <div class="auth-form__field">
+                        <label id="mod-login-username-lbl" for="mod-login-username">{{ __('Username') }}</label>
+                        <input type="text" name="username" id="mod-login-username" class="auth-form__input" size="15" />
+                    </div>
+                    <div class="auth-form__field">
+                        <label id="mod-login-password-lbl" for="mod-login-password">{{ __('Password') }}</label>
+                        <input type="password" name="passwd" id="mod-login-password" class="auth-form__input" size="15" />
+                    </div>
+                    <div id="alerta" class="login-alert {{ $alerta === 1 ? '' : 'is-hidden' }}">{{ __('Invalid username or password!') }}</div>
+                    <button type="submit" class="auth-form__submit">{{ __('Sign in') }}</button>
+                    <input type="submit" class="hidebtn" value="{{ __('Sign in') }}" />
+                </form>
+                <noscript class="auth-card__noscript">
+                    {{ __('Warning! JavaScript must be enabled for the administration backend to work properly.') }}
+                </noscript>
+            </div>
+        </section>
     </div>
 </body>
 </html>

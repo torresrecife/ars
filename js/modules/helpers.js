@@ -331,7 +331,7 @@ var selectAjaxUrl = window.arsSelectAjaxUrl || "ajax/select";
 				if(valor2 == 1 || valor2 == "1"){
 					$("#sel_anda").html("Selecionar Andamentos:");
 				}else if(valor2 == 2 || valor2 == "2"){
-					$("#sel_anda").html("Selecionar Lanï¿½amentos:");
+					$("#sel_anda").html("Selecionar Lançamentos:");
 				}
 				andamentoTiposAtualizarPool();
 			}else if(valor1 == 1){

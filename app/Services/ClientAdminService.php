@@ -23,18 +23,23 @@ class ClientAdminService
 
 	public function indexData()
 	{
-		$clients = $this->repository->all();
+		$search = trim((string) request()->query('q', ''));
+		$clients = $this->repository->paginate(20, $search);
 		$dadosMap = $this->buildDadosMap($this->repository->listDadosByBanco());
 
-		foreach ($clients as $index => $client) {
-			$clients[$index]['dados_html'] = isset($dadosMap[$client['banco_id']]) ? implode('<br>', $dadosMap[$client['banco_id']]) : '';
+		$collection = $clients->getCollection();
+		foreach ($collection as $index => $client) {
+			$client['dados_html'] = isset($dadosMap[$client['banco_id']]) ? implode('<br>', $dadosMap[$client['banco_id']]) : '';
+			$collection[$index] = $client;
 		}
+		$clients->setCollection($collection);
 
 		return array(
 			'clients' => $clients,
+			'search' => $search,
 			'areas' => $this->repository->listAreas(),
 			'carteiras' => $this->repository->listCarteiras(),
-			'statusLabels' => array('Y' => 'Ativo', 'N' => 'Inativo', 'P' => 'Pendente'),
+			'statusLabels' => array('Y' => __('Active'), 'N' => __('Inactive'), 'P' => __('Pending')),
 		);
 	}
 
@@ -62,6 +67,31 @@ class ClientAdminService
 			'simulador' => isset($row['simulador']) ? (string) $row['simulador'] : '',
 			'banco_curto' => isset($row['banco_curto']) ? (string) $row['banco_curto'] : '',
 			'dados_codes' => $dadosCodes,
+		);
+	}
+
+	public function formData(array $values = array())
+	{
+		$defaults = array(
+			'banco_id' => 0,
+			'banco_name' => '',
+			'banco_cod' => '',
+			'banco_area' => 0,
+			'banco_status' => '',
+			'banco_class' => '',
+			'simulador' => '',
+			'banco_curto' => '',
+			'dados_codes' => array(),
+		);
+
+		return array(
+			'client' => array_merge($defaults, $values),
+			'areas' => $this->repository->listAreas(),
+			'carteiras' => $this->repository->listCarteiras(),
+			'statusOptions' => array(
+				'Y' => __('Active'),
+				'N' => __('Inactive'),
+			),
 		);
 	}
 

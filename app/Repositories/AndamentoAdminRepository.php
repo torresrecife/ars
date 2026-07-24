@@ -15,17 +15,30 @@ class AndamentoAdminRepository
 		return $row ? $row->toArray() : false;
 	}
 
-	public function listAll()
+	public function paginate($perPage = 20, $search = '')
 	{
-		return Andamento::query()
+		$query = Andamento::query();
+
+		$search = trim((string) $search);
+		if ($search !== '') {
+			$query->where(function ($query) use ($search) {
+				$query->where('nome', 'like', '%' . $search . '%')
+					->orWhere('chave', 'like', '%' . $search . '%')
+					->orWhere('anda_neo', 'like', '%' . $search . '%')
+					->orWhere('titulo', 'like', '%' . $search . '%');
+			});
+		}
+
+		$paginator = $query
 			->orderBy('especie')
 			->orderBy('nome')
-			->get()
-			->map(function (Andamento $andamento) {
+			->paginate((int) $perPage);
+
+		$paginator->setCollection($paginator->getCollection()->map(function (Andamento $andamento) {
 				return $andamento->toArray();
-			})
-			->values()
-			->all();
+			})->values());
+
+		return $paginator;
 	}
 
 	public function existsByKeyOrName($nome, $chave, $excludeId = 0)

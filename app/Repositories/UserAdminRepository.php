@@ -13,16 +13,28 @@ class UserAdminRepository
 	/** @var int */
 	private $lastInsertId = 0;
 
-	public function all()
+	public function paginate($perPage = 20, $search = '')
 	{
-		return Usuario::query()
+		$query = Usuario::query();
+
+		$search = trim((string) $search);
+		if ($search !== '') {
+			$query->where(function ($query) use ($search) {
+				$query->where('nome_usu', 'like', '%' . $search . '%')
+					->orWhere('login_usu', 'like', '%' . $search . '%')
+					->orWhere('email_usu', 'like', '%' . $search . '%');
+			});
+		}
+
+		$paginator = $query
 			->orderBy('id_usu')
-			->get()
-			->map(function (Usuario $user) {
+			->paginate((int) $perPage);
+
+		$paginator->setCollection($paginator->getCollection()->map(function (Usuario $user) {
 				return $user->toArray();
-			})
-			->values()
-			->all();
+			})->values());
+
+		return $paginator;
 	}
 
 	public function findById($id)

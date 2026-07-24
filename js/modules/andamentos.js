@@ -14,12 +14,17 @@ function andamentoTiposEscape(valor){
 }
 function andamentoTiposAtualizarInputs(){
 	var html = "";
+	var valores = [];
 	$(".andamento-tipos-item").each(function(index){
 		var tipo = $(this).attr("data-tipo");
 		var numero = index + 1;
+		valores.push(tipo);
 		html += "<input type='hidden' class='cls_andam_input' name='andam_name_" + numero + "' value=\"" + andamentoTiposEscape(tipo) + "\" />";
 	});
 	$("#andamento-tipos-inputs").html(html);
+	if($("#anda_neo").length){
+		$("#anda_neo").val(valores.join(","));
+	}
 	if($(".andamento-tipos-item").length>0){
 		$("#andamento-tipos-vazio").hide();
 	}else{
@@ -48,6 +53,82 @@ function andamentoTiposAtualizarPool(){
 	if(select.find("option").length>0){
 		select.prop("selectedIndex", 0);
 	}
+}
+function andamentoTiposMontarPoolOptions(html){
+	var select = $("#andam_name_pool");
+	var markup = $.trim(String(html || ""));
+	var items = [];
+	if(markup !== ""){
+		var container = $("<div>").html(markup);
+		container.find("option").each(function(){
+			items.push({
+				value: $(this).attr("value") || "",
+				text: $(this).text()
+			});
+		});
+	}
+	if(items.length === 0){
+		items.push({ value: "", text: "  " });
+	}
+	select.empty();
+	for(var i = 0; i < items.length; i++){
+		select.append($("<option>").val(items[i].value).text(items[i].text));
+	}
+	select.data("optionsHtml", select.html());
+}
+function andamentoTiposAtualizarRotulo(especie){
+	var label = arsTranslate("Select progress items");
+	if(especie == 1 || especie == "1"){
+		label = arsTranslate("Select progress items");
+	}else if(especie == 2 || especie == "2"){
+		label = arsTranslate("Select financial entries");
+	}
+	$("#sel_anda").text(label);
+}
+function andamentoTiposCarregarPool(especie, callback){
+	var especieAtual = $.trim(String(especie || ""));
+	var select = $("#andam_name_pool");
+	if(select.length===0){
+		if(typeof callback === "function"){
+			callback("");
+		}
+		return;
+	}
+	if(especieAtual===""){
+		andamentoTiposMontarPoolOptions("");
+		andamentoTiposAtualizarRotulo("");
+		andamentoTiposAtualizarPool();
+		if(typeof callback === "function"){
+			callback("");
+		}
+		return;
+	}
+	$.ajax({
+		type: "POST",
+		url: window.arsSelectAjaxUrl || "ajax/select",
+		dataType: "html",
+		cache: false,
+		data: {
+			flag: especieAtual,
+			dados: 0
+		},
+		success: function(retornoAjax){
+			andamentoTiposMontarPoolOptions(retornoAjax);
+			andamentoTiposAtualizarRotulo(especieAtual);
+			andamentoTiposAtualizarPool();
+			if(typeof callback === "function"){
+				callback(retornoAjax);
+			}
+		},
+		error: function(){
+			andamentoTiposMontarPoolOptions("");
+			andamentoTiposAtualizarRotulo(especieAtual);
+			andamentoTiposAtualizarPool();
+			if(typeof callback === "function"){
+				callback("");
+			}
+		}
+	});
 }
 function andamentoTiposAdicionar(){
 	var tipo = $("#andam_name_pool").val();
@@ -90,6 +171,31 @@ function andamentoTiposRemover(botao){
 	$(botao).closest(".andamento-tipos-item").remove();
 	andamentoTiposAtualizarInputs();
 	return false;
+}
+function andamentoFormInit(especie, tiposSelecionados){
+	var especieAtual = $.trim(String(especie || ""));
+	var tipos = $.isArray(tiposSelecionados) ? tiposSelecionados : [];
+	andamentoTiposReset(arsTranslate("No linked progress items."));
+	if($("#especie").length){
+		$("#especie").off("change.andamentoForm").on("change.andamentoForm", function(){
+			andamentoTiposReset(arsTranslate("No linked progress items."));
+			andamentoTiposCarregarPool($(this).val(), function(){
+				andamentoTiposAtualizarInputs();
+			});
+		});
+	}
+	if(especieAtual===""){
+		andamentoTiposCarregarPool("", function(){
+			andamentoTiposAtualizarInputs();
+		});
+		return;
+	}
+	andamentoTiposCarregarPool(especieAtual, function(){
+		$.each(tipos, function(_, tipo){
+			andamentoTiposAdicionarValor(tipo, true);
+		});
+		andamentoTiposAtualizarInputs();
+	});
 }
 function fc_edit_andamento(valor1,valor2){
 	var andamentoResourceBaseUrl = window.arsAndamentoResourceBaseUrl || "admin/andamentos";

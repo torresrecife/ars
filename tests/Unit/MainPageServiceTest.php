@@ -76,7 +76,8 @@ class MainPageServiceTest extends TestCase
         $this->assertSame('usuarios', $result->currentSection());
         $this->assertNotNull($result->topAction());
         $this->assertSame(__('New User'), $result->topAction()->label());
-        $this->assertSame('fc_edit_usu("", "I");', $result->topAction()->javascript());
+        $this->assertSame('', $result->topAction()->javascript());
+        $this->assertSame(route('usuarios.create'), $result->topAction()->href());
         $this->assertSame('controller', $result->content()->type());
         $this->assertSame('user-admin', $result->content()->controller());
     }
