@@ -255,3 +255,114 @@ function somarMeta(valor2){
 		$("#meta_valor_"+valor2).val(mvati);
 	}
 }
+function metaFormInit(config){
+	config = config || {};
+	var root = $("#metas-rows");
+	if(!root.length){
+		return;
+	}
+
+	var template = $("#meta-row-template").html() || "";
+	var isEditMode = !!config.isEditMode;
+	var rowCount = parseInt(config.initialRows || root.find(".metas-row").length || 1, 10);
+
+	function updateCounter(){
+		$("#numes").val(root.find(".metas-row").length);
+	}
+
+	function setMasks(rowIndex){
+		var espe = $("#meta_name_" + rowIndex + " option:selected").data("especie");
+		if(parseInt(espe, 10) === 2){
+			$("#meta_valor_" + rowIndex).setMask("decimal");
+			root.find(".metas-row[data-row='" + rowIndex + "'] .js-meta-week").setMask("decimal");
+		}else{
+			$("#meta_valor_" + rowIndex).setMask("integer");
+			root.find(".metas-row[data-row='" + rowIndex + "'] .js-meta-week").setMask("integer");
+		}
+	}
+
+	function parseMetaDecimal(value){
+		value = value || "";
+		if(typeof value !== "string"){
+			value = String(value);
+		}
+		value = value.trim();
+		if(value === ""){
+			return 0;
+		}
+		return parseFloat(value.replace(/\./g, "").replace(",", ".")) || 0;
+	}
+
+	function formatMetaTotal(rowIndex, total){
+		var espe = $("#meta_name_" + rowIndex + " option:selected").data("especie");
+		if(parseInt(espe, 10) === 2){
+			var formatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+			$("#meta_valor_" + rowIndex).val(formatter.format(total).replace("R$", "").trim());
+			return;
+		}
+
+		$("#meta_valor_" + rowIndex).val(Math.round(total));
+	}
+
+	function refreshManualState(rowIndex){
+		var row = root.find(".metas-row[data-row='" + rowIndex + "']");
+		var manual = row.find(".js-meta-manual").is(":checked");
+		row.find(".js-meta-week-field").toggleClass("is-hidden", !manual);
+		$("#meta_valor_" + rowIndex).prop("readonly", manual);
+		if(manual){
+			recalculateTotal(rowIndex);
+		}
+	}
+
+	function recalculateTotal(rowIndex){
+		var row = root.find(".metas-row[data-row='" + rowIndex + "']");
+		if(!row.find(".js-meta-manual").is(":checked")){
+			return;
+		}
+
+		var total = 0;
+		row.find(".js-meta-week").each(function(){
+			total += parseMetaDecimal($(this).val());
+		});
+		formatMetaTotal(rowIndex, total);
+	}
+
+	function bindRow(rowIndex){
+		setMasks(rowIndex);
+		refreshManualState(rowIndex);
+
+		$("#meta_name_" + rowIndex).on("change", function(){
+			setMasks(rowIndex);
+			recalculateTotal(rowIndex);
+		});
+
+		root.find(".metas-row[data-row='" + rowIndex + "'] .js-meta-manual").on("change", function(){
+			refreshManualState(rowIndex);
+		});
+
+		root.find(".metas-row[data-row='" + rowIndex + "'] .js-meta-week").on("keyup blur", function(){
+			recalculateTotal(rowIndex);
+		});
+
+		root.find(".metas-row[data-row='" + rowIndex + "'] .js-meta-remove-row").on("click", function(){
+			root.find(".metas-row[data-row='" + rowIndex + "']").remove();
+			updateCounter();
+		});
+	}
+
+	root.find(".metas-row").each(function(){
+		var rowIndex = parseInt($(this).attr("data-row"), 10);
+		bindRow(rowIndex);
+	});
+
+	if(!isEditMode){
+		$("#meta-add-row").on("click", function(){
+			rowCount++;
+			root.append(template.replace(/__INDEX__/g, rowCount));
+			bindRow(rowCount);
+			updateCounter();
+		});
+	}
+
+	updateCounter();
+}

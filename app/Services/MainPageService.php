@@ -108,7 +108,6 @@ class MainPageService
 			'setores' => new MainPageTopAction('newsetor', __('New Sector'), '', route('setores.create')),
 			'clientes' => new MainPageTopAction('newsetor', __('New Client'), '', route('clientes.create')),
 			'andamentos' => new MainPageTopAction('newsetor', __('New Progress'), '', route('andamentos.create')),
-			'metas-***REMOVED***' => new MainPageTopAction('newsetor', __('New Goal'), 'fc_edit_metas("", "I");'),
 			'semanas' => new MainPageTopAction('newsetor', __('New Week'), '', route('semanas.create')),
 			'regioes' => new MainPageTopAction('newsetor', __('New Region'), '', route('regioes.create')),
 		);

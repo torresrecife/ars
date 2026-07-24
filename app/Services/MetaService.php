@@ -47,6 +47,23 @@ class MetaService
 		return $this->regionService->listActive();
 	}
 
+	public function resolveContext(array $input = array())
+	{
+		$months = \App\Support\MonthMap::localized();
+		$month = isset($input['mes']) ? (int) $input['mes'] : (isset($input['meta_mes']) ? (int) $input['meta_mes'] : (int) date('m'));
+		$year = isset($input['ano']) ? (int) $input['ano'] : (isset($input['meta_ano']) ? (int) $input['meta_ano'] : (int) date('Y'));
+		$startDate = isset($input['startDate']) && trim((string) $input['startDate']) !== ''
+			? (string) $input['startDate']
+			: ((isset($months[$month]) ? $months[$month] : $month) . ' / ' . $year);
+
+		return array(
+			'startBanco' => isset($input['startBanco']) ? (int) $input['startBanco'] : (isset($input['banco_id']) ? (int) $input['banco_id'] : 0),
+			'startDate' => $startDate,
+			'mes' => $month,
+			'ano' => $year,
+		);
+	}
+
 	public function regionSelectionData(array $session = array())
 	{
 		$level = isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '';
@@ -131,6 +148,42 @@ class MetaService
 		}
 
 		return $total;
+	}
+
+	public function formData(array $context, array $values = array(), array $session = array())
+	{
+		$bankId = (int) $context['startBanco'];
+		$metaMonth = (int) $context['mes'];
+		$metaYear = (int) $context['ano'];
+		$regionSelection = $this->regionSelectionData($session);
+		$goalRow = array(
+			'meta_id' => isset($values['meta_id']) ? (int) $values['meta_id'] : 0,
+			'meta_name_1' => isset($values['anda_id']) ? (int) $values['anda_id'] : 0,
+			'regiao_id_1' => isset($values['regiao_id']) ? (int) $values['regiao_id'] : 0,
+			'meta_valor_1' => isset($values['meta_valor']) ? (string) $values['meta_valor'] : '',
+			'def_sem_1' => isset($values['def_sem']) ? (string) $values['def_sem'] : 'N',
+			'sem1_valor_1' => isset($values['sem_1']) ? (string) $values['sem_1'] : '',
+			'sem2_valor_1' => isset($values['sem_2']) ? (string) $values['sem_2'] : '',
+			'sem3_valor_1' => isset($values['sem_3']) ? (string) $values['sem_3'] : '',
+			'sem4_valor_1' => isset($values['sem_4']) ? (string) $values['sem_4'] : '',
+			'sem5_valor_1' => isset($values['sem_5']) ? (string) $values['sem_5'] : '',
+		);
+
+		return array(
+			'context' => $context,
+			'bank' => $this->getBank($bankId),
+			'andamentos' => $this->listAndamentos(),
+			'regions' => $regionSelection['regions'],
+			'allowGlobalRegion' => $regionSelection['allowGlobal'],
+			'goalRow' => $goalRow,
+			'metaTipos' => array(1 => __('Production'), 2 => __('Financial')),
+			'metaContext' => array(
+				'banco_id' => $bankId,
+				'meta_mes' => $metaMonth,
+				'meta_ano' => $metaYear,
+				'meta_id' => isset($values['meta_id']) ? (int) $values['meta_id'] : 0,
+			),
+		);
 	}
 
 	private function extractMetaPayload(array $input, $index)

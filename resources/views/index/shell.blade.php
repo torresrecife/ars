@@ -142,7 +142,7 @@
 		'regioes' => __('Regions'),
 	];
 	$currentPageTitle = isset($pageTitleMap[$currentSection]) ? $pageTitleMap[$currentSection] : __('ARS Control');
-	$contentCardClass = in_array($currentSection, array('andamentos', 'usuarios', 'clientes', 'regioes', 'setores', 'semanas'), true)
+	$contentCardClass = in_array($currentSection, array('andamentos', 'usuarios', 'clientes', 'regioes', 'setores', 'semanas', 'metas-select', 'metas-***REMOVED***'), true)
 		? 'ars-shell__content-card ars-shell__content-card--flat'
 		: 'ars-shell__content-card';
 	$sectionSubtitle = in_array($currentSection, ['painel', 'producao', 'relatorio-semanal', 'relatorio-mensal', 'carteiras', 'metas-select', 'metas-***REMOVED***'], true)

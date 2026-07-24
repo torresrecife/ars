@@ -1,97 +1,91 @@
 @php
 	$bankCode = isset($bank['banco_cod']) ? $bank['banco_cod'] : '';
 	$allowGlobalRegion = !empty($allowGlobalRegion);
+	$contextQuery = http_build_query([
+		'startBanco' => $startBanco,
+		'startDate' => $startDate,
+		'mes' => $mes,
+		'ano' => $ano,
+	]);
 @endphp
-<div class="***REMOVED***-module-offset">
-<script>
-window.arsMetaResourceBaseUrl = "{{ url('***REMOVED***/metas') }}";
-</script>
-<br><div class="***REMOVED***-context-title">{{ __('Client') }}: <b>{{ e((string) $bankCode) }}</b> | {{ __('Month/Year') }}: <b>{{ e((string) $startDate) }}</b></div><br>
-<label><h2><u>{{ __('Goals') }}</u></h2></label>
-<div>
-<table class="***REMOVED***list ***REMOVED***list--metas">
-	<tr height="30">
-		<td class="order"><b>{{ __('Client') }}</b></td>
-		<td class="order"><b>{{ __('Region') }}</b></td>
-		<td class="order"><b>{{ __('Progress') }}</b></td>
-		<td class="order"><b>{{ __('Type') }}</b></td>
-		<td class="order"><b>{{ __('Quantity/Value') }}</b></td>
-		<td class="order"><b>{{ __('Options') }}</b></td>
-	</tr>
-@foreach ($metas as $arr)
-	@php $metaValor = ((int) $arr['especie'] === 2) ? number_format((float) $arr['meta_valor'], 2, ',', '.') : number_format((float) $arr['meta_valor'], 0, '', ''); @endphp
-	<tr>
-		<td class="order">{{ e((string) $arr['banco_name']) }}</td>
-		<td class="order">{{ e(isset($arr['regiao_nome']) && $arr['regiao_nome'] !== '' ? (string) $arr['regiao_nome'] : __('All regions')) }}</td>
-		<td class="order">{{ e((string) $arr['nome']) }}</td>
-		<td class="order ***REMOVED***-type-badge {{ (int) $arr['especie'] === 1 ? '***REMOVED***-type-badge--production' : '***REMOVED***-type-badge--financial' }}">{{ e((string) $metaTipos[$arr['especie']]) }}</td>
-		<td class="order">{{ $metaValor }}</td>
-		<td class="order ***REMOVED***-action-cell">
-			@include('partials.***REMOVED***-action-buttons', [
-				'display' => 'block',
-				'editAction' => "fc_edit_metas(" . (int) $arr['meta_id'] . ",'U')",
-				'deleteAction' => "fc_del_metas(" . (int) $arr['meta_id'] . "," . json_encode((string) $arr['nome']) . ")",
-				'editTitle' => __('Edit Goal'),
-				'deleteTitle' => __('Delete Goal'),
-			])
-		</td>
-	</tr>
-@endforeach
-</table>
-<br><div class="***REMOVED***-context-title">{{ __('Total financial goal') }}: <b>R$ {{ number_format((float) $totalFinanceiro, 2, ',', '.') }}</b></div><br>
-<div id="dialog-edit-metas" title="{{ __('Edit Goal') }}" class="***REMOVED***-dialog is-hidden">
-	<p class="validateMetas">{{ __('Edit the goal below') }}</p>
-	<fieldset>
-		<div id="tb_dialog" class="***REMOVED***-dialog-panel ***REMOVED***-dialog-panel--metas">
-			<table align="left" class="***REMOVED***-dialog-table ***REMOVED***-dialog-table--metas">
-				<tr><td>
-					<div class="metas-form-label metas-form-label--meta">{{ __('Select goals') }}</div>
-					<div class="metas-form-label metas-form-label--region">{{ __('Region') }}</div>
-					<div class="metas-form-label metas-form-label--value">{{ __('Total Value') }}</div>
-					<div class="metas-form-label metas-form-label--manual">{{ __('Manual definition') }}</div>
-					<div class="metas-form-label metas-form-label--week">{{ __('Week 1') }}</div>
-					<div class="metas-form-label metas-form-label--week">{{ __('Week 2') }}</div>
-					<div class="metas-form-label metas-form-label--week">{{ __('Week 3') }}</div>
-					<div class="metas-form-label metas-form-label--week">{{ __('Week 4') }}</div>
-					<div class="metas-form-label metas-form-label--week">{{ __('Week 5') }}</div>
-				</td></tr>
-				<tr><td>
-					<div id="metas_0">
-						<div class="metas-form-row">
-							<select class="cls_metas2 input-default metas-field--meta" name="meta_name_1" id="meta_name_1" obrigatorio="1" title="{{ __('Goal') }}" onchange="my_especie(1);">
-								<option value=""></option>
-								@foreach ($andamentos as $andamento)
-									<option value="{{ (int) $andamento['anda_id'] }}" especie="{{ (int) $andamento['especie'] }}">{{ e((string) $andamento['nome'] . ' (' . $metaTipos[$andamento['especie']] . ')') }}</option>
-								@endforeach
-							</select>
-							<select class="cls_meta_regiao input-default metas-field--region" name="regiao_id_1" id="regiao_id_1">
-								@if ($allowGlobalRegion)
-									<option value="">{{ __('All regions') }}</option>
-								@endif
-								@foreach ($regions as $region)
-									<option value="{{ (int) $region['regiao_id'] }}">{{ e((string) $region['regiao_nome']) }}</option>
-								@endforeach
-							</select>
-							<input type="text" class="cls_meta metas-field--value" name="meta_valor_1" id="meta_valor_1" value="" obrigatorio="1" title="{{ __('Total goal') }}" alt=""/>
-							<input type="checkbox" class="cls_meta metas-field--manual" name="def_sem_1" id="def_sem_1" onclick="definir_sem(this,1);" value="" title="{{ __('Manual definition') }}">
-							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem1_valor_1" id="sem1_valor_1" value="" title="{{ __('Week 1 value') }}" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
-							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem2_valor_1" id="sem2_valor_1" value="" title="{{ __('Week 2 value') }}" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
-							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem3_valor_1" id="sem3_valor_1" value="" title="{{ __('Week 3 value') }}" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
-							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem4_valor_1" id="sem4_valor_1" value="" title="{{ __('Week 4 value') }}" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
-							<input type="text" class="cls_meta sem_1 metas-field--week is-hidden" name="sem5_valor_1" id="sem5_valor_1" value="" title="{{ __('Week 5 value') }}" onkeypress="somarMeta(1)" onblur="somarMeta(1)">
-							<button id="inp1_1" class="bts metas-add-button" onclick="inserir_metas($('#meta_name_1').html(),1);">+</button>
-						</div>
-					</div>
-					<div id="metas_1"></div>
-				</td></tr>
-			</table>
+<div class="***REMOVED***-page ***REMOVED***-page--flat metas-page">
+	@if (session('status'))
+		<div class="***REMOVED***-flash ***REMOVED***-flash--success">{{ session('status') }}</div>
+	@endif
+
+	@if (session('error'))
+		<div class="***REMOVED***-flash ***REMOVED***-flash--error">{{ session('error') }}</div>
+	@endif
+
+	<div class="***REMOVED***-page__toolbar ***REMOVED***-page__toolbar--between">
+		<div class="***REMOVED***-page__eyebrow">{{ __('Goals') }}</div>
+		<div class="***REMOVED***-form-inline">
+			<a href="{{ route('metas') }}" class="***REMOVED***-button ***REMOVED***-button--secondary">{{ __('Change context') }}</a>
+			<a href="{{ route('metas.create', ['startBanco' => $startBanco, 'startDate' => $startDate, 'mes' => $mes, 'ano' => $ano]) }}" class="***REMOVED***-button ***REMOVED***-button--primary">{{ __('New Goal') }}</a>
 		</div>
-	</fieldset>
-</div>
-<input type="hidden" name="metas_num" id="metas_num" value="1" />
-<input type="hidden" class="cls_meta" name="meta_id" id="meta_id" value="" />
-<input type="hidden" class="cls_meta" name="banco_id" id="banco_id" value="{{ e((string) $startBanco) }}" />
-<input type="hidden" class="cls_meta" name="meta_mes" id="meta_mes" value="{{ e((string) $mes) }}" />
-<input type="hidden" class="cls_meta" name="meta_ano" id="meta_ano" value="{{ e((string) $ano) }}" />
-</div>
+	</div>
+
+	<div class="metas-context-grid">
+		<div class="***REMOVED***-card metas-context-card">
+			<div class="metas-context-card__label">{{ __('Client') }}</div>
+			<div class="metas-context-card__value">{{ e((string) $bankCode) }}</div>
+		</div>
+		<div class="***REMOVED***-card metas-context-card">
+			<div class="metas-context-card__label">{{ __('Month/Year') }}</div>
+			<div class="metas-context-card__value">{{ e((string) $startDate) }}</div>
+		</div>
+		<div class="***REMOVED***-card metas-context-card">
+			<div class="metas-context-card__label">{{ __('Total financial goal') }}</div>
+			<div class="metas-context-card__value">R$ {{ number_format((float) $totalFinanceiro, 2, ',', '.') }}</div>
+		</div>
+	</div>
+
+	<div class="***REMOVED***-surface ***REMOVED***-surface--table">
+		<table class="***REMOVED***list ***REMOVED***list--full ***REMOVED***list--modern metas-***REMOVED***-table">
+			<colgroup>
+				<col class="***REMOVED***-col ***REMOVED***-col--name" />
+				<col class="***REMOVED***-col ***REMOVED***-col--region" />
+				<col class="***REMOVED***-col ***REMOVED***-col--progress" />
+				<col class="***REMOVED***-col ***REMOVED***-col--type" />
+				<col class="***REMOVED***-col ***REMOVED***-col--value" />
+				<col class="***REMOVED***-col ***REMOVED***-col--actions" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th class="order">{{ __('Client') }}</th>
+					<th class="order">{{ __('Region') }}</th>
+					<th class="order">{{ __('Progress') }}</th>
+					<th class="order">{{ __('Type') }}</th>
+					<th class="order">{{ __('Quantity/Value') }}</th>
+					<th class="order">{{ __('Options') }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				@forelse ($metas as $arr)
+					@php $metaValor = ((int) $arr['especie'] === 2) ? number_format((float) $arr['meta_valor'], 2, ',', '.') : number_format((float) $arr['meta_valor'], 0, '', ''); @endphp
+					<tr>
+						<td class="order">{{ e((string) $arr['banco_name']) }}</td>
+						<td class="order">{{ e(isset($arr['regiao_nome']) && $arr['regiao_nome'] !== '' ? (string) $arr['regiao_nome'] : __('All regions')) }}</td>
+						<td class="order">{{ e((string) $arr['nome']) }}</td>
+						<td class="order"><span class="***REMOVED***-type-pill {{ (int) $arr['especie'] === 1 ? '***REMOVED***-type-pill--production' : '***REMOVED***-type-pill--financial' }}">{{ e((string) $metaTipos[$arr['especie']]) }}</span></td>
+						<td class="order">{{ $metaValor }}</td>
+						<td class="order">
+							<div class="***REMOVED***-table-actions">
+								<a href="{{ route('metas.edit', ['id' => (int) $arr['meta_id'], 'startBanco' => $startBanco, 'startDate' => $startDate, 'mes' => $mes, 'ano' => $ano]) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
+								<form method="post" action="{{ route('metas.destroy.page', (int) $arr['meta_id']) }}?{{ $contextQuery }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the goal :name?', ['name' => $arr['nome']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
+									@csrf
+									@method('DELETE')
+									<button type="submit" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</button>
+								</form>
+							</div>
+						</td>
+					</tr>
+				@empty
+					<tr>
+						<td colspan="6" class="order metas-empty">{{ __('No goals found for this context.') }}</td>
+					</tr>
+				@endforelse
+			</tbody>
+		</table>
+	</div>
 </div>

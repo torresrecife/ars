@@ -719,7 +719,7 @@ a.saveorder.inactive {
 a.pointer { cursor: pointer; }
 
 button {
-	margin-top: 4px;
+	margin-top: 0;
 	background: #fff;
 	border: 1px solid #ccc;
 	text-decoration: none;
