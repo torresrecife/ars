@@ -481,7 +481,10 @@ div.cpanel-right-sub {
 }
 .login-alert {
   color: red;
-  text-align: center;
+  text-align: left;
+  font-size: 12px;
+  position: absolute;
+  padding: 5px;
 }
 .force-password-dialog table { width: 100%; }
 .force-password-dialog td {
