@@ -81,7 +81,7 @@ class NeoDetailRepository extends NeoSqlsrvRepository
 			JOIN v_Andamento_Processo AS a WITH (NOLOCK) ON a.CodigoProcesso = p.CodigoProcesso
 			" . $this->ajuizamentoApply() . "
 			WHERE a.TipoAndamentoProcesso IN (" . $typeList . ")
-			AND p.TipoProcesso NOT IN (N'CARTA PRECATÃƒÆ’Ã¢â‚¬Å“RIA')
+			AND p.TipoProcesso NOT IN (N'CARTA PRECATÓRIA')
 		";
 
 		$query .= $this->buildAndamentoBaseConditions($carteiraCodes, $carteiraMode, $ufCodes, $month, $year, $week);
@@ -99,7 +99,7 @@ class NeoDetailRepository extends NeoSqlsrvRepository
 			p.Cartorio as Cartorio,
 			l.CodigoLancamento as CodigoLancamento,
 			p.IdentificadorContratante as IdentificadorContratante,
-			" . $this->parteSubquery('RÃƒÂ©u', 'Adverso') . ",
+			" . $this->parteSubquery($this->reuLabel(), 'Adverso') . ",
 			" . $this->parteSubquery('Autor', 'Adverso2') . ",
 			p.Area,
 			p.NumeroProcesso as Processo,
@@ -125,7 +125,7 @@ class NeoDetailRepository extends NeoSqlsrvRepository
 			a.TipoAndamentoProcesso as Andamento,
 			FORMAT(a.DataHoraEvento, 'dd/MM/yyyy', 'en-US') as DataEvento,
 			FORMAT(a.DataHora, 'dd/MM/yyyy', 'en-US') as DataCadastro,
-			" . $this->parteSubquery('RÃƒÂ©u', 'Adverso') . ",
+			" . $this->parteSubquery($this->reuLabel(), 'Adverso') . ",
 			dist.DataAjuizamento as Ajuizamento
 		";
 	}
@@ -135,7 +135,7 @@ class NeoDetailRepository extends NeoSqlsrvRepository
 		return "(
 			select top 1 pp.Pessoa
 			from v_Parte_Processo as pp WITH (NOLOCK)
-			where pp.TipoPessoa = '" . str_replace("'", "''", (string) $tipoPessoa) . "'
+			where pp.TipoPessoa = N'" . str_replace("'", "''", (string) $tipoPessoa) . "'
 			and pp.CodigoProcesso = p.CodigoProcesso
 		) as " . $alias;
 	}
@@ -149,12 +149,12 @@ class NeoDetailRepository extends NeoSqlsrvRepository
 					SELECT ap.DataHoraEvento
 					FROM v_Andamento_Processo as ap WITH (NOLOCK)
 					WHERE ap.CodigoProcesso = p.CodigoProcesso
-					AND ap.TipoAndamentoProcesso = 'AÃƒÂ§ÃƒÂ£o distribuÃƒÂ­da'
+					AND ap.TipoAndamentoProcesso = N'" . $this->acaoDistribuidaLabel() . "'
 					UNION ALL
 					SELECT ah.DataHoraEvento
 					FROM v_Andamento_Processo_Historico as ah WITH (NOLOCK)
 					WHERE ah.CodigoProcesso = p.CodigoProcesso
-					AND ah.TipoAndamentoProcesso = 'AÃƒÂ§ÃƒÂ£o distribuÃƒÂ­da'
+					AND ah.TipoAndamentoProcesso = N'" . $this->acaoDistribuidaLabel() . "'
 				) x
 				ORDER BY x.DataHoraEvento DESC
 			) dist
@@ -189,5 +189,15 @@ class NeoDetailRepository extends NeoSqlsrvRepository
 		$query .= " AND p.TipoDesdobramento IS NULL AND a.Invalido = 'False'";
 
 		return $query;
+	}
+
+	private function reuLabel()
+	{
+		return json_decode('"\u0052\u00e9\u0075"');
+	}
+
+	private function acaoDistribuidaLabel()
+	{
+		return json_decode('"\u0041\u00e7\u00e3\u006f\u0020\u0064\u0069\u0073\u0074\u0072\u0069\u0062\u0075\u00ed\u0064\u0061"');
 	}
 }
