@@ -116,6 +116,50 @@ class DashboardPanelServiceTest extends TestCase
         $this->assertSame(array('900', '901'), $payload['totalCodes']);
     }
 
+    public function test_build_financial_rows_matches_accented_type_names_after_normalization()
+    {
+        $dashboardRepository = Mockery::mock(DashboardRepository::class);
+        $dashboardRepository->shouldReceive('listMetaRowsByBankMonthYearAndSpecies')
+            ->once()
+            ->andReturn(array(
+                array(
+                    'anda_id' => 1,
+                    'nome' => 'Sucumbencia',
+                    'anda_neo' => 'SUCUMBÊNCIA',
+                    'meta_valor' => 50,
+                    'weekMeta' => array(50.0),
+                    'totalMeta' => 50.0,
+                    'especie' => 2,
+                ),
+            ));
+
+        $neoRepository = Mockery::mock(NeoPanelRepository::class);
+        $neoRepository->shouldReceive('listFinancialEventsByWeek')
+            ->once()
+            ->andReturn(array(
+                array('type_name' => 'SUCUMBENCIA', 'code' => '910', 'value' => 33.0),
+            ));
+
+        $service = new DashboardPanelService(
+            $dashboardRepository,
+            $neoRepository,
+            Mockery::mock(RegionService::class),
+            array(),
+            new PerformanceMetricFormatter()
+        );
+
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('buildFinancialRows');
+        $method->setAccessible(true);
+
+        $rows = $method->invoke($service, 3, 7, 2026, array(array('start' => 1, 'end' => 7)), array('C1'), '=', array(), 0, array());
+
+        $this->assertCount(1, $rows);
+        $payload = $rows[0]->toArray();
+        $this->assertSame(33.0, $payload['totalReal']);
+        $this->assertSame(array('910'), $payload['totalCodes']);
+    }
+
     public function test_financial_summary_total_goal_uses_row_total_meta()
     {
         $service = new DashboardPanelService(
