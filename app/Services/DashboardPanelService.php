@@ -906,21 +906,7 @@ class DashboardPanelService
 			return false;
 		}
 
-		if ($left === $right) {
-			return true;
-		}
-
-		if (strlen($left) >= 6 && strlen($right) >= 6) {
-			if (strpos($left, $right) !== false || strpos($right, $left) !== false) {
-				return true;
-			}
-
-			if (function_exists('levenshtein') && levenshtein($left, $right) <= 2) {
-				return true;
-			}
-		}
-
-		return false;
+		return $left === $right;
 	}
 
 }
