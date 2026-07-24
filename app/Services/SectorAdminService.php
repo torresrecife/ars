@@ -19,8 +19,11 @@ class SectorAdminService
 
 	public function indexData()
 	{
+		$search = trim((string) request()->query('q', ''));
+
 		return array(
-			'areas' => $this->repository->listAll(),
+			'areas' => $this->repository->paginate(20, $search),
+			'search' => $search,
 		);
 	}
 
@@ -35,6 +38,16 @@ class SectorAdminService
 			'area_id' => isset($row['area_id']) ? (int) $row['area_id'] : 0,
 			'area_nome' => isset($row['area_nome']) ? (string) $row['area_nome'] : '',
 			'area_date' => isset($row['area_date']) ? (string) $row['area_date'] : '',
+		);
+	}
+
+	public function formData(array $values = array())
+	{
+		return array(
+			'sector' => array(
+				'area_id' => isset($values['area_id']) ? (int) $values['area_id'] : 0,
+				'area_nome' => isset($values['area_nome']) ? (string) $values['area_nome'] : '',
+			),
 		);
 	}
 

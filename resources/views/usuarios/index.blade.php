@@ -1,135 +1,104 @@
-<div class="***REMOVED***-module-offset">
-<script>
-window.arsUserResourceBaseUrl = "{{ url('***REMOVED***/usuarios') }}";
-</script>
-<label><h2><u>{{ __('Users') }}</u></h2></label>
-<div>
-<table class="***REMOVED***list">
-	<tr height="30">
-		<td class="order"><b>{{ __('Code') }}</b></td>
-		<td class="order"><b>{{ __('Name') }}</b></td>
-		<td class="order"><b>{{ __('User') }}</b></td>
-		<td class="order"><b>{{ __('Level') }}</b></td>
-		<td class="order"><b>{{ __('Last Access') }}</b></td>
-		<td class="order"><b>{{ __('Created At') }}</b></td>
-		<td class="order"><b>{{ __('E-mail') }}</b></td>
-		<td class="order"><b>{{ __('Status') }}</b></td>
-		<td class="order"><b>{{ __('Options') }}</b></td>
-	</tr>
-@foreach ($users as $user)
-	@php
-		$acesso = empty($user['acesso_usu']) || $user['acesso_usu'] === '0000-00-00 00:00:00' ? '' : strftime('%d/%m/%Y %H:%M:%S', strtotime($user['acesso_usu']));
-	@endphp
-	<tr>
-		<td class="order">{{ $user['id_usu'] }}</td>
-		<td class="order">{{ e($user['nome_usu']) }}</td>
-		<td class="order">{{ e($user['login_usu']) }}</td>
-		<td class="order">{{ e($user['nivel_usu']) }}</td>
-		<td class="order">{{ $acesso }}</td>
-		<td class="order">{{ strftime('%d/%m/%Y %H:%M:%S', strtotime($user['data_cad'])) }}</td>
-		<td class="order">{{ e($user['email_usu']) }}</td>
-		<td class="order">{{ e($user['status_usu']) }}</td>
-		<td class="order ***REMOVED***-action-cell">
-			@include('partials.***REMOVED***-action-buttons', [
-				'display' => 'block',
-				'editAction' => "fc_edit_usu(" . (int) $user['id_usu'] . ",'U')",
-				'deleteAction' => "fc_del_usu(" . (int) $user['id_usu'] . "," . json_encode((string) $user['login_usu']) . ")",
-				'editTitle' => __('Edit User'),
-				'deleteTitle' => __('Delete User'),
-			])
-		</td>
-	</tr>
-@endforeach
-</table>
-<div id="dialog-edit-usu" title="{{ __('Edit User') }}" class="***REMOVED***-dialog ***REMOVED***-dialog--scroll is-hidden">
-	<p class="validateTips">{{ __('Edit the user below') }}</p>
-	<fieldset>
-		<div>
-			<table class="***REMOVED***-dialog-table ***REMOVED***-dialog-table--user">
-				<tr><td width="25%"><label>{{ __('Name') }}:</label></td><td width="75%"><input type="text" class="cls_usu" name="nome_usu" id="nome_usu" value="" obrigatorio="1" title="{{ __('Full Name') }}"/></td></tr>
-				<tr><td><label>{{ __('User') }}:</label></td><td><input type="text" class="cls_usu" name="login_usu" id="login_usu" value="" obrigatorio="1" title="{{ __('User') }}"/></td></tr>
-				<tr><td><label>{{ __('E-mail') }}:</label></td><td><input type="text" class="cls_usu" name="email_usu" id="email_usu" value="" obrigatorio="1" title="{{ __('E-mail') }}"/></td></tr>
+<div class="***REMOVED***-page ***REMOVED***-page--flat">
+	@if (session('status'))
+		<div class="***REMOVED***-flash ***REMOVED***-flash--success">{{ session('status') }}</div>
+	@endif
+
+	@if (session('error'))
+		<div class="***REMOVED***-flash ***REMOVED***-flash--error">{{ session('error') }}</div>
+	@endif
+
+	<div class="***REMOVED***-page__toolbar ***REMOVED***-page__toolbar--between">
+		<form method="get" action="{{ route('usuarios') }}" class="***REMOVED***-form-inline ***REMOVED***-search-form">
+			<input type="text" name="q" value="{{ e($search ?? '') }}" class="***REMOVED***-form-input ***REMOVED***-search-input" placeholder="{{ __('Search users...') }}" />
+			<button type="submit" class="***REMOVED***-button ***REMOVED***-button--primary">{{ __('Search') }}</button>
+			@if (!empty($search))
+				<a href="{{ route('usuarios') }}" class="***REMOVED***-button ***REMOVED***-button--secondary">{{ __('Clear') }}</a>
+			@endif
+		</form>
+	</div>
+
+	<div class="***REMOVED***-surface ***REMOVED***-surface--table">
+		<table class="***REMOVED***list ***REMOVED***list--full ***REMOVED***list--modern">
+			<colgroup>
+				<col class="***REMOVED***-col ***REMOVED***-col--code" />
+				<col class="***REMOVED***-col ***REMOVED***-col--name" />
+				<col class="***REMOVED***-col ***REMOVED***-col--login" />
+				<col class="***REMOVED***-col ***REMOVED***-col--level" />
+				<col class="***REMOVED***-col ***REMOVED***-col--datetime" />
+				<col class="***REMOVED***-col ***REMOVED***-col--datetime" />
+				<col class="***REMOVED***-col ***REMOVED***-col--email" />
+				<col class="***REMOVED***-col ***REMOVED***-col--status" />
+				<col class="***REMOVED***-col ***REMOVED***-col--actions" />
+			</colgroup>
+			<thead>
 				<tr>
-					<td><label>{{ __('Level') }}:</label></td>
-					<td>
-						<select class="cls_usu" name="nivel_usu" id="nivel_usu" obrigatorio="1" title="Nivel">
-							<option value=""></option>
-							<option value="ADM">{{ __('Admin') }}</option>
-							<option value="GER">{{ __('Manager') }}</option>
-							<option value="USU">{{ __('User') }}</option>
-						</select>
-					</td>
+					<th class="order">{{ __('Code') }}</th>
+					<th class="order">{{ __('Name') }}</th>
+					<th class="order">{{ __('User') }}</th>
+					<th class="order">{{ __('Level') }}</th>
+					<th class="order">{{ __('Last Access') }}</th>
+					<th class="order">{{ __('Created At') }}</th>
+					<th class="order">{{ __('E-mail') }}</th>
+					<th class="order">{{ __('Status') }}</th>
+					<th class="order">{{ __('Options') }}</th>
 				</tr>
-				<tr>
-					<td><label>{{ __('Sector') }}:</label></td>
-					<td>
-						<select class="cls_usu" name="setor_usu" id="setor_usu" onchange="sel_tipo(1,this.value)" obrigatorio="1" title="Setor">
-							<option value="0">{{ __('All') }}</option>
-							@foreach ($areas as $area)
-								<option value="{{ $area['area_id'] }}">{{ e($area['area_nome']) }}</option>
-							@endforeach
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td><label id="sel_banco">{{ __('Clients') }}:</label></td>
-					<td>
-						<div class="usuario-clientes-box">
-							<div id="usuario-clientes-vinculados" class="usuario-clientes-lista"></div>
-							<div id="usuario-clientes-inputs"></div>
-							<div id="usuario-clientes-vazio" class="usuario-clientes-vazio">{{ __('No linked clients.') }}</div>
-						</div>
-						<div class="usuario-clientes-adicionar">
-							<select class="input-default" name="banco_usu_pool" id="banco_usu_pool" title="Cliente"></select>
-							<button id="bt-add-cliente-usu" class="bts" type="button" onclick="usuarioClientesAdicionar();">+</button>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td><label>{{ __('Region Mode') }}:</label></td>
-					<td>
-						<select class="cls_usu" name="regiao_modo" id="regiao_modo" title="Modo Regiao">
-							<option value="N">{{ __('No regional filter') }}</option>
-							<option value="R">{{ __('Linked regions') }}</option>
-							<option value="T">{{ __('All regions') }}</option>
-						</select>
-					</td>
-				</tr>
-				<tr id="usuario-regioes-row">
-					<td><label>{{ __('Regions') }}:</label></td>
-					<td>
-						<div class="usuario-regioes-box">
-							<div id="usuario-regioes-vinculadas" class="usuario-regioes-lista"></div>
-							<div id="usuario-regioes-inputs"></div>
-							<div id="usuario-regioes-vazio" class="usuario-regioes-vazio">{{ __('No linked regions.') }}</div>
-						</div>
-						<div class="usuario-regioes-adicionar">
-							<select class="input-default" name="regiao_usu_pool" id="regiao_usu_pool" title="Regiao">
-								<option value=""></option>
-								@foreach ($regions as $region)
-									<option value="{{ $region['regiao_id'] }}">{{ e($region['regiao_nome']) }}</option>
-								@endforeach
-							</select>
-							<button id="bt-add-regiao-usu" class="bts" type="button" onclick="usuarioRegioesAdicionar();">+</button>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td><label>Status</label></td>
-					<td>
-						<select class="cls_usu" name="status_usu" id="status_usu" obrigatorio="1" title="Status">
-							<option value=""></option>
-							<option value="ATI">{{ __('Active') }}</option>
-							<option value="INA">{{ __('Inactive') }}</option>
-						</select>
-					</td>
-				</tr>
-				<tr><td><label>{{ __('Password') }}</label></td><td><input type="password" class="cls_usu" name="senha_usu1" id="senha_usu1" value="" /></td></tr>
-				<tr><td><label>{{ __('Repeat Password') }}</label></td><td><input type="password" class="cls_usu" name="senha_usu2" id="senha_usu2" value="" /></td></tr>
-			</table>
-			<input type="hidden" class="cls_usu" name="id_usu" id="id_usu" value="" />
+			</thead>
+			<tbody>
+				@foreach ($users as $user)
+					@php
+						$acesso = empty($user['acesso_usu']) || $user['acesso_usu'] === '0000-00-00 00:00:00' ? '' : strftime('%d/%m/%Y %H:%M:%S', strtotime($user['acesso_usu']));
+					@endphp
+					<tr>
+						<td class="order">{{ (int) $user['id_usu'] }}</td>
+						<td class="order">{{ e($user['nome_usu']) }}</td>
+						<td class="order">{{ e($user['login_usu']) }}</td>
+						<td class="order">{{ e($user['nivel_usu']) }}</td>
+						<td class="order">{{ $acesso }}</td>
+						<td class="order">{{ strftime('%d/%m/%Y %H:%M:%S', strtotime($user['data_cad'])) }}</td>
+						<td class="order">{{ e($user['email_usu']) }}</td>
+						<td class="order">{{ e($user['status_usu']) }}</td>
+						<td class="order">
+							<div class="***REMOVED***-table-actions">
+								<a href="{{ route('usuarios.edit', (int) $user['id_usu']) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
+								<form method="post" action="{{ route('usuarios.destroy.page', (int) $user['id_usu']) }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the user :name?', ['name' => $user['login_usu']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
+									@csrf
+									@method('DELETE')
+									<button type="submit" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</button>
+								</form>
+							</div>
+						</td>
+					</tr>
+				@endforeach
+			</tbody>
+		</table>
+	</div>
+
+	@if (method_exists($users, 'hasPages') && $users->hasPages())
+		<div class="***REMOVED***-pagination">
+			<div class="***REMOVED***-pagination__summary">
+				{{ __('Showing :from to :to of :total items', ['from' => $users->firstItem(), 'to' => $users->lastItem(), 'total' => $users->total()]) }}
+			</div>
+			<div class="***REMOVED***-pagination__links">
+				@if ($users->onFirstPage())
+					<span class="***REMOVED***-pagination__link is-disabled">{{ __('Previous') }}</span>
+				@else
+					<a href="{{ $users->appends(request()->except('page'))->previousPageUrl() }}" class="***REMOVED***-pagination__link">{{ __('Previous') }}</a>
+				@endif
+
+				@foreach ($users->appends(request()->except('page'))->getUrlRange(max(1, $users->currentPage() - 2), min($users->lastPage(), $users->currentPage() + 2)) as $page => $url)
+					@if ($page === $users->currentPage())
+						<span class="***REMOVED***-pagination__link is-active">{{ $page }}</span>
+					@else
+						<a href="{{ $url }}" class="***REMOVED***-pagination__link">{{ $page }}</a>
+					@endif
+				@endforeach
+
+				@if ($users->hasMorePages())
+					<a href="{{ $users->appends(request()->except('page'))->nextPageUrl() }}" class="***REMOVED***-pagination__link">{{ __('Next') }}</a>
+				@else
+					<span class="***REMOVED***-pagination__link is-disabled">{{ __('Next') }}</span>
+				@endif
+			</div>
 		</div>
-	</fieldset>
-</div>
-</div>
+	@endif
 </div>

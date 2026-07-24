@@ -104,13 +104,13 @@ class MainPageService
 	private function resolveTopAction($currentSection)
 	{
 		$actions = array(
-			'usuarios' => new MainPageTopAction('newuser', __('New User'), 'fc_edit_usu("", "I");'),
-			'setores' => new MainPageTopAction('newsetor', __('New Sector'), 'fc_edit_setor("", "I");'),
-			'clientes' => new MainPageTopAction('newsetor', __('New Client'), 'fc_edit_cliente("", "I");'),
-			'andamentos' => new MainPageTopAction('newsetor', __('New Progress'), 'fc_edit_andamento("", "I");'),
+			'usuarios' => new MainPageTopAction('newuser', __('New User'), '', route('usuarios.create')),
+			'setores' => new MainPageTopAction('newsetor', __('New Sector'), '', route('setores.create')),
+			'clientes' => new MainPageTopAction('newsetor', __('New Client'), '', route('clientes.create')),
+			'andamentos' => new MainPageTopAction('newsetor', __('New Progress'), '', route('andamentos.create')),
 			'metas-***REMOVED***' => new MainPageTopAction('newsetor', __('New Goal'), 'fc_edit_metas("", "I");'),
-			'semanas' => new MainPageTopAction('newsetor', __('New Week'), 'fc_edit_sem("", "I");'),
-			'regioes' => new MainPageTopAction('newsetor', __('New Region'), 'fc_edit_regiao("", "I");'),
+			'semanas' => new MainPageTopAction('newsetor', __('New Week'), '', route('semanas.create')),
+			'regioes' => new MainPageTopAction('newsetor', __('New Region'), '', route('regioes.create')),
 		);
 
 		return isset($actions[$currentSection]) ? $actions[$currentSection] : null;

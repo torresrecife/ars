@@ -1,80 +1,98 @@
-<div class="***REMOVED***-module-offset">
-<script>
-window.arsAndamentoResourceBaseUrl = "{{ url('***REMOVED***/andamentos') }}";
-window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
-</script>
-<label><h2><u>{{ __('Progress') }}</u></h2></label>
-<div>
-<table class="***REMOVED***list ***REMOVED***list--full">
-	<tr height="30">
-		<td class="order"><b>{{ __('Code') }}</b></td>
-		<td class="order"><b>{{ __('Name') }}</b></td>
-		<td class="order"><b>{{ __('Code Name') }}</b></td>
-		<td class="order"><b>{{ __('Progress') }}</b></td>
-		<td class="order"><b>{{ __('Type') }}</b></td>
-		<td class="order"><b>{{ __('Panel') }}</b></td>
-		<td class="order"><b>{{ __('Panel Title') }}</b></td>
-		<td class="order"><b>{{ __('Options') }}</b></td>
-	</tr>
-@foreach ($andamentos as $andamento)
-	<tr>
-		<td class="order">{{ (int) $andamento['anda_id'] }}</td>
-		<td class="order">{{ e($andamento['nome']) }}</td>
-		<td class="order">{{ e($andamento['chave']) }}</td>
-		<td class="order">{{ e($andamento['anda_neo']) }}</td>
-		<td class="order ***REMOVED***-type-badge {{ (int) $andamento['especie'] === 1 ? '***REMOVED***-type-badge--production' : '***REMOVED***-type-badge--financial' }}">{{ e($metaTipos[(int) $andamento['especie']]) }}</td>
-		<td class="order">{{ e($andamento['painel']) }}</td>
-		<td class="order">{{ e($andamento['titulo']) }}</td>
-		<td class="order ***REMOVED***-action-cell">
-			@include('partials.***REMOVED***-action-buttons', [
-				'display' => 'block',
-				'editAction' => "fc_edit_andamento(" . (int) $andamento['anda_id'] . ",'U')",
-				'deleteAction' => "fc_del_andamento(" . (int) $andamento['anda_id'] . "," . json_encode((string) $andamento['nome']) . ")",
-				'editTitle' => __('Edit Progress'),
-				'deleteTitle' => __('Delete Progress'),
-			])
-		</td>
-	</tr>
-@endforeach
-</table>
-<div id="dialog-edit-andamento" title="{{ __('Edit Progress') }}" class="***REMOVED***-dialog is-hidden">
-	<p class="validateTips">{{ __('Edit the progress below') }}</p>
-	<fieldset>
-		<div id="tb_dialog" class="***REMOVED***-dialog-panel">
-			<table class="***REMOVED***-dialog-table">
+<div class="***REMOVED***-page ***REMOVED***-page--flat">
+	@if (session('status'))
+		<div class="***REMOVED***-flash ***REMOVED***-flash--success">{{ session('status') }}</div>
+	@endif
+
+	@if (session('error'))
+		<div class="***REMOVED***-flash ***REMOVED***-flash--error">{{ session('error') }}</div>
+	@endif
+
+	<div class="***REMOVED***-page__toolbar ***REMOVED***-page__toolbar--between">
+		<form method="get" action="{{ route('andamentos') }}" class="***REMOVED***-form-inline ***REMOVED***-search-form">
+			<input type="text" name="q" value="{{ e($search ?? '') }}" class="***REMOVED***-form-input ***REMOVED***-search-input" placeholder="{{ __('Search progress...') }}" />
+			<button type="submit" class="***REMOVED***-button ***REMOVED***-button--primary">{{ __('Search') }}</button>
+			@if (!empty($search))
+				<a href="{{ route('andamentos') }}" class="***REMOVED***-button ***REMOVED***-button--secondary">{{ __('Clear') }}</a>
+			@endif
+		</form>
+	</div>
+
+	<div class="***REMOVED***-surface ***REMOVED***-surface--table">
+		<table class="***REMOVED***list ***REMOVED***list--full ***REMOVED***list--modern">
+			<colgroup>
+				<col class="***REMOVED***-col ***REMOVED***-col--code" />
+				<col class="***REMOVED***-col ***REMOVED***-col--name" />
+				<col class="***REMOVED***-col ***REMOVED***-col--key" />
+				<col class="***REMOVED***-col ***REMOVED***-col--progress" />
+				<col class="***REMOVED***-col ***REMOVED***-col--type" />
+				<col class="***REMOVED***-col ***REMOVED***-col--panel" />
+				<col class="***REMOVED***-col ***REMOVED***-col--title" />
+				<col class="***REMOVED***-col ***REMOVED***-col--actions" />
+			</colgroup>
+			<thead>
 				<tr>
-					<td>{{ __('Progress Name') }}:<br><input type="text" class="cls_andamento ***REMOVED***-field--standard" name="nome" id="nome" value="" obrigatorio="1" title="{{ __('Progress Name') }}" /></td>
-					<td>{{ __('Key Name') }}: <br><input type="text" class="cls_andamento ***REMOVED***-field--standard" name="chave" id="chave" value="" obrigatorio="1" title="{{ __('Key Name') }}" /></td>
+					<th class="order">{{ __('Code') }}</th>
+					<th class="order">{{ __('Name') }}</th>
+					<th class="order">{{ __('Code Name') }}</th>
+					<th class="order">{{ __('Progress') }}</th>
+					<th class="order">{{ __('Type') }}</th>
+					<th class="order">{{ __('Panel') }}</th>
+					<th class="order">{{ __('Panel Title') }}</th>
+					<th class="order">{{ __('Options') }}</th>
 				</tr>
-				<tr>
-					<td>{{ __('Panel') }}: <br>
-						<select class="cls_andamento input-default ***REMOVED***-field--standard ***REMOVED***-field--select" name="painel" id="painel" onchange="sel_tipo(0,this.value)" obrigatorio="1" title="{{ __('Panel') }}">
-							<option value=""></option><option value="Y">{{ __('Yes') }}</option><option value="N">{{ __('No') }}</option>
-						</select>
-					</td>
-					<td>{{ __('Panel Title') }}: <br><input type="text" class="cls_andamento ***REMOVED***-field--standard" name="titulo" id="titulo" value="" obrigatorio="1" title="{{ __('Title Name') }}" /></td>
-				</tr>
-				<tr>
-					<td colspan="2">{{ __('Type') }}: <br>
-						<select class="cls_andamento input-default ***REMOVED***-field--standard ***REMOVED***-field--select" name="especie" id="especie" onchange="sel_tipo(0,this.value)" obrigatorio="1" title="{{ __('Type') }}">
-							<option value=""></option><option value="1">{{ __('Production') }}</option><option value="2">{{ __('Financial') }}</option>
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2"><label id="sel_anda">{{ __('Select progress items') }}:</label><br/>
-						<div id="andamento-tipos-vinculados" class="andamento-tipos-lista"></div>
-						<div id="andamento-tipos-inputs"></div>
-						<div id="andamento-tipos-vazio" class="andamento-tipos-vazio">{{ __('No linked progress items.') }}</div>
-						<div class="***REMOVED***-dialog-row-gap">
-							<select class="input-default ***REMOVED***-field--large ***REMOVED***-field--select" name="andam_name_pool" id="andam_name_pool" obrigatorio="1" title="{{ __('Progress') }}"></select>
-							<button id="inp1_1" class="bts" type="button" onclick="andamentoTiposAdicionar();">+</button>
-						</div>
-					</td>
-				</tr>
-			</table>
-			<input type="hidden" class="cls_andamento" name="anda_id" id="anda_id" value="" />
+			</thead>
+			<tbody>
+				@foreach ($andamentos as $andamento)
+					<tr>
+						<td class="order">{{ (int) $andamento['anda_id'] }}</td>
+						<td class="order">{{ e($andamento['nome']) }}</td>
+						<td class="order">{{ e($andamento['chave']) }}</td>
+						<td class="order">{{ e($andamento['anda_neo']) }}</td>
+						<td class="order"><span class="***REMOVED***-type-pill {{ (int) $andamento['especie'] === 1 ? '***REMOVED***-type-pill--production' : '***REMOVED***-type-pill--financial' }}">{{ e($metaTipos[(int) $andamento['especie']]) }}</span></td>
+						<td class="order">{{ e($andamento['painel']) }}</td>
+						<td class="order">{{ e($andamento['titulo']) }}</td>
+						<td class="order">
+							<div class="***REMOVED***-table-actions">
+								<a href="{{ route('andamentos.edit', (int) $andamento['anda_id']) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
+								<form method="post" action="{{ route('andamentos.destroy', (int) $andamento['anda_id']) }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the progress :name?', ['name' => $andamento['nome']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
+									@csrf
+									@method('DELETE')
+									<button type="submit" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</button>
+								</form>
+							</div>
+						</td>
+					</tr>
+				@endforeach
+			</tbody>
+		</table>
+	</div>
+
+	@if (method_exists($andamentos, 'hasPages') && $andamentos->hasPages())
+		<div class="***REMOVED***-pagination">
+			<div class="***REMOVED***-pagination__summary">
+				{{ __('Showing :from to :to of :total items', ['from' => $andamentos->firstItem(), 'to' => $andamentos->lastItem(), 'total' => $andamentos->total()]) }}
+			</div>
+			<div class="***REMOVED***-pagination__links">
+				@if ($andamentos->onFirstPage())
+					<span class="***REMOVED***-pagination__link is-disabled">{{ __('Previous') }}</span>
+				@else
+					<a href="{{ $andamentos->appends(request()->except('page'))->previousPageUrl() }}" class="***REMOVED***-pagination__link">{{ __('Previous') }}</a>
+				@endif
+
+				@foreach ($andamentos->appends(request()->except('page'))->getUrlRange(max(1, $andamentos->currentPage() - 2), min($andamentos->lastPage(), $andamentos->currentPage() + 2)) as $page => $url)
+					@if ($page === $andamentos->currentPage())
+						<span class="***REMOVED***-pagination__link is-active">{{ $page }}</span>
+					@else
+						<a href="{{ $url }}" class="***REMOVED***-pagination__link">{{ $page }}</a>
+					@endif
+				@endforeach
+
+				@if ($andamentos->hasMorePages())
+					<a href="{{ $andamentos->appends(request()->except('page'))->nextPageUrl() }}" class="***REMOVED***-pagination__link">{{ __('Next') }}</a>
+				@else
+					<span class="***REMOVED***-pagination__link is-disabled">{{ __('Next') }}</span>
+				@endif
+			</div>
 		</div>
-	</fieldset>
+	@endif
 </div>
-<br>

@@ -26,22 +26,88 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Usuario'), function () {
+        Route::get('/usuarios/novo', 'UserAdminController@createPage')->name('usuarios.create');
+        Route::get('/usuarios/{id}/editar', 'UserAdminController@editPage')->name('usuarios.edit');
         Route::get('/usuarios', 'HomeController@webSectionPage')->defaults('section', 'usuarios')->name('usuarios');
     });
+    Route::group(array('middleware' => 'can:create,App\\Models\\Usuario'), function () {
+        Route::post('/usuarios', 'UserAdminController@storePage')->name('usuarios.store.page');
+    });
+    Route::group(array('middleware' => 'can:update,App\\Models\\Usuario'), function () {
+        Route::match(['put', 'patch'], '/usuarios/{id}', 'UserAdminController@updatePage')->name('usuarios.update.page');
+    });
+    Route::group(array('middleware' => 'can:delete,App\\Models\\Usuario'), function () {
+        Route::delete('/usuarios/{id}', 'UserAdminController@destroyPage')->name('usuarios.destroy.page');
+    });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Area'), function () {
+        Route::get('/setores/novo', 'SectorAdminController@createPage')->name('setores.create');
+        Route::get('/setores/{id}/editar', 'SectorAdminController@editPage')->name('setores.edit');
         Route::get('/setores', 'HomeController@webSectionPage')->defaults('section', 'setores')->name('setores');
     });
+    Route::group(array('middleware' => 'can:create,App\\Models\\Area'), function () {
+        Route::post('/setores', 'SectorAdminController@storePage')->name('setores.store.page');
+    });
+    Route::group(array('middleware' => 'can:update,App\\Models\\Area'), function () {
+        Route::match(['put', 'patch'], '/setores/{id}', 'SectorAdminController@updatePage')->name('setores.update.page');
+    });
+    Route::group(array('middleware' => 'can:delete,App\\Models\\Area'), function () {
+        Route::delete('/setores/{id}', 'SectorAdminController@destroyPage')->name('setores.destroy.page');
+    });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Banco'), function () {
+        Route::get('/clientes/novo', 'ClientAdminController@createPage')->name('clientes.create');
+        Route::get('/clientes/{id}/editar', 'ClientAdminController@editPage')->name('clientes.edit');
         Route::get('/clientes', 'HomeController@webSectionPage')->defaults('section', 'clientes')->name('clientes');
     });
+    Route::group(array('middleware' => 'can:create,App\\Models\\Banco'), function () {
+        Route::post('/clientes', 'ClientAdminController@storePage')->name('clientes.store.page');
+    });
+    Route::group(array('middleware' => 'can:update,App\\Models\\Banco'), function () {
+        Route::match(['put', 'patch'], '/clientes/{id}', 'ClientAdminController@updatePage')->name('clientes.update.page');
+    });
+    Route::group(array('middleware' => 'can:delete,App\\Models\\Banco'), function () {
+        Route::delete('/clientes/{id}', 'ClientAdminController@destroyPage')->name('clientes.destroy.page');
+    });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Andamento'), function () {
+        Route::get('/andamentos/novo', 'AndamentoAdminController@createPage')->name('andamentos.create');
+        Route::get('/andamentos/{id}/editar', 'AndamentoAdminController@editPage')->name('andamentos.edit');
         Route::get('/andamentos', 'HomeController@webSectionPage')->defaults('section', 'andamentos')->name('andamentos');
     });
+    Route::group(array('middleware' => 'can:create,App\\Models\\Andamento'), function () {
+        Route::post('/andamentos', 'AndamentoAdminController@storePage')->name('andamentos.store');
+    });
+    Route::group(array('middleware' => 'can:update,App\\Models\\Andamento'), function () {
+        Route::match(['put', 'patch'], '/andamentos/{id}', 'AndamentoAdminController@updatePage')->name('andamentos.update');
+    });
+    Route::group(array('middleware' => 'can:delete,App\\Models\\Andamento'), function () {
+        Route::delete('/andamentos/{id}', 'AndamentoAdminController@destroyPage')->name('andamentos.destroy');
+    });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Semana'), function () {
+        Route::get('/semanas/novo', 'WeekController@createPage')->name('semanas.create');
+        Route::get('/semanas/{id}/editar', 'WeekController@editPage')->name('semanas.edit');
         Route::get('/semanas', 'HomeController@webSectionPage')->defaults('section', 'semanas')->name('semanas');
     });
+    Route::group(array('middleware' => 'can:create,App\\Models\\Semana'), function () {
+        Route::post('/semanas', 'WeekController@storePage')->name('semanas.store.page');
+    });
+    Route::group(array('middleware' => 'can:update,App\\Models\\Semana'), function () {
+        Route::match(['put', 'patch'], '/semanas/{id}', 'WeekController@updatePage')->name('semanas.update.page');
+    });
+    Route::group(array('middleware' => 'can:delete,App\\Models\\Semana'), function () {
+        Route::delete('/semanas/{id}', 'WeekController@destroyPage')->name('semanas.destroy.page');
+    });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Regiao'), function () {
+        Route::get('/regioes/novo', 'RegionAdminController@createPage')->name('regioes.create');
+        Route::get('/regioes/{id}/editar', 'RegionAdminController@editPage')->name('regioes.edit');
         Route::get('/regioes', 'HomeController@webSectionPage')->defaults('section', 'regioes')->name('regioes');
+    });
+    Route::group(array('middleware' => 'can:create,App\\Models\\Regiao'), function () {
+        Route::post('/regioes', 'RegionAdminController@storePage')->name('regioes.store.page');
+    });
+    Route::group(array('middleware' => 'can:update,App\\Models\\Regiao'), function () {
+        Route::match(['put', 'patch'], '/regioes/{id}', 'RegionAdminController@updatePage')->name('regioes.update.page');
+    });
+    Route::group(array('middleware' => 'can:delete,App\\Models\\Regiao'), function () {
+        Route::delete('/regioes/{id}', 'RegionAdminController@destroyPage')->name('regioes.destroy.page');
     });
 
     Route::prefix('***REMOVED***')->as('***REMOVED***.')->group(function () {

@@ -120,6 +120,86 @@
 		'Error deleting sector.' => __('Error deleting sector.'),
 		'Sector deleted successfully.' => __('Sector deleted successfully.'),
 	];
+	$currentSection = $pageData->currentSection();
+	$currentState = $pageData->state();
+	$currentUser = $pageData->user();
+	$currentMonthLabel = $pageData->monthYearLabel();
+	$pageTitleMap = [
+		'inicio' => __('Home'),
+		'carteiras' => __('Wallet(s)'),
+		'painel' => __('Panel'),
+		'producao' => __('Production'),
+		'relatorio-semanal' => __('Weekly'),
+		'relatorio-mensal' => __('Monthly'),
+		'***REMOVED***' => __('Admin'),
+		'usuarios' => __('Users'),
+		'setores' => __('Sectors'),
+		'clientes' => __('Clients'),
+		'andamentos' => __('Progress'),
+		'metas-select' => __('Goals'),
+		'metas-***REMOVED***' => __('Goals'),
+		'semanas' => __('Weeks'),
+		'regioes' => __('Regions'),
+	];
+	$currentPageTitle = isset($pageTitleMap[$currentSection]) ? $pageTitleMap[$currentSection] : __('ARS Control');
+	$contentCardClass = in_array($currentSection, array('andamentos', 'usuarios', 'clientes', 'regioes', 'setores', 'semanas'), true)
+		? 'ars-shell__content-card ars-shell__content-card--flat'
+		: 'ars-shell__content-card';
+	$sectionSubtitle = in_array($currentSection, ['painel', 'producao', 'relatorio-semanal', 'relatorio-mensal', 'carteiras', 'metas-select', 'metas-***REMOVED***'], true)
+		? $currentMonthLabel
+		: __('Administrative workspace');
+	$isHomeActive = $currentSection === 'inicio';
+	$isGoalsActive = in_array($currentSection, ['metas-select', 'metas-***REMOVED***'], true);
+	$isReportActive = in_array($currentSection, ['relatorio-semanal', 'relatorio-mensal'], true);
+	$baseQuery = [
+		'startDate' => $currentState->startDate(),
+		'mes' => $currentState->mes(),
+		'ano' => $currentState->ano(),
+		'regiao_id' => $currentState->regiaoId(),
+	];
+	$buildShellUrl = function ($path, array $params = []) {
+		$filtered = array_filter($params, function ($value) {
+			return $value !== '' && $value !== null;
+		});
+
+		return empty($filtered) ? url($path) : url($path) . '?' . http_build_query($filtered);
+	};
+	$navLinks = [
+		['key' => 'inicio', 'label' => __('Home'), 'url' => url('index'), 'active' => $isHomeActive],
+		['key' => 'carteiras', 'label' => __('Wallet(s)'), 'url' => $buildShellUrl('carteiras', $baseQuery + ['area_id' => $currentState->areaId()]), 'active' => $currentSection === 'carteiras'],
+		['key' => 'painel', 'label' => __('Panel'), 'url' => $buildShellUrl('painel', $baseQuery + ['area_id' => $currentState->areaId(), 'bank_id' => $currentState->bankId()]), 'active' => $currentSection === 'painel'],
+		['key' => 'producao', 'label' => __('Production'), 'url' => $buildShellUrl('producao', $baseQuery + ['startSetor' => $currentState->startSetor()]), 'active' => $currentSection === 'producao'],
+		['key' => 'relatorio', 'label' => __('Report'), 'url' => $buildShellUrl('relatorio', $baseQuery + ['startSetor' => $currentState->startSetor(), 'geral' => $currentSection === 'relatorio-semanal' ? 1 : 0]), 'active' => $isReportActive],
+	];
+	$***REMOVED***Links = [
+		['key' => '***REMOVED***', 'label' => __('Admin'), 'url' => url('***REMOVED***'), 'active' => $currentSection === '***REMOVED***'],
+		['key' => 'metas', 'label' => __('Goals'), 'url' => url('metas'), 'active' => $isGoalsActive],
+		['key' => 'usuarios', 'label' => __('Users'), 'url' => url('usuarios'), 'active' => $currentSection === 'usuarios'],
+		['key' => 'clientes', 'label' => __('Clients'), 'url' => url('clientes'), 'active' => $currentSection === 'clientes'],
+		['key' => 'setores', 'label' => __('Sectors'), 'url' => url('setores'), 'active' => $currentSection === 'setores'],
+		['key' => 'andamentos', 'label' => __('Progress'), 'url' => url('andamentos'), 'active' => $currentSection === 'andamentos'],
+		['key' => 'regioes', 'label' => __('Regions'), 'url' => url('regioes'), 'active' => $currentSection === 'regioes'],
+		['key' => 'semanas', 'label' => __('Weeks'), 'url' => url('semanas'), 'active' => $currentSection === 'semanas'],
+	];
+	$shellIcons = [
+		'inicio' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>',
+		'carteiras' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v12H3z"/><path d="M3 10h18"/><path d="M16 15h3"/></svg>',
+		'painel' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h4v7H4z"/><path d="M10 4h4v16h-4z"/><path d="M16 9h4v11h-4z"/></svg>',
+		'producao' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16"/><path d="M7 18V8"/><path d="M12 18V4"/><path d="M17 18v-6"/></svg>',
+		'relatorio' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v6h6"/><path d="M10 13h6"/><path d="M10 17h6"/></svg>',
+		'***REMOVED***' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7z"/><path d="M9.5 12.5 11 14l3.5-4"/></svg>',
+		'metas' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M21 3 12 12"/><path d="M16 3h5v5"/></svg>',
+		'usuarios' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M17 11a3 3 0 1 0 0-6"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg>',
+		'clientes' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"/><path d="M8 7V5h8v2"/><path d="M4 12h16"/></svg>',
+		'setores' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4z"/><path d="M13 4h7v7h-7z"/><path d="M4 13h7v7H4z"/><path d="M13 13h7v7h-7z"/></svg>',
+		'andamentos' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14"/><path d="M5 12h14"/><path d="M5 18h10"/></svg>',
+		'regioes' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5-9 8-9-8z"/><path d="M12 4v15.5"/></svg>',
+		'semanas' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v4"/><path d="M17 3v4"/><path d="M4 9h16"/><rect x="4" y="5" width="16" height="16" rx="2"/></svg>',
+		'back' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6"/></svg>',
+		'logout' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17H5V7h5"/><path d="M14 8l4 4-4 4"/><path d="M18 12H9"/></svg>',
+		'menu' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>',
+		'action' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>',
+	];
 @endphp
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pt-br" lang="pt-br" dir="ltr">
@@ -127,66 +207,118 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<title>{{ __('ARS Control') }}</title>
-	<link href="css/images/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
-	<link rel="stylesheet" href="css/template.css" type="text/css" />
-	<link rel="stylesheet" href="css/custom-theme/jquery-ui.css">
+	<link href="{{ asset('css/images/favicon.ico') }}" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+	<link rel="stylesheet" href="{{ asset('css/template.css') }}" type="text/css" />
+	<link rel="stylesheet" href="{{ asset('css/custom-theme/jquery-ui.css') }}">
 	@if (is_file(public_path('mix-manifest.json')) && is_file(public_path('build/css/app.css')))
 		<link rel="stylesheet" href="{{ asset('public/' . ltrim(mix('/build/css/app.css'), '/')) }}">
 	@else
 		<link rel="stylesheet" href="{{ asset('css/ars-modern.css') }}">
 	@endif
-	<script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
-	<script type="text/javascript" src="js/jquery-ui-1.8.23.custom.min.js"></script>
-	<script type="text/javascript" src="js/jquery.meio.mask.js"></script>
+	<script type="text/javascript" src="{{ asset('js/jquery-1.8.0.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('js/jquery-ui-1.8.23.custom.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('js/jquery.meio.mask.js') }}"></script>
 	<script type="text/javascript">
 	window.arsTranslations = {!! json_encode($arsTranslations, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!};
 	</script>
 	@if ($compiledModulesAvailable)
 		<script type="text/javascript" src="{{ asset('public/' . ltrim(mix('/build/js/ars-modules.js'), '/')) }}"></script>
 	@else
-		<script type="text/javascript" src="js/modules/helpers.js?v={{ $helpersJsVersion }}"></script>
-		<script type="text/javascript" src="js/modules/setores.js?v={{ $setoresJsVersion }}"></script>
-		<script type="text/javascript" src="js/modules/usuarios.js?v={{ $usuariosJsVersion }}"></script>
-		<script type="text/javascript" src="js/modules/semanas.js?v={{ $semanasJsVersion }}"></script>
-		<script type="text/javascript" src="js/modules/regioes.js?v={{ $regioesJsVersion }}"></script>
-		<script type="text/javascript" src="js/modules/clientes.js?v={{ $clientesJsVersion }}"></script>
-		<script type="text/javascript" src="js/modules/andamentos.js?v={{ $andamentosJsVersion }}"></script>
-		<script type="text/javascript" src="js/modules/metas.js?v={{ $metasJsVersion }}"></script>
-		<script type="text/javascript" src="js/modules/painel.js?v={{ $painelJsVersion }}"></script>
-		<script type="text/javascript" src="js/modules/relatorio.js?v={{ $relatorioJsVersion }}"></script>
+		<script type="text/javascript" src="{{ asset('js/modules/helpers.js') }}?v={{ $helpersJsVersion }}"></script>
+		<script type="text/javascript" src="{{ asset('js/modules/setores.js') }}?v={{ $setoresJsVersion }}"></script>
+		<script type="text/javascript" src="{{ asset('js/modules/usuarios.js') }}?v={{ $usuariosJsVersion }}"></script>
+		<script type="text/javascript" src="{{ asset('js/modules/semanas.js') }}?v={{ $semanasJsVersion }}"></script>
+		<script type="text/javascript" src="{{ asset('js/modules/regioes.js') }}?v={{ $regioesJsVersion }}"></script>
+		<script type="text/javascript" src="{{ asset('js/modules/clientes.js') }}?v={{ $clientesJsVersion }}"></script>
+		<script type="text/javascript" src="{{ asset('js/modules/andamentos.js') }}?v={{ $andamentosJsVersion }}"></script>
+		<script type="text/javascript" src="{{ asset('js/modules/metas.js') }}?v={{ $metasJsVersion }}"></script>
+		<script type="text/javascript" src="{{ asset('js/modules/painel.js') }}?v={{ $painelJsVersion }}"></script>
+		<script type="text/javascript" src="{{ asset('js/modules/relatorio.js') }}?v={{ $relatorioJsVersion }}"></script>
 	@endif
 </head>
 <body id="minwidth-body">
-	<div class="head_bk"></div>
-	<div class="head_fixed">
-		<div id="border-top" class="h_blue">
-			<span class="logo"><img src="css/images/logo.png" alt="{{ __('Petition System') }}" /></span>
-			<span class="title"><a href="{{ url('index') }}">{{ __('ARS - NEO Legal') }}</a></span>
-		</div>
-		<div id="header-box">
-			<div id="topSpace"></div>
-			<div id="module-status">
-				<span class="viewsite"><a href="{{ url('index') }}">{{ __('Home') }}</a></span>
-				@if ($pageData->topAction())
-					<span class="{{ $pageData->topAction()->className() }}"><a href="javascript:{{ $pageData->topAction()->javascript() }}">{{ e($pageData->topAction()->label()) }}</a></span>
-				@endif
-				@if ($pageData->canAdmin())
-					<span class="relatory"><a href="{{ url('producao') }}">{{ __('Production') }}</a></span>
-					<span class="viewconfig"><a href="{{ url('***REMOVED***') }}">{{ __('Admin') }}</a></span>
-				@endif
-				<span class="voltar"><a href="javascript:window.history.go(-1)">{{ __('Back') }}</a></span>
-				<span class="logout"><a href="{{ url('logout') }}">{{ __('Logout') }}</a></span>
+	<div class="ars-shell" id="ars-shell">
+		<aside class="ars-shell__sidebar" id="ars-shell-sidebar">
+			<div class="ars-shell__sidebar-header">
+				<button type="button" class="ars-shell__sidebar-toggle ars-shell__sidebar-toggle--desktop" id="ars-shell-toggle-desktop" aria-label="{{ __('Toggle navigation') }}">
+					<span class="ars-shell__icon ars-shell__icon--menu">{!! $shellIcons['menu'] !!}</span>
+				</button>
+				<a href="{{ url('index') }}" class="ars-shell__brand">
+					<span class="ars-shell__brand-mark">
+						<img src="{{ asset('css/images/logo.png') }}" alt="{{ __('ARS - NEO Legal') }}" />
+					</span>
+					<span class="ars-shell__brand-text">
+						<strong>ARS</strong>
+						<small>{{ __('ARS - NEO Legal') }}</small>
+					</span>
+				</a>
 			</div>
-			<div class="clr"></div>
-		</div>
-	</div>
-	<div id="content-box">
-		<div id="element-box">
-			<div class="m wbg">
-				<div class="***REMOVED***form">
-					{!! $contentHtml !!}
+			<nav class="ars-shell__nav" aria-label="{{ __('Main navigation') }}">
+				<div class="ars-shell__nav-group">
+					<div class="ars-shell__nav-title">{{ __('Workspace') }}</div>
+					@foreach ($navLinks as $link)
+						<a href="{{ $link['url'] }}" class="ars-shell__nav-link{{ $link['active'] ? ' is-active' : '' }}">
+							<span class="ars-shell__icon ars-shell__nav-icon">{!! $shellIcons[$link['key']] !!}</span>
+							<span class="ars-shell__nav-label">{{ $link['label'] }}</span>
+						</a>
+					@endforeach
 				</div>
-			</div>
+				@if ($pageData->canAdmin())
+					<div class="ars-shell__nav-group">
+						<div class="ars-shell__nav-title">{{ __('Administration') }}</div>
+						@foreach ($***REMOVED***Links as $link)
+							<a href="{{ $link['url'] }}" class="ars-shell__nav-link{{ $link['active'] ? ' is-active' : '' }}">
+								<span class="ars-shell__icon ars-shell__nav-icon">{!! $shellIcons[$link['key']] !!}</span>
+								<span class="ars-shell__nav-label">{{ $link['label'] }}</span>
+							</a>
+						@endforeach
+					</div>
+				@endif
+			</nav>
+		</aside>
+		<div class="ars-shell__main">
+			<header class="ars-shell__topbar">
+				<div class="ars-shell__topbar-left">
+					<button type="button" class="ars-shell__sidebar-toggle ars-shell__sidebar-toggle--mobile" id="ars-shell-toggle-mobile" aria-label="{{ __('Toggle navigation') }}">
+						<span class="ars-shell__icon ars-shell__icon--menu">{!! $shellIcons['menu'] !!}</span>
+					</button>
+					<div class="ars-shell__page-meta">
+						<div class="ars-shell__page-title">{{ $currentPageTitle }}</div>
+						<div class="ars-shell__page-subtitle">{{ $sectionSubtitle }}</div>
+					</div>
+				</div>
+				<div class="ars-shell__topbar-actions">
+					<div class="ars-shell__meta-chip">{{ __('Level') }}: {{ e($currentUser->level()) }}</div>
+					@if ($pageData->topAction())
+						@if ($pageData->topAction()->href() !== '')
+							<a href="{{ $pageData->topAction()->href() }}" class="ars-shell__action-button ars-shell__action-button--primary">
+								<span class="ars-shell__icon">{!! $shellIcons['action'] !!}</span>
+								<span>{{ e($pageData->topAction()->label()) }}</span>
+							</a>
+						@else
+							<button type="button" class="ars-shell__action-button ars-shell__action-button--primary" onclick="{{ $pageData->topAction()->javascript() }}">
+								<span class="ars-shell__icon">{!! $shellIcons['action'] !!}</span>
+								<span>{{ e($pageData->topAction()->label()) }}</span>
+							</button>
+						@endif
+					@endif
+					<button type="button" class="ars-shell__action-button" onclick="window.history.go(-1)">
+						<span class="ars-shell__icon">{!! $shellIcons['back'] !!}</span>
+						<span>{{ __('Back') }}</span>
+					</button>
+					<a href="{{ url('logout') }}" class="ars-shell__action-button ars-shell__action-link">
+						<span class="ars-shell__icon">{!! $shellIcons['logout'] !!}</span>
+						<span>{{ __('Logout') }}</span>
+					</a>
+				</div>
+			</header>
+			<main class="ars-shell__content-area">
+				<section class="{{ $contentCardClass }}">
+					<div class="***REMOVED***form ars-shell__content">
+						{!! $contentHtml !!}
+					</div>
+				</section>
+			</main>
 		</div>
 	</div>
 <form name="form_ars" action="{{ e($entryUrl) }}" method="POST" id="form_ars" class="is-hidden">
@@ -209,5 +341,63 @@
 		include $exportPath;
 	}
 @endphp
+<script type="text/javascript">
+(function () {
+	var root = document.getElementById('ars-shell');
+	var desktopToggle = document.getElementById('ars-shell-toggle-desktop');
+	var mobileToggle = document.getElementById('ars-shell-toggle-mobile');
+	var storageKey = 'ars-shell-collapsed';
+
+	if (!root) {
+		return;
+	}
+
+	function applyCollapsedState(collapsed) {
+		if (collapsed) {
+			root.classList.add('is-collapsed');
+		} else {
+			root.classList.remove('is-collapsed');
+		}
+	}
+
+	function toggleCollapsedState() {
+		var collapsed = !root.classList.contains('is-collapsed');
+		applyCollapsedState(collapsed);
+		if (window.localStorage) {
+			window.localStorage.setItem(storageKey, collapsed ? '1' : '0');
+		}
+	}
+
+	if (window.localStorage && window.localStorage.getItem(storageKey) === '1') {
+		applyCollapsedState(true);
+	}
+
+	if (desktopToggle) {
+		desktopToggle.addEventListener('click', toggleCollapsedState);
+	}
+
+	if (mobileToggle) {
+		mobileToggle.addEventListener('click', function () {
+			root.classList.toggle('is-mobile-open');
+		});
+	}
+
+	document.addEventListener('click', function (event) {
+		if (window.innerWidth > 960) {
+			return;
+		}
+
+		if (!root.classList.contains('is-mobile-open')) {
+			return;
+		}
+
+		if (event.target.closest('.ars-shell__sidebar') || event.target.closest('.ars-shell__sidebar-toggle--mobile')) {
+			return;
+		}
+
+		root.classList.remove('is-mobile-open');
+	});
+}());
+</script>
 </body>
 </html>

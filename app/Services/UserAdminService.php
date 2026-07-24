@@ -23,8 +23,11 @@ class UserAdminService
 
 	public function indexData()
 	{
+		$search = trim((string) request()->query('q', ''));
+
 		return array(
-			'users' => $this->repository->all(),
+			'users' => $this->repository->paginate(20, $search),
+			'search' => $search,
 			'areas' => $this->repository->listAreas(),
 			'regions' => $this->regionService->listActive(),
 		);
@@ -76,6 +79,45 @@ class UserAdminService
 			'region_ids' => $regionIds,
 			'regions' => $regions,
 			'status_usu' => (string) $row['status_usu'],
+		);
+	}
+
+	public function formData(array $values = array())
+	{
+		$defaults = array(
+			'id_usu' => 0,
+			'nome_usu' => '',
+			'login_usu' => '',
+			'email_usu' => '',
+			'nivel_usu' => '',
+			'id_setor' => 0,
+			'id_cliente' => '',
+			'client_ids' => array(),
+			'clients' => array(),
+			'regiao_modo' => 'N',
+			'region_ids' => array(),
+			'regions' => array(),
+			'status_usu' => '',
+		);
+
+		return array(
+			'user' => array_merge($defaults, $values),
+			'areas' => $this->repository->listAreas(),
+			'regions' => $this->regionService->listActive(),
+			'levelOptions' => array(
+				'ADM' => __('Admin'),
+				'GER' => __('Manager'),
+				'USU' => __('User'),
+			),
+			'statusOptions' => array(
+				'ATI' => __('Active'),
+				'INA' => __('Inactive'),
+			),
+			'regionModeOptions' => array(
+				'N' => __('No regional filter'),
+				'R' => __('Linked regions'),
+				'T' => __('All regions'),
+			),
 		);
 	}
 

@@ -14,22 +14,34 @@ class RegionAdminRepository
 	/** @var int */
 	private $lastInsertId = 0;
 
-	public function all()
+	public function paginate($perPage = 20, $search = '')
 	{
-		return Regiao::query()
+		$query = Regiao::query()
 			->leftJoin('regioes_ufs as ru', 'ru.regiao_id', '=', 'regioes.regiao_id')
-			->leftJoin('usuarios_regioes as ur', 'ur.regiao_id', '=', 'regioes.regiao_id')
+			->leftJoin('usuarios_regioes as ur', 'ur.regiao_id', '=', 'regioes.regiao_id');
+
+		$search = trim((string) $search);
+		if ($search !== '') {
+			$query->where(function ($query) use ($search) {
+				$query->where('regioes.regiao_nome', 'like', '%' . $search . '%')
+					->orWhere('regioes.regiao_slug', 'like', '%' . $search . '%')
+					->orWhere('ru.uf', 'like', '%' . $search . '%');
+			});
+		}
+
+		$paginator = $query
 			->groupBy('regioes.regiao_id', 'regioes.regiao_nome', 'regioes.regiao_slug', 'regioes.regiao_status')
 			->orderBy('regioes.regiao_nome')
-			->get(array(
+			->paginate((int) $perPage, array(
 				'regioes.regiao_id',
 				'regioes.regiao_nome',
 				'regioes.regiao_slug',
 				'regioes.regiao_status',
 				DB::raw("COALESCE(GROUP_CONCAT(DISTINCT ru.uf ORDER BY ru.uf SEPARATOR ', '), '') AS ufs"),
 				DB::raw('COUNT(DISTINCT ur.usuario_id) AS total_usuarios'),
-			))
-			->map(function (Regiao $row) {
+			));
+
+		$paginator->setCollection($paginator->getCollection()->map(function ($row) {
 				return array(
 					'regiao_id' => (int) $row->regiao_id,
 					'regiao_nome' => (string) $row->regiao_nome,
@@ -38,9 +50,9 @@ class RegionAdminRepository
 					'ufs' => (string) $row->ufs,
 					'total_usuarios' => (string) $row->total_usuarios,
 				);
-			})
-			->values()
-			->all();
+			})->values());
+
+		return $paginator;
 	}
 
 	public function findById($id)

@@ -1,92 +1,103 @@
-<div class="***REMOVED***-module-offset">
-<script>
-window.arsWeekResourceBaseUrl = "{{ url('***REMOVED***/semanas') }}";
-</script>
-<label><h2><u>{{ __('Weeks') }}</u></h2></label>
-<div>
-<table class="***REMOVED***list">
-	<tr height="30">
-		<td class="order"><b>{{ __('Code') }}</b></td>
-		<td class="order"><b>{{ __('Month') }}</b></td>
-		<td class="order"><b>{{ __('Year') }}</b></td>
-		<td class="order ***REMOVED***-week-cell"><b>{{ __('1st Week') }}</b></td>
-		<td class="order ***REMOVED***-week-cell"><b>{{ __('2nd Week') }}</b></td>
-		<td class="order ***REMOVED***-week-cell"><b>{{ __('3rd Week') }}</b></td>
-		<td class="order ***REMOVED***-week-cell"><b>{{ __('4th Week') }}</b></td>
-		<td class="order ***REMOVED***-week-cell ***REMOVED***-week-cell--optional"><b>{{ __('5th Week') }}</b></td>
-		<td class="order"><b>{{ __('Updated At') }}</b></td>
-		<td class="order"><b>{{ __('Created At') }}</b></td>
-		<td class="order"><b>{{ __('Settings') }}</b></td>
-	</tr>
-@foreach ($weeks as $arr)
-	<tr>
-		<td class="order">{{ $arr['semanas_id'] }}</td>
-		<td class="order">{{ isset($months[$arr['mes']]) ? $months[$arr['mes']] : $arr['mes'] }}</td>
-		<td class="order">{{ $arr['ano'] }}</td>
-		<td class="order ***REMOVED***-week-cell">{!! $arr['ini_1'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_1'] !!}</td>
-		<td class="order ***REMOVED***-week-cell">{!! $arr['ini_2'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_2'] !!}</td>
-		<td class="order ***REMOVED***-week-cell">{!! $arr['ini_3'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_3'] !!}</td>
-		<td class="order ***REMOVED***-week-cell">{!! $arr['ini_4'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_4'] !!}</td>
-		<td class="order ***REMOVED***-week-cell ***REMOVED***-week-cell--optional">{!! ($arr['ini_5'] ? $arr['ini_5'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_5'] : '-') !!}</td>
-		<td class="order">{{ $arr['dataalt'] }}</td>
-		<td class="order">{{ $arr['datacad'] }}</td>
-		<td class="order ***REMOVED***-action-cell">
-			@include('partials.***REMOVED***-action-buttons', [
-				'display' => 'block',
-				'editAction' => "fc_edit_sem(" . (int) $arr['semanas_id'] . ",'U')",
-				'deleteAction' => "fc_del_sem(" . (int) $arr['semanas_id'] . "," . json_encode((string) $arr['mes']) . ")",
-				'editTitle' => __('Edit Week'),
-				'deleteTitle' => __('Delete Week'),
-			])
-		</td>
-	</tr>
-@endforeach
+<div class="***REMOVED***-page ***REMOVED***-page--flat ***REMOVED***-module-offset">
+@if (session('status'))
+	<div class="***REMOVED***-flash ***REMOVED***-flash--success">{{ session('status') }}</div>
+@endif
+
+@if (session('error'))
+	<div class="***REMOVED***-flash ***REMOVED***-flash--error">{{ session('error') }}</div>
+@endif
+
+<div class="***REMOVED***-page__toolbar ***REMOVED***-page__toolbar--between">
+	<form method="get" action="{{ route('semanas') }}" class="***REMOVED***-form-inline ***REMOVED***-search-form">
+		<input type="text" name="q" value="{{ e($search ?? '') }}" class="***REMOVED***-form-input ***REMOVED***-search-input" placeholder="{{ __('Search weeks...') }}" />
+		<button type="submit" class="***REMOVED***-button ***REMOVED***-button--primary">{{ __('Search') }}</button>
+		@if (!empty($search))
+			<a href="{{ route('semanas') }}" class="***REMOVED***-button ***REMOVED***-button--secondary">{{ __('Clear') }}</a>
+		@endif
+	</form>
+</div>
+<div class="***REMOVED***-surface ***REMOVED***-surface--table">
+<table class="***REMOVED***list ***REMOVED***list--full ***REMOVED***list--modern">
+	<colgroup>
+		<col class="***REMOVED***-col ***REMOVED***-col--code" />
+		<col class="***REMOVED***-col ***REMOVED***-col--name" />
+		<col class="***REMOVED***-col ***REMOVED***-col--code" />
+		<col class="***REMOVED***-col ***REMOVED***-col--week" />
+		<col class="***REMOVED***-col ***REMOVED***-col--week" />
+		<col class="***REMOVED***-col ***REMOVED***-col--week" />
+		<col class="***REMOVED***-col ***REMOVED***-col--week" />
+		<col class="***REMOVED***-col ***REMOVED***-col--week" />
+		<col class="***REMOVED***-col ***REMOVED***-col--datetime" />
+		<col class="***REMOVED***-col ***REMOVED***-col--datetime" />
+		<col class="***REMOVED***-col ***REMOVED***-col--actions" />
+	</colgroup>
+	<thead>
+		<tr>
+			<th class="order">{{ __('Code') }}</th>
+			<th class="order">{{ __('Month') }}</th>
+			<th class="order">{{ __('Year') }}</th>
+			<th class="order">{{ __('1st Week') }}</th>
+			<th class="order">{{ __('2nd Week') }}</th>
+			<th class="order">{{ __('3rd Week') }}</th>
+			<th class="order">{{ __('4th Week') }}</th>
+			<th class="order">{{ __('5th Week') }}</th>
+			<th class="order">{{ __('Updated At') }}</th>
+			<th class="order">{{ __('Created At') }}</th>
+			<th class="order">{{ __('Settings') }}</th>
+		</tr>
+	</thead>
+	<tbody>
+	@foreach ($weeks as $arr)
+		<tr>
+			<td class="order">{{ $arr['semanas_id'] }}</td>
+			<td class="order">{{ isset($months[$arr['mes']]) ? $months[$arr['mes']] : $arr['mes'] }}</td>
+			<td class="order">{{ $arr['ano'] }}</td>
+			<td class="order">{!! $arr['ini_1'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_1'] !!}</td>
+			<td class="order">{!! $arr['ini_2'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_2'] !!}</td>
+			<td class="order">{!! $arr['ini_3'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_3'] !!}</td>
+			<td class="order">{!! $arr['ini_4'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_4'] !!}</td>
+			<td class="order">{!! ($arr['ini_5'] ? $arr['ini_5'] . "&nbsp;&agrave;&nbsp;" . $arr['fim_5'] : '-') !!}</td>
+			<td class="order">{{ $arr['dataalt'] }}</td>
+			<td class="order">{{ $arr['datacad'] }}</td>
+			<td class="order">
+				<div class="***REMOVED***-table-actions">
+					<a href="{{ route('semanas.edit', (int) $arr['semanas_id']) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
+					<form method="post" action="{{ route('semanas.destroy.page', (int) $arr['semanas_id']) }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the week :name?', ['name' => (isset($months[$arr['mes']]) ? $months[$arr['mes']] : $arr['mes']) . ' / ' . $arr['ano']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
+						@csrf
+						@method('DELETE')
+						<button type="submit" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</button>
+					</form>
+				</div>
+			</td>
+		</tr>
+	@endforeach
+	</tbody>
 </table>
-<div id="dialog-edit-sem" title="{{ __('Edit Week') }}" class="***REMOVED***-dialog ***REMOVED***-dialog--scroll is-hidden">
-	<p class="validateTips">{{ __('Edit the week below') }}</p>
-	<fieldset>
-		<div>
-			<table class="***REMOVED***-dialog-table ***REMOVED***-dialog-table--week">
-				<tr>
-					<td><label>{{ __('Code') }}:</label></td>
-					<td colspan="3"><input type="text" class="cls_sem ***REMOVED***-code-field" name="id_sem" id="id_sem" title="{{ __('Week ID') }}" readonly="readonly" /></td>
-				</tr>
-				<tr>
-					<td class="***REMOVED***-label-cell"><label>{{ __('Month/Year') }}:</label></td>
-					<td class="***REMOVED***-label-cell"><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="mes_sem" id="mes_sem" title="{{ __('Month') }}" alt="integer"/></td>
-					<td align="center" class="***REMOVED***-label-cell">/</td>
-					<td class="***REMOVED***-label-cell"><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="ano_sem" id="ano_sem" title="{{ __('Year') }}" maxlength="4"/></td>
-				<tr>
-					<td><label>{{ __('1st Week') }}:</label></td>
-					<td><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="ini1_sem" id="ini1_sem" title="{{ __('1st Week start') }}" alt="integer"/></td>
-					<td align="center" class="***REMOVED***-label-cell">&agrave;</td>
-					<td><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="fim1_sem" id="fim1_sem" title="{{ __('1st Week end') }}" alt="integer"/></td>
-				</tr>
-				<tr>
-					<td><label>{{ __('2nd Week') }}:</label></td>
-					<td><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="ini2_sem" id="ini2_sem" title="{{ __('2nd Week start') }}" alt="integer"/></td>
-					<td align="center" class="***REMOVED***-label-cell">&agrave;</td>
-					<td><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="fim2_sem" id="fim2_sem" title="{{ __('2nd Week end') }}" alt="integer"/></td>
-				</tr>
-				<tr>
-					<td><label>{{ __('3rd Week') }}:</label></td>
-					<td><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="ini3_sem" id="ini3_sem" title="{{ __('3rd Week start') }}" alt="integer"/></td>
-					<td align="center" class="***REMOVED***-label-cell">&agrave;</td>
-					<td><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="fim3_sem" id="fim3_sem" title="{{ __('3rd Week end') }}" alt="integer"/></td>
-				</tr>
-				<tr>
-					<td><label>{{ __('4th Week') }}:</label></td>
-					<td><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="ini4_sem" id="ini4_sem" title="{{ __('4th Week start') }}" alt="integer"/></td>
-					<td align="center" class="***REMOVED***-label-cell">&agrave;</td>
-					<td><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="fim4_sem" id="fim4_sem" title="{{ __('4th Week end') }}" alt="integer"/></td>
-				</tr>
-				<tr>
-					<td><label>{{ __('5th Week') }}:</label></td>
-					<td><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="ini5_sem" id="ini5_sem" title="{{ __('5th Week start') }}" alt="integer"/></td>
-					<td align="center" class="***REMOVED***-label-cell">&agrave;</td>
-					<td><input type="text" class="cls_sem ***REMOVED***-field--fluid" name="fim5_sem" id="fim5_sem" title="{{ __('5th Week end') }}" alt="integer"/></td>
-				</tr>
-			</table>
+</div>
+@if (method_exists($weeks, 'hasPages') && $weeks->hasPages())
+	<div class="***REMOVED***-pagination">
+		<div class="***REMOVED***-pagination__summary">
+			{{ __('Showing :from to :to of :total items', ['from' => $weeks->firstItem(), 'to' => $weeks->lastItem(), 'total' => $weeks->total()]) }}
 		</div>
-	</fieldset>
+		<div class="***REMOVED***-pagination__links">
+			@if ($weeks->onFirstPage())
+				<span class="***REMOVED***-pagination__link is-disabled">{{ __('Previous') }}</span>
+			@else
+				<a href="{{ $weeks->appends(request()->except('page'))->previousPageUrl() }}" class="***REMOVED***-pagination__link">{{ __('Previous') }}</a>
+			@endif
+			@foreach ($weeks->appends(request()->except('page'))->getUrlRange(max(1, $weeks->currentPage() - 2), min($weeks->lastPage(), $weeks->currentPage() + 2)) as $page => $url)
+				@if ($page === $weeks->currentPage())
+					<span class="***REMOVED***-pagination__link is-active">{{ $page }}</span>
+				@else
+					<a href="{{ $url }}" class="***REMOVED***-pagination__link">{{ $page }}</a>
+				@endif
+			@endforeach
+			@if ($weeks->hasMorePages())
+				<a href="{{ $weeks->appends(request()->except('page'))->nextPageUrl() }}" class="***REMOVED***-pagination__link">{{ __('Next') }}</a>
+			@else
+				<span class="***REMOVED***-pagination__link is-disabled">{{ __('Next') }}</span>
+			@endif
+		</div>
+	</div>
+@endif
 </div>

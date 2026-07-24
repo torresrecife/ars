@@ -24,20 +24,34 @@ class ClientAdminRepository
 		$this->sqlsrvLookupRepository = $sqlsrvLookupRepository;
 	}
 
-	public function all()
+	public function paginate($perPage = 20, $search = '')
 	{
-		return DB::table('bancos as b')
-			->join('area as a', 'a.area_id', '=', 'b.banco_area')
+		$query = DB::table('bancos as b')
+			->join('area as a', 'a.area_id', '=', 'b.banco_area');
+
+		$search = trim((string) $search);
+		if ($search !== '') {
+			$query->where(function ($query) use ($search) {
+				$query->where('b.banco_name', 'like', '%' . $search . '%')
+					->orWhere('b.banco_cod', 'like', '%' . $search . '%')
+					->orWhere('b.banco_curto', 'like', '%' . $search . '%')
+					->orWhere('a.area_nome', 'like', '%' . $search . '%');
+			});
+		}
+
+		$paginator = $query
 			->orderBy('b.banco_id')
-			->get(array(
+			->paginate((int) $perPage, array(
 				'b.*',
 				'a.area_nome',
 				DB::raw("DATE_FORMAT(b.banco_creator, '%d/%m/%Y') AS datacad"),
-			))
-			->map(function ($row) {
+			));
+
+		$paginator->setCollection($paginator->getCollection()->map(function ($row) {
 				return (array) $row;
-			})
-			->all();
+			})->values());
+
+		return $paginator;
 	}
 
 	public function listDadosByBanco()

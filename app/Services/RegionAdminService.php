@@ -19,8 +19,11 @@ class RegionAdminService
 
 	public function indexData()
 	{
+		$search = trim((string) request()->query('q', ''));
+
 		return array(
-			'regions' => $this->repository->all(),
+			'regions' => $this->repository->paginate(20, $search),
+			'search' => $search,
 			'ufs' => $this->brUfs(),
 		);
 	}
@@ -40,6 +43,26 @@ class RegionAdminService
 			'regiao_slug' => (string) $row['regiao_slug'],
 			'regiao_status' => (string) $row['regiao_status'],
 			'ufs' => $ufs,
+		);
+	}
+
+	public function formData(array $values = array())
+	{
+		$defaults = array(
+			'regiao_id' => 0,
+			'regiao_nome' => '',
+			'regiao_slug' => '',
+			'regiao_status' => 'Y',
+			'ufs' => array(),
+		);
+
+		return array(
+			'region' => array_merge($defaults, $values),
+			'ufs' => $this->brUfs(),
+			'statusOptions' => array(
+				'Y' => __('Active'),
+				'N' => __('Inactive'),
+			),
 		);
 	}
 

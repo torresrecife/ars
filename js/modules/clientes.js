@@ -153,18 +153,34 @@ function clienteCarteirasEscape(valor){
 }
 function clienteCarteirasAtualizarInputs(){
 	var html = "";
+	var carteirasLista = [];
 	$(".cliente-carteiras-item").each(function(index){
 		var valor = $(this).attr("data-carteira");
 		var numero = index + 1;
+		carteirasLista.push(valor);
 		html += "<input type='hidden' class='cls_cliente_carteira_input' name='dados_name_" + numero + "' value=\"" + clienteCarteirasEscape(valor) + "\" />";
 	});
 	$("#cliente-carteiras-inputs").html(html);
 	$("#cartei_num").val($(".cliente-carteiras-item").length);
+	$("#dados_json").val(JSON.stringify(carteirasLista));
 	if($(".cliente-carteiras-item").length>0){
 		$("#cliente-carteiras-vazio").hide();
 	}else{
 		$("#cliente-carteiras-vazio").show();
 	}
+}
+function clienteFormInit(carteiras){
+	clienteCarteirasReset();
+	if(!carteiras || !carteiras.length){
+		clienteCarteirasAtualizarInputs();
+		return;
+	}
+	for(var i=0;i<carteiras.length;i++){
+		if(carteiras[i]!=""){
+			clienteCarteirasAdicionarValor(carteiras[i], true);
+		}
+	}
+	clienteCarteirasAtualizarInputs();
 }
 function clienteCarteirasAdicionar(){
 	var valor = $("#dados_name_pool").val();
