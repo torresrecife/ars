@@ -45,6 +45,9 @@
 <td align="right">{{ __('Progress') }}</td>
 </tr>
 </table>
+<div class="detail-actions detail-actions--andamento">
+<button type="button" class="detail-actions__button" onclick="exportDetailTable('tbf1', '{{ \Illuminate\Support\Str::slug((string) $bankName, '-') }}-andamentos')">{{ __('Export to Excel') }}</button>
+</div>
 <br>
 </body>
 </html>

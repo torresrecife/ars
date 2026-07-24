@@ -56,6 +56,9 @@
 <td align="right">{{ __('Entries') }}</td>
 </tr>
 </table>
+<div class="detail-actions detail-actions--financial">
+<button type="button" class="detail-actions__button" onclick="exportDetailTable('tbf1', '{{ \Illuminate\Support\Str::slug((string) $bankName, '-') }}-financial-details')">{{ __('Export to Excel') }}</button>
+</div>
 <br>
 </body>
 </html>

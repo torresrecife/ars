@@ -262,6 +262,34 @@ div.cpanel-right-sub {
   background: #ebebeb;
   cursor: pointer;
 }
+.detail-actions {
+  margin: 18px auto 0;
+  text-align: right;
+}
+.detail-actions--andamento { width: 80%; }
+.detail-actions--financial { width: 70%; text-align: center;}
+.detail-actions__button {
+  display: inline-block;
+  min-width: 170px;
+  border: 1px solid #1C86EE;
+  background: #1C86EE;
+  color: #FFFFFF;
+  font-family: Arial, sans-serif;
+  font-size: 10pt;
+  font-weight: bold;
+  line-height: 1.2;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.detail-actions__button:hover,
+.detail-actions__button:focus {
+  background: #1c7fdf;
+  color: #FFFFFF;
+}
+.detail-actions__button:active {
+  background: #1c7fdf;
+}
 .detail-summary {
   border-collapse: collapse;
   font-family: Arial, sans-serif;
