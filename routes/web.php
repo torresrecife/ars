@@ -24,6 +24,19 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin', 'HomeController@webSectionPage')->defaults('section', 'admin')->name('admin');
         Route::get('/metas', 'HomeController@webMetas')->middleware('can:viewAny,App\\Models\\MetaAndamento')->name('metas');
     });
+    Route::group(array('middleware' => 'can:viewAny,App\\Models\\MetaAndamento'), function () {
+        Route::get('/metas/novo', 'MetaController@createPage')->name('metas.create');
+        Route::get('/metas/{id}/editar', 'MetaController@editPage')->name('metas.edit');
+    });
+    Route::group(array('middleware' => 'can:create,App\\Models\\MetaAndamento'), function () {
+        Route::post('/metas', 'MetaController@storePage')->name('metas.store.page');
+    });
+    Route::group(array('middleware' => 'can:update,App\\Models\\MetaAndamento'), function () {
+        Route::match(['put', 'patch'], '/metas/{id}', 'MetaController@updatePage')->name('metas.update.page');
+    });
+    Route::group(array('middleware' => 'can:delete,App\\Models\\MetaAndamento'), function () {
+        Route::delete('/metas/{id}', 'MetaController@destroyPage')->name('metas.destroy.page');
+    });
 
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\Usuario'), function () {
         Route::get('/usuarios/novo', 'UserAdminController@createPage')->name('usuarios.create');
