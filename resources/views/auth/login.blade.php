@@ -12,7 +12,7 @@
             <div class="auth-layout__hero-inner">
                 <div class="auth-layout__brand">
                     <span class="auth-layout__brand-mark">
-                        <img src="{{ $legacyBaseUrl }}/css/images/logo.png" alt="{{ __('ARS - NEO Legal') }}" />
+                        <img src="{{ asset('css/images/ars-logo-icon.png') }}" alt="{{ __('ARS - NEO Legal') }}" />
                     </span>
                     <div class="auth-layout__brand-text">
                         <strong>ARS</strong>
