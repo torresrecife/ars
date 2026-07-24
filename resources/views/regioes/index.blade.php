@@ -27,16 +27,12 @@
 		<td class="order">{{ e($region['ufs']) }}</td>
 		<td class="order">{{ (int) $region['total_usuarios'] }}</td>
 		<td class="order">{{ ((string) $region['regiao_status'] === 'Y') ? __('Active') : __('Inactive') }}</td>
-		<td class="order">
-			<div class="***REMOVED***-table-actions">
-				<a href="{{ route('regioes.edit', (int) $region['regiao_id']) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
-				<form method="post" action="{{ route('regioes.destroy.page', (int) $region['regiao_id']) }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the region :name?', ['name' => $region['regiao_nome']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
-					@csrf
-					@method('DELETE')
-					<button type="submit" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</button>
-				</form>
-			</div>
-		</td>
+						<td class="order">
+							<div class="***REMOVED***-table-actions">
+								<a href="{{ route('regioes.edit', (int) $region['regiao_id']) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
+								<a href="{{ route('regioes.confirm-delete', (int) $region['regiao_id']) }}" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</a>
+							</div>
+						</td>
 	</tr>
 @endforeach
 </table>

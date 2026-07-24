@@ -72,11 +72,7 @@
 						<td class="order">
 							<div class="***REMOVED***-table-actions">
 								<a href="{{ route('metas.edit', ['id' => (int) $arr['meta_id'], 'startBanco' => $startBanco, 'startDate' => $startDate, 'mes' => $mes, 'ano' => $ano]) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
-								<form method="post" action="{{ route('metas.destroy.page', (int) $arr['meta_id']) }}?{{ $contextQuery }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the goal :name?', ['name' => $arr['nome']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
-									@csrf
-									@method('DELETE')
-									<button type="submit" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</button>
-								</form>
+								<a href="{{ route('metas.confirm-delete', ['id' => (int) $arr['meta_id'], 'startBanco' => $startBanco, 'startDate' => $startDate, 'mes' => $mes, 'ano' => $ano]) }}" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</a>
 							</div>
 						</td>
 					</tr>

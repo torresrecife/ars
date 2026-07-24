@@ -42,11 +42,7 @@
 						<td class="order">
 							<div class="***REMOVED***-table-actions">
 								<a href="{{ route('setores.edit', (int) $area['area_id']) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
-								<form method="post" action="{{ route('setores.destroy.page', (int) $area['area_id']) }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the sector :name?', ['name' => $area['area_nome']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
-									@csrf
-									@method('DELETE')
-									<button type="submit" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</button>
-								</form>
+								<a href="{{ route('setores.confirm-delete', (int) $area['area_id']) }}" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</a>
 							</div>
 						</td>
 					</tr>

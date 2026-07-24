@@ -213,6 +213,29 @@ class MetaController extends Controller
 		);
 	}
 
+	public function confirmDeletePage(Request $request, $id)
+	{
+		$payload = $this->metaService->findById((int) $id);
+		if (!$payload) {
+			abort(404, __('Goal not found.'));
+		}
+
+		$backQuery = array(
+			'startBanco' => $request->query('startBanco', $payload['banco_id']),
+			'startDate' => $request->query('startDate', $this->monthYearLabel((int) $payload['meta_mes'], (int) $payload['meta_ano'])),
+			'mes' => $request->query('mes', $payload['meta_mes']),
+			'ano' => $request->query('ano', $payload['meta_ano']),
+		);
+
+		return $this->renderShellPage($request, 'shared/confirm-delete', array(
+			'pageTitle' => __('Delete Goal'),
+			'message' => __('Review the selected goal before confirming permanent deletion.'),
+			'itemName' => (string) $payload['nome'],
+			'formAction' => route('metas.destroy.page', (int) $id) . '?' . http_build_query($backQuery),
+			'backUrl' => url('metas?' . http_build_query($backQuery)),
+		));
+	}
+
 	private function renderShellPage(Request $request, $viewName, array $viewData)
 	{
 		$user = $this->authService->currentUser();

@@ -1547,6 +1547,12 @@ label.filter-published-lbl {
   background: #ffffff;
 }
 
+.***REMOVED***-button--danger {
+  border-color: #f2caca;
+  background: #fff4f4;
+  color: #a33131;
+}
+
 .***REMOVED***-button--compact {
   min-width: 38px;
   padding: 0;
@@ -1554,6 +1560,53 @@ label.filter-published-lbl {
 
 .***REMOVED***-link-button--danger {
   color: #9b2c2c;
+}
+
+.***REMOVED***-confirm-delete {
+  max-width: 760px;
+}
+
+.***REMOVED***-confirm-delete__header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.***REMOVED***-confirm-delete__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #22313f;
+}
+
+.***REMOVED***-confirm-delete__copy {
+  color: #5d7083;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.***REMOVED***-confirm-delete__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  margin-bottom: 22px;
+  border: 1px solid #d9e2ec;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.***REMOVED***-confirm-delete__label {
+  color: #6b7b8c;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.***REMOVED***-confirm-delete__value {
+  color: #22313f;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 table.***REMOVED***list--modern {

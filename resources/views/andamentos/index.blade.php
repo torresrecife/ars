@@ -54,11 +54,7 @@
 						<td class="order">
 							<div class="***REMOVED***-table-actions">
 								<a href="{{ route('andamentos.edit', (int) $andamento['anda_id']) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
-								<form method="post" action="{{ route('andamentos.destroy', (int) $andamento['anda_id']) }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the progress :name?', ['name' => $andamento['nome']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
-									@csrf
-									@method('DELETE')
-									<button type="submit" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</button>
-								</form>
+								<a href="{{ route('andamentos.confirm-delete', (int) $andamento['anda_id']) }}" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</a>
 							</div>
 						</td>
 					</tr>

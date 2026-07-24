@@ -29,16 +29,12 @@
 		<td class="order">{{ $client['datacad'] }}</td>
 		<td class="order">{{ e($client['area_nome']) }}</td>
 		<td class="order">{{ isset($statusLabels[$client['banco_status']]) ? $statusLabels[$client['banco_status']] : $client['banco_status'] }}</td>
-		<td class="order">
-			<div class="***REMOVED***-table-actions">
-				<a href="{{ route('clientes.edit', (int) $client['banco_id']) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
-				<form method="post" action="{{ route('clientes.destroy.page', (int) $client['banco_id']) }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the client :name?', ['name' => $client['banco_name']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
-					@csrf
-					@method('DELETE')
-					<button type="submit" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</button>
-				</form>
-			</div>
-		</td>
+						<td class="order">
+							<div class="***REMOVED***-table-actions">
+								<a href="{{ route('clientes.edit', (int) $client['banco_id']) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
+								<a href="{{ route('clientes.confirm-delete', (int) $client['banco_id']) }}" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</a>
+							</div>
+						</td>
 	</tr>
 @endforeach
 </table>

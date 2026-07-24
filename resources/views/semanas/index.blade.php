@@ -62,11 +62,7 @@
 			<td class="order">
 				<div class="***REMOVED***-table-actions">
 					<a href="{{ route('semanas.edit', (int) $arr['semanas_id']) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
-					<form method="post" action="{{ route('semanas.destroy.page', (int) $arr['semanas_id']) }}" onsubmit="return confirm({{ json_encode(__('Do you really want to delete the week :name?', ['name' => (isset($months[$arr['mes']]) ? $months[$arr['mes']] : $arr['mes']) . ' / ' . $arr['ano']]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }});">
-						@csrf
-						@method('DELETE')
-						<button type="submit" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</button>
-					</form>
+					<a href="{{ route('semanas.confirm-delete', (int) $arr['semanas_id']) }}" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</a>
 				</div>
 			</td>
 		</tr>

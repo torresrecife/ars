@@ -120,6 +120,22 @@ class UserAdminController extends Controller
 		);
 	}
 
+	public function confirmDeletePage(Request $request, $id)
+	{
+		$data = $this->service->editPayload((int) $id);
+		if (!is_array($data) || empty($data['id_usu'])) {
+			abort(404, __('User not found.'));
+		}
+
+		return $this->renderShellPage($request, 'shared/confirm-delete', array(
+			'pageTitle' => __('Delete User'),
+			'message' => __('Review the selected user before confirming permanent deletion.'),
+			'itemName' => (string) $data['nome_usu'],
+			'formAction' => route('usuarios.destroy.page', (int) $id),
+			'backUrl' => url('usuarios'),
+		));
+	}
+
 	public function show($id)
 	{
 		$data = $this->service->editPayload((int) $id);

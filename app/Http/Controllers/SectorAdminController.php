@@ -126,6 +126,22 @@ class SectorAdminController extends Controller
 		);
 	}
 
+	public function confirmDeletePage(Request $request, $id)
+	{
+		$payload = $this->service->editPayload((int) $id);
+		if (!is_array($payload) || empty($payload['area_id'])) {
+			abort(404, __('Sector not found.'));
+		}
+
+		return $this->renderShellPage($request, 'shared/confirm-delete', array(
+			'pageTitle' => __('Delete Sector'),
+			'message' => __('Review the selected sector before confirming permanent deletion.'),
+			'itemName' => (string) $payload['area_nome'],
+			'formAction' => route('setores.destroy.page', (int) $id),
+			'backUrl' => url('setores'),
+		));
+	}
+
 	public function show($id)
 	{
 		$data = $this->service->editPayload((int) $id);
