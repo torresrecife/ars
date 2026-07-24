@@ -166,8 +166,8 @@ class WeekController extends Controller
 
 		$itemName = sprintf(
 			'%s / %s',
-			isset(MonthMap::localized()[(int) $row['mes_sem']]) ? MonthMap::localized()[(int) $row['mes_sem']] : (string) $row['mes_sem'],
-			(string) $row['ano_sem']
+			isset(MonthMap::localized()[(int) $row['mes']]) ? MonthMap::localized()[(int) $row['mes']] : (string) $row['mes'],
+			(string) $row['ano']
 		);
 
 		return $this->renderShellPage($request, 'shared/confirm-delete', array(
