@@ -142,9 +142,6 @@
 		'regioes' => __('Regions'),
 	];
 	$currentPageTitle = isset($pageTitleMap[$currentSection]) ? $pageTitleMap[$currentSection] : __('ARS Control');
-	$contentCardClass = in_array($currentSection, array('andamentos', 'usuarios', 'clientes', 'regioes', 'setores', 'semanas', 'metas-select', 'metas-admin'), true)
-		? 'ars-shell__content-card ars-shell__content-card--flat'
-		: 'ars-shell__content-card';
 	$sectionSubtitle = in_array($currentSection, ['painel', 'producao', 'relatorio-semanal', 'relatorio-mensal', 'carteiras', 'metas-select', 'metas-admin'], true)
 		? $currentMonthLabel
 		: __('Administrative workspace');
@@ -166,8 +163,6 @@
 	};
 	$navLinks = [
 		['key' => 'inicio', 'label' => __('Home'), 'url' => url('index'), 'active' => $isHomeActive],
-		['key' => 'carteiras', 'label' => __('Wallet(s)'), 'url' => $buildShellUrl('carteiras', $baseQuery + ['area_id' => $currentState->areaId()]), 'active' => $currentSection === 'carteiras'],
-		['key' => 'painel', 'label' => __('Panel'), 'url' => $buildShellUrl('painel', $baseQuery + ['area_id' => $currentState->areaId(), 'bank_id' => $currentState->bankId()]), 'active' => $currentSection === 'painel'],
 		['key' => 'producao', 'label' => __('Production'), 'url' => $buildShellUrl('producao', $baseQuery + ['startSetor' => $currentState->startSetor()]), 'active' => $currentSection === 'producao'],
 		['key' => 'relatorio', 'label' => __('Report'), 'url' => $buildShellUrl('relatorio', $baseQuery + ['startSetor' => $currentState->startSetor(), 'geral' => $currentSection === 'relatorio-semanal' ? 1 : 0]), 'active' => $isReportActive],
 	];
@@ -244,9 +239,9 @@
 					<span class="ars-shell__icon ars-shell__icon--menu">{!! $shellIcons['menu'] !!}</span>
 				</button>
 				<a href="{{ url('index') }}" class="ars-shell__brand">
-					<span class="ars-shell__brand-mark">
-						<img src="{{ asset('css/images/logo.png') }}" alt="{{ __('ARS - NEO Legal') }}" />
-					</span>
+{{--					<span class="ars-shell__brand-mark">--}}
+{{--						<img src="{{ asset('css/images/logo.png') }}" alt="{{ __('ARS - NEO Legal') }}" />--}}
+{{--					</span>--}}
 					<span class="ars-shell__brand-text">
 						<strong>ARS</strong>
 						<small>{{ __('ARS - NEO Legal') }}</small>
@@ -313,7 +308,7 @@
 				</div>
 			</header>
 			<main class="ars-shell__content-area">
-				<section class="{{ $contentCardClass }}">
+				<section class="ars-shell__content-card">
 					<div class="adminform ars-shell__content">
 						{!! $contentHtml !!}
 					</div>
