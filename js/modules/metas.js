@@ -366,3 +366,123 @@ function metaFormInit(config){
 
 	updateCounter();
 }
+
+function metaListInit(){
+	var sortableRoot = $("#metas-sortable");
+	if(!sortableRoot.length){
+		return;
+	}
+
+	var reorderUrl = sortableRoot.data("reorder-url");
+	if(!reorderUrl){
+		return;
+	}
+
+	var originalOrder = [];
+	var draggedRow = null;
+	var dragEnabledForRow = null;
+	var collectMetaIds = function(){
+		return sortableRoot.find("tr[data-meta-id]").map(function(){
+			return parseInt($(this).attr("data-meta-id"), 10);
+		}).get();
+	};
+
+	var applyOriginalOrder = function(metaIds){
+		var rowMap = {};
+		sortableRoot.find("tr[data-meta-id]").each(function(){
+			rowMap[$(this).attr("data-meta-id")] = $(this);
+		});
+
+		$.each(metaIds, function(_, metaId){
+			var row = rowMap[String(metaId)];
+			if(row){
+				sortableRoot.append(row);
+			}
+		});
+	};
+
+	var persistOrder = function(){
+		var payload = {
+			startBanco: sortableRoot.data("bank-id"),
+			mes: sortableRoot.data("month"),
+			ano: sortableRoot.data("year"),
+			meta_ids: collectMetaIds()
+		};
+
+		arsAjax({
+			type: "POST",
+			url: reorderUrl,
+			data: payload,
+			success: function(response){
+				if(!response || response.ok !== true){
+					alert((response && response.message) ? response.message : arsTranslate("Error saving goal order."));
+					applyOriginalOrder(originalOrder);
+				}
+			},
+			error: function(xhr){
+				alert(LerMensagemAjaxErro(xhr, arsTranslate("Error saving goal order.")));
+				applyOriginalOrder(originalOrder);
+			}
+		}
+		);
+	};
+
+	sortableRoot.find("tr[data-meta-id]").attr("draggable", "true");
+
+	sortableRoot.on("mousedown", ".metas-drag-handle", function(){
+		dragEnabledForRow = $(this).closest("tr")[0];
+	});
+
+	$(document).on("mouseup.metaListInit", function(){
+		dragEnabledForRow = null;
+	});
+
+	sortableRoot.on("dragstart", "tr[data-meta-id]", function(event){
+		if(this !== dragEnabledForRow){
+			event.preventDefault();
+			return false;
+		}
+
+		originalOrder = collectMetaIds();
+		draggedRow = this;
+		$(this).addClass("is-dragging");
+
+		if(event.originalEvent && event.originalEvent.dataTransfer){
+			event.originalEvent.dataTransfer.effectAllowed = "move";
+			event.originalEvent.dataTransfer.setData("text/plain", $(this).attr("data-meta-id"));
+		}
+	});
+
+	sortableRoot.on("dragover", "tr[data-meta-id]", function(event){
+		if(!draggedRow || this === draggedRow){
+			return;
+		}
+
+		event.preventDefault();
+		var rect = this.getBoundingClientRect();
+		var midpoint = rect.top + (rect.height / 2);
+		if(event.originalEvent.clientY < midpoint){
+			this.parentNode.insertBefore(draggedRow, this);
+		}else{
+			this.parentNode.insertBefore(draggedRow, this.nextSibling);
+		}
+	});
+
+	sortableRoot.on("drop", "tr[data-meta-id]", function(event){
+		if(!draggedRow){
+			return;
+		}
+
+		event.preventDefault();
+	});
+
+	sortableRoot.on("dragend", "tr[data-meta-id]", function(){
+		var currentOrder = collectMetaIds();
+		$(this).removeClass("is-dragging");
+		if(draggedRow && originalOrder.join(",") !== currentOrder.join(",")){
+			persistOrder();
+		}
+		draggedRow = null;
+		dragEnabledForRow = null;
+	});
+}

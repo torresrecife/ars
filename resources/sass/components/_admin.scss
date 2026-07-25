@@ -2155,6 +2155,53 @@ table.metas-admin-table .admin-col--actions {
   color: #935f10;
 }
 
+.admin-col--drag {
+  width: 52px;
+}
+
+.metas-admin-table tbody tr {
+  cursor: default;
+}
+
+.metas-admin-table tbody tr.is-dragging {
+  opacity: .55;
+}
+
+.metas-order-header,
+.metas-order-cell {
+  text-align: center;
+}
+
+.metas-drag-handle {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 1px solid #d9e2ec;
+  border-radius: 8px;
+  background: #f7fafc;
+  cursor: grab;
+}
+
+.metas-drag-handle:active {
+  cursor: grabbing;
+}
+
+.metas-drag-handle span {
+  width: 3px;
+  height: 14px;
+  border-radius: 999px;
+  background: #9bb0c2;
+}
+
+.metas-order-help {
+  margin: 12px 0 0;
+  color: #607284;
+  font-size: 13px;
+}
+
 @media (max-width: 900px) {
   .admin-form-grid {
     grid-template-columns: 1fr;

@@ -43,6 +43,7 @@
 	<div class="admin-surface admin-surface--table">
 		<table class="adminlist adminlist--full adminlist--modern metas-admin-table">
 			<colgroup>
+				<col class="admin-col admin-col--drag" />
 				<col class="admin-col admin-col--name" />
 				<col class="admin-col admin-col--region" />
 				<col class="admin-col admin-col--progress" />
@@ -52,6 +53,7 @@
 			</colgroup>
 			<thead>
 				<tr>
+					<th class="order metas-order-header">{{ __('Order') }}</th>
 					<th class="order">{{ __('Client') }}</th>
 					<th class="order">{{ __('Region') }}</th>
 					<th class="order">{{ __('Progress') }}</th>
@@ -60,10 +62,21 @@
 					<th class="order">{{ __('Options') }}</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody
+				id="metas-sortable"
+				data-reorder-url="{{ route('metas.reorder.page') }}"
+				data-bank-id="{{ (int) $startBanco }}"
+				data-month="{{ (int) $mes }}"
+				data-year="{{ (int) $ano }}"
+			>
 				@forelse ($metas as $arr)
 					@php $metaValor = ((int) $arr['especie'] === 2) ? number_format((float) $arr['meta_valor'], 2, ',', '.') : number_format((float) $arr['meta_valor'], 0, '', ''); @endphp
-					<tr>
+					<tr data-meta-id="{{ (int) $arr['meta_id'] }}">
+						<td class="order metas-order-cell">
+							<button type="button" class="metas-drag-handle" title="{{ __('Drag to reorder') }}" aria-label="{{ __('Drag to reorder') }}">
+								<span></span><span></span><span></span>
+							</button>
+						</td>
 						<td class="order">{{ e((string) $arr['banco_name']) }}</td>
 						<td class="order">{{ e(isset($arr['regiao_nome']) && $arr['regiao_nome'] !== '' ? (string) $arr['regiao_nome'] : __('All regions')) }}</td>
 						<td class="order">{{ e((string) $arr['nome']) }}</td>
@@ -78,10 +91,16 @@
 					</tr>
 				@empty
 					<tr>
-						<td colspan="6" class="order metas-empty">{{ __('No goals found for this context.') }}</td>
+						<td colspan="7" class="order metas-empty">{{ __('No goals found for this context.') }}</td>
 					</tr>
 				@endforelse
 			</tbody>
 		</table>
 	</div>
+	<p class="metas-order-help">{{ __('Drag and drop the rows to define the display order of the goals in this context.') }}</p>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+	metaListInit();
+});
+</script>

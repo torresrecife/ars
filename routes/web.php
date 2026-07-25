@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::group(array('middleware' => 'can:update,App\\Models\\MetaAndamento'), function () {
         Route::match(['put', 'patch'], '/metas/{id}', 'MetaController@updatePage')->name('metas.update.page');
+        Route::post('/metas/reordenar', 'MetaController@reorder')->name('metas.reorder.page');
     });
     Route::group(array('middleware' => 'can:delete,App\\Models\\MetaAndamento'), function () {
         Route::get('/metas/{id}/excluir', 'MetaController@confirmDeletePage')->name('metas.confirm-delete');
@@ -217,6 +218,7 @@ Route::middleware('auth')->group(function () {
         });
         Route::group(array('middleware' => 'can:update,App\\Models\\MetaAndamento'), function () {
             Route::match(['put', 'patch'], '/metas/{id}', 'MetaController@update')->name('metas.update');
+            Route::post('/metas/reordenar', 'MetaController@reorder')->name('metas.reorder');
         });
         Route::group(array('middleware' => 'can:delete,App\\Models\\MetaAndamento'), function () {
             Route::delete('/metas/{id}', 'MetaController@destroy')->name('metas.destroy');

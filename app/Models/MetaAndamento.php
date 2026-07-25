@@ -23,6 +23,7 @@ class MetaAndamento extends Model
         'sem_4',
         'sem_5',
         'regiao_id',
+        'sort_order',
     );
 
     protected $casts = array(
@@ -38,6 +39,7 @@ class MetaAndamento extends Model
         'sem_4' => 'decimal:2',
         'sem_5' => 'decimal:2',
         'regiao_id' => 'int',
+        'sort_order' => 'int',
     );
 
     public function banco()
