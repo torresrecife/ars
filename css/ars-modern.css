@@ -169,7 +169,7 @@ div#element-box div.section-box { background: #f4f4f4; }
 div#element-box.login { background-color: #ffffff; }
 div .***REMOVED***form { height: 95%; }
 div .***REMOVED***form:has(table#tb_pro),
-div .***REMOVED***form:has(table#tb_fin) { margin-top: 64px; }
+div .***REMOVED***form:has(table#tb_fin) { margin-top: 4px; }
 .content_body { height: auto; }
 .cpanel div.icon,
 #cpanel div.icon {
