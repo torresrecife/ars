@@ -150,6 +150,22 @@ class MetaService
 		return $total;
 	}
 
+	public function reorderByContext(array $input)
+	{
+		$bankId = isset($input['startBanco']) ? (int) $input['startBanco'] : (isset($input['banco_id']) ? (int) $input['banco_id'] : 0);
+		$month = isset($input['mes']) ? (int) $input['mes'] : (isset($input['meta_mes']) ? (int) $input['meta_mes'] : 0);
+		$year = isset($input['ano']) ? (int) $input['ano'] : (isset($input['meta_ano']) ? (int) $input['meta_ano'] : 0);
+		$metaIds = isset($input['meta_ids']) && is_array($input['meta_ids']) ? $input['meta_ids'] : array();
+
+		if ($bankId <= 0 || $month <= 0 || $year <= 0 || empty($metaIds)) {
+			return WriteResult::error();
+		}
+
+		return $this->repository->reorderByIds($bankId, $month, $year, $metaIds)
+			? WriteResult::success()
+			: WriteResult::error();
+	}
+
 	public function formData(array $context, array $values = array(), array $session = array())
 	{
 		$bankId = (int) $context['startBanco'];

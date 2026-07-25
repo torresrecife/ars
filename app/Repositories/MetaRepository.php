@@ -30,6 +30,8 @@ class MetaRepository
 			->where('m.banco_id', (int) $bankId)
 			->where('m.meta_mes', (int) $month)
 			->where('m.meta_ano', (int) $year)
+			->orderByRaw('CASE WHEN m.sort_order IS NULL THEN 1 ELSE 0 END')
+			->orderBy('m.sort_order')
 			->orderBy('a.especie')
 			->orderBy('a.nome')
 			->orderBy('r.regiao_nome')
@@ -48,6 +50,7 @@ class MetaRepository
 				'm.sem_4',
 				'm.sem_5',
 				'm.regiao_id',
+				'm.sort_order',
 				'a.nome',
 				'a.especie',
 				'b.banco_name',
@@ -105,6 +108,9 @@ class MetaRepository
 	{
 		$model = new MetaAndamento();
 		$model->fill($this->normalizeModelData($data));
+		if (!isset($model->sort_order) || $model->sort_order === null) {
+			$model->sort_order = $this->nextSortOrder($data);
+		}
 
 		return $model->save();
 	}
@@ -117,6 +123,9 @@ class MetaRepository
 		}
 
 		$model->fill($this->normalizeModelData($data));
+		if (isset($data['sort_order'])) {
+			$model->sort_order = (int) $data['sort_order'];
+		}
 
 		return $model->save();
 	}
@@ -129,6 +138,29 @@ class MetaRepository
 		}
 
 		return (bool) $model->delete();
+	}
+
+	public function reorderByIds($bankId, $month, $year, array $metaIds)
+	{
+		$normalizedIds = array_values(array_map('intval', $metaIds));
+		if (empty($normalizedIds)) {
+			return false;
+		}
+
+		$updated = 0;
+
+		DB::transaction(function () use ($normalizedIds, $bankId, $month, $year, &$updated) {
+			foreach ($normalizedIds as $index => $metaId) {
+				$updated += MetaAndamento::query()
+					->where('banco_id', (int) $bankId)
+					->where('meta_mes', (int) $month)
+					->where('meta_ano', (int) $year)
+					->where('meta_id', $metaId)
+					->update(array('sort_order' => $index + 1));
+			}
+		});
+
+		return $updated > 0;
 	}
 
 	private function normalizeModelData(array $data)
@@ -146,6 +178,16 @@ class MetaRepository
 			'sem_5' => $data['sem_5'],
 			'meta_valor' => $data['meta_valor'],
 			'regiao_id' => isset($data['regiao_id']) && (int) $data['regiao_id'] > 0 ? (int) $data['regiao_id'] : null,
+			'sort_order' => isset($data['sort_order']) ? (int) $data['sort_order'] : null,
 		);
+	}
+
+	private function nextSortOrder(array $data)
+	{
+		return (int) MetaAndamento::query()
+			->where('banco_id', (int) $data['banco_id'])
+			->where('meta_mes', (int) $data['meta_mes'])
+			->where('meta_ano', (int) $data['meta_ano'])
+			->max('sort_order') + 1;
 	}
 }

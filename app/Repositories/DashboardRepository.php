@@ -72,6 +72,8 @@ class DashboardRepository
 		}
 
 		return $query
+			->orderByRaw('CASE WHEN m.sort_order IS NULL THEN 1 ELSE 0 END')
+			->orderBy('m.sort_order')
 			->orderBy('a.especie')
 			->orderBy('a.ordem')
 			->orderBy('a.nome')
@@ -89,6 +91,7 @@ class DashboardRepository
 				'm.sem_4',
 				'm.sem_5',
 				'm.regiao_id',
+				'm.sort_order',
 				'a.nome',
 				'a.especie',
 				'a.anda_neo',

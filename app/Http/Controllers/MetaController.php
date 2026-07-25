@@ -213,6 +213,13 @@ class MetaController extends Controller
 		);
 	}
 
+	public function reorder(Request $request)
+	{
+		$result = $this->metaService->reorderByContext($request->all());
+
+		return $this->mapWriteResultToJson($result, __('Goal order updated successfully.'));
+	}
+
 	public function confirmDeletePage(Request $request, $id)
 	{
 		$payload = $this->metaService->findById((int) $id);
