@@ -168,6 +168,7 @@
     "Monthly": "Mensal",
     "Name": "Nome",
     "New Client": "Novo Cliente",
+    "New Goal": "Nova meta",
     "New Progress": "Novo Andamento",
     "New Sector": "Novo Setor",
     "New User": "Novo Usuário",
@@ -274,6 +275,7 @@
     "Title Name": "Nome do Título",
     "Toggle navigation": "Alternar navegação",
     "Total": "Total",
+    "Total goal": "Meta total",
     "Total Value": "Valor Total",
     "Total financial goal": "Meta financeira total",
     "Totals": "Totais",
@@ -310,5 +312,10 @@
     "Weeks": "Semanas",
     "Workspace": "Espaço de trabalho",
     "Year": "Ano",
-    "Yes": "Sim"
+    "Yes": "Sim",
+    "Drag and drop the rows to define the display order of the goals in this context.":  "Arraste e solte as linhas para definir a ordem de exibição das metas neste contexto.",
+    "Drag to reorder":  "Arrastar para reordenar",
+    "Error saving goal order.":  "Erro ao salvar a ordem das metas.",
+    "Goal order updated successfully.":  "Ordem das metas atualizada com sucesso.",
+    "Order":  "Ordem"
 }
