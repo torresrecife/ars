@@ -167,9 +167,9 @@ div.m {
 div#element-box div.m { padding: 10px; }
 div#element-box div.section-box { background: #f4f4f4; }
 div#element-box.login { background-color: #ffffff; }
-div .***REMOVED***form { height: 95%; }
-div .***REMOVED***form:has(table#tb_pro),
-div .***REMOVED***form:has(table#tb_fin) { margin-top: 4px; }
+div .adminform { height: 95%; }
+div .adminform:has(table#tb_pro),
+div .adminform:has(table#tb_fin) { margin-top: 4px; }
 .content_body { height: auto; }
 .cpanel div.icon,
 #cpanel div.icon {
@@ -305,44 +305,44 @@ div.cpanel-right-sub {
   height: 50px;
   text-align: center;
 }
-.***REMOVED***-dialog { text-align: left; }
-.***REMOVED***-dialog--scroll { overflow-y: scroll; }
-.***REMOVED***-module-offset { margin-top: 80px; }
-.***REMOVED***-action-cell { width: 130px; }
-.***REMOVED***-context-title {
+.admin-dialog { text-align: left; }
+.admin-dialog--scroll { overflow-y: scroll; }
+.admin-module-offset { margin-top: 80px; }
+.admin-action-cell { width: 130px; }
+.admin-context-title {
   font-family: Arial, sans-serif;
   margin-left: 40px;
   font-size: 10pt;
 }
-.***REMOVED***list--full { width: 100%; }
-.***REMOVED***list--metas { width: 72%; }
-.***REMOVED***-type-badge { color: #ffffff; }
-.***REMOVED***-type-badge--production { background: #1C86EE; }
-.***REMOVED***-type-badge--financial { background: #FFB90F; }
-.***REMOVED***-dialog-panel { width: 520px; }
-.***REMOVED***-dialog-panel--metas,
-.***REMOVED***-dialog-table--metas { width: 1030px; }
-.***REMOVED***-dialog-panel--metas { min-height: 70px; }
-.***REMOVED***-dialog-table { width: 500px; }
-.***REMOVED***-dialog-table--region { width: 520px; }
-.***REMOVED***-dialog-table--user { width: 460px; }
-.***REMOVED***-dialog-table--week { width: 400px; }
-.***REMOVED***-field--standard { width: 200px; }
-.***REMOVED***-field--large { width: 400px; }
-.***REMOVED***-field--select { height: 22px; }
-.***REMOVED***-field--fluid { width: 90%; }
-.***REMOVED***-code-field {
+.adminlist--full { width: 100%; }
+.adminlist--metas { width: 72%; }
+.admin-type-badge { color: #ffffff; }
+.admin-type-badge--production { background: #1C86EE; }
+.admin-type-badge--financial { background: #FFB90F; }
+.admin-dialog-panel { width: 520px; }
+.admin-dialog-panel--metas,
+.admin-dialog-table--metas { width: 1030px; }
+.admin-dialog-panel--metas { min-height: 70px; }
+.admin-dialog-table { width: 500px; }
+.admin-dialog-table--region { width: 520px; }
+.admin-dialog-table--user { width: 460px; }
+.admin-dialog-table--week { width: 400px; }
+.admin-field--standard { width: 200px; }
+.admin-field--large { width: 400px; }
+.admin-field--select { height: 22px; }
+.admin-field--fluid { width: 90%; }
+.admin-code-field {
   border: 0;
   background: #ffffff;
   width: 50px;
 }
-.***REMOVED***-label-cell { width: 50px; }
-.***REMOVED***-week-cell {
+.admin-label-cell { width: 50px; }
+.admin-week-cell {
   background: #436EEE;
   color: #ffffff;
 }
-.***REMOVED***-week-cell--optional { background: #1E90FF; }
-.***REMOVED***-dialog-row-gap { margin-top: 8px; }
+.admin-week-cell--optional { background: #1E90FF; }
+.admin-dialog-row-gap { margin-top: 8px; }
 .bts {
   font-size: 14pt;
   text-decoration: none;
@@ -865,48 +865,48 @@ input {
   font-size: 8pt;
   font-family: Arial, sans-serif;
 }
-table.***REMOVED***list {
+table.adminlist {
   width: 100%;
   border-spacing: 1px;
   background-color: #cccccc;
   color: #666666;
 }
-table.***REMOVED***list td,
-table.***REMOVED***list th { padding: 4px; }
-table.***REMOVED***list td { padding-left: 8px; }
-table.***REMOVED***list thead th {
+table.adminlist td,
+table.adminlist th { padding: 4px; }
+table.adminlist td { padding-left: 8px; }
+table.adminlist thead th {
   text-align: center;
   background: #f7f7f7;
   color: #666666;
   border-bottom: 1px solid #cccccc;
   border-left: 1px solid #ffffff;
 }
-table.***REMOVED***list thead th.left { text-align: left; }
-table.***REMOVED***list thead a:hover { text-decoration: none; }
-table.***REMOVED***list thead th img { vertical-align: middle; padding-left: 3px; }
-table.***REMOVED***list tbody th { font-weight: bold; }
-table.***REMOVED***list tbody tr { background-color: #ffffff; text-align: left; }
-table.***REMOVED***list tbody tr.row0:hover td,
-table.***REMOVED***list tbody tr.row1:hover td { background-color: #e8f6fe; }
-table.***REMOVED***list tbody tr td { background: #ffffff; border: 1px solid #ffffff; }
-table.***REMOVED***list tbody tr.row1 td { background: #f0f0f0; border-top: 1px solid #ffffff; }
-table.***REMOVED***list tfoot tr { text-align: center; color: #333333; }
-table.***REMOVED***list tfoot td,
-table.***REMOVED***list tfoot th {
+table.adminlist thead th.left { text-align: left; }
+table.adminlist thead a:hover { text-decoration: none; }
+table.adminlist thead th img { vertical-align: middle; padding-left: 3px; }
+table.adminlist tbody th { font-weight: bold; }
+table.adminlist tbody tr { background-color: #ffffff; text-align: left; }
+table.adminlist tbody tr.row0:hover td,
+table.adminlist tbody tr.row1:hover td { background-color: #e8f6fe; }
+table.adminlist tbody tr td { background: #ffffff; border: 1px solid #ffffff; }
+table.adminlist tbody tr.row1 td { background: #f0f0f0; border-top: 1px solid #ffffff; }
+table.adminlist tfoot tr { text-align: center; color: #333333; }
+table.adminlist tfoot td,
+table.adminlist tfoot th {
   background-color: #f7f7f7;
   border-top: 1px solid #999999;
   text-align: center;
 }
-table.***REMOVED***list td.order { text-align: center; }
-table.***REMOVED***list td.order2 { text-align: left; white-space: nowrap; width: 120px; }
-table.***REMOVED***list td.order span {
+table.adminlist td.order { text-align: center; }
+table.adminlist td.order2 { text-align: left; white-space: nowrap; width: 120px; }
+table.adminlist td.order span {
   float: left;
   width: 20px;
   text-align: center;
   background-repeat: no-repeat;
   height: 13px;
 }
-table.***REMOVED***list .pagination { display: inline-block; padding: 0; margin: 0 auto; }
+table.adminlist .pagination { display: inline-block; padding: 0; margin: 0 auto; }
 div.pagetitle { padding-left: 60px; background-repeat: no-repeat; margin-left: 10px; }
 div.pagetitle h2 {
   line-height: 48px;
@@ -995,11 +995,11 @@ div.width-100 fieldset {
   background-color: #ffffff;
   padding: 5px 17px 17px;
 }
-fieldset.***REMOVED***form { margin: 10px; overflow: hidden; }
-div.current fieldset.***REMOVED***form { border: 1px #cccccc solid; }
-fieldset.***REMOVED***form legend { margin: 0; padding: 0; }
-ul.***REMOVED***formlist,
-ul.***REMOVED***formlist li { margin: 0; padding: 0; list-style: none; }
+fieldset.adminform { margin: 10px; overflow: hidden; }
+div.current fieldset.adminform { border: 1px #cccccc solid; }
+fieldset.adminform legend { margin: 0; padding: 0; }
+ul.adminformlist,
+ul.adminformlist li { margin: 0; padding: 0; list-style: none; }
 fieldset label,
 fieldset span.faux-label {
   float: left;
@@ -1019,27 +1019,27 @@ fieldset button {
   width: auto;
   margin: 5px 5px 5px 0;
 }
-fieldset.***REMOVED***form textarea { width: 355px; }
+fieldset.adminform textarea { width: 355px; }
 fieldset ul.checklist input { clear: left; margin-right: 10px; }
 fieldset ul.checklist label,
 fieldset ul.menu-links label,
 fieldset#filter-bar label { clear: none; }
-fieldset.***REMOVED***form ul.checklist li { width: 100%; margin: 0; padding: 0; }
-fieldset.***REMOVED***form ul.checklist li label { width: auto; }
-fieldset.***REMOVED***form .menu-links label { white-space: nowrap; }
-fieldset.***REMOVED***form .menu-links input { margin: 8px 5px 0 0; }
-fieldset.***REMOVED***form.long label,
-fieldset.***REMOVED***form.long span.faux-label { min-width: 180px; }
-fieldset.***REMOVED***form label,
-fieldset.***REMOVED***form span.faux-label { min-width: 135px; padding: 0 5px 0 0; }
-fieldset.***REMOVED***form fieldset.radio,
-fieldset.***REMOVED***form-legacy fieldset.radio {
+fieldset.adminform ul.checklist li { width: 100%; margin: 0; padding: 0; }
+fieldset.adminform ul.checklist li label { width: auto; }
+fieldset.adminform .menu-links label { white-space: nowrap; }
+fieldset.adminform .menu-links input { margin: 8px 5px 0 0; }
+fieldset.adminform.long label,
+fieldset.adminform.long span.faux-label { min-width: 180px; }
+fieldset.adminform label,
+fieldset.adminform span.faux-label { min-width: 135px; padding: 0 5px 0 0; }
+fieldset.adminform fieldset.radio,
+fieldset.adminform-legacy fieldset.radio {
   border: 0;
   float: left;
   padding: 0;
   margin: 0 0 5px;
 }
-fieldset.***REMOVED***form fieldset.radio label {
+fieldset.adminform fieldset.radio label {
   min-width: 60px;
   padding-left: 0;
   padding-right: 10px;
@@ -1047,29 +1047,29 @@ fieldset.***REMOVED***form fieldset.radio label {
   clear: none;
   display: inline;
 }
-fieldset.***REMOVED***form fieldset.checkboxes,
-fieldset.***REMOVED***form-legacy fieldset.checkboxes {
+fieldset.adminform fieldset.checkboxes,
+fieldset.adminform-legacy fieldset.checkboxes {
   border: 0;
   float: left;
   padding: 0;
   margin: 0 0 5px;
   clear: right;
 }
-fieldset.***REMOVED***form fieldset.checkboxes input[type="checkbox"] { float: left; clear: left; }
-fieldset.***REMOVED***form fieldset.checkboxes label,
-fieldset.***REMOVED***form fieldset.checkboxes span.faux-label { clear: right; }
-fieldset.***REMOVED***form span.spacer > span.before {
+fieldset.adminform fieldset.checkboxes input[type="checkbox"] { float: left; clear: left; }
+fieldset.adminform fieldset.checkboxes label,
+fieldset.adminform fieldset.checkboxes span.faux-label { clear: right; }
+fieldset.adminform span.spacer > span.before {
   clear: both;
   overflow: hidden;
   height: 0;
   display: block;
 }
-fieldset.***REMOVED***form span.spacer > span.text label {
+fieldset.adminform span.spacer > span.text label {
   white-space: nowrap;
   font-weight: bold;
   color: #666666;
 }
-fieldset.***REMOVED***form-legacy label { min-width: 150px; float: left; }
+fieldset.adminform-legacy label { min-width: 150px; float: left; }
 input.readonly {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1.091em;
@@ -1116,16 +1116,16 @@ div#content-pane fieldset {
 div.panel fieldset { border: 0; }
 input.required { background-color: #d5eeff; }
 .star { color: #eb8207; font-size: 1.2em; }
-table.***REMOVED***form {
+table.adminform {
   background-color: #ffffff;
   border: solid 1px #d5d5d5;
   width: 100%;
   border-collapse: collapse;
   margin: 8px 0 15px;
 }
-table.***REMOVED***form tr.row0 { background-color: #f9f9f9; }
-table.***REMOVED***form tr.row1 { background-color: #eeeeee; }
-table.***REMOVED***form th {
+table.adminform tr.row0 { background-color: #f9f9f9; }
+table.adminform tr.row1 { background-color: #eeeeee; }
+table.adminform th {
   font-size: 1.091em;
   padding: 6px 2px 4px 4px;
   text-align: left;
@@ -1133,13 +1133,13 @@ table.***REMOVED***form th {
   color: #000000;
   background-repeat: repeat;
 }
-table.***REMOVED***form td {
+table.adminform td {
   padding: 5px;
   text-align: left;
   font-size: 1.091em;
 }
-table.***REMOVED***form td.filter { text-align: left; }
-table.***REMOVED***form td.helpMenu { text-align: right; }
+table.adminform td.filter { text-align: left; }
+table.adminform td.helpMenu { text-align: right; }
 input.text-area-order {
   text-align: center;
   margin-right: 5px;

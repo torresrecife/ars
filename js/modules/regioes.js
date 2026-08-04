@@ -102,7 +102,7 @@ function regiaoFormInit(ufs){
 	regiaoUfsAtualizarValor();
 }
 function fc_edit_regiao(valor1,valor2){
-	var regiaoResourceBaseUrl = window.arsRegionResourceBaseUrl || "***REMOVED***/regioes";
+	var regiaoResourceBaseUrl = window.arsRegionResourceBaseUrl || "admin/regioes";
 	var regiaoResourceUrl = function(id){
 		return regiaoResourceBaseUrl + "/" + id;
 	};
@@ -190,7 +190,7 @@ function fc_edit_regiao(valor1,valor2){
 	});
 }
 function fc_del_regiao(valor1,valor2){
-	var regiaoResourceBaseUrl = window.arsRegionResourceBaseUrl || "***REMOVED***/regioes";
+	var regiaoResourceBaseUrl = window.arsRegionResourceBaseUrl || "admin/regioes";
 	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>" + arsFormat("Do you really want to delete the region :name?", {name: "<b>" + valor2 + "</b>"}) + "</td></tr></table><br>",{
 		[arsTranslate("Yes")]: function(){
 			var dialog = $(this);
@@ -207,12 +207,12 @@ function fc_del_regiao(valor1,valor2){
 function regiaoSlugify(valor){
 	return String(valor || "")
 		.toLowerCase()
-		.replace(/[áàãâä]/g, "a")
-		.replace(/[éèêë]/g, "e")
-		.replace(/[íìîï]/g, "i")
-		.replace(/[óòõôö]/g, "o")
-		.replace(/[úùûü]/g, "u")
-		.replace(/ç/g, "c")
+		.replace(/[Ã¡Ã Ã£Ã¢Ã¤]/g, "a")
+		.replace(/[Ã©Ã¨ÃªÃ«]/g, "e")
+		.replace(/[Ã­Ã¬Ã®Ã¯]/g, "i")
+		.replace(/[Ã³Ã²ÃµÃ´Ã¶]/g, "o")
+		.replace(/[ÃºÃ¹Ã»Ã¼]/g, "u")
+		.replace(/Ã§/g, "c")
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-+|-+$/g, "");
 }

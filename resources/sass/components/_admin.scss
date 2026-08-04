@@ -79,23 +79,23 @@ input {
   font-family: Arial, sans-serif;
 }
 
-table.***REMOVED***list {
+table.adminlist {
   width: 100%;
   border-spacing: 1px;
   background-color: #cccccc;
   color: #666666;
 }
 
-table.***REMOVED***list td,
-table.***REMOVED***list th {
+table.adminlist td,
+table.adminlist th {
   padding: 4px;
 }
 
-table.***REMOVED***list td {
+table.adminlist td {
   padding-left: 8px;
 }
 
-table.***REMOVED***list thead th {
+table.adminlist thead th {
   text-align: center;
   background: #f7f7f7;
   color: #666666;
@@ -103,66 +103,66 @@ table.***REMOVED***list thead th {
   border-left: 1px solid #ffffff;
 }
 
-table.***REMOVED***list thead th.left {
+table.adminlist thead th.left {
   text-align: left;
 }
 
-table.***REMOVED***list thead a:hover {
+table.adminlist thead a:hover {
   text-decoration: none;
 }
 
-table.***REMOVED***list thead th img {
+table.adminlist thead th img {
   vertical-align: middle;
   padding-left: 3px;
 }
 
-table.***REMOVED***list tbody th {
+table.adminlist tbody th {
   font-weight: bold;
 }
 
-table.***REMOVED***list tbody tr {
+table.adminlist tbody tr {
   background-color: #ffffff;
   text-align: left;
 }
 
-table.***REMOVED***list tbody tr.row0:hover td,
-table.***REMOVED***list tbody tr.row1:hover td {
+table.adminlist tbody tr.row0:hover td,
+table.adminlist tbody tr.row1:hover td {
   background-color: #e8f6fe;
 }
 
-table.***REMOVED***list tbody tr td {
+table.adminlist tbody tr td {
   background: #ffffff;
   border: 1px solid #ffffff;
 }
 
-table.***REMOVED***list tbody tr.row1 td {
+table.adminlist tbody tr.row1 td {
   background: #f0f0f0;
   border-top: 1px solid #ffffff;
 }
 
-table.***REMOVED***list tfoot tr {
+table.adminlist tfoot tr {
   text-align: center;
   color: #333333;
 }
 
-table.***REMOVED***list tfoot td,
-table.***REMOVED***list tfoot th {
+table.adminlist tfoot td,
+table.adminlist tfoot th {
   background-color: #f7f7f7;
   border-top: 1px solid #999999;
   text-align: center;
 }
 
-table.***REMOVED***list td.order {
+table.adminlist td.order {
   text-align: center;
 }
 
-table.***REMOVED***list td.order2 {
+table.adminlist td.order2 {
   text-align: left;
   white-space: nowrap;
   width: 120px;
 }
 
-table.***REMOVED***list td.order span {
+table.adminlist td.order span {
   float: left;
   //width: 20px;
   text-align: center;
@@ -170,7 +170,7 @@ table.***REMOVED***list td.order span {
   height: 13px;
 }
 
-table.***REMOVED***list .pagination {
+table.adminlist .pagination {
   display: inline-block;
   padding: 0;
   margin: 0 auto;
@@ -297,22 +297,22 @@ div.width-100 fieldset {
   padding: 5px 17px 17px;
 }
 
-fieldset.***REMOVED***form {
+fieldset.adminform {
   margin: 10px;
   overflow: hidden;
 }
 
-div.current fieldset.***REMOVED***form {
+div.current fieldset.adminform {
   border: 1px #cccccc solid;
 }
 
-fieldset.***REMOVED***form legend {
+fieldset.adminform legend {
   margin: 0;
   padding: 0;
 }
 
-ul.***REMOVED***formlist,
-ul.***REMOVED***formlist li {
+ul.adminformlist,
+ul.adminformlist li {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -347,7 +347,7 @@ fieldset button {
   margin: 5px 5px 5px 0;
 }
 
-fieldset.***REMOVED***form textarea {
+fieldset.adminform textarea {
   width: 355px;
 }
 
@@ -362,44 +362,44 @@ fieldset#filter-bar label {
   clear: none;
 }
 
-fieldset.***REMOVED***form ul.checklist li {
+fieldset.adminform ul.checklist li {
   width: 100%;
   margin: 0;
   padding: 0;
 }
 
-fieldset.***REMOVED***form ul.checklist li label {
+fieldset.adminform ul.checklist li label {
   width: auto;
 }
 
-fieldset.***REMOVED***form .menu-links label {
+fieldset.adminform .menu-links label {
   white-space: nowrap;
 }
 
-fieldset.***REMOVED***form .menu-links input {
+fieldset.adminform .menu-links input {
   margin: 8px 5px 0 0;
 }
 
-fieldset.***REMOVED***form.long label,
-fieldset.***REMOVED***form.long span.faux-label {
+fieldset.adminform.long label,
+fieldset.adminform.long span.faux-label {
   min-width: 180px;
 }
 
-fieldset.***REMOVED***form label,
-fieldset.***REMOVED***form span.faux-label {
+fieldset.adminform label,
+fieldset.adminform span.faux-label {
   min-width: 135px;
   padding: 0 5px 0 0;
 }
 
-fieldset.***REMOVED***form fieldset.radio,
-fieldset.***REMOVED***form-legacy fieldset.radio {
+fieldset.adminform fieldset.radio,
+fieldset.adminform-legacy fieldset.radio {
   border: 0;
   float: left;
   padding: 0;
   margin: 0 0 5px;
 }
 
-fieldset.***REMOVED***form fieldset.radio label {
+fieldset.adminform fieldset.radio label {
   min-width: 60px;
   padding-left: 0;
   padding-right: 10px;
@@ -408,8 +408,8 @@ fieldset.***REMOVED***form fieldset.radio label {
   display: inline;
 }
 
-fieldset.***REMOVED***form fieldset.checkboxes,
-fieldset.***REMOVED***form-legacy fieldset.checkboxes {
+fieldset.adminform fieldset.checkboxes,
+fieldset.adminform-legacy fieldset.checkboxes {
   border: 0;
   float: left;
   padding: 0;
@@ -417,30 +417,30 @@ fieldset.***REMOVED***form-legacy fieldset.checkboxes {
   clear: right;
 }
 
-fieldset.***REMOVED***form fieldset.checkboxes input[type="checkbox"] {
+fieldset.adminform fieldset.checkboxes input[type="checkbox"] {
   float: left;
   clear: left;
 }
 
-fieldset.***REMOVED***form fieldset.checkboxes label,
-fieldset.***REMOVED***form fieldset.checkboxes span.faux-label {
+fieldset.adminform fieldset.checkboxes label,
+fieldset.adminform fieldset.checkboxes span.faux-label {
   clear: right;
 }
 
-fieldset.***REMOVED***form span.spacer > span.before {
+fieldset.adminform span.spacer > span.before {
   clear: both;
   overflow: hidden;
   height: 0;
   display: block;
 }
 
-fieldset.***REMOVED***form span.spacer > span.text label {
+fieldset.adminform span.spacer > span.text label {
   white-space: nowrap;
   font-weight: bold;
   color: #666666;
 }
 
-fieldset.***REMOVED***form-legacy label {
+fieldset.adminform-legacy label {
   min-width: 150px;
   float: left;
 }
@@ -524,7 +524,7 @@ input.required {
   font-size: 1.2em;
 }
 
-table.***REMOVED***form {
+table.adminform {
   background-color: #ffffff;
   border: solid 1px #d5d5d5;
   width: 100%;
@@ -532,15 +532,15 @@ table.***REMOVED***form {
   margin: 8px 0 15px;
 }
 
-table.***REMOVED***form tr.row0 {
+table.adminform tr.row0 {
   background-color: #f9f9f9;
 }
 
-table.***REMOVED***form tr.row1 {
+table.adminform tr.row1 {
   background-color: #eeeeee;
 }
 
-table.***REMOVED***form th {
+table.adminform th {
   font-size: 1.091em;
   padding: 6px 2px 4px 4px;
   text-align: left;
@@ -549,17 +549,17 @@ table.***REMOVED***form th {
   background-repeat: repeat;
 }
 
-table.***REMOVED***form td {
+table.adminform td {
   padding: 5px;
   text-align: left;
   font-size: 1.091em;
 }
 
-table.***REMOVED***form td.filter {
+table.adminform td.filter {
   text-align: left;
 }
 
-table.***REMOVED***form td.helpMenu {
+table.adminform td.helpMenu {
   text-align: right;
 }
 
@@ -908,113 +908,113 @@ label.filter-published-lbl {
   width: 242px;
 }
 
-.***REMOVED***-dialog {
+.admin-dialog {
   text-align: left;
 }
 
-.***REMOVED***-dialog--scroll {
+.admin-dialog--scroll {
   overflow-y: scroll;
 }
 
-.***REMOVED***-module-offset {
+.admin-module-offset {
   //margin-top: 80px;
 }
 
-.***REMOVED***-action-cell {
+.admin-action-cell {
   width: 130px;
 }
 
-.***REMOVED***-context-title {
+.admin-context-title {
   font-family: $font-body;
   margin-left: 40px;
   font-size: 10pt;
 }
 
-.***REMOVED***list--full {
+.adminlist--full {
   width: 100%;
 }
 
-.***REMOVED***list--metas {
+.adminlist--metas {
   width: 72%;
 }
 
-.***REMOVED***-type-badge {
+.admin-type-badge {
   color: #ffffff;
 }
 
-.***REMOVED***-type-badge--production {
+.admin-type-badge--production {
   background: $color-primary;
 }
 
-.***REMOVED***-type-badge--financial {
+.admin-type-badge--financial {
   background: $color-warning;
 }
 
-.***REMOVED***-dialog-panel {
+.admin-dialog-panel {
   width: 520px;
 }
 
-.***REMOVED***-dialog-panel--metas,
-.***REMOVED***-dialog-table--metas {
+.admin-dialog-panel--metas,
+.admin-dialog-table--metas {
   width: 1030px;
 }
 
-.***REMOVED***-dialog-panel--metas {
+.admin-dialog-panel--metas {
   min-height: 70px;
 }
 
-.***REMOVED***-dialog-table {
+.admin-dialog-table {
   width: 500px;
 }
 
-.***REMOVED***-dialog-table--region {
+.admin-dialog-table--region {
   width: 520px;
 }
 
-.***REMOVED***-dialog-table--user {
+.admin-dialog-table--user {
   width: 460px;
 }
 
-.***REMOVED***-dialog-table--week {
+.admin-dialog-table--week {
   width: 400px;
 }
 
-.***REMOVED***-field--standard {
+.admin-field--standard {
   width: 200px;
 }
 
-.***REMOVED***-field--large {
+.admin-field--large {
   width: 400px;
 }
 
-.***REMOVED***-field--select {
+.admin-field--select {
   height: 22px;
 }
 
-.***REMOVED***-field--fluid {
+.admin-field--fluid {
   width: 90%;
 }
 
-.***REMOVED***-code-field {
+.admin-code-field {
   border: 0;
   background: #ffffff;
   width: 50px;
 }
 
-.***REMOVED***-label-cell {
+.admin-label-cell {
   width: 50px;
 }
 
-.***REMOVED***-week-cell {
+.admin-week-cell {
   background: #436EEE;
   color: #ffffff;
 }
 
-.***REMOVED***-week-cell--optional {
+.admin-week-cell--optional {
   background: #1E90FF;
 }
 
-.***REMOVED***-dialog-row-gap {
+.admin-dialog-row-gap {
   margin-top: 8px;
 }
 
@@ -1384,40 +1384,40 @@ label.filter-published-lbl {
   display: none;
 }
 
-.***REMOVED***-page {
+.admin-page {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.***REMOVED***-page--flat {
+.admin-page--flat {
   gap: 16px;
 }
 
-.***REMOVED***-page__header,
-.***REMOVED***-page__toolbar,
-.***REMOVED***-page__actions,
-.***REMOVED***-table-actions,
-.***REMOVED***-form-inline,
-.***REMOVED***-form-actions {
+.admin-page__header,
+.admin-page__toolbar,
+.admin-page__actions,
+.admin-table-actions,
+.admin-form-inline,
+.admin-form-actions {
   display: flex;
   align-items: center;
 }
 
-.***REMOVED***-page__header {
+.admin-page__header {
   justify-content: space-between;
   gap: 16px;
 }
 
-.***REMOVED***-page__toolbar {
+.admin-page__toolbar {
   justify-content: flex-end;
 }
 
-.***REMOVED***-page__toolbar--between {
+.admin-page__toolbar--between {
   justify-content: space-between;
 }
 
-.***REMOVED***-page__eyebrow {
+.admin-page__eyebrow {
   color: #5b7082;
   font-size: 12px;
   font-weight: bold;
@@ -1425,7 +1425,7 @@ label.filter-published-lbl {
   text-transform: uppercase;
 }
 
-.***REMOVED***-page__title {
+.admin-page__title {
   margin: 0;
   padding: 0;
   color: #152636;
@@ -1433,33 +1433,33 @@ label.filter-published-lbl {
   line-height: 1.15;
 }
 
-.***REMOVED***-page__subtitle {
+.admin-page__subtitle {
   margin: 6px 0 0;
   color: #6e8192;
   font-size: 13px;
 }
 
-.***REMOVED***-page__actions,
-.***REMOVED***-table-actions,
-.***REMOVED***-form-inline,
-.***REMOVED***-form-actions {
+.admin-page__actions,
+.admin-table-actions,
+.admin-form-inline,
+.admin-form-actions {
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.***REMOVED***-dashboard-copy {
+.admin-dashboard-copy {
   margin-top: 6px;
   color: #607081;
   font-size: 14px;
 }
 
-.***REMOVED***-dashboard-grid {
+.admin-dashboard-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 }
 
-.***REMOVED***-dashboard-card {
+.admin-dashboard-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1475,8 +1475,8 @@ label.filter-published-lbl {
   transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
 
-.***REMOVED***-dashboard-card:hover,
-.***REMOVED***-dashboard-card:focus {
+.admin-dashboard-card:hover,
+.admin-dashboard-card:focus {
   text-decoration: none;
   color: #142433;
   border-color: #c2d3e4;
@@ -1484,7 +1484,7 @@ label.filter-published-lbl {
   transform: translateY(-1px);
 }
 
-.***REMOVED***-dashboard-card__icon {
+.admin-dashboard-card__icon {
   width: 42px;
   height: 42px;
   display: inline-flex;
@@ -1495,7 +1495,7 @@ label.filter-published-lbl {
   color: #37516b;
 }
 
-.***REMOVED***-dashboard-card__icon svg {
+.admin-dashboard-card__icon svg {
   width: 22px;
   height: 22px;
   fill: none;
@@ -1505,19 +1505,19 @@ label.filter-published-lbl {
   stroke-linejoin: round;
 }
 
-.***REMOVED***-dashboard-card__title {
+.admin-dashboard-card__title {
   font-size: 16px;
   font-weight: 700;
   color: #22313f;
 }
 
-.***REMOVED***-dashboard-card__description {
+.admin-dashboard-card__description {
   font-size: 13px;
   line-height: 1.5;
   color: #66788a;
 }
 
-.***REMOVED***-dashboard-page .***REMOVED***-dashboard-grid {
+.admin-dashboard-page .admin-dashboard-grid {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
@@ -1534,7 +1534,7 @@ label.filter-published-lbl {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.wallet-card .***REMOVED***-dashboard-card__description {
+.wallet-card .admin-dashboard-card__description {
   text-transform: uppercase;
   letter-spacing: .02em;
 }
@@ -1553,12 +1553,12 @@ label.filter-published-lbl {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
-.***REMOVED***-table-actions {
+.admin-table-actions {
   justify-content: center;
   flex-wrap: nowrap;
 }
 
-.***REMOVED***-card {
+.admin-card {
   background: #ffffff;
   border: 1px solid #dce5ec;
   border-radius: 14px;
@@ -1566,16 +1566,16 @@ label.filter-published-lbl {
   padding: 18px;
 }
 
-.***REMOVED***-card--form {
+.admin-card--form {
   padding: 22px;
 }
 
-.***REMOVED***-surface {
+.admin-surface {
   background: transparent;
 }
 
-.***REMOVED***-surface--table,
-.***REMOVED***-surface--form {
+.admin-surface--table,
+.admin-surface--form {
   background: #ffffff;
   border: 1px solid #d9e2ec;
   border-radius: 6px;
@@ -1583,38 +1583,38 @@ label.filter-published-lbl {
   overflow: hidden;
 }
 
-.***REMOVED***-surface--table {
+.admin-surface--table {
   background: transparent;
   border: 0;
   border-radius: 0;
   overflow: visible;
 }
 
-.***REMOVED***-surface--form {
+.admin-surface--form {
   padding: 20px;
 }
 
-.***REMOVED***-flash {
+.admin-flash {
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 13px;
   font-weight: bold;
 }
 
-.***REMOVED***-flash--success {
+.admin-flash--success {
   background: #edf8f0;
   border: 1px solid #cfe8d6;
   color: #23623a;
 }
 
-.***REMOVED***-flash--error {
+.admin-flash--error {
   background: #fff2f2;
   border: 1px solid #f0d0d0;
   color: #9b2c2c;
 }
 
-.***REMOVED***-button,
-.***REMOVED***-link-button {
+.admin-button,
+.admin-link-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1630,65 +1630,65 @@ label.filter-published-lbl {
   cursor: pointer;
 }
 
-.***REMOVED***-button:hover,
-.***REMOVED***-button:focus,
-.***REMOVED***-link-button:hover,
-.***REMOVED***-link-button:focus {
+.admin-button:hover,
+.admin-button:focus,
+.admin-link-button:hover,
+.admin-link-button:focus {
   text-decoration: none;
   border-color: #b7c8d8;
   background: #f7fafc;
   color: #183a57;
 }
 
-.***REMOVED***-button--primary {
+.admin-button--primary {
   border-color: #c8deef;
   background: #edf5fb;
   color: #0f5686;
 }
 
-.***REMOVED***-button--secondary {
+.admin-button--secondary {
   background: #ffffff;
 }
 
-.***REMOVED***-button--danger {
+.admin-button--danger {
   border-color: #f2caca;
   background: #fff4f4;
   color: #a33131;
 }
 
-.***REMOVED***-button--compact {
+.admin-button--compact {
   min-width: 38px;
   padding: 0;
 }
 
-.***REMOVED***-link-button--danger {
+.admin-link-button--danger {
   color: #9b2c2c;
 }
 
-.***REMOVED***-confirm-delete {
+.admin-confirm-delete {
   max-width: 760px;
 }
 
-.***REMOVED***-confirm-delete__header {
+.admin-confirm-delete__header {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 20px;
 }
 
-.***REMOVED***-confirm-delete__title {
+.admin-confirm-delete__title {
   font-size: 18px;
   font-weight: 700;
   color: #22313f;
 }
 
-.***REMOVED***-confirm-delete__copy {
+.admin-confirm-delete__copy {
   color: #5d7083;
   font-size: 14px;
   line-height: 1.5;
 }
 
-.***REMOVED***-confirm-delete__summary {
+.admin-confirm-delete__summary {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -1699,20 +1699,20 @@ label.filter-published-lbl {
   background: #fbfcfd;
 }
 
-.***REMOVED***-confirm-delete__label {
+.admin-confirm-delete__label {
   color: #6b7b8c;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
 }
 
-.***REMOVED***-confirm-delete__value {
+.admin-confirm-delete__value {
   color: #22313f;
   font-size: 16px;
   font-weight: 700;
 }
 
-table.***REMOVED***list--modern {
+table.adminlist--modern {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
@@ -1722,7 +1722,7 @@ table.***REMOVED***list--modern {
   font-family: Arial, sans-serif;
 }
 
-table.***REMOVED***list.***REMOVED***list--modern thead th {
+table.adminlist.adminlist--modern thead th {
   padding: 12px 10px;
   border: 0;
   border-bottom: 1px solid #d9e2ec;
@@ -1734,15 +1734,15 @@ table.***REMOVED***list.***REMOVED***list--modern thead th {
   vertical-align: top;
 }
 
-table.***REMOVED***list.***REMOVED***list--modern tbody tr {
+table.adminlist.adminlist--modern tbody tr {
   background: transparent;
 }
 
-table.***REMOVED***list.***REMOVED***list--modern tbody tr:hover td {
+table.adminlist.adminlist--modern tbody tr:hover td {
   background: #f8fbfd;
 }
 
-table.***REMOVED***list.***REMOVED***list--modern tbody tr td {
+table.adminlist.adminlist--modern tbody tr td {
   padding: 12px 10px;
   border: 0;
   border-bottom: 1px solid #d9e2ec;
@@ -1753,71 +1753,71 @@ table.***REMOVED***list.***REMOVED***list--modern tbody tr td {
   word-break: break-word;
 }
 
-table.***REMOVED***list.***REMOVED***list--modern tbody tr:last-child td {
+table.adminlist.adminlist--modern tbody tr:last-child td {
   border-bottom: 0;
 }
 
-table.***REMOVED***list.***REMOVED***list--modern td.order {
+table.adminlist.adminlist--modern td.order {
   text-align: left;
 }
 
-.***REMOVED***-col--code {
+.admin-col--code {
   width: 64px;
 }
 
-.***REMOVED***-col--name {
+.admin-col--name {
   width: 14%;
 }
 
-.***REMOVED***-col--key {
+.admin-col--key {
   width: 12%;
 }
 
-.***REMOVED***-col--progress {
+.admin-col--progress {
   width: 24%;
 }
 
-.***REMOVED***-col--type {
+.admin-col--type {
   width: 120px;
 }
 
-.***REMOVED***-col--panel {
+.admin-col--panel {
   width: 72px;
 }
 
-.***REMOVED***-col--title {
+.admin-col--title {
   width: 16%;
 }
 
-.***REMOVED***-col--actions {
+.admin-col--actions {
   width: 150px;
 }
 
-.***REMOVED***-col--login {
+.admin-col--login {
   width: 12%;
 }
 
-.***REMOVED***-col--level {
+.admin-col--level {
   width: 80px;
 }
 
-.***REMOVED***-col--datetime {
+.admin-col--datetime {
   width: 135px;
 }
 
-.***REMOVED***-col--week {
+.admin-col--week {
   width: 72px;
 }
 
-.***REMOVED***-col--email {
+.admin-col--email {
   width: 16%;
 }
 
-.***REMOVED***-col--region {
+.admin-col--region {
   width: 16%;
 }
 
-.***REMOVED***-col--value {
+.admin-col--value {
   width: 120px;
 }
 
@@ -1831,7 +1831,7 @@ table.***REMOVED***list.***REMOVED***list--modern td.order {
   font-size: 14px;
 }
 
-.metas-page .***REMOVED***-page__toolbar {
+.metas-page .admin-page__toolbar {
   margin-bottom: 18px;
 }
 
@@ -1938,16 +1938,16 @@ table.***REMOVED***list.***REMOVED***list--modern td.order {
   color: #6b7b8c;
 }
 
-table.metas-***REMOVED***-table .***REMOVED***-col--actions {
+table.metas-admin-table .admin-col--actions {
   width: 170px;
 }
 
 @media (max-width: 1024px) {
-  .***REMOVED***-dashboard-grid {
+  .admin-dashboard-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .***REMOVED***-dashboard-page .***REMOVED***-dashboard-grid {
+  .admin-dashboard-page .admin-dashboard-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1982,11 +1982,11 @@ table.metas-***REMOVED***-table .***REMOVED***-col--actions {
 }
 
 @media (max-width: 640px) {
-  .***REMOVED***-dashboard-grid {
+  .admin-dashboard-grid {
     grid-template-columns: 1fr;
   }
 
-  .***REMOVED***-dashboard-page .***REMOVED***-dashboard-grid {
+  .admin-dashboard-page .admin-dashboard-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1995,16 +1995,16 @@ table.metas-***REMOVED***-table .***REMOVED***-col--actions {
   }
 }
 
-.***REMOVED***-col--status {
+.admin-col--status {
   width: 80px;
 }
 
-.***REMOVED***-table-actions form {
+.admin-table-actions form {
   margin: 0;
   display: inline-flex;
 }
 
-.***REMOVED***-pagination {
+.admin-pagination {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2013,19 +2013,19 @@ table.metas-***REMOVED***-table .***REMOVED***-col--actions {
   font-family: Arial, sans-serif;
 }
 
-.***REMOVED***-pagination__summary {
+.admin-pagination__summary {
   color: #5d7083;
   font-size: 14px;
 }
 
-.***REMOVED***-pagination__links {
+.admin-pagination__links {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.***REMOVED***-pagination__link {
+.admin-pagination__link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2042,60 +2042,60 @@ table.metas-***REMOVED***-table .***REMOVED***-col--actions {
   text-decoration: none;
 }
 
-.***REMOVED***-pagination__link:hover {
+.admin-pagination__link:hover {
   border-color: #c4d0dc;
   background: #f8fafc;
 }
 
-.***REMOVED***-pagination__link.is-active {
+.admin-pagination__link.is-active {
   border-color: #274f8a;
   background: #274f8a;
   color: #ffffff;
 }
 
-.***REMOVED***-pagination__link.is-disabled {
+.admin-pagination__link.is-disabled {
   border-color: #e5ebf1;
   background: #f8fafc;
   color: #93a1af;
   cursor: default;
 }
 
-.***REMOVED***-form {
+.admin-form {
   display: flex;
   flex-direction: column;
   gap: 22px;
 }
 
-.***REMOVED***-form-grid {
+.admin-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
 
-.***REMOVED***-form-group {
+.admin-form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-width: 0;
 }
 
-.***REMOVED***-form-group--full {
+.admin-form-group--full {
   grid-column: 1 / -1;
 }
 
-.***REMOVED***-form-subgrid {
+.admin-form-subgrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
 
-.***REMOVED***-form-group label {
+.admin-form-group label {
   color: #405567;
   font-size: 13px;
   font-weight: bold;
 }
 
-.***REMOVED***-form-input {
+.admin-form-input {
   width: 100%;
   min-height: 40px;
   padding: 0 12px;
@@ -2107,32 +2107,32 @@ table.metas-***REMOVED***-table .***REMOVED***-col--actions {
   box-sizing: border-box;
 }
 
-.***REMOVED***-form-select {
+.admin-form-select {
   padding-right: 36px;
 }
 
-.***REMOVED***-form-select--wide {
+.admin-form-select--wide {
   min-width: 320px;
 }
 
-.***REMOVED***-search-form {
+.admin-search-form {
   width: 100%;
   justify-content: flex-start;
 }
 
-.***REMOVED***-search-input {
+.admin-search-input {
   width: 320px;
   max-width: 100%;
 }
 
-.***REMOVED***-form-input:focus,
-.***REMOVED***-form-select:focus {
+.admin-form-input:focus,
+.admin-form-select:focus {
   background: #ffffff;
   border-color: #9ec4e4;
   box-shadow: 0 0 0 3px rgba(28, 134, 238, .12);
 }
 
-.***REMOVED***-type-pill {
+.admin-type-pill {
   display: inline-flex;
   align-items: center;
   min-height: 24px;
@@ -2145,25 +2145,25 @@ table.metas-***REMOVED***-table .***REMOVED***-col--actions {
   white-space: nowrap;
 }
 
-.***REMOVED***-type-pill--production {
+.admin-type-pill--production {
   background: #e8f3fb;
   color: #0c5c89;
 }
 
-.***REMOVED***-type-pill--financial {
+.admin-type-pill--financial {
   background: #fbf1e6;
   color: #935f10;
 }
 
-.***REMOVED***-col--drag {
+.admin-col--drag {
   width: 52px;
 }
 
-.metas-***REMOVED***-table tbody tr {
+.metas-admin-table tbody tr {
   cursor: default;
 }
 
-.metas-***REMOVED***-table tbody tr.is-dragging {
+.metas-admin-table tbody tr.is-dragging {
   opacity: .55;
 }
 
@@ -2203,22 +2203,22 @@ table.metas-***REMOVED***-table .***REMOVED***-col--actions {
 }
 
 @media (max-width: 900px) {
-  .***REMOVED***-form-grid {
+  .admin-form-grid {
     grid-template-columns: 1fr;
   }
 
-  .***REMOVED***-form-subgrid {
+  .admin-form-subgrid {
     grid-template-columns: 1fr;
   }
 
-  .***REMOVED***-pagination {
+  .admin-pagination {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .***REMOVED***-page__header,
-  .***REMOVED***-page__toolbar,
-  .***REMOVED***-page__toolbar--between {
+  .admin-page__header,
+  .admin-page__toolbar,
+  .admin-page__toolbar--between {
     align-items: flex-start;
     flex-direction: column;
   }

@@ -50,19 +50,19 @@ class MainPageContentRenderer
 				return app(GeneralProductionController::class)->weekly(GeneralProductionInput::fromArray($input), $session);
 			case 'general-production-monthly':
 				return app(GeneralProductionController::class)->monthly(GeneralProductionInput::fromArray($input), $session);
-			case 'user-***REMOVED***':
+			case 'user-admin':
 				return app(UserAdminController::class)->index();
-			case 'sector-***REMOVED***':
+			case 'sector-admin':
 				return app(SectorAdminController::class)->index();
-			case 'client-***REMOVED***':
+			case 'client-admin':
 				return app(ClientAdminController::class)->index();
-			case 'andamento-***REMOVED***':
+			case 'andamento-admin':
 				return app(AndamentoAdminController::class)->index();
-			case 'meta-***REMOVED***':
+			case 'meta-admin':
 				return app(MetaController::class)->index($input, $session);
-			case 'week-***REMOVED***':
+			case 'week-admin':
 				return app(WeekController::class)->index();
-			case 'region-***REMOVED***':
+			case 'region-admin':
 				return app(RegionAdminController::class)->index();
 			default:
 				return '';

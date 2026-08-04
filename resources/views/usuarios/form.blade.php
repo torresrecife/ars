@@ -19,22 +19,22 @@
 <script>
 window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 </script>
-<div class="***REMOVED***-page ***REMOVED***-page--flat">
-	<div class="***REMOVED***-page__toolbar ***REMOVED***-page__toolbar--between">
-		<div class="***REMOVED***-page__eyebrow">{{ $pageTitle }}</div>
-		<a href="{{ $backUrl }}" class="***REMOVED***-button ***REMOVED***-button--secondary">{{ __('Back') }}</a>
+<div class="admin-page admin-page--flat">
+	<div class="admin-page__toolbar admin-page__toolbar--between">
+		<div class="admin-page__eyebrow">{{ $pageTitle }}</div>
+		<a href="{{ $backUrl }}" class="admin-button admin-button--secondary">{{ __('Back') }}</a>
 	</div>
 
 	@if ($errors->any())
-		<div class="***REMOVED***-flash ***REMOVED***-flash--error">
+		<div class="admin-flash admin-flash--error">
 			@foreach ($errors->all() as $error)
 				<div>{{ $error }}</div>
 			@endforeach
 		</div>
 	@endif
 
-	<div class="***REMOVED***-surface ***REMOVED***-surface--form">
-		<form method="post" action="{{ $formAction }}" class="***REMOVED***-form">
+	<div class="admin-surface admin-surface--form">
+		<form method="post" action="{{ $formAction }}" class="admin-form">
 			@csrf
 			@if ($formMethod !== 'POST')
 				@method($formMethod)
@@ -43,100 +43,100 @@ window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 			<input type="hidden" name="banco_neo" id="banco_neo" value="{{ e($linkedClients) }}" />
 			<input type="hidden" name="regiao_neo" id="regiao_neo" value="{{ e($linkedRegions) }}" />
 
-			<div class="***REMOVED***-form-grid">
-				<div class="***REMOVED***-form-group">
+			<div class="admin-form-grid">
+				<div class="admin-form-group">
 					<label for="nome_usu">{{ __('Full Name') }}</label>
-					<input type="text" class="***REMOVED***-form-input" name="nome_usu" id="nome_usu" value="{{ old('nome_usu', $user['nome_usu']) }}" />
+					<input type="text" class="admin-form-input" name="nome_usu" id="nome_usu" value="{{ old('nome_usu', $user['nome_usu']) }}" />
 				</div>
-				<div class="***REMOVED***-form-group">
+				<div class="admin-form-group">
 					<label for="login_usu">{{ __('User') }}</label>
-					<input type="text" class="***REMOVED***-form-input" name="login_usu" id="login_usu" value="{{ old('login_usu', $user['login_usu']) }}" />
+					<input type="text" class="admin-form-input" name="login_usu" id="login_usu" value="{{ old('login_usu', $user['login_usu']) }}" />
 				</div>
-				<div class="***REMOVED***-form-group">
+				<div class="admin-form-group">
 					<label for="email_usu">{{ __('E-mail') }}</label>
-					<input type="text" class="***REMOVED***-form-input" name="email_usu" id="email_usu" value="{{ old('email_usu', $user['email_usu']) }}" />
+					<input type="text" class="admin-form-input" name="email_usu" id="email_usu" value="{{ old('email_usu', $user['email_usu']) }}" />
 				</div>
-				<div class="***REMOVED***-form-group">
+				<div class="admin-form-group">
 					<label for="nivel_usu">{{ __('Level') }}</label>
-					<select class="***REMOVED***-form-input ***REMOVED***-form-select" name="nivel_usu" id="nivel_usu">
+					<select class="admin-form-input admin-form-select" name="nivel_usu" id="nivel_usu">
 						<option value=""></option>
 						@foreach ($levelOptions as $optionValue => $optionLabel)
 							<option value="{{ $optionValue }}"{{ old('nivel_usu', $user['nivel_usu']) === $optionValue ? ' selected="selected"' : '' }}>{{ $optionLabel }}</option>
 						@endforeach
 					</select>
 				</div>
-				<div class="***REMOVED***-form-group">
+				<div class="admin-form-group">
 					<label for="setor_usu">{{ __('Sector') }}</label>
-					<select class="***REMOVED***-form-input ***REMOVED***-form-select" name="setor_usu" id="setor_usu">
+					<select class="admin-form-input admin-form-select" name="setor_usu" id="setor_usu">
 						<option value="0">{{ __('All') }}</option>
 						@foreach ($areas as $area)
 							<option value="{{ (int) $area['area_id'] }}"{{ (string) old('setor_usu', $user['id_setor']) === (string) $area['area_id'] ? ' selected="selected"' : '' }}>{{ e($area['area_nome']) }}</option>
 						@endforeach
 					</select>
 				</div>
-				<div class="***REMOVED***-form-group">
+				<div class="admin-form-group">
 					<label for="status_usu">{{ __('Status') }}</label>
-					<select class="***REMOVED***-form-input ***REMOVED***-form-select" name="status_usu" id="status_usu">
+					<select class="admin-form-input admin-form-select" name="status_usu" id="status_usu">
 						<option value=""></option>
 						@foreach ($statusOptions as $optionValue => $optionLabel)
 							<option value="{{ $optionValue }}"{{ old('status_usu', $user['status_usu']) === $optionValue ? ' selected="selected"' : '' }}>{{ $optionLabel }}</option>
 						@endforeach
 					</select>
 				</div>
-				<div class="***REMOVED***-form-group ***REMOVED***-form-group--full">
+				<div class="admin-form-group admin-form-group--full">
 					<label id="sel_banco">{{ __('Clients') }}</label>
 					<div class="usuario-clientes-box">
 						<div id="usuario-clientes-vinculados" class="usuario-clientes-lista"></div>
 						<div id="usuario-clientes-inputs"></div>
 						<div id="usuario-clientes-vazio" class="usuario-clientes-vazio">{{ __('No linked clients.') }}</div>
 					</div>
-					<div class="***REMOVED***-form-inline">
-						<select class="***REMOVED***-form-input ***REMOVED***-form-select ***REMOVED***-form-select--wide" name="banco_usu_pool" id="banco_usu_pool" title="{{ __('Clients') }}"></select>
-						<button type="button" class="***REMOVED***-button ***REMOVED***-button--secondary ***REMOVED***-button--compact" onclick="usuarioClientesAdicionar();">+</button>
+					<div class="admin-form-inline">
+						<select class="admin-form-input admin-form-select admin-form-select--wide" name="banco_usu_pool" id="banco_usu_pool" title="{{ __('Clients') }}"></select>
+						<button type="button" class="admin-button admin-button--secondary admin-button--compact" onclick="usuarioClientesAdicionar();">+</button>
 					</div>
 				</div>
-				<div class="***REMOVED***-form-group">
+				<div class="admin-form-group">
 					<label for="regiao_modo">{{ __('Region Mode') }}</label>
-					<select class="***REMOVED***-form-input ***REMOVED***-form-select" name="regiao_modo" id="regiao_modo">
+					<select class="admin-form-input admin-form-select" name="regiao_modo" id="regiao_modo">
 						@foreach ($regionModeOptions as $optionValue => $optionLabel)
 							<option value="{{ $optionValue }}"{{ old('regiao_modo', $user['regiao_modo']) === $optionValue ? ' selected="selected"' : '' }}>{{ $optionLabel }}</option>
 						@endforeach
 					</select>
 				</div>
-				<div class="***REMOVED***-form-group ***REMOVED***-form-group--full" id="usuario-regioes-row">
+				<div class="admin-form-group admin-form-group--full" id="usuario-regioes-row">
 					<label>{{ __('Regions') }}</label>
 					<div class="usuario-regioes-box">
 						<div id="usuario-regioes-vinculadas" class="usuario-regioes-lista"></div>
 						<div id="usuario-regioes-inputs"></div>
 						<div id="usuario-regioes-vazio" class="usuario-regioes-vazio">{{ __('No linked regions.') }}</div>
 					</div>
-					<div class="***REMOVED***-form-inline">
-						<select class="***REMOVED***-form-input ***REMOVED***-form-select ***REMOVED***-form-select--wide" name="regiao_usu_pool" id="regiao_usu_pool" title="{{ __('Regions') }}">
+					<div class="admin-form-inline">
+						<select class="admin-form-input admin-form-select admin-form-select--wide" name="regiao_usu_pool" id="regiao_usu_pool" title="{{ __('Regions') }}">
 							<option value=""></option>
 							@foreach ($regions as $region)
 								<option value="{{ (int) $region['regiao_id'] }}">{{ e($region['regiao_nome']) }}</option>
 							@endforeach
 						</select>
-						<button type="button" class="***REMOVED***-button ***REMOVED***-button--secondary ***REMOVED***-button--compact" onclick="usuarioRegioesAdicionar();">+</button>
+						<button type="button" class="admin-button admin-button--secondary admin-button--compact" onclick="usuarioRegioesAdicionar();">+</button>
 					</div>
 				</div>
-				<div class="***REMOVED***-form-group ***REMOVED***-form-group--full">
-					<div class="***REMOVED***-form-subgrid">
-						<div class="***REMOVED***-form-group">
+				<div class="admin-form-group admin-form-group--full">
+					<div class="admin-form-subgrid">
+						<div class="admin-form-group">
 							<label for="senha_usu1">{{ __('Password') }}</label>
-							<input type="password" class="***REMOVED***-form-input" name="senha_usu1" id="senha_usu1" value="" />
+							<input type="password" class="admin-form-input" name="senha_usu1" id="senha_usu1" value="" />
 						</div>
-						<div class="***REMOVED***-form-group">
+						<div class="admin-form-group">
 							<label for="senha_usu2">{{ __('Repeat Password') }}</label>
-							<input type="password" class="***REMOVED***-form-input" name="senha_usu2" id="senha_usu2" value="" />
+							<input type="password" class="admin-form-input" name="senha_usu2" id="senha_usu2" value="" />
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<div class="***REMOVED***-form-actions">
-				<button type="submit" class="***REMOVED***-button ***REMOVED***-button--primary">{{ $submitLabel }}</button>
-				<a href="{{ $backUrl }}" class="***REMOVED***-button ***REMOVED***-button--secondary">{{ __('Exit') }}</a>
+			<div class="admin-form-actions">
+				<button type="submit" class="admin-button admin-button--primary">{{ $submitLabel }}</button>
+				<a href="{{ $backUrl }}" class="admin-button admin-button--secondary">{{ __('Exit') }}</a>
 			</div>
 		</form>
 	</div>

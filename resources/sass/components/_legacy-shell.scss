@@ -263,12 +263,12 @@ div#element-box.login {
   background-color: #ffffff;
 }
 
-div .***REMOVED***form {
+div .adminform {
   height: 95%;
 }
 
-div .***REMOVED***form:has(table#tb_pro),
-div .***REMOVED***form:has(table#tb_fin) {
+div .adminform:has(table#tb_pro),
+div .adminform:has(table#tb_fin) {
   margin-top: 4px;
 }
 

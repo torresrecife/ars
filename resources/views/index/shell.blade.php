@@ -137,22 +137,22 @@
 		'producao' => __('Production'),
 		'relatorio-semanal' => __('Weekly'),
 		'relatorio-mensal' => __('Monthly'),
-		'***REMOVED***' => __('Admin'),
+		'admin' => __('Admin'),
 		'usuarios' => __('Users'),
 		'setores' => __('Sectors'),
 		'clientes' => __('Clients'),
 		'andamentos' => __('Progress'),
 		'metas-select' => __('Goals'),
-		'metas-***REMOVED***' => __('Goals'),
+		'metas-admin' => __('Goals'),
 		'semanas' => __('Weeks'),
 		'regioes' => __('Regions'),
 	];
 	$currentPageTitle = isset($pageTitleMap[$currentSection]) ? $pageTitleMap[$currentSection] : __('ARS Control');
-	$sectionSubtitle = in_array($currentSection, ['painel', 'producao', 'relatorio-semanal', 'relatorio-mensal', 'carteiras', 'metas-select', 'metas-***REMOVED***'], true)
+	$sectionSubtitle = in_array($currentSection, ['painel', 'producao', 'relatorio-semanal', 'relatorio-mensal', 'carteiras', 'metas-select', 'metas-admin'], true)
 		? $currentMonthLabel
 		: __('Administrative workspace');
 	$isHomeActive = $currentSection === 'inicio';
-	$isGoalsActive = in_array($currentSection, ['metas-select', 'metas-***REMOVED***'], true);
+	$isGoalsActive = in_array($currentSection, ['metas-select', 'metas-admin'], true);
 	$isReportActive = in_array($currentSection, ['relatorio-semanal', 'relatorio-mensal'], true);
 	$baseQuery = [
 		'startDate' => $currentState->startDate(),
@@ -182,10 +182,10 @@
 		}));
 	}
 
-	$***REMOVED***Links = array();
+	$adminLinks = array();
 	if ($currentLevel === 'ADM') {
-		$***REMOVED***Links = [
-			['key' => '***REMOVED***', 'label' => __('Admin'), 'url' => url('***REMOVED***'), 'active' => $currentSection === '***REMOVED***'],
+		$adminLinks = [
+			['key' => 'admin', 'label' => __('Admin'), 'url' => url('admin'), 'active' => $currentSection === 'admin'],
 			['key' => 'metas', 'label' => __('Goals'), 'url' => url('metas'), 'active' => $isGoalsActive],
 			['key' => 'usuarios', 'label' => __('Users'), 'url' => url('usuarios'), 'active' => $currentSection === 'usuarios'],
 			['key' => 'clientes', 'label' => __('Clients'), 'url' => url('clientes'), 'active' => $currentSection === 'clientes'],
@@ -195,8 +195,8 @@
 			['key' => 'semanas', 'label' => __('Weeks'), 'url' => url('semanas'), 'active' => $currentSection === 'semanas'],
 		];
 	} elseif ($currentLevel === 'GER') {
-		$***REMOVED***Links = [
-			['key' => '***REMOVED***', 'label' => __('Admin'), 'url' => url('***REMOVED***'), 'active' => $currentSection === '***REMOVED***'],
+		$adminLinks = [
+			['key' => 'admin', 'label' => __('Admin'), 'url' => url('admin'), 'active' => $currentSection === 'admin'],
 			['key' => 'metas', 'label' => __('Goals'), 'url' => url('metas'), 'active' => $isGoalsActive],
 		];
 	}
@@ -206,7 +206,7 @@
 		'painel' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h4v7H4z"/><path d="M10 4h4v16h-4z"/><path d="M16 9h4v11h-4z"/></svg>',
 		'producao' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16"/><path d="M7 18V8"/><path d="M12 18V4"/><path d="M17 18v-6"/></svg>',
 		'relatorio' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v6h6"/><path d="M10 13h6"/><path d="M10 17h6"/></svg>',
-		'***REMOVED***' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7z"/><path d="M9.5 12.5 11 14l3.5-4"/></svg>',
+		'admin' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7z"/><path d="M9.5 12.5 11 14l3.5-4"/></svg>',
 		'metas' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M21 3 12 12"/><path d="M16 3h5v5"/></svg>',
 		'usuarios' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M17 11a3 3 0 1 0 0-6"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg>',
 		'clientes' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"/><path d="M8 7V5h8v2"/><path d="M4 12h16"/></svg>',
@@ -285,7 +285,7 @@
 				@if ($pageData->canAdmin())
 					<div class="ars-shell__nav-group">
 						<div class="ars-shell__nav-title">{{ __('Administration') }}</div>
-						@foreach ($***REMOVED***Links as $link)
+						@foreach ($adminLinks as $link)
 							<a href="{{ $link['url'] }}" class="ars-shell__nav-link{{ $link['active'] ? ' is-active' : '' }}">
 								<span class="ars-shell__icon ars-shell__nav-icon">{!! $shellIcons[$link['key']] !!}</span>
 								<span class="ars-shell__nav-label">{{ $link['label'] }}</span>
@@ -336,7 +336,7 @@
 			</header>
 			<main class="ars-shell__content-area">
 				<section class="ars-shell__content-card">
-					<div class="***REMOVED***form ars-shell__content">
+					<div class="adminform ars-shell__content">
 						{!! $contentHtml !!}
 					</div>
 				</section>

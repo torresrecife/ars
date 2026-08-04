@@ -110,7 +110,7 @@ class HomeController extends Controller
 		$startBanco = isset($input['startBanco']) ? (int) $input['startBanco'] : 0;
 		$bankId = isset($input['banco_id']) ? (int) $input['banco_id'] : 0;
 
-		return ($startBanco > 0 || $bankId > 0) ? 'metas-***REMOVED***' : 'metas-select';
+		return ($startBanco > 0 || $bankId > 0) ? 'metas-admin' : 'metas-select';
 	}
 
 	private function ensureLegacyEnvironment()

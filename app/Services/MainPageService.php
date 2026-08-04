@@ -148,20 +148,20 @@ class MainPageService
 				return MainPageContent::forController('general-production-weekly', true);
 			case 'relatorio-mensal':
 				return MainPageContent::forController('general-production-monthly', true);
-			case '***REMOVED***':
-				return MainPageContent::forView('***REMOVED***/index', array(
+			case 'admin':
+				return MainPageContent::forView('admin/index', array(
 					'userLevel' => $user->level(),
 					'hidArea' => $state->areaId(),
 					'banks' => $this->repository->listAdminBanks($user->sectorId(), $user->clientIds()),
 				));
 			case 'usuarios':
-				return MainPageContent::forController('user-***REMOVED***');
+				return MainPageContent::forController('user-admin');
 			case 'setores':
-				return MainPageContent::forController('sector-***REMOVED***');
+				return MainPageContent::forController('sector-admin');
 			case 'clientes':
-				return MainPageContent::forController('client-***REMOVED***');
+				return MainPageContent::forController('client-admin');
 			case 'andamentos':
-				return MainPageContent::forController('andamento-***REMOVED***');
+				return MainPageContent::forController('andamento-admin');
 			case 'metas-select':
 				return MainPageContent::forView('index/metas-select', array(
 					'banks' => $this->repository->listBanksForMetas($user->sectorId(), $user->clientIds()),
@@ -169,12 +169,12 @@ class MainPageService
 					'month' => $state->mes(),
 					'year' => $state->ano(),
 				));
-			case 'metas-***REMOVED***':
-				return MainPageContent::forController('meta-***REMOVED***');
+			case 'metas-admin':
+				return MainPageContent::forController('meta-admin');
 			case 'semanas':
-				return MainPageContent::forController('week-***REMOVED***');
+				return MainPageContent::forController('week-admin');
 			case 'regioes':
-				return MainPageContent::forController('region-***REMOVED***');
+				return MainPageContent::forController('region-admin');
 			case 'inicio':
 			default:
 				return MainPageContent::forView('index/default', array(

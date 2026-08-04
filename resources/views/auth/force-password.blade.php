@@ -81,7 +81,7 @@ function new_pass(){
 $(function(){ new_pass(); });
 </script>
 
-<div id="dialog-new-pass" title="Nova senha" class="***REMOVED***-dialog force-password-dialog is-hidden">
+<div id="dialog-new-pass" title="Nova senha" class="admin-dialog force-password-dialog is-hidden">
     <p class="validateTips">Alteracao de senha obrigatoria!</p>
     <fieldset>
         <table>

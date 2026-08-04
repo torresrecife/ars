@@ -94,7 +94,7 @@ p.noresults {
 	padding: 20px 15px;
 }
 
-span.***REMOVED***list-searchstatus a {
+span.adminlist-searchstatus a {
 	padding-left: 20px;
 }
 
@@ -209,12 +209,12 @@ textarea#mm_message {
 	background: #fff;
 }
 
-.pane-sliders .***REMOVED***list {
+.pane-sliders .adminlist {
 	border: 0 none;
 	font-size: 1em;
 }
 
-.pane-sliders .***REMOVED***list td {
+.pane-sliders .adminlist td {
 	border: 0 none;
 }
 
@@ -453,18 +453,18 @@ ul#legend li {
 
 
 /* Tree indentation & nesting - Up to 10 levels deep so don't go crazy :) */
-table.***REMOVED***list td.indent-4 	{	padding-left: 4px;		}
-table.***REMOVED***list td.indent-19 	{	padding-left: 19px;		}
-table.***REMOVED***list td.indent-34 	{	padding-left: 34px;		}
-table.***REMOVED***list td.indent-49 	{	padding-left: 49px;		}
-table.***REMOVED***list td.indent-64 	{	padding-left: 64px;		}
-table.***REMOVED***list td.indent-79 	{	padding-left: 79px;		}
-table.***REMOVED***list td.indent-94 	{	padding-left: 94px;		}
-table.***REMOVED***list td.indent-109 	{	padding-left: 109px;	}
-table.***REMOVED***list td.indent-124 	{	padding-left: 124px;	}
-table.***REMOVED***list td.indent-139 	{	padding-left: 139px;	}
+table.adminlist td.indent-4 	{	padding-left: 4px;		}
+table.adminlist td.indent-19 	{	padding-left: 19px;		}
+table.adminlist td.indent-34 	{	padding-left: 34px;		}
+table.adminlist td.indent-49 	{	padding-left: 49px;		}
+table.adminlist td.indent-64 	{	padding-left: 64px;		}
+table.adminlist td.indent-79 	{	padding-left: 79px;		}
+table.adminlist td.indent-94 	{	padding-left: 94px;		}
+table.adminlist td.indent-109 	{	padding-left: 109px;	}
+table.adminlist td.indent-124 	{	padding-left: 124px;	}
+table.adminlist td.indent-139 	{	padding-left: 139px;	}
 
-table.***REMOVED***list tr td.btns a {
+table.adminlist tr td.btns a {
 	text-decoration: underline;
 }
 
@@ -472,16 +472,16 @@ table.***REMOVED***list tr td.btns a {
 
 /* -- TABLE STYLES ----------------------------- */
 
-div#element-box div.m form table.***REMOVED***list tr td a {
+div#element-box div.m form table.adminlist tr td a {
 	font-size: 1.1em;
 }
 
-div#element-box div.m form table.***REMOVED***list tr td div.button2-left.smallsub a {
+div#element-box div.m form table.adminlist tr td div.button2-left.smallsub a {
 	font-size: 1em;
 }
 
-div#element-box div.m form table.***REMOVED***list tr td p.smallsub a,
-div#element-box div.m div.pane-slider form table.***REMOVED***list a {
+div#element-box div.m form table.adminlist tr td p.smallsub a,
+div#element-box div.m div.pane-slider form table.adminlist a {
 	font-size: 1em;
 }
 
@@ -509,7 +509,7 @@ p.mod-purge-instruct {
 }
 
 div.checkin-tick {
-	background: url(images/***REMOVED***/tick.png) 20px 50% no-repeat;
+	background: url(images/admin/tick.png) 20px 50% no-repeat;
 	text-indent: -9999px;
 }
 
@@ -544,8 +544,8 @@ td.right,th.right {
 	display: inline-block;
 }
 
-table.***REMOVED***table th,
-table.***REMOVED***table td {
+table.admintable th,
+table.admintable td {
 	font-size: 1.091em;
 }
 
@@ -570,7 +570,7 @@ a.saveorder {
 	height: 16px;
 	display:block;
 	overflow: hidden;
-	background: url(images/***REMOVED***/filesave.png) no-repeat;
+	background: url(images/admin/filesave.png) no-repeat;
 	float: right;
 	margin-right: 8px;
 }
@@ -893,21 +893,21 @@ a.jgrid:hover {	text-decoration: none;}
 	width: 16px;
 }
 .jgrid span.text 					{ display:none; }
-.jgrid span.publish					{ background-image: url(images/***REMOVED***/tick.png); }
-.jgrid span.unpublish				{ background-image: url(images/***REMOVED***/publish_x.png); }
+.jgrid span.publish					{ background-image: url(images/admin/tick.png); }
+.jgrid span.unpublish				{ background-image: url(images/admin/publish_x.png); }
 .jgrid span.archive 					{ background-image: url(images/menu/icon-16-archive.png); }
 .jgrid span.trash					{ background-image: url(images/menu/icon-16-trash.png); }
 .jgrid span.default					{ background-image: url(images/menu/icon-16-default.png); }
 .jgrid span.notdefault				{ background-image: url(images/menu/icon-16-notdefault.png); }
-.jgrid span.checkedout				{ background-image: url(images/***REMOVED***/checked_out.png); }
-.jgrid span.downarrow				{ background-image: url(images/***REMOVED***/downarrow.png); }
-.jgrid span.downarrow_disabled		{ background-image: url(images/***REMOVED***/downarrow0.png); background-position: 0 -12px; }
-.jgrid span.uparrow					{ background-image: url(images/***REMOVED***/uparrow.png); }
-.jgrid span.uparrow_disabled			{ background-image: url(images/***REMOVED***/uparrow0.png); background-position: 0 -12px; }
-.jgrid span.published				{ background-image: url(images/***REMOVED***/publish_g.png); }
-.jgrid span.expired					{ background-image: url(images/***REMOVED***/publish_r.png); }
-.jgrid span.pending					{ background-image: url(images/***REMOVED***/publish_y.png); }
-.jgrid span.warning					{ background-image: url(images/***REMOVED***/publish_y.png); }
+.jgrid span.checkedout				{ background-image: url(images/admin/checked_out.png); }
+.jgrid span.downarrow				{ background-image: url(images/admin/downarrow.png); }
+.jgrid span.downarrow_disabled		{ background-image: url(images/admin/downarrow0.png); background-position: 0 -12px; }
+.jgrid span.uparrow					{ background-image: url(images/admin/uparrow.png); }
+.jgrid span.uparrow_disabled			{ background-image: url(images/admin/uparrow0.png); background-position: 0 -12px; }
+.jgrid span.published				{ background-image: url(images/admin/publish_g.png); }
+.jgrid span.expired					{ background-image: url(images/admin/publish_r.png); }
+.jgrid span.pending					{ background-image: url(images/admin/publish_y.png); }
+.jgrid span.warning					{ background-image: url(images/admin/publish_y.png); }
 
 /* -- ICON STYLES ----------------------------- */
 .icon-16-alert						{	background-image: url(images/menu/icon-16-alert.png);	}
@@ -1544,7 +1544,7 @@ div#config #submenu-box .padding {
 
 /* -- Relocated from com_users/media/grid.css ----------- */
 a.move_up {
-	background-image: url('images/***REMOVED***/uparrow.png');
+	background-image: url('images/admin/uparrow.png');
 	display: inline-block;
 	height: 16px;
 	text-indent: -1000em;
@@ -1552,14 +1552,14 @@ a.move_up {
 }
 
 span.move_up {
-	background-image: url('images/***REMOVED***/uparrow0.png');
+	background-image: url('images/admin/uparrow0.png');
 	display: inline-block;
 	height: 16px;
 	width: 16px;
 }
 
 a.move_down {
-	background-image: url('images/***REMOVED***/downarrow.png');
+	background-image: url('images/admin/downarrow.png');
 	display: inline-block;
 	height: 16px;
 	text-indent: -1000em;
@@ -1567,14 +1567,14 @@ a.move_down {
 }
 
 span.move_down {
-	background-image: url('images/***REMOVED***/downarrow0.png');
+	background-image: url('images/admin/downarrow0.png');
 	display: inline-block;
 	height: 16px;
 	width: 16px;
 }
 
 a.grid_false {
-	background-image: url('images/***REMOVED***/publish_x.png');
+	background-image: url('images/admin/publish_x.png');
 	display: inline-block;
 	height: 16px;
 	text-indent: -1000em;
@@ -1582,7 +1582,7 @@ a.grid_false {
 }
 
 a.grid_true {
-	background-image: url('images/***REMOVED***/tick.png');
+	background-image: url('images/admin/tick.png');
 	display: inline-block;
 	height: 16px;
 	text-indent: -1000em;
@@ -1590,7 +1590,7 @@ a.grid_true {
 }
 
 a.grid_trash {
-	background-image: url('images/***REMOVED***/icon-16-trash.png');
+	background-image: url('images/admin/icon-16-trash.png');
 	display: inline-block;
 	height: 16px;
 	text-indent: -1000em;
@@ -1668,19 +1668,19 @@ span.icon-16-locked {
 }
 
 span.icon-16-unset {
-	background: url(images/***REMOVED***/icon-16-denyinactive.png) no-repeat;
+	background: url(images/admin/icon-16-denyinactive.png) no-repeat;
 }
 
 span.icon-16-allowed {
-	background: url(images/***REMOVED***/icon-16-allow.png) no-repeat;
+	background: url(images/admin/icon-16-allow.png) no-repeat;
 }
 
 span.icon-16-denied {
-	background: url(images/***REMOVED***/icon-16-deny.png) no-repeat;
+	background: url(images/admin/icon-16-deny.png) no-repeat;
 }
 
 span.icon-16-locked {
-	background: url(images/***REMOVED***/checked_out.png) 0 0 no-repeat;
+	background: url(images/admin/checked_out.png) 0 0 no-repeat;
 }
 
 label.icon-16-allow,
@@ -1696,33 +1696,33 @@ a.icon-16-denyinactive {
 }
 
 label.icon-16-allow {
-	background: url(images/***REMOVED***/icon-16-allow.png) no-repeat;
+	background: url(images/admin/icon-16-allow.png) no-repeat;
 	text-indent: -9999em;
 	position: relative;
 	left: 40%;
 }
 
 label.icon-16-deny {
-	background: url(images/***REMOVED***/icon-16-deny.png) no-repeat;
+	background: url(images/admin/icon-16-deny.png) no-repeat;
 	text-indent: -9999em;
 	position: relative;
 	left: 40%;
 }
 
 a.icon-16-allow {
-	background: url(images/***REMOVED***/icon-16-allow.png) no-repeat;
+	background: url(images/admin/icon-16-allow.png) no-repeat;
 }
 
 a.icon-16-deny {
-	background: url(images/***REMOVED***/icon-16-deny.png) no-repeat;
+	background: url(images/admin/icon-16-deny.png) no-repeat;
 }
 
 a.icon-16-allowinactive {
-	background: url(images/***REMOVED***/icon-16-allowinactive.png) no-repeat;
+	background: url(images/admin/icon-16-allowinactive.png) no-repeat;
 }
 
 a.icon-16-denyinactive {
-	background: url(images/***REMOVED***/icon-16-denyinactive.png) no-repeat;
+	background: url(images/admin/icon-16-denyinactive.png) no-repeat;
 }
 
 /* Create, Edit, Edit State & Delete Tabs */
@@ -1760,13 +1760,13 @@ ul.acllegend li {
 ul.acllegend li.acl-allowed {
 	padding-left: 20px;
 	padding-right: 10px;
-	background: url(images/***REMOVED***/icon-16-allow.png) no-repeat left;
+	background: url(images/admin/icon-16-allow.png) no-repeat left;
 }
 
 ul.acllegend li.acl-denied {
 	padding-left: 20px;
 	padding-right: 20px;
-	background: url(images/***REMOVED***/icon-16-deny.png) no-repeat left;
+	background: url(images/admin/icon-16-deny.png) no-repeat left;
 }
 
 ul.acllegend li.acl-editgroups {
@@ -1835,7 +1835,7 @@ label#jform_filters-lbl {
 * Mod_rewrite Warning
 */
 #jform_sef_rewrite-lbl {
-	background: url(images/***REMOVED***/icon-16-notice-note.png) right top no-repeat;
+	background: url(images/admin/icon-16-notice-note.png) right top no-repeat;
 }
 
 /**
@@ -1993,17 +1993,17 @@ table.group-rules td select {
 
 /* Debug acl styling */
 .check-0,
-table.***REMOVED***list tbody td.check-0 {
+table.adminlist tbody td.check-0 {
 	background-color: #FFFFCF;
 }
 
 .check-a,
-table.***REMOVED***list tbody td.check-a {
+table.adminlist tbody td.check-a {
 	background-color: #CFFFDA;
 }
 
 .check-d,
-table.***REMOVED***list tbody td.check-d {
+table.adminlist tbody td.check-d {
 	background-color: #FFCFCF;
 }
 
@@ -2075,12 +2075,12 @@ span.update-badge {
 /* Installer Database */
 #installer-database p.warning {
 	padding-left: 20px;
-	background: transparent url(images/***REMOVED***/icon-16-deny.png) center left no-repeat;
+	background: transparent url(images/admin/icon-16-deny.png) center left no-repeat;
 }
 
 #installer-database p.nowarning {
 	padding-left: 20px;
-	background: transparent url(images/***REMOVED***/icon-16-allow.png) center left no-repeat;
+	background: transparent url(images/admin/icon-16-allow.png) center left no-repeat;
 }
 table.topo2
 {

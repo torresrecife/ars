@@ -47,7 +47,7 @@
                     <input type="submit" class="hidebtn" value="{{ __('Sign in') }}" />
                 </form>
                 <noscript class="auth-card__noscript">
-                    {{ __('Warning! JavaScript must be enabled for the ***REMOVED***istration backend to work properly.') }}
+                    {{ __('Warning! JavaScript must be enabled for the administration backend to work properly.') }}
                 </noscript>
             </div>
         </section>

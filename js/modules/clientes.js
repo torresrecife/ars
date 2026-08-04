@@ -1,5 +1,5 @@
 function fc_edit_cliente(valor1,valor2){
-	var clientResourceBaseUrl = window.arsClientResourceBaseUrl || "***REMOVED***/clientes";
+	var clientResourceBaseUrl = window.arsClientResourceBaseUrl || "admin/clientes";
 	var clientResourceUrl = function(id){
 		return clientResourceBaseUrl + "/" + id;
 	};
@@ -225,7 +225,7 @@ function clienteCarteirasRemover(botao){
 	return false;
 }
 function fc_del_cliente(valor1,valor2){
-	var clientResourceBaseUrl = window.arsClientResourceBaseUrl || "***REMOVED***/clientes";
+	var clientResourceBaseUrl = window.arsClientResourceBaseUrl || "admin/clientes";
 	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>" + arsFormat("Do you really want to delete the client :name?", {name: "<b>" + valor2 + "</b>"}) + "</td></tr></table><br>",{
 		[arsTranslate("Yes")]: function(){
 			var dialog = $(this);

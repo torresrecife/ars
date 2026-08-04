@@ -1,5 +1,5 @@
 function fc_edit_usu(valor1,valor2){
-	var userResourceBaseUrl = window.arsUserResourceBaseUrl || "***REMOVED***/usuarios";
+	var userResourceBaseUrl = window.arsUserResourceBaseUrl || "admin/usuarios";
 	var userResourceUrl = function(id){
 		return userResourceBaseUrl + "/" + id;
 	};
@@ -421,7 +421,7 @@ function userFormInit(setorId, clientIds, clients, regionIds, regions){
 	});
 }
 function fc_del_usu(valor1,valor2){
-	var userResourceBaseUrl = window.arsUserResourceBaseUrl || "***REMOVED***/usuarios";
+	var userResourceBaseUrl = window.arsUserResourceBaseUrl || "admin/usuarios";
 	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>" + arsFormat("Do you really want to delete the user :name?", {name: "<b>" + valor2 + "</b>"}) + "</td></tr></table><br>",{
 		[arsTranslate("Yes")]: function(){
 			var dialog = $(this);

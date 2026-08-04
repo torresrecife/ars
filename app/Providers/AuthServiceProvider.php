@@ -46,7 +46,7 @@ class AuthServiceProvider extends ServiceProvider
             return new LegacyUsuarioProvider($app['hash'], $config['model']);
         });
 
-        Gate::define('access-***REMOVED***', function ($user) {
+        Gate::define('access-admin', function ($user) {
             return in_array((string) $user->nivel_usu, array('ADM', 'GER'), true);
         });
     }

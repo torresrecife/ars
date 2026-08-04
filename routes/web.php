@@ -20,8 +20,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/painel', 'HomeController@webSectionPage')->defaults('section', 'painel')->name('painel');
     Route::get('/producao', 'HomeController@webSectionPage')->defaults('section', 'producao')->name('producao');
     Route::get('/relatorio', 'HomeController@webRelatorio')->name('relatorio');
-    Route::middleware('can:access-***REMOVED***')->group(function () {
-        Route::get('/***REMOVED***', 'HomeController@webSectionPage')->defaults('section', '***REMOVED***')->name('***REMOVED***');
+    Route::middleware('can:access-admin')->group(function () {
+        Route::get('/admin', 'HomeController@webSectionPage')->defaults('section', 'admin')->name('admin');
         Route::get('/metas', 'HomeController@webMetas')->middleware('can:viewAny,App\\Models\\MetaAndamento')->name('metas');
     });
     Route::group(array('middleware' => 'can:viewAny,App\\Models\\MetaAndamento'), function () {
@@ -131,7 +131,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/regioes/{id}', 'RegionAdminController@destroyPage')->name('regioes.destroy.page');
     });
 
-    Route::prefix('***REMOVED***')->as('***REMOVED***.')->group(function () {
+    Route::prefix('admin')->as('admin.')->group(function () {
         Route::group(array('middleware' => 'can:viewAny,App\\Models\\Usuario'), function () {
             Route::get('/usuarios/{id}', 'UserAdminController@show')->name('usuarios.show');
         });
@@ -234,10 +234,10 @@ if (app()->environment('testing')) {
             return response('ok', 200);
         })->name('test.http.usuarios');
 
-    Route::middleware(array('web', 'auth', 'can:access-***REMOVED***'))
-        ->get('/_test/http/***REMOVED***-protegido', function () {
+    Route::middleware(array('web', 'auth', 'can:access-admin'))
+        ->get('/_test/http/admin-protegido', function () {
             return response('ok', 200);
-        })->name('test.http.***REMOVED***');
+        })->name('test.http.admin');
 
     Route::middleware(array('web', 'auth', 'can:viewAny,App\\Models\\MetaAndamento'))
         ->get('/_test/http/metas-protegido', function () {

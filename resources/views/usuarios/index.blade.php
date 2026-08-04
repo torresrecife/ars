@@ -1,34 +1,34 @@
-<div class="***REMOVED***-page ***REMOVED***-page--flat">
+<div class="admin-page admin-page--flat">
 	@if (session('status'))
-		<div class="***REMOVED***-flash ***REMOVED***-flash--success">{{ session('status') }}</div>
+		<div class="admin-flash admin-flash--success">{{ session('status') }}</div>
 	@endif
 
 	@if (session('error'))
-		<div class="***REMOVED***-flash ***REMOVED***-flash--error">{{ session('error') }}</div>
+		<div class="admin-flash admin-flash--error">{{ session('error') }}</div>
 	@endif
 
-	<div class="***REMOVED***-page__toolbar ***REMOVED***-page__toolbar--between">
-		<form method="get" action="{{ route('usuarios') }}" class="***REMOVED***-form-inline ***REMOVED***-search-form">
-			<input type="text" name="q" value="{{ e($search ?? '') }}" class="***REMOVED***-form-input ***REMOVED***-search-input" placeholder="{{ __('Search users...') }}" />
-			<button type="submit" class="***REMOVED***-button ***REMOVED***-button--primary">{{ __('Search') }}</button>
+	<div class="admin-page__toolbar admin-page__toolbar--between">
+		<form method="get" action="{{ route('usuarios') }}" class="admin-form-inline admin-search-form">
+			<input type="text" name="q" value="{{ e($search ?? '') }}" class="admin-form-input admin-search-input" placeholder="{{ __('Search users...') }}" />
+			<button type="submit" class="admin-button admin-button--primary">{{ __('Search') }}</button>
 			@if (!empty($search))
-				<a href="{{ route('usuarios') }}" class="***REMOVED***-button ***REMOVED***-button--secondary">{{ __('Clear') }}</a>
+				<a href="{{ route('usuarios') }}" class="admin-button admin-button--secondary">{{ __('Clear') }}</a>
 			@endif
 		</form>
 	</div>
 
-	<div class="***REMOVED***-surface ***REMOVED***-surface--table">
-		<table class="***REMOVED***list ***REMOVED***list--full ***REMOVED***list--modern">
+	<div class="admin-surface admin-surface--table">
+		<table class="adminlist adminlist--full adminlist--modern">
 			<colgroup>
-				<col class="***REMOVED***-col ***REMOVED***-col--code" />
-				<col class="***REMOVED***-col ***REMOVED***-col--name" />
-				<col class="***REMOVED***-col ***REMOVED***-col--login" />
-				<col class="***REMOVED***-col ***REMOVED***-col--level" />
-				<col class="***REMOVED***-col ***REMOVED***-col--datetime" />
-				<col class="***REMOVED***-col ***REMOVED***-col--datetime" />
-				<col class="***REMOVED***-col ***REMOVED***-col--email" />
-				<col class="***REMOVED***-col ***REMOVED***-col--status" />
-				<col class="***REMOVED***-col ***REMOVED***-col--actions" />
+				<col class="admin-col admin-col--code" />
+				<col class="admin-col admin-col--name" />
+				<col class="admin-col admin-col--login" />
+				<col class="admin-col admin-col--level" />
+				<col class="admin-col admin-col--datetime" />
+				<col class="admin-col admin-col--datetime" />
+				<col class="admin-col admin-col--email" />
+				<col class="admin-col admin-col--status" />
+				<col class="admin-col admin-col--actions" />
 			</colgroup>
 			<thead>
 				<tr>
@@ -58,9 +58,9 @@
 						<td class="order">{{ e($user['email_usu']) }}</td>
 						<td class="order">{{ e($user['status_usu']) }}</td>
 						<td class="order">
-							<div class="***REMOVED***-table-actions">
-								<a href="{{ route('usuarios.edit', (int) $user['id_usu']) }}" class="***REMOVED***-link-button">{{ __('Edit') }}</a>
-								<a href="{{ route('usuarios.confirm-delete', (int) $user['id_usu']) }}" class="***REMOVED***-link-button ***REMOVED***-link-button--danger">{{ __('Delete') }}</a>
+							<div class="admin-table-actions">
+								<a href="{{ route('usuarios.edit', (int) $user['id_usu']) }}" class="admin-link-button">{{ __('Edit') }}</a>
+								<a href="{{ route('usuarios.confirm-delete', (int) $user['id_usu']) }}" class="admin-link-button admin-link-button--danger">{{ __('Delete') }}</a>
 							</div>
 						</td>
 					</tr>
@@ -70,29 +70,29 @@
 	</div>
 
 	@if (method_exists($users, 'hasPages') && $users->hasPages())
-		<div class="***REMOVED***-pagination">
-			<div class="***REMOVED***-pagination__summary">
+		<div class="admin-pagination">
+			<div class="admin-pagination__summary">
 				{{ __('Showing :from to :to of :total items', ['from' => $users->firstItem(), 'to' => $users->lastItem(), 'total' => $users->total()]) }}
 			</div>
-			<div class="***REMOVED***-pagination__links">
+			<div class="admin-pagination__links">
 				@if ($users->onFirstPage())
-					<span class="***REMOVED***-pagination__link is-disabled">{{ __('Previous') }}</span>
+					<span class="admin-pagination__link is-disabled">{{ __('Previous') }}</span>
 				@else
-					<a href="{{ $users->appends(request()->except('page'))->previousPageUrl() }}" class="***REMOVED***-pagination__link">{{ __('Previous') }}</a>
+					<a href="{{ $users->appends(request()->except('page'))->previousPageUrl() }}" class="admin-pagination__link">{{ __('Previous') }}</a>
 				@endif
 
 				@foreach ($users->appends(request()->except('page'))->getUrlRange(max(1, $users->currentPage() - 2), min($users->lastPage(), $users->currentPage() + 2)) as $page => $url)
 					@if ($page === $users->currentPage())
-						<span class="***REMOVED***-pagination__link is-active">{{ $page }}</span>
+						<span class="admin-pagination__link is-active">{{ $page }}</span>
 					@else
-						<a href="{{ $url }}" class="***REMOVED***-pagination__link">{{ $page }}</a>
+						<a href="{{ $url }}" class="admin-pagination__link">{{ $page }}</a>
 					@endif
 				@endforeach
 
 				@if ($users->hasMorePages())
-					<a href="{{ $users->appends(request()->except('page'))->nextPageUrl() }}" class="***REMOVED***-pagination__link">{{ __('Next') }}</a>
+					<a href="{{ $users->appends(request()->except('page'))->nextPageUrl() }}" class="admin-pagination__link">{{ __('Next') }}</a>
 				@else
-					<span class="***REMOVED***-pagination__link is-disabled">{{ __('Next') }}</span>
+					<span class="admin-pagination__link is-disabled">{{ __('Next') }}</span>
 				@endif
 			</div>
 		</div>

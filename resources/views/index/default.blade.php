@@ -4,20 +4,20 @@
 	];
 @endphp
 
-<div class="***REMOVED***-page ***REMOVED***-page--flat ***REMOVED***-dashboard-page">
-	<div class="***REMOVED***-page__toolbar ***REMOVED***-page__toolbar--between">
+<div class="admin-page admin-page--flat admin-dashboard-page">
+	<div class="admin-page__toolbar admin-page__toolbar--between">
 		<div>
-			<div class="***REMOVED***-page__eyebrow">{{ __('Workspace') }}</div>
-			<div class="***REMOVED***-dashboard-copy">{{ __('Choose a sector to open the wallets and results workspace.') }}</div>
+			<div class="admin-page__eyebrow">{{ __('Workspace') }}</div>
+			<div class="admin-dashboard-copy">{{ __('Choose a sector to open the wallets and results workspace.') }}</div>
 		</div>
 	</div>
 
-	<div class="***REMOVED***-dashboard-grid">
+	<div class="admin-dashboard-grid">
 		@foreach ($areas as $area)
-			<a href="#" onclick="AbrirCarteiras('{{ (int) $area['area_id'] }}'); return false;" class="***REMOVED***-dashboard-card">
-				<span class="***REMOVED***-dashboard-card__icon">{!! $homeIcons['sector'] !!}</span>
-				<span class="***REMOVED***-dashboard-card__title">{{ e($area['area_nome']) }}</span>
-				<span class="***REMOVED***-dashboard-card__description">{{ __('Open the wallet list and navigate to the panel for this sector.') }}</span>
+			<a href="#" onclick="AbrirCarteiras('{{ (int) $area['area_id'] }}'); return false;" class="admin-dashboard-card">
+				<span class="admin-dashboard-card__icon">{!! $homeIcons['sector'] !!}</span>
+				<span class="admin-dashboard-card__title">{{ e($area['area_nome']) }}</span>
+				<span class="admin-dashboard-card__description">{{ __('Open the wallet list and navigate to the panel for this sector.') }}</span>
 			</a>
 		@endforeach
 	</div>

@@ -10,7 +10,7 @@ function my_especie(valor){
 }
 
 function fc_edit_metas(valor1,valor2){
-	var metaResourceBaseUrl = window.arsMetaResourceBaseUrl || "***REMOVED***/metas";
+	var metaResourceBaseUrl = window.arsMetaResourceBaseUrl || "admin/metas";
 	var metaResourceUrl = function(id){
 		return metaResourceBaseUrl + "/" + id;
 	};
@@ -167,7 +167,7 @@ function fc_edit_metas(valor1,valor2){
 	});
 }
 function fc_del_metas(valor1,valor2){
-	var metaResourceBaseUrl = window.arsMetaResourceBaseUrl || "***REMOVED***/metas";
+	var metaResourceBaseUrl = window.arsMetaResourceBaseUrl || "admin/metas";
 	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>" + arsFormat("Do you really want to delete the goal :name?", {name: "<b>" + valor2 + "</b>"}) + "</td></tr></table><br>",{
 		[arsTranslate("Yes")]: function(){
 			var confirmDialog = $(this);

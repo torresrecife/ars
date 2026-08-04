@@ -252,7 +252,7 @@ class MetaController extends Controller
 
 		$this->authService->syncSessionContext($user);
 		$pageData = $this->mainPageService->build(array(
-			'section' => 'metas-***REMOVED***',
+			'section' => 'metas-admin',
 			'startDate' => isset($viewData['context']['startDate']) ? $viewData['context']['startDate'] : '',
 			'mes' => isset($viewData['context']['mes']) ? $viewData['context']['mes'] : date('m'),
 			'ano' => isset($viewData['context']['ano']) ? $viewData['context']['ano'] : date('Y'),

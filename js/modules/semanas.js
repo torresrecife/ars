@@ -1,5 +1,5 @@
 function fc_edit_sem(valor1,valor2){
-	var weekResourceBaseUrl = window.arsWeekResourceBaseUrl || "***REMOVED***/semanas";
+	var weekResourceBaseUrl = window.arsWeekResourceBaseUrl || "admin/semanas";
 	var weekResourceUrl = function(id){
 		return weekResourceBaseUrl + "/" + id;
 	};
@@ -83,8 +83,8 @@ function fc_edit_sem(valor1,valor2){
 }
 
 function fc_del_sem(valor1,valor2){
-	var weekResourceBaseUrl = window.arsWeekResourceBaseUrl || "***REMOVED***/semanas";
-	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a semana do mês: <b>" + valor2 + "</b> ?</td></tr></table><br>",{
+	var weekResourceBaseUrl = window.arsWeekResourceBaseUrl || "admin/semanas";
+	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>Deseja realmente deletar a semana do mÃªs: <b>" + valor2 + "</b> ?</td></tr></table><br>",{
 		"Sim": function(){
 			var dialog = $(this);
 			arsJsonSubmit("DELETE", weekResourceBaseUrl + "/" + valor1, {}, "Erro ao excluir a semana.", function(){
@@ -97,7 +97,7 @@ function fc_del_sem(valor1,valor2){
 				});
 			});
 		},
-		"Não": function(){
+		"NÃ£o": function(){
 			$(this).dialog("close");
 		}
 	});

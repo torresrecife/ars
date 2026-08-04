@@ -1,4 +1,4 @@
-﻿
+
 $(function() {
 	var csrfToken = $('meta[name="csrf-token"]').attr('content');
 	if(csrfToken){
@@ -71,7 +71,7 @@ function mostrarErroData(){
 }
 function NormalizarModuloPath(scriptFile){
 	var map = {
-		"***REMOVED***.php": "***REMOVED***",
+		"admin.php": "admin",
 		"usu.php": "usuarios",
 		"usuarios.php": "usuarios",
 		"setor.php": "setores",

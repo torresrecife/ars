@@ -25,8 +25,8 @@
     RewriteRule ^dados_anda\.php$ detalhes/andamentos [L,QSA]
     RewriteRule ^dados_fatur\.php$ detalhes/faturamento [L,QSA]
 
-    RewriteCond %{THE_REQUEST} \s/+(.*/)?***REMOVED***\.php[\s?] [NC]
-    RewriteRule ^***REMOVED***\.php$ /ars/***REMOVED*** [R=301,L,QSA]
+    RewriteCond %{THE_REQUEST} \s/+(.*/)?admin\.php[\s?] [NC]
+    RewriteRule ^admin\.php$ /ars/admin [R=301,L,QSA]
     RewriteCond %{THE_REQUEST} \s/+(.*/)?usu\.php[\s?] [NC]
     RewriteRule ^usu\.php$ /ars/usuarios [R=301,L,QSA]
     RewriteCond %{THE_REQUEST} \s/+(.*/)?clientes\.php[\s?] [NC]

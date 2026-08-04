@@ -1,5 +1,5 @@
 function fc_edit_setor(valor1, valor2){
-	var sectorResourceBaseUrl = window.arsSectorResourceBaseUrl || "***REMOVED***/setores";
+	var sectorResourceBaseUrl = window.arsSectorResourceBaseUrl || "admin/setores";
 	var sectorResourceUrl = function(id){
 		return sectorResourceBaseUrl + "/" + id;
 	};
@@ -84,7 +84,7 @@ function fc_edit_setor(valor1, valor2){
 }
 
 function fc_del_setor(valor1, valor2){
-	var sectorResourceBaseUrl = window.arsSectorResourceBaseUrl || "***REMOVED***/setores";
+	var sectorResourceBaseUrl = window.arsSectorResourceBaseUrl || "admin/setores";
 	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>" + arsFormat("Do you really want to delete the sector :name?", {name: "<b>" + valor2 + "</b>"}) + "</td></tr></table><br>",{
 		[arsTranslate("Yes")]: function(){
 			var dialog = $(this);

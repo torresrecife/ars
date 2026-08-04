@@ -1,8 +1,8 @@
 @php
-	$***REMOVED***Links = [];
+	$adminLinks = [];
 
 	if ($userLevel === 'ADM') {
-		$***REMOVED***Links = [
+		$adminLinks = [
 			[
 				'label' => __('Users'),
 				'url' => url('usuarios'),
@@ -53,7 +53,7 @@
 			],
 		];
 	} elseif ($userLevel === 'GER') {
-		$***REMOVED***Links = [
+		$adminLinks = [
 			[
 				'label' => __('Goals'),
 				'url' => url('metas'),
@@ -69,7 +69,7 @@
 		];
 	}
 
-	$***REMOVED***Icons = [
+	$adminIcons = [
 		'users' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M17 11a3 3 0 1 0 0-6"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg>',
 		'grid' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4z"/><path d="M13 4h7v7h-7z"/><path d="M4 13h7v7H4z"/><path d="M13 13h7v7h-7z"/></svg>',
 		'briefcase' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"/><path d="M8 7V5h8v2"/><path d="M4 12h16"/></svg>',
@@ -81,20 +81,20 @@
 	];
 @endphp
 
-<div class="***REMOVED***-page ***REMOVED***-page--flat ***REMOVED***-dashboard-page">
-	<div class="***REMOVED***-page__toolbar ***REMOVED***-page__toolbar--between">
+<div class="admin-page admin-page--flat admin-dashboard-page">
+	<div class="admin-page__toolbar admin-page__toolbar--between">
 		<div>
-			<div class="***REMOVED***-page__eyebrow">{{ __('Administration') }}</div>
-			<div class="***REMOVED***-dashboard-copy">{{ __('Choose a module to manage the ***REMOVED***istrative data of the system.') }}</div>
+			<div class="admin-page__eyebrow">{{ __('Administration') }}</div>
+			<div class="admin-dashboard-copy">{{ __('Choose a module to manage the administrative data of the system.') }}</div>
 		</div>
 	</div>
 
-	<div class="***REMOVED***-dashboard-grid">
-		@foreach ($***REMOVED***Links as $link)
-			<a href="{{ $link['url'] }}" class="***REMOVED***-dashboard-card">
-				<span class="***REMOVED***-dashboard-card__icon">{!! $***REMOVED***Icons[$link['icon']] !!}</span>
-				<span class="***REMOVED***-dashboard-card__title">{{ $link['label'] }}</span>
-				<span class="***REMOVED***-dashboard-card__description">{{ $link['description'] }}</span>
+	<div class="admin-dashboard-grid">
+		@foreach ($adminLinks as $link)
+			<a href="{{ $link['url'] }}" class="admin-dashboard-card">
+				<span class="admin-dashboard-card__icon">{!! $adminIcons[$link['icon']] !!}</span>
+				<span class="admin-dashboard-card__title">{{ $link['label'] }}</span>
+				<span class="admin-dashboard-card__description">{{ $link['description'] }}</span>
 			</a>
 		@endforeach
 	</div>

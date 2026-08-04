@@ -198,7 +198,7 @@ function andamentoFormInit(especie, tiposSelecionados){
 	});
 }
 function fc_edit_andamento(valor1,valor2){
-	var andamentoResourceBaseUrl = window.arsAndamentoResourceBaseUrl || "***REMOVED***/andamentos";
+	var andamentoResourceBaseUrl = window.arsAndamentoResourceBaseUrl || "admin/andamentos";
 	var andamentoResourceUrl = function(id){
 		return andamentoResourceBaseUrl + "/" + id;
 	};
@@ -298,7 +298,7 @@ function fc_edit_andamento(valor1,valor2){
 	});
 }
 function fc_del_andamento(valor1,valor2){
-	var andamentoResourceBaseUrl = window.arsAndamentoResourceBaseUrl || "***REMOVED***/andamentos";
+	var andamentoResourceBaseUrl = window.arsAndamentoResourceBaseUrl || "admin/andamentos";
 	msgbox("<br><table align='center'><tr><td style='font-size:8pt'>" + arsFormat("Do you really want to delete the progress :name?", {name: "<b>" + valor2 + "</b>"}) + "</td></tr></table><br>",{
 		[arsTranslate("Yes")]: function(){
 			var dialog = $(this);
