@@ -307,6 +307,9 @@
 					</div>
 				</div>
 				<div class="ars-shell__topbar-actions">
+					@if ($currentUser->name() !== '')
+						<div class="ars-shell__meta-chip">{{ __('User') }}: {{ e($currentUser->name()) }}</div>
+					@endif
 					<div class="ars-shell__meta-chip">{{ __('Level') }}: {{ e($currentUser->level()) }}</div>
 					@if ($pageData->topAction())
 						@if ($pageData->topAction()->href() !== '')

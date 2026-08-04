@@ -9,6 +9,7 @@ use App\Services\DashboardPanelService;
 use App\Services\RegionService;
 use App\ViewModels\DashboardMetricCell;
 use App\ViewModels\DashboardMetricRow;
+use App\ViewModels\DashboardPanelContext;
 use Mockery;
 use ReflectionClass;
 use Tests\TestCase;
@@ -203,5 +204,85 @@ class DashboardPanelServiceTest extends TestCase
         $this->assertSame(400.0, $payload['metaTotal']);
         $this->assertSame(150.0, $payload['realTotal']);
         $this->assertSame(37.5, $payload['grandPercent']);
+    }
+
+    public function test_manager_with_linked_regions_still_sees_region_tabs_when_region_mode_is_default()
+    {
+        $regionService = Mockery::mock(RegionService::class);
+        $regionService->shouldReceive('listUserRegions')
+            ->once()
+            ->with(9)
+            ->andReturn(array(
+                array('regiao_id' => 3, 'regiao_nome' => 'Norte'),
+                array('regiao_id' => 4, 'regiao_nome' => 'Sul'),
+            ));
+
+        $service = new DashboardPanelService(
+            Mockery::mock(DashboardRepository::class),
+            Mockery::mock(NeoPanelRepository::class),
+            $regionService,
+            array(),
+            new PerformanceMetricFormatter()
+        );
+
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('resolveRegionTabs');
+        $method->setAccessible(true);
+
+        $tabs = $method->invoke(
+            $service,
+            new DashboardPanelContext(1, '1', 7, 2026, 9, 'GER', 'N', 3),
+            3,
+            array(3, 4)
+        );
+
+        $this->assertTrue($tabs['show']);
+        $this->assertCount(3, $tabs['tabs']);
+        $this->assertSame(0, $tabs['tabs'][0]['id']);
+        $this->assertFalse($tabs['tabs'][0]['active']);
+        $this->assertSame(3, $tabs['tabs'][1]['id']);
+        $this->assertTrue($tabs['tabs'][1]['active']);
+        $this->assertSame(4, $tabs['tabs'][2]['id']);
+    }
+
+    public function test_manager_without_linked_regions_falls_back_to_active_region_tabs()
+    {
+        $regionService = Mockery::mock(RegionService::class);
+        $regionService->shouldReceive('listUserRegions')
+            ->once()
+            ->with(9)
+            ->andReturn(array());
+        $regionService->shouldReceive('listActive')
+            ->once()
+            ->andReturn(array(
+                array('regiao_id' => 7, 'regiao_nome' => 'Leste'),
+                array('regiao_id' => 8, 'regiao_nome' => 'Oeste'),
+            ));
+
+        $service = new DashboardPanelService(
+            Mockery::mock(DashboardRepository::class),
+            Mockery::mock(NeoPanelRepository::class),
+            $regionService,
+            array(),
+            new PerformanceMetricFormatter()
+        );
+
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('resolveRegionTabs');
+        $method->setAccessible(true);
+
+        $tabs = $method->invoke(
+            $service,
+            new DashboardPanelContext(1, '1', 7, 2026, 9, 'GER', 'N', 0),
+            0,
+            array(7, 8)
+        );
+
+        $this->assertTrue($tabs['show']);
+        $this->assertCount(3, $tabs['tabs']);
+        $this->assertSame(0, $tabs['tabs'][0]['id']);
+        $this->assertTrue($tabs['tabs'][0]['active']);
+        $this->assertSame(7, $tabs['tabs'][1]['id']);
+        $this->assertSame(8, $tabs['tabs'][2]['id']);
     }
 }

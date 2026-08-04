@@ -35,6 +35,7 @@ class MainPageServiceTest extends TestCase
             'ano' => 2026,
         ), array(
             'usuarioID' => 9,
+            'usuarioNome' => 'Maria Admin',
             'usuarioSetor' => 3,
             'usuarioCliente' => '1,2',
             'usuarioNivel' => 'ADM',
@@ -47,6 +48,7 @@ class MainPageServiceTest extends TestCase
         $this->assertSame('view', $result->content()->type());
         $this->assertSame('***REMOVED***/index', $result->content()->view());
         $this->assertSame(__('July') . ' / 2026', $result->monthYearLabel());
+        $this->assertSame('Maria Admin', $result->user()->name());
     }
 
     public function test_build_returns_top_action_for_usuarios_section()
@@ -68,6 +70,7 @@ class MainPageServiceTest extends TestCase
             'ano' => 2026,
         ), array(
             'usuarioID' => 9,
+            'usuarioNome' => 'Maria Admin',
             'usuarioSetor' => 3,
             'usuarioCliente' => '1,2',
             'usuarioNivel' => 'ADM',

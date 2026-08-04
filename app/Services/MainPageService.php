@@ -58,6 +58,7 @@ class MainPageService
 			isset($session['usuarioRegiaoUfs']) ? $session['usuarioRegiaoUfs'] : '',
 			isset($session['usuarioNivel']) ? $session['usuarioNivel'] : '',
 			$userId,
+			isset($session['usuarioNome']) ? $session['usuarioNome'] : '',
 			$regions,
 			$this->shouldShowRegionSelector(
 				isset($session['usuarioNivel']) ? (string) $session['usuarioNivel'] : '',

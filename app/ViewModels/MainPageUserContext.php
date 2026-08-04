@@ -27,13 +27,16 @@ class MainPageUserContext
 	/** @var int */
 	private $id;
 
+	/** @var string */
+	private $name;
+
 	/** @var array */
 	private $regions;
 
 	/** @var bool */
 	private $showRegionSelector;
 
-	public function __construct($sectorId, $clientIds, $regionMode, $regionIds, $regionUfs, $level, $id, array $regions, $showRegionSelector)
+	public function __construct($sectorId, $clientIds, $regionMode, $regionIds, $regionUfs, $level, $id, $name, array $regions, $showRegionSelector)
 	{
 		$this->sectorId = (int) $sectorId;
 		$this->clientIds = (string) $clientIds;
@@ -42,6 +45,7 @@ class MainPageUserContext
 		$this->regionUfs = (string) $regionUfs;
 		$this->level = (string) $level;
 		$this->id = (int) $id;
+		$this->name = trim((string) $name);
 		$this->regions = $regions;
 		$this->showRegionSelector = (bool) $showRegionSelector;
 	}
@@ -81,6 +85,11 @@ class MainPageUserContext
 		return $this->id;
 	}
 
+	public function name()
+	{
+		return $this->name;
+	}
+
 	public function regions()
 	{
 		return $this->regions;
@@ -106,6 +115,7 @@ class MainPageUserContext
 			'regionUfs' => $this->regionUfs,
 			'level' => $this->level,
 			'id' => $this->id,
+			'name' => $this->name,
 			'regions' => $this->regions,
 			'showRegionSelector' => $this->showRegionSelector,
 		);

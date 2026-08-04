@@ -439,11 +439,11 @@ class DashboardPanelService
 			return new DashboardRegionFilter(0, array(), '', $allRegionIds);
 		}
 
-		if (empty($regionIds)) {
-			return $default;
-		}
-
 		if ($level === 'USU' && $mode === 'R') {
+			if (empty($regionIds)) {
+				return $default;
+			}
+
 			$selectedRegionId = !empty($regionIds) ? (int) $regionIds[0] : 0;
 			if ($selectedRegionId <= 0) {
 				return $default;
@@ -458,7 +458,7 @@ class DashboardPanelService
 			);
 		}
 
-		if ($level === 'GER' && in_array($mode, array('R', 'T'), true)) {
+		if ($level === 'GER') {
 			if ($selectedRegionId > 0 && in_array($selectedRegionId, $regionIds, true)) {
 				$region = $this->regionService->findUserRegion($context->userId(), $selectedRegionId);
 
@@ -470,8 +470,12 @@ class DashboardPanelService
 				);
 			}
 
-			if ($mode === 'R') {
-				$selectedRegionId = !empty($regionIds) ? (int) $regionIds[0] : 0;
+			if ($selectedRegionId === 0 || $mode === 'T') {
+				return new DashboardRegionFilter(0, array(), '', $regionIds);
+			}
+
+			if (!empty($regionIds)) {
+				$selectedRegionId = (int) $regionIds[0];
 				if ($selectedRegionId <= 0) {
 					return $default;
 				}
@@ -485,7 +489,36 @@ class DashboardPanelService
 				);
 			}
 
-			return new DashboardRegionFilter(0, array(), '', $regionIds);
+			$activeRegions = $this->regionService->listActive();
+			if (empty($activeRegions)) {
+				return $default;
+			}
+
+			$activeRegionIds = array();
+			$activeRegionNames = array();
+			foreach ($activeRegions as $region) {
+				$regionId = (int) $region['regiao_id'];
+				if ($regionId <= 0) {
+					continue;
+				}
+				$activeRegionIds[] = $regionId;
+				$activeRegionNames[$regionId] = (string) $region['regiao_nome'];
+			}
+
+			if ($selectedRegionId > 0 && in_array($selectedRegionId, $activeRegionIds, true)) {
+				return new DashboardRegionFilter(
+					$selectedRegionId,
+					$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+					isset($activeRegionNames[$selectedRegionId]) ? ' | ' . __('Region') . ': <b>' . $activeRegionNames[$selectedRegionId] . '</b>' : '',
+					array($selectedRegionId)
+				);
+			}
+
+			return new DashboardRegionFilter(0, array(), '', $activeRegionIds);
+		}
+
+		if (empty($regionIds)) {
+			return $default;
 		}
 
 		return $default;
@@ -502,8 +535,11 @@ class DashboardPanelService
 
 		if ($context->userLevel() === 'ADM') {
 			$userRegions = $this->regionService->listActive();
-		} elseif ($context->userLevel() === 'GER' && in_array($context->userRegionMode(), array('R', 'T'), true)) {
+		} elseif ($context->userLevel() === 'GER') {
 			$userRegions = $this->regionService->listUserRegions($context->userId());
+			if (empty($userRegions)) {
+				$userRegions = $this->regionService->listActive();
+			}
 		} else {
 			return array(
 				'show' => false,
@@ -519,7 +555,7 @@ class DashboardPanelService
 		}
 
 		$tabs = array();
-		if ($context->userLevel() === 'ADM' || ($context->userLevel() === 'GER' && $context->userRegionMode() === 'T')) {
+		if ($context->userLevel() === 'ADM' || $context->userLevel() === 'GER') {
 			$tabs[] = array(
 				'id' => 0,
 				'label' => __('All regions'),
@@ -540,7 +576,7 @@ class DashboardPanelService
 		}
 
 		return array(
-			'show' => true,
+			'show' => !empty($tabs),
 			'tabs' => $tabs,
 		);
 	}
@@ -557,10 +593,14 @@ class DashboardPanelService
 			return $metaRegionIds;
 		}
 
-		if ($context->userId() > 0 && in_array($context->userLevel(), array('GER', 'USU'), true) && in_array($context->userRegionMode(), array('R', 'T'), true)) {
+		if ($context->userId() > 0 && in_array($context->userLevel(), array('GER', 'USU'), true)) {
 			$userRegionIds = array();
 			foreach ($this->regionService->listUserRegions($context->userId()) as $region) {
 				$userRegionIds[] = (int) $region['regiao_id'];
+			}
+
+			if ($context->userLevel() === 'GER' && empty($userRegionIds)) {
+				return $metaRegionIds;
 			}
 
 			return array_values(array_intersect($userRegionIds, $metaRegionIds));
