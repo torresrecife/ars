@@ -14,33 +14,33 @@ abstract class NeoSqlsrvRepository
 
 	/** @var array */
 	private $ufNameMap = array(
-		'AC' => 'Acre',
-		'AL' => 'Alagoas',
-		'AP' => 'AmapÃ¡',
-		'AM' => 'Amazonas',
-		'BA' => 'Bahia',
-		'CE' => 'CearÃ¡',
-		'DF' => 'Distrito Federal',
-		'ES' => 'EspÃ­rito Santo',
-		'GO' => 'GoiÃ¡s',
-		'MA' => 'MaranhÃ£o',
-		'MT' => 'Mato Grosso',
-		'MS' => 'Mato Grosso do Sul',
-		'MG' => 'Minas Gerais',
-		'PA' => 'ParÃ¡',
-		'PB' => 'ParaÃ­ba',
-		'PR' => 'ParanÃ¡',
-		'PE' => 'Pernambuco',
-		'PI' => 'PiauÃ­',
-		'RJ' => 'Rio de Janeiro',
-		'RN' => 'Rio Grande do Norte',
-		'RS' => 'Rio Grande do Sul',
-		'RO' => 'RondÃ´nia',
-		'RR' => 'Roraima',
-		'SC' => 'Santa Catarina',
-		'SP' => 'SÃ£o Paulo',
-		'SE' => 'Sergipe',
-		'TO' => 'Tocantins',
+		'AC' => array('Acre'),
+		'AL' => array('Alagoas'),
+		'AP' => array('Amapa', 'Amapá'),
+		'AM' => array('Amazonas'),
+		'BA' => array('Bahia'),
+		'CE' => array('Ceara', 'Ceará'),
+		'DF' => array('Distrito Federal'),
+		'ES' => array('Espirito Santo', 'Espírito Santo'),
+		'GO' => array('Goias', 'Goiás'),
+		'MA' => array('Maranhao', 'Maranhão'),
+		'MT' => array('Mato Grosso'),
+		'MS' => array('Mato Grosso do Sul'),
+		'MG' => array('Minas Gerais'),
+		'PA' => array('Para', 'Pará'),
+		'PB' => array('Paraiba', 'Paraíba'),
+		'PR' => array('Parana', 'Paraná'),
+		'PE' => array('Pernambuco'),
+		'PI' => array('Piaui', 'Piauí'),
+		'RJ' => array('Rio de Janeiro'),
+		'RN' => array('Rio Grande do Norte'),
+		'RS' => array('Rio Grande do Sul'),
+		'RO' => array('Rondonia', 'Rondônia'),
+		'RR' => array('Roraima'),
+		'SC' => array('Santa Catarina'),
+		'SP' => array('Sao Paulo', 'São Paulo'),
+		'SE' => array('Sergipe'),
+		'TO' => array('Tocantins'),
 	);
 
 	public function __construct($connection)
@@ -150,7 +150,9 @@ abstract class NeoSqlsrvRepository
 			$upperCode = strtoupper($code);
 			$values[$upperCode] = $upperCode;
 			if (isset($this->ufNameMap[$upperCode])) {
-				$values[$this->ufNameMap[$upperCode]] = $this->ufNameMap[$upperCode];
+				foreach ($this->ufNameMap[$upperCode] as $name) {
+					$values[$name] = $name;
+				}
 			}
 		}
 

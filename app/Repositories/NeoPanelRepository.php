@@ -144,7 +144,7 @@ class NeoPanelRepository extends NeoSqlsrvRepository
 
 	private function buildProductionBaseConditions(array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
 	{
-		$query = " AND p.TipoProcesso NOT IN (N'CARTA PRECATÃƒâ€œRIA')";
+		$query = " AND p.TipoProcesso NOT IN (N'CARTA PRECATÓRIA')";
 		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
 		$query .= $this->buildUfCondition($ufCodes);
 		$query .= $this->buildWeekCondition('a.DataHoraEvento', $month, $year, $week);
