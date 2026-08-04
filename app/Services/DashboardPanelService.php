@@ -459,19 +459,23 @@ class DashboardPanelService
 		}
 
 		if ($level === 'GER') {
-			if ($selectedRegionId > 0 && in_array($selectedRegionId, $regionIds, true)) {
-				$region = $this->regionService->findUserRegion($context->userId(), $selectedRegionId);
+			$availableRegionIds = !empty($visibleRegionIds)
+				? array_values(array_unique(array_map('intval', $visibleRegionIds)))
+				: $regionIds;
+
+			if ($selectedRegionId > 0 && in_array($selectedRegionId, $availableRegionIds, true)) {
+				$regionName = $this->resolveRegionName($context->userId(), $selectedRegionId);
 
 				return new DashboardRegionFilter(
 					$selectedRegionId,
 					$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-					$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : '',
+					$regionName !== '' ? ' | ' . __('Region') . ': <b>' . $regionName . '</b>' : '',
 					array($selectedRegionId)
 				);
 			}
 
 			if ($selectedRegionId === 0 || $mode === 'T') {
-				return new DashboardRegionFilter(0, array(), '', $regionIds);
+				return new DashboardRegionFilter(0, array(), '', $availableRegionIds);
 			}
 
 			if (!empty($regionIds)) {
@@ -479,12 +483,12 @@ class DashboardPanelService
 				if ($selectedRegionId <= 0) {
 					return $default;
 				}
-				$region = $this->regionService->findUserRegion($context->userId(), $selectedRegionId);
+				$regionName = $this->resolveRegionName($context->userId(), $selectedRegionId);
 
 				return new DashboardRegionFilter(
 					$selectedRegionId,
 					$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-					$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : '',
+					$regionName !== '' ? ' | ' . __('Region') . ': <b>' . $regionName . '</b>' : '',
 					array($selectedRegionId)
 				);
 			}
@@ -522,6 +526,22 @@ class DashboardPanelService
 		}
 
 		return $default;
+	}
+
+	private function resolveRegionName($userId, $regionId)
+	{
+		$region = $this->regionService->findUserRegion($userId, $regionId);
+		if ($region && isset($region['regiao_nome'])) {
+			return (string) $region['regiao_nome'];
+		}
+
+		foreach ($this->regionService->listActive() as $activeRegion) {
+			if ((int) $activeRegion['regiao_id'] === (int) $regionId) {
+				return (string) $activeRegion['regiao_nome'];
+			}
+		}
+
+		return '';
 	}
 
 	private function resolveRegionTabs(DashboardPanelContext $context, $selectedRegionId, array $visibleRegionIds = array())

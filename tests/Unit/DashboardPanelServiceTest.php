@@ -285,4 +285,38 @@ class DashboardPanelServiceTest extends TestCase
         $this->assertSame(7, $tabs['tabs'][1]['id']);
         $this->assertSame(8, $tabs['tabs'][2]['id']);
     }
+
+    public function test_manager_all_regions_uses_visible_meta_region_ids_instead_of_only_linked_regions()
+    {
+        $regionService = Mockery::mock(RegionService::class);
+        $regionService->shouldReceive('listUserRegions')
+            ->once()
+            ->with(9)
+            ->andReturn(array(
+                array('regiao_id' => 3, 'regiao_nome' => 'Norte'),
+            ));
+
+        $service = new DashboardPanelService(
+            Mockery::mock(DashboardRepository::class),
+            Mockery::mock(NeoPanelRepository::class),
+            $regionService,
+            array(),
+            new PerformanceMetricFormatter()
+        );
+
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('resolveRegionFilter');
+        $method->setAccessible(true);
+
+        $filter = $method->invoke(
+            $service,
+            new DashboardPanelContext(1, '1', 7, 2026, 9, 'GER', 'N', 0),
+            array(3, 4)
+        );
+
+        $payload = $filter->toArray();
+
+        $this->assertSame(0, $payload['selectedRegionId']);
+        $this->assertSame(array(3, 4), $payload['metaRegionIds']);
+    }
 }
