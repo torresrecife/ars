@@ -47,6 +47,14 @@ function exportDetailTable(tableId, fileName) {
 		$(this).replaceWith(document.createTextNode(selected));
 	});
 
+	$(exportTable).find('[data-excel-type="text"]').each(function () {
+		var currentStyle = this.getAttribute('style') || '';
+		if (currentStyle !== '' && currentStyle.slice(-1) !== ';') {
+			currentStyle += ';';
+		}
+		this.setAttribute('style', currentStyle + "mso-number-format:'\\@';");
+	});
+
 	$(exportTable).find('[onclick]').removeAttr('onclick');
 
 	var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +

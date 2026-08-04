@@ -33,8 +33,8 @@
 <td align="center" class="cls_real detail-table__row--interactive" onclick="enviar_neo({{ (int) $row['Codigo'] }})">{{ $row['Codigo'] }}</td>
 <td align="center">{{ e((string) $row['Adverso2']) }}</td>
 <td align="center">{{ e((string) $row['Adverso']) }}</td>
-<td align="center">{{ e((string) $row['processo_exibicao']) }}</td>
-<td align="center">{{ e((string) $row['processo_cnj_exibicao']) }}</td>
+<td align="center" data-excel-type="text">{{ e((string) $row['processo_exibicao']) }}</td>
+<td align="center" data-excel-type="text">{{ e((string) $row['processo_cnj_exibicao']) }}</td>
 <td align="center">{{ e((string) $row['ContaContratoNeoCobranca']) }}</td>
 <td align="center">{{ (string) $row['comarca_exibicao'] }}</td>
 <td align="center">{{ e((string) $row['estado_exibicao']) }}</td>

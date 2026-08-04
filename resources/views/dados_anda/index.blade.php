@@ -28,7 +28,7 @@
 <td align="center" class="cls_real detail-table__row--interactive" onclick="enviar_neo({{ (int) $row['Codigo'] }})">{{ $row['Codigo'] }}</td>
 <td align="center">{{ $row['Adverso'] }}</td>
 <td align="center">{{ $row['Ajuizamento'] }}</td>
-<td align="center">{{ $row['Processo'] === '' ? '-' : $row['Processo'] }}</td>
+<td align="center" data-excel-type="text">{{ $row['Processo'] === '' ? '-' : $row['Processo'] }}</td>
 <td align="center">{{ $row['ContaContratoNeoCobranca'] }}</td>
 <td align="center">{{ $row['comarca_exibicao'] }}</td>
 <td align="center">{{ $row['estado_exibicao'] }}</td>
