@@ -22,19 +22,19 @@ class PerformanceMetricFormatter
 			: $this->percent($realOrPercent, $meta);
 
 		if (($meta !== null && (float) $meta == 0.0) || $percent == 0.0) {
-			return 'circle_grey.svg';
+			return 'circle_grey.png';
 		}
 		if ($percent >= 100 && $percent < 110) {
-			return 'circle_green.svg';
+			return 'circle_green.png';
 		}
 		if ($percent < 100 && $percent >= 80) {
-			return 'circle_yellow.svg';
+			return 'circle_yellow.png';
 		}
 		if ($percent >= 110) {
-			return 'circle_blue.svg';
+			return 'circle_blue.png';
 		}
 
-		return 'circle_red.svg';
+		return 'circle_red.png';
 	}
 
 	public function heatColor($percent)
