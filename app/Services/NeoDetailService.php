@@ -349,6 +349,35 @@ class NeoDetailService
 			return formatarProcesso($value);
 		}
 
+		if (preg_match('/^\d{2}\.\d{2}\.\d{4}\.\d{3}\.\d{5}-\d$/', $value)) {
+			return $value;
+		}
+
+		if (preg_match('/^\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}$/', $value)) {
+			return $value;
+		}
+
+		$numero = preg_replace('/\D/', '', $value);
+		if (!is_string($numero)) {
+			return $value;
+		}
+
+		if (strlen($numero) === 17) {
+			return preg_replace(
+				'/(\d{2})(\d{2})(\d{4})(\d{3})(\d{5})(\d)/',
+				'$1.$2.$3.$4.$5-$6',
+				$numero
+			) ?? $value;
+		}
+
+		if (strlen($numero) === 20) {
+			return preg_replace(
+				'/(\d{7})(\d{2})(\d{4})(\d)(\d{2})(\d{4})/',
+				'$1-$2.$3.$4.$5.$6',
+				$numero
+			) ?? $value;
+		}
+
 		return $value;
 	}
 }

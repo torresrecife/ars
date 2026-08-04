@@ -4,9 +4,15 @@ namespace Tests\Unit;
 
 use App\Data\NeoDetailInput;
 use App\Http\Requests\NeoDetailRequest;
+use App\Repositories\DashboardRepository;
+use App\Repositories\NeoDetailRepository;
+use App\Services\NeoDetailService;
+use App\Services\RegionService;
 use App\ViewModels\AndamentoDetailViewData;
 use App\ViewModels\FinancialDetailViewData;
 use App\ViewModels\NeoDetailRow;
+use Mockery;
+use ReflectionClass;
 use Tests\TestCase;
 
 class NeoDetailContractsTest extends TestCase
@@ -75,5 +81,23 @@ class NeoDetailContractsTest extends TestCase
         $this->assertSame('Banco A', $andamento->toArray()['bankName']);
         $this->assertSame(10, $andamento->toArray()['rows'][0]['Codigo']);
         $this->assertSame(120.5, $financial->toArray()['totalValue']);
+    }
+
+    public function test_service_formats_cnj_number_when_helper_is_unavailable()
+    {
+        $service = new NeoDetailService(
+            Mockery::mock(NeoDetailRepository::class),
+            Mockery::mock(DashboardRepository::class),
+            Mockery::mock(RegionService::class)
+        );
+
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('formatProcesso');
+        $method->setAccessible(true);
+
+        $this->assertSame(
+            '0005734-19.2025.8.17.2810',
+            $method->invoke($service, '00057341920258172810')
+        );
     }
 }
