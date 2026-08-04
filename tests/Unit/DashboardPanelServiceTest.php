@@ -206,7 +206,7 @@ class DashboardPanelServiceTest extends TestCase
         $this->assertSame(37.5, $payload['grandPercent']);
     }
 
-    public function test_manager_with_linked_regions_still_sees_region_tabs_when_region_mode_is_default()
+    public function test_manager_with_linked_regions_does_not_see_all_regions_tab_when_region_mode_is_default()
     {
         $regionService = Mockery::mock(RegionService::class);
         $regionService->shouldReceive('listUserRegions')
@@ -237,12 +237,10 @@ class DashboardPanelServiceTest extends TestCase
         );
 
         $this->assertTrue($tabs['show']);
-        $this->assertCount(3, $tabs['tabs']);
-        $this->assertSame(0, $tabs['tabs'][0]['id']);
-        $this->assertFalse($tabs['tabs'][0]['active']);
-        $this->assertSame(3, $tabs['tabs'][1]['id']);
-        $this->assertTrue($tabs['tabs'][1]['active']);
-        $this->assertSame(4, $tabs['tabs'][2]['id']);
+        $this->assertCount(2, $tabs['tabs']);
+        $this->assertSame(3, $tabs['tabs'][0]['id']);
+        $this->assertTrue($tabs['tabs'][0]['active']);
+        $this->assertSame(4, $tabs['tabs'][1]['id']);
     }
 
     public function test_manager_without_linked_regions_falls_back_to_active_region_tabs()
@@ -295,6 +293,14 @@ class DashboardPanelServiceTest extends TestCase
             ->andReturn(array(
                 array('regiao_id' => 3, 'regiao_nome' => 'Norte'),
             ));
+        $regionService->shouldReceive('findUserRegion')
+            ->once()
+            ->with(9, 3)
+            ->andReturn(array('regiao_id' => 3, 'regiao_nome' => 'Norte'));
+        $regionService->shouldReceive('listUfsByRegionIds')
+            ->once()
+            ->with(array(3))
+            ->andReturn(array('AM'));
 
         $service = new DashboardPanelService(
             Mockery::mock(DashboardRepository::class),
@@ -314,9 +320,7 @@ class DashboardPanelServiceTest extends TestCase
             array(3, 4)
         );
 
-        $payload = $filter->toArray();
-
-        $this->assertSame(0, $payload['selectedRegionId']);
-        $this->assertSame(array(3, 4), $payload['metaRegionIds']);
+        $this->assertSame(3, $filter->selectedRegionId());
+        $this->assertSame(array(3), $filter->metaRegionIds());
     }
 }

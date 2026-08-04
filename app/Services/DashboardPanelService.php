@@ -474,7 +474,11 @@ class DashboardPanelService
 				);
 			}
 
-			if ($selectedRegionId === 0 || $mode === 'T') {
+			if (($selectedRegionId === 0 || $mode === 'T') && empty($regionIds)) {
+				return new DashboardRegionFilter(0, array(), '', $availableRegionIds);
+			}
+
+			if ($mode === 'T') {
 				return new DashboardRegionFilter(0, array(), '', $availableRegionIds);
 			}
 
@@ -553,10 +557,12 @@ class DashboardPanelService
 			);
 		}
 
+		$hasExplicitUserRegions = false;
 		if ($context->userLevel() === 'ADM') {
 			$userRegions = $this->regionService->listActive();
 		} elseif ($context->userLevel() === 'GER') {
 			$userRegions = $this->regionService->listUserRegions($context->userId());
+			$hasExplicitUserRegions = !empty($userRegions);
 			if (empty($userRegions)) {
 				$userRegions = $this->regionService->listActive();
 			}
@@ -575,7 +581,13 @@ class DashboardPanelService
 		}
 
 		$tabs = array();
-		if ($context->userLevel() === 'ADM' || $context->userLevel() === 'GER') {
+		if ($context->userLevel() === 'ADM') {
+			$tabs[] = array(
+				'id' => 0,
+				'label' => __('All regions'),
+				'active' => (int) $selectedRegionId === 0,
+			);
+		} elseif ($context->userLevel() === 'GER' && !$hasExplicitUserRegions) {
 			$tabs[] = array(
 				'id' => 0,
 				'label' => __('All regions'),
