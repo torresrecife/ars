@@ -22,6 +22,9 @@
 	$contentHeight = $viewData['contentHeight'];
 	$weekCountClass = count($weeks) === 5 ? 'is-five-weeks' : 'is-four-weeks';
 	$splitFinancialTable = !empty($productionRows) && !empty($financialRows);
+	$metricIconUrl = function ($icon) {
+		return asset('img/' . ltrim((string) $icon, '/'));
+	};
 @endphp
 <br><div class="dashboard-title">{{ __('Client') }}: <b>{{ $bank['banco_cod'] }}</b>{!! $showRegionTabs ? '' : $regionLabel !!} | {{ __('Month/Year') }}: <b>{{ $startDate }}</b> <a href="#" onclick="painelNavegarMes('{{ $bankId }}','p'); return false;">&lt;</a> <a href="#" onclick="painelNavegarMes('{{ $bankId }}','n'); return false;">&gt;</a></div>
 @if ($showRegionTabs)
@@ -74,11 +77,11 @@
 		@foreach ($row['weekData'] as $weekIndex => $weekData)
 			<td align="center" class="cls_vals dashboard-table__metric-meta">{{ number_format($weekData['meta'], 0, ',', '.') }}</td>
 			<td align="center" class="cls_vals cls_real" onclick="painelAbrirDetalhe('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','{{ (int) $weekIndex }}','and');">{{ $weekData['real'] }}</td>
-			<td align="center" class="cls_vals"><img src="http://admin/img/{{ $weekData['icon'] }}" class="box" />{{ number_format($weekData['percent'], 0, ',', '') }}%</td>
+			<td align="center" class="cls_vals"><img src="{{ $metricIconUrl($weekData['icon']) }}" class="box" />{{ number_format($weekData['percent'], 0, ',', '') }}%</td>
 		@endforeach
 		<td align="center" class="cls_vals cls_real cls_bk dashboard-table__total-meta"><b>{{ number_format($row['totalMeta'], 0, ',', '.') }}</b></td>
 		<td align="center" class="cls_vals cls_real cls_bk" onclick="painelAbrirDetalhe('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','total','and');"><b>{{ $row['totalReal'] }}</b></td>
-		<td align="center" class="cls_vals cls_bk"><img src="http://admin/img/{{ $row['totalIcon'] }}" class="box" />{{ number_format($row['totalPercent'], 0, ',', '') }}%</td>
+		<td align="center" class="cls_vals cls_bk"><img src="{{ $metricIconUrl($row['totalIcon']) }}" class="box" />{{ number_format($row['totalPercent'], 0, ',', '') }}%</td>
 	</tr>
 	@endforeach
 @if ($splitFinancialTable)
@@ -97,11 +100,11 @@
 		@foreach ($row['weekData'] as $weekIndex => $weekData)
 			<td align="center" class="cls_vals dashboard-table__metric-meta">{{ number_format($weekData['meta'], 2, ',', '.') }}</td>
 			<td align="center" class="cls_vals cls_real" onclick="painelAbrirDetalhe('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','{{ (int) $weekIndex }}','fat');">{{ number_format($weekData['real'], 2, ',', '.') }}</td>
-			<td align="center" class="cls_vals"><img src="http://admin/img/{{ $weekData['icon'] }}" class="box" />{{ number_format($weekData['percent'], 0, ',', '') }}%</td>
+			<td align="center" class="cls_vals"><img src="{{ $metricIconUrl($weekData['icon']) }}" class="box" />{{ number_format($weekData['percent'], 0, ',', '') }}%</td>
 		@endforeach
 		<td align="center" class="cls_vals cls_real cls_bk dashboard-table__total-meta"><b>{{ number_format($row['totalMeta'], 2, ',', '.') }}</b></td>
 		<td align="center" class="cls_vals cls_real cls_bk" onclick="painelAbrirDetalhe('{{ (int) $row['andaId'] }}','{{ (int) $bank['banco_id'] }}','{{ addslashes($bank['banco_name']) }}','{{ (int) $month }}','{{ (int) $year }}','total','fat');"><b>{{ number_format($row['totalReal'], 2, ',', '.') }}</b></td>
-		<td align="center" class="cls_vals cls_bk"><img src="http://admin/img/{{ $row['totalIcon'] }}" class="box" />{{ number_format($row['totalPercent'], 0, ',', '') }}%</td>
+		<td align="center" class="cls_vals cls_bk"><img src="{{ $metricIconUrl($row['totalIcon']) }}" class="box" />{{ number_format($row['totalPercent'], 0, ',', '') }}%</td>
 	</tr>
 	@endforeach
 	<tr height="5px"></tr>
@@ -111,11 +114,11 @@
 		@foreach ($summary['weekTotals'] as $weekTotal)
 			<td align="center" class="cls_vals2 cls_bk dashboard-table__total-meta"><b>{{ number_format($weekTotal['meta'], 2, ',', '.') }}</b></td>
 			<td align="center" class="cls_vals2 cls_bk"><b>{{ number_format($weekTotal['real'], 2, ',', '.') }}</b></td>
-			<td align="center" class="cls_vals2 cls_bk"><img src="http://admin/img/{{ $weekTotal['icon'] }}" class="box" />&nbsp;<b>{{ number_format($weekTotal['percent'], 1, ',', '') }}%</b></td>
+			<td align="center" class="cls_vals2 cls_bk"><img src="{{ $metricIconUrl($weekTotal['icon']) }}" class="box" />&nbsp;<b>{{ number_format($weekTotal['percent'], 1, ',', '') }}%</b></td>
 		@endforeach
 		<td align="center" class="cls_vals2 cls_bk dashboard-table__total-meta"><b>{{ number_format($summary['metaTotal'], 2, ',', '.') }}</b></td>
 		<td align="center" class="cls_vals2 cls_bk"><b>{{ number_format($summary['realTotal'], 2, ',', '.') }}</b></td>
-		<td align="center" class="cls_vals2 cls_bk"><img src="http://admin/img/{{ $summary['grandIcon'] }}" class="box" />&nbsp;<b>{{ number_format($summary['grandPercent'], 1, ',', '') }}%</b></td>
+		<td align="center" class="cls_vals2 cls_bk"><img src="{{ $metricIconUrl($summary['grandIcon']) }}" class="box" />&nbsp;<b>{{ number_format($summary['grandPercent'], 1, ',', '') }}%</b></td>
 	</tr>
 	<tr height="5px"></tr>
 	@foreach ($prejudiceRows as $row)
@@ -138,7 +141,7 @@
 	<tr>
 		<td align="center" class="dashboard-total-table__muted">R$ {{ number_format($summary['metaTotal'], 2, ',', '.') }}<br></td>
 		<td align="center" class="dashboard-total-table__plain">R$ {{ number_format($summary['netRealTotal'], 2, ',', '.') }}<br></td>
-		<td align="center" class="dashboard-total-table__plain"><img src="http://admin/img/{{ $summary['netIcon'] }}" class="box" />{{ number_format($summary['netPercent'], 1, ',', '') }}%</td>
+		<td align="center" class="dashboard-total-table__plain"><img src="{{ $metricIconUrl($summary['netIcon']) }}" class="box" />{{ number_format($summary['netPercent'], 1, ',', '') }}%</td>
 	</tr>
 </table>
 <br><br><br><br>

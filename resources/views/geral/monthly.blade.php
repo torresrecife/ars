@@ -3,6 +3,9 @@
 <br><div class="report-title">{!! $titleArea !!}{!! isset($regionLabel) ? $regionLabel : '' !!} | {{ __('Month/Year') }}: <b>{{ e($startDate) }}</b> </div><br>
 @php
 	$weekCountClass = count($weeks) === 4 ? 'is-four-weeks' : 'is-five-weeks';
+	$metricIconUrl = function ($icon) {
+		return asset('img/' . ltrim((string) $icon, '/'));
+	};
 @endphp
 <script>
 	window.arsDetailFaturamentoUrl = "{{ url('detalhes/faturamento') }}";
@@ -34,12 +37,12 @@
 		@foreach ($row['weekData'] as $weekData)
 			<td class="cls_vals cls_body report-cell--meta" align="center">{{ number_format($weekData['meta'], 2, ',', '.') }}</td>
 			<td class="cls_vals cls_body cls_real" align="center" onclick="relatorioAbrirDetalhe('{{ implode(',', $weekData['codes']) }}','{{ e($row['name']) }}');">{{ number_format($weekData['real'], 2, ',', '.') }}</td>
-			<td class="cls_body" align="center"><img src="http://admin/img/{{ $weekData['icon'] }}" class="box" />{{ number_format($weekData['percent'], 0, ',', '') }} %</td>
+			<td class="cls_body" align="center"><img src="{{ $metricIconUrl($weekData['icon']) }}" class="box" />{{ number_format($weekData['percent'], 0, ',', '') }} %</td>
 		@endforeach
 		<td class="">&nbsp;</td>
 		<td class="cls_body cls_bk report-cell--total-meta" align="center"><b>{{ number_format($row['totalMeta'], 2, ',', '.') }}</b></td>
 		<td class="cls_body cls_bk report-cell--black-text" align="center"><b>{{ number_format($row['totalReal'], 2, ',', '.') }}</b></td>
-		<td class="cls_body cls_bk report-cell--black-text" align="center"><img src="http://admin/img/{{ $row['totalIcon'] }}" class="box" />{{ number_format($row['totalPercent'], 0, ',', '') }} %</td>
+		<td class="cls_body cls_bk report-cell--black-text" align="center"><img src="{{ $metricIconUrl($row['totalIcon']) }}" class="box" />{{ number_format($row['totalPercent'], 0, ',', '') }} %</td>
 	</tr>
 	@endforeach
 	<tr height="5px"></tr>
@@ -48,12 +51,12 @@
 		@foreach ($totals['weeks'] as $weekTotal)
 			<td align="center" class="cls_vals2 cls_bk report-cell--total-meta"><b>{{ number_format($weekTotal['meta'], 2, ',', '.') }}</b></td>
 			<td align="center" class="cls_vals2 cls_bk"><b>{{ number_format($weekTotal['real'], 2, ',', '.') }}</b></td>
-			<td align="center" class="cls_vals2 cls_bk"><img src="http://admin/img/{{ $weekTotal['icon'] }}" class="box" /><b>{{ number_format($weekTotal['percent'], 0, ',', '') }} %</b></td>
+			<td align="center" class="cls_vals2 cls_bk"><img src="{{ $metricIconUrl($weekTotal['icon']) }}" class="box" /><b>{{ number_format($weekTotal['percent'], 0, ',', '') }} %</b></td>
 		@endforeach
 		<td class="">&nbsp;</td>
 		<td align="center" class="cls_vals2 cls_bk report-cell--total-meta"><b>{{ number_format($totals['meta'], 2, ',', '.') }}</b></td>
 		<td align="center" class="cls_vals2 cls_bk"><b>{{ number_format($totals['real'], 2, ',', '.') }}</b></td>
-		<td align="center" class="cls_vals2 cls_bk"><img src="http://admin/img/{{ $totals['icon'] }}" class="box" /><b>{{ number_format($totals['percent'], 0, ',', '') }} %</b></td>
+		<td align="center" class="cls_vals2 cls_bk"><img src="{{ $metricIconUrl($totals['icon']) }}" class="box" /><b>{{ number_format($totals['percent'], 0, ',', '') }} %</b></td>
 	</tr>
 	<input type="hidden" name="startSetor" value="{{ e($startSector) }}"/>
 	<input type="hidden" name="startDate" value="{{ e($startDate) }}" />
