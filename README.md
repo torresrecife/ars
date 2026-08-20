@@ -1,8 +1,8 @@
 # ARS - Sector Results Tracking
 
-ARS Online is an ***REMOVED***istrative and operational system currently being modernized into a cleaner Laravel application.
+ARS Online is an administrative and operational system currently being modernized into a cleaner Laravel application.
 
-The project includes authentication, dashboards, production views, reports, goals, and ***REMOVED***istrative modules for users, clients, sectors, regions, weeks, progress items, and operational targets. Some compatibility points from the legacy PHP application still exist, but the intended architecture is Laravel-first: routes, controllers, policies, FormRequests, Eloquent/Query Builder, Blade, Sass, Laravel Mix, JSON endpoints, and named service/view model contracts.
+The project includes authentication, dashboards, production views, reports, goals, and administrative modules for users, clients, sectors, regions, weeks, progress items, and operational targets. Some compatibility points from the legacy PHP application still exist, but the intended architecture is Laravel-first: routes, controllers, policies, Form Requests, Eloquent/Query Builder, Blade, Sass, Laravel Mix, JSON endpoints, and named service/view-model contracts.
 
 ## Overview
 
@@ -41,7 +41,7 @@ npm -v
 
 ## Project Structure
 
-- `app/Http/Controllers`: HTTP entrypoints and ***REMOVED***istrative controllers.
+- `app/Http/Controllers`: HTTP entry points and administrative controllers.
 - `app/Services`: application rules, payload assembly, and view model orchestration.
 - `app/Repositories`: MySQL access and SQL Server integration.
 - `app/Models`: Eloquent models.
@@ -143,8 +143,8 @@ For Portuguese output, add or update the corresponding key in `resources/lang/pt
 
 ```json
 {
-    "Users": "Usuarios",
-    "Create a new user": "Crie um novo usuario",
+    "Users": "Usuários",
+    "Create a new user": "Crie um novo usuário",
     "Error saving client.": "Erro ao salvar o cliente."
 }
 ```
@@ -272,7 +272,7 @@ Authenticated routes:
 - `GET /painel`
 - `GET /producao`
 - `GET /relatorio`
-- `GET /***REMOVED***`
+- `GET /admin`
 - `GET /metas`
 
 Administrative screen routes:
@@ -286,21 +286,21 @@ Administrative screen routes:
 
 Administrative REST/JSON endpoints:
 
-- `/***REMOVED***/usuarios`
-- `/***REMOVED***/clientes`
-- `/***REMOVED***/setores`
-- `/***REMOVED***/andamentos`
-- `/***REMOVED***/semanas`
-- `/***REMOVED***/regioes`
-- `/***REMOVED***/metas`
+- `/admin/usuarios`
+- `/admin/clientes`
+- `/admin/setores`
+- `/admin/andamentos`
+- `/admin/semanas`
+- `/admin/regioes`
+- `/admin/metas`
 
 ## Authentication and Authorization
 
-Authentication uses Laravel `auth` and `guest` middleware. Authorization for ***REMOVED***istrative modules is handled through policies/gates by resource.
+Authentication uses Laravel `auth` and `guest` middleware. Authorization for administrative modules is handled through policies and gates by resource.
 
 Known user levels:
 
-- `ADM`: full ***REMOVED***istration.
+- `ADM`: full administration access.
 - `GER`: management access with module/region restrictions.
 - `USU`: operational user with limited access.
 
@@ -423,8 +423,8 @@ Already completed or partially completed:
 - Gradual removal of physical `.php` wrappers.
 - Main navigation through Laravel routes.
 - Laravel-based authentication.
-- Policies for ***REMOVED***istrative modules.
-- REST/JSON endpoints for ***REMOVED***istrative modules.
+- Policies for administrative modules.
+- REST/JSON endpoints for administrative modules.
 - Administrative frontend using a common AJAX client.
 - Administrative and operational views migrated to Blade.
 - Repositories migrated to Eloquent/Query Builder where practical.
