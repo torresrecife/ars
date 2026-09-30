@@ -49,6 +49,7 @@
 	window.arsDetailFaturamentoUrl = "{{ url('detalhes/faturamento') }}";
 	window.arsPanelContentHeight = {{ (int) $contentHeight }};
 </script>
+<div class="responsive-table responsive-table--dashboard" role="region" aria-label="{{ __('Panel') }}" tabindex="0">
 <table align="center" height="auto" width="100%" border="0" cellspacing="1" cellpadding="1" id="tb_pro" class="dashboard-table {{ $weekCountClass }}">
 	<tr>
 		<td align="center" rowspan="2" class="dashboard-table__spacer-cell"></td>
@@ -136,6 +137,7 @@
 	</tr>
 	@endforeach
 </table>
+</div>
 <br>
 <table align="center" height="6%" width="25%" border="1" cellspacing="3" cellpadding="3" id="tb_tot" class="dashboard-total-table">
 	<tr>

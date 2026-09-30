@@ -29,6 +29,14 @@
   width: 99%;
 }
 
+.responsive-table--report .report-table--weekly {
+  min-width: 760px;
+}
+
+.responsive-table--report .report-table--monthly {
+  min-width: 980px;
+}
+
 .report-row {
   height: 30px;
 }
@@ -159,4 +167,18 @@
 
 .metric-heat--over {
   background: $color-primary;
+}
+
+@media (max-width: 960px) {
+  .report-switch {
+    float: none;
+    min-height: 38px;
+    margin: 0 0 12px;
+    padding: 0 14px;
+  }
+
+  .report-title {
+    margin-left: 0;
+    line-height: 1.5;
+  }
 }

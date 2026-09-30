@@ -121,6 +121,7 @@
 
 .ars-shell__nav-link {
   display: flex;
+  height: auto;
   align-items: center;
   gap: 12px;
   padding: 11px 12px;
@@ -274,11 +275,26 @@
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(27, 45, 63, .05);
   padding: 20px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .ars-shell__content {
   height: 100%;
+}
+
+.responsive-table {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.responsive-table:focus-visible {
+  outline: 3px solid rgba(28, 134, 238, .22);
+  outline-offset: 2px;
 }
 
 .ars-shell__content.adminform,
@@ -358,6 +374,45 @@
     box-shadow: 0 16px 40px rgba(27, 45, 63, .16);
   }
 
+  .ars-shell::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 19;
+    background: rgba(18, 35, 50, .36);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .2s ease, visibility .2s ease;
+  }
+
+  .ars-shell.is-mobile-open::after {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .ars-shell.is-collapsed .ars-shell__sidebar {
+    width: min(274px, calc(100vw - 48px));
+    flex-basis: auto;
+  }
+
+  .ars-shell.is-collapsed .ars-shell__brand-text,
+  .ars-shell.is-collapsed .ars-shell__nav-title,
+  .ars-shell.is-collapsed .ars-shell__nav-label {
+    display: flex;
+  }
+
+  .ars-shell.is-collapsed .ars-shell__nav-title,
+  .ars-shell.is-collapsed .ars-shell__nav-label {
+    display: block;
+  }
+
+  .ars-shell.is-collapsed .ars-shell__brand,
+  .ars-shell.is-collapsed .ars-shell__nav-link {
+    justify-content: flex-start;
+  }
+
   .ars-shell__sidebar-toggle--mobile {
     display: inline-flex;
   }
@@ -381,5 +436,62 @@
 
   .ars-shell__page-title {
     font-size: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .ars-shell__topbar {
+    gap: 12px;
+    padding: 12px 14px;
+  }
+
+  .ars-shell__topbar-left {
+    width: 100%;
+  }
+
+  .ars-shell__topbar-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .ars-shell__meta-chip {
+    grid-column: 1 / -1;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .ars-shell__action-button,
+  .ars-shell__action-link {
+    justify-content: center;
+    min-width: 0;
+    padding: 0 10px;
+  }
+
+  .ars-shell__content-area {
+    padding: 10px;
+  }
+
+  .ars-shell__content-card {
+    min-height: calc(100vh - 106px);
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .ars-shell__page-title {
+    font-size: 18px;
+  }
+
+  .ars-shell__page-subtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .responsive-table {
+    margin-inline: -12px;
+    width: calc(100% + 24px);
+    max-width: calc(100% + 24px);
+    padding-inline: 12px;
   }
 }

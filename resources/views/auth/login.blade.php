@@ -2,6 +2,7 @@
 <html lang="{{ app()->getLocale() === 'en_CA' ? 'en-ca' : 'pt-br' }}">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>{{ __('ARS Control') }}</title>
     <link href="{{ url('css/images/favicon.ico') }}" rel="shortcut icon" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" href="{{ url('css/ars-modern.css') }}" type="text/css" />

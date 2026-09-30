@@ -1558,6 +1558,14 @@ label.filter-published-lbl {
   flex-wrap: nowrap;
 }
 
+.admin-table-actions .admin-link-button,
+.admin-table-actions .admin-button {
+  min-width: 72px;
+  padding-right: 12px;
+  padding-left: 12px;
+  white-space: nowrap;
+}
+
 .admin-card {
   background: #ffffff;
   border: 1px solid #dce5ec;
@@ -1587,7 +1595,11 @@ label.filter-published-lbl {
   background: transparent;
   border: 0;
   border-radius: 0;
-  overflow: visible;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-surface--form {
@@ -1790,7 +1802,7 @@ table.adminlist.adminlist--modern td.order {
 }
 
 .admin-col--actions {
-  width: 150px;
+  width: 180px;
 }
 
 .admin-col--login {
@@ -1939,7 +1951,7 @@ table.adminlist.adminlist--modern td.order {
 }
 
 table.metas-admin-table .admin-col--actions {
-  width: 170px;
+  width: 180px;
 }
 
 @media (max-width: 1024px) {
@@ -2203,6 +2215,25 @@ table.metas-admin-table .admin-col--actions {
 }
 
 @media (max-width: 900px) {
+  table.adminlist--modern {
+    min-width: 760px;
+    table-layout: auto;
+  }
+
+  table.adminlist.adminlist--modern th,
+  table.adminlist.adminlist--modern td {
+    white-space: nowrap;
+  }
+
+  table.adminlist.adminlist--modern td.admin-cell--wrap,
+  table.adminlist.adminlist--modern td.order {
+    white-space: normal;
+  }
+
+  .admin-table-actions {
+    justify-content: flex-start;
+  }
+
   .admin-form-grid {
     grid-template-columns: 1fr;
   }
@@ -2221,5 +2252,57 @@ table.metas-admin-table .admin-col--actions {
   .admin-page__toolbar--between {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-card,
+  .admin-card--form,
+  .admin-surface--form {
+    padding: 14px;
+  }
+
+  .admin-form-select--wide,
+  .admin-search-input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-search-form,
+  .admin-search-form .admin-button {
+    width: 100%;
+  }
+
+  .admin-page__toolbar .admin-button,
+  .admin-page__toolbar .admin-link-button {
+    justify-content: center;
+  }
+
+  .metas-row {
+    padding: 12px;
+  }
+
+  .metas-row__primary,
+  .metas-row__weeks {
+    grid-template-columns: 1fr;
+  }
+
+  .metas-row__actions {
+    flex-direction: column;
+  }
+
+  .metas-row__actions .admin-button,
+  .metas-row__actions .admin-link-button {
+    width: 100%;
+  }
+
+  .ui-dialog {
+    max-width: calc(100vw - 24px) !important;
+    margin: 12px !important;
+  }
+
+  .ui-dialog .ui-dialog-content {
+    max-width: 100%;
+    overflow-x: auto;
   }
 }

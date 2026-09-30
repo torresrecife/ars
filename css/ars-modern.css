@@ -568,6 +568,7 @@ div.cpanel-right-sub {
   padding: 40px 28px;
 }
 .auth-card {
+  box-sizing: border-box;
   width: 100%;
   max-width: 420px;
   background: #ffffff;
@@ -1387,4 +1388,77 @@ label.filter-published-lbl {
   margin: 0;
   padding: 0;
   width: 242px;
+}
+
+/* Responsive compatibility layer. Keep in sync with resources/sass until Mix is mandatory. */
+body#minwidth-body { min-width: 0; }
+.responsive-table {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+.responsive-table:focus-visible {
+  outline: 3px solid rgba(28, 134, 238, .22);
+  outline-offset: 2px;
+}
+.responsive-table--dashboard .dashboard-table { min-width: 980px; }
+.responsive-table--report .report-table--weekly { min-width: 760px; }
+.responsive-table--report .report-table--monthly { min-width: 980px; }
+.responsive-table--detail .detail-table { width: 100%; min-width: 1080px; }
+.admin-surface--table {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 960px) {
+  html { overflow-y: auto; }
+  body, body#minwidth-body {
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    height: auto;
+    margin: 0;
+  }
+  .dashboard-title, .dashboard-region-tabs, .report-title { margin-left: 0; }
+  .dashboard-region-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
+  .dashboard-region-tab { flex: 0 0 auto; min-height: 38px; display: inline-flex; align-items: center; }
+  .report-switch { float: none; min-height: 38px; margin: 0 0 12px; padding: 0 14px; }
+  .detail-actions--andamento, .detail-actions--financial,
+  .detail-summary--andamento, .detail-summary--financial { width: 100%; }
+  .detail-summary td { display: block; width: 100%; padding: 6px 0; text-align: left; }
+}
+
+@media (max-width: 900px) {
+  table.adminlist--modern { min-width: 760px; table-layout: auto; }
+}
+
+@media (max-width: 640px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+    width: 100%;
+    min-height: 100vh;
+  }
+  .auth-layout__hero {
+    min-width: 0;
+    align-items: flex-start;
+    border-right: 0;
+    border-bottom: 1px solid #e0e7ee;
+    padding: 24px 20px;
+  }
+  .auth-layout__brand { margin-bottom: 18px; }
+  .auth-layout__brand-mark { width: 48px; height: 48px; border-radius: 14px; }
+  .auth-layout__hero-copy h1 { font-size: 27px; }
+  .auth-layout__hero-copy p { font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+  .auth-layout__panel { align-items: flex-start; min-width: 0; padding: 20px; }
+  .auth-card { width: 100%; min-width: 0; max-width: 100%; padding: 22px 18px; border-radius: 14px; }
+  .detail-actions__button { width: 100%; min-height: 44px; }
+  .ui-dialog { max-width: calc(100vw - 24px) !important; margin: 12px !important; }
+  .ui-dialog .ui-dialog-content { max-width: 100%; overflow-x: auto; }
 }

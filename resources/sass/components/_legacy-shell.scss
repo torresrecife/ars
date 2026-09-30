@@ -18,7 +18,22 @@ th {
 
 body#minwidth-body {
   height: 95%;
-  min-width: 960px;
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  html {
+    overflow-y: auto;
+  }
+
+  body,
+  body#minwidth-body {
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    height: auto;
+    margin: 0;
+  }
 }
 
 a,

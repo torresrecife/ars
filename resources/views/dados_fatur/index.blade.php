@@ -1,4 +1,5 @@
 <html height="100%">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="{{ asset('css/ars-modern.css') }}">
 <script type="text/javascript" src="{{ asset('js/jquery-1.8.0.min.js') }}"></script>
 @if (is_file(public_path('mix-manifest.json')) && is_file(public_path('build/js/ars-details.js')))
@@ -9,6 +10,7 @@
 @endif
 <body>
 @php $index = 1; @endphp
+<div class="responsive-table responsive-table--detail" role="region" aria-label="{{ __('Financial') }}" tabindex="0">
 <table align="center" id="tbf1" border="1" cellspacing="5" cellpadding="5" bordercolor="#ccc" class="detail-table detail-table--financial">
 <tr class="detail-table__header">
 <th align="center" class="comFiltro"><b>N.</b></th>
@@ -48,6 +50,7 @@
 </tr>
 @endforeach
 </table>
+</div>
 <table align="center" border="0" cellspacing="2" cellpadding="2" class="detail-summary detail-summary--financial">
 <tr>
 <td align="left">{{ __('Bank') }}: {{ e((string) $bankName) }}</td>
