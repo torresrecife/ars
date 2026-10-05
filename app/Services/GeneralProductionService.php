@@ -87,21 +87,26 @@ class GeneralProductionService
 		);
 
 		foreach ($banks as $bank) {
-			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context->month(), $context->year(), $regionFilter->selectedRegionId());
-			$aggregate = $this->aggregateFinancialMetas($metaRows);
+			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context->month(), $context->year(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds());
+			$metaGroups = $this->splitFinancialMetaRows($metaRows);
+			$aggregate = $this->aggregateFinancialMetas($metaGroups['regular']);
+			$prejudiceAggregate = $this->aggregateFinancialMetas($metaGroups['prejudice']);
 			$carteiraCodes = $this->repository->listCarteiraCodesByBankId($bank['banco_id']);
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);
 			$events = $this->loadFinancialMonthEvents($bank['banco_id'], $aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
+			$prejudiceEvents = empty($prejudiceAggregate['types']) ? array() : $this->loadFinancialMonthEvents($bank['banco_id'], $prejudiceAggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
 			$sum = $this->aggregateFinancialEvents($events, $aggregate['types']);
+			$prejudiceSum = $this->aggregateFinancialEvents($prejudiceEvents, $prejudiceAggregate['types']);
+			$realized = $sum['total'] - $prejudiceSum['total'];
 			$metaToday = ($usefulDaysMonth > 0) ? ($aggregate['metaTotal'] / $usefulDaysMonth) * $usefulDaysCurrent : 0.0;
-			$percentToday = $this->metricFormatter->percent($sum['total'], $metaToday, 1);
-			$percentMonth = $this->metricFormatter->percent($sum['total'], $aggregate['metaTotal'], 1);
+			$percentToday = $this->metricFormatter->percent($realized, $metaToday, 1);
+			$percentMonth = $this->metricFormatter->percent($realized, $aggregate['metaTotal'], 1);
 			$rows[] = new WeeklyProductionRow(
 				$bank['banco_name'],
 				$aggregate['metaTotal'],
 				$metaToday,
-				$sum['total'],
-				$sum['total'] - $metaToday,
+				$realized,
+				$realized - $metaToday,
 				$percentToday,
 				$percentMonth,
 				$this->metricFormatter->heatColor($percentToday),
@@ -110,7 +115,7 @@ class GeneralProductionService
 			);
 			$totals['metaMonth'] += $aggregate['metaTotal'];
 			$totals['metaToday'] += $metaToday;
-			$totals['realized'] += $sum['total'];
+			$totals['realized'] += $realized;
 		}
 
 		$totals['balance'] = $totals['realized'] - $totals['metaToday'];
@@ -183,29 +188,35 @@ class GeneralProductionService
 		$grandReal = 0.0;
 
 		foreach ($banks as $bank) {
-			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context->month(), $context->year(), $regionFilter->selectedRegionId());
-			$aggregate = $this->aggregateFinancialMetas($metaRows);
+			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context->month(), $context->year(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds());
+			$metaGroups = $this->splitFinancialMetaRows($metaRows);
+			$aggregate = $this->aggregateFinancialMetas($metaGroups['regular']);
+			$prejudiceAggregate = $this->aggregateFinancialMetas($metaGroups['prejudice']);
 			$carteiraCodes = $this->repository->listCarteiraCodesByBankId($bank['banco_id']);
 			$carteiraMode = $this->repository->findCarteiraModeByBankId($bank['banco_id']);
 			$events = $this->loadFinancialWeekMonthEvents($bank['banco_id'], $aggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
+			$prejudiceEvents = empty($prejudiceAggregate['types']) ? array() : $this->loadFinancialWeekMonthEvents($bank['banco_id'], $prejudiceAggregate['types'], $carteiraCodes, $carteiraMode, $context->month(), $context->year(), $regionFilter->ufs());
 			$weeksLookup = $this->buildWeekFinancialLookup($events, $weeks, $aggregate['types']);
+			$prejudiceWeeksLookup = $this->buildWeekFinancialLookup($prejudiceEvents, $weeks, $prejudiceAggregate['types']);
 			$weekData = array();
 			$totalReal = 0.0;
 
 			foreach ($weeks as $index => $week) {
 				$meta = $this->resolveMonthlyWeekMeta($aggregate, $index, $weeks);
-				$real = isset($weeksLookup[$index]) ? $weeksLookup[$index] : array('total' => 0.0, 'codes' => array());
-				$percent = $this->metricFormatter->percent($real['total'], $meta, 0);
+				$regularReal = isset($weeksLookup[$index]) ? $weeksLookup[$index] : array('total' => 0.0, 'codes' => array());
+				$prejudiceReal = isset($prejudiceWeeksLookup[$index]) ? $prejudiceWeeksLookup[$index] : array('total' => 0.0, 'codes' => array());
+				$realValue = $regularReal['total'] - $prejudiceReal['total'];
+				$percent = $this->metricFormatter->percent($realValue, $meta, 0);
 				$weekData[] = new DashboardMetricCell(
 					$meta,
-					$real['total'],
+					$realValue,
 					$percent,
 					$this->metricFormatter->percentIcon($percent),
-					$real['codes']
+					$regularReal['codes']
 				);
 				$weekMetaTotals[$index] += $meta;
-				$weekRealTotals[$index] += $real['total'];
-				$totalReal += $real['total'];
+				$weekRealTotals[$index] += $realValue;
+				$totalReal += $realValue;
 			}
 
 			$totalPercent = $this->metricFormatter->percent($totalReal, $aggregate['metaTotal'], 0);
@@ -328,19 +339,46 @@ class GeneralProductionService
 			return $default;
 		}
 
+		$level = $context->userLevel();
+		$mode = $context->userRegionMode();
+		$selectedRegionId = $context->selectedRegionId();
 		$userRegions = $this->regionService->listUserRegions($context->userId());
 		$regionIds = array();
 		foreach ($userRegions as $region) {
 			$regionIds[] = (int) $region['regiao_id'];
 		}
 
+		if ($level === 'ADM') {
+			$activeRegionIds = array();
+			foreach ($this->regionService->listActive() as $region) {
+				$activeRegionIds[] = (int) $region['regiao_id'];
+			}
+
+			if ($selectedRegionId > 0 && in_array($selectedRegionId, $activeRegionIds, true)) {
+				$region = $this->regionService->findUserRegion($context->userId(), $selectedRegionId);
+				if (!$region) {
+					foreach ($this->regionService->listActive() as $activeRegion) {
+						if ((int) $activeRegion['regiao_id'] === $selectedRegionId) {
+							$region = $activeRegion;
+							break;
+						}
+					}
+				}
+
+				return new GeneralProductionRegionFilter(
+					$selectedRegionId,
+					$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
+					$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : '',
+					array($selectedRegionId)
+				);
+			}
+
+			return new GeneralProductionRegionFilter(0, array(), '', $activeRegionIds);
+		}
+
 		if (empty($regionIds)) {
 			return $default;
 		}
-
-		$level = $context->userLevel();
-		$mode = $context->userRegionMode();
-		$selectedRegionId = $context->selectedRegionId();
 
 		if ($level === 'USU' && $mode === 'R') {
 			$selectedRegionId = (int) $regionIds[0];
@@ -349,7 +387,8 @@ class GeneralProductionService
 			return new GeneralProductionRegionFilter(
 				$selectedRegionId,
 				$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-				$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : ''
+				$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : '',
+				array($selectedRegionId)
 			);
 		}
 
@@ -360,7 +399,8 @@ class GeneralProductionService
 				return new GeneralProductionRegionFilter(
 					$selectedRegionId,
 					$this->regionService->listUfsByRegionIds(array($selectedRegionId)),
-					$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : ''
+					$region ? ' | ' . __('Region') . ': <b>' . $region['regiao_nome'] . '</b>' : '',
+					array($selectedRegionId)
 				);
 			}
 
@@ -368,12 +408,42 @@ class GeneralProductionService
 				return new GeneralProductionRegionFilter(
 					0,
 					$this->regionService->listUfsByRegionIds($regionIds),
-					' | ' . __('Regions') . ': <b>' . __('All linked') . '</b>'
+					' | ' . __('Regions') . ': <b>' . __('All linked') . '</b>',
+					$regionIds
 				);
 			}
 		}
 
 		return $default;
+	}
+
+	private function splitFinancialMetaRows(array $metaRows)
+	{
+		$groups = array(
+			'regular' => array(),
+			'prejudice' => array(),
+		);
+
+		foreach ($metaRows as $row) {
+			$group = $this->isPrejudiceMetaRow($row) ? 'prejudice' : 'regular';
+			$groups[$group][] = $row;
+		}
+
+		return $groups;
+	}
+
+	private function isPrejudiceMetaRow(array $row)
+	{
+		$prejudiceName = 'CUSTAS POR FALHA OPERACIONAL';
+
+		foreach (array('nome', 'chave', 'anda_neo') as $field) {
+			$value = isset($row[$field]) ? trim((string) $row[$field]) : '';
+			if (strcasecmp($value, $prejudiceName) === 0) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private function aggregateFinancialMetas(array $metaRows)
@@ -391,10 +461,15 @@ class GeneralProductionService
 			for ($week = 1; $week <= 5; $week++) {
 				$semanas[$week - 1] += isset($row['sem_' . $week]) ? (float) $row['sem_' . $week] : 0.0;
 			}
-			foreach (explode(',', (string) $row['anda_neo']) as $type) {
-				$type = trim($type);
-				if ($type !== '') {
-					$types[$type] = $type;
+			// A meta can identify the same financial type through its display name,
+			// key, or Neo name. The individual panel accepts all three forms; the
+			// general report must do the same so region-specific metas are not lost.
+			foreach (array('nome', 'chave', 'anda_neo') as $field) {
+				foreach (explode(',', (string) (isset($row[$field]) ? $row[$field] : '')) as $type) {
+					$type = trim($type);
+					if ($type !== '') {
+						$types[$type] = $type;
+					}
 				}
 			}
 		}
@@ -409,7 +484,10 @@ class GeneralProductionService
 
 	private function aggregateFinancialEvents(array $events, array $types)
 	{
-		$allowedTypes = array_fill_keys($types, true);
+		$allowedTypes = array();
+		foreach ($types as $type) {
+			$allowedTypes[$this->normalizeTypeName($type)] = true;
+		}
 		$total = 0.0;
 		$codes = array();
 		$seen = array();
@@ -418,7 +496,7 @@ class GeneralProductionService
 			$type = isset($event['type_name']) ? trim((string) $event['type_name']) : '';
 			$code = isset($event['code']) ? (string) $event['code'] : '';
 			$value = isset($event['value']) ? (float) $event['value'] : 0.0;
-			if ($type === '' || $code === '' || !isset($allowedTypes[$type])) {
+			if ($type === '' || $code === '' || !isset($allowedTypes[$this->normalizeTypeName($type)])) {
 				continue;
 			}
 
@@ -449,13 +527,16 @@ class GeneralProductionService
 			);
 		}
 
-		$allowedTypes = array_fill_keys($types, true);
+		$allowedTypes = array();
+		foreach ($types as $type) {
+			$allowedTypes[$this->normalizeTypeName($type)] = true;
+		}
 		foreach ($events as $event) {
 			$type = isset($event['type_name']) ? trim((string) $event['type_name']) : '';
 			$code = isset($event['code']) ? (string) $event['code'] : '';
 			$value = isset($event['value']) ? (float) $event['value'] : 0.0;
 			$day = isset($event['day_number']) ? (int) $event['day_number'] : 0;
-			if ($type === '' || $code === '' || $day <= 0 || !isset($allowedTypes[$type])) {
+			if ($type === '' || $code === '' || $day <= 0 || !isset($allowedTypes[$this->normalizeTypeName($type)])) {
 				continue;
 			}
 
@@ -521,6 +602,21 @@ class GeneralProductionService
 		return Cache::remember($key, now()->addSeconds($ttl), function () use ($typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes) {
 			return $this->neoRepository->listFinancialWeekMonthEvents($typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes);
 		});
+	}
+
+	private function normalizeTypeName($value)
+	{
+		$value = trim((string) $value);
+		if ($value === '') {
+			return '';
+		}
+
+		$ascii = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value);
+		if (is_string($ascii) && $ascii !== '') {
+			$value = $ascii;
+		}
+
+		return preg_replace('/[^a-z0-9]+/', '', strtolower($value));
 	}
 
 	private function neoCacheKey($prefix, $bankId, array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $ufCodes = array())

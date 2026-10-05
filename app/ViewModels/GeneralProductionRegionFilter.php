@@ -15,11 +15,15 @@ class GeneralProductionRegionFilter
 	/** @var string */
 	private $label;
 
-	public function __construct($selectedRegionId, array $ufs, $label)
+	/** @var array */
+	private $metaRegionIds;
+
+	public function __construct($selectedRegionId, array $ufs, $label, array $metaRegionIds = array())
 	{
 		$this->selectedRegionId = (int) $selectedRegionId;
 		$this->ufs = $ufs;
 		$this->label = (string) $label;
+		$this->metaRegionIds = array_values(array_unique(array_map('intval', $metaRegionIds)));
 	}
 
 	public function selectedRegionId()
@@ -35,5 +39,10 @@ class GeneralProductionRegionFilter
 	public function label()
 	{
 		return $this->label;
+	}
+
+	public function metaRegionIds()
+	{
+		return $this->metaRegionIds;
 	}
 }

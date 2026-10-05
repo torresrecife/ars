@@ -62,7 +62,7 @@ class GeneralProductionRepository
 			->all();
 	}
 
-	public function listFinancialMetasByBankMonthYear($bankId, $month, $year, $regionId = 0)
+	public function listFinancialMetasByBankMonthYear($bankId, $month, $year, $regionId = 0, array $regionIds = array())
 	{
 		$query = DB::table('metas_andamentos as m')
 			->join('andamentos as a', 'a.anda_id', '=', 'm.anda_id')
@@ -73,6 +73,11 @@ class GeneralProductionRepository
 
 		if ((int) $regionId > 0) {
 			$query->where('m.regiao_id', (int) $regionId);
+		} elseif (!empty($regionIds)) {
+			$query->where(function ($query) use ($regionIds) {
+				$query->whereNull('m.regiao_id')
+					->orWhereIn('m.regiao_id', array_values(array_unique(array_map('intval', $regionIds))));
+			});
 		} else {
 			$query->whereNull('m.regiao_id');
 		}
@@ -88,6 +93,8 @@ class GeneralProductionRepository
 				'm.sem_4',
 				'm.sem_5',
 				'm.regiao_id',
+				'a.nome',
+				'a.chave',
 				'a.anda_neo',
 			))
 			->map(function ($row) {
