@@ -131,6 +131,12 @@
   width: 0.5%;
 }
 
+.report-table--monthly .report-cell--status {
+  min-width: 76px;
+  width: 76px;
+  white-space: nowrap;
+}
+
 .report-table .cls_real {
   font-weight: bold;
   color: #8B4513;
