@@ -776,6 +776,10 @@ div.cpanel-right-sub {
 .report-cell--meta { background: #F0F0F0; }
 .report-cell--total-meta { background: #F2F5A9; }
 .report-cell--black-text { color: #000000; }
+.report-cell--prejudice {
+  background: #FDE2E2 !important;
+  color: #9B1C1C;
+}
 .report-cell--gap { width: 0.5%; }
 .report-table td.cls_dados {
   border-left-width: 1px;

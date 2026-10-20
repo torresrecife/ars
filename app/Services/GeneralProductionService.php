@@ -186,6 +186,7 @@ class GeneralProductionService
 		$weekRealTotals = array_fill(0, count($weeks), 0.0);
 		$grandMeta = 0.0;
 		$grandReal = 0.0;
+		$grandPrejudice = 0.0;
 
 		foreach ($banks as $bank) {
 			$metaRows = $this->repository->listFinancialMetasByBankMonthYear($bank['banco_id'], $context->month(), $context->year(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds());
@@ -200,6 +201,7 @@ class GeneralProductionService
 			$prejudiceWeeksLookup = $this->buildWeekFinancialLookup($prejudiceEvents, $weeks, $prejudiceAggregate['types']);
 			$weekData = array();
 			$totalReal = 0.0;
+			$totalPrejudice = 0.0;
 
 			foreach ($weeks as $index => $week) {
 				$meta = $this->resolveMonthlyWeekMeta($aggregate, $index, $weeks);
@@ -217,6 +219,7 @@ class GeneralProductionService
 				$weekMetaTotals[$index] += $meta;
 				$weekRealTotals[$index] += $realValue;
 				$totalReal += $realValue;
+				$totalPrejudice += $prejudiceReal['total'];
 			}
 
 			$totalPercent = $this->metricFormatter->percent($totalReal, $aggregate['metaTotal'], 0);
@@ -225,11 +228,13 @@ class GeneralProductionService
 				$weekData,
 				$aggregate['metaTotal'],
 				$totalReal,
+				$totalPrejudice,
 				$totalPercent,
 				$this->metricFormatter->percentIcon($totalPercent)
 			);
 			$grandMeta += $aggregate['metaTotal'];
 			$grandReal += $totalReal;
+			$grandPrejudice += $totalPrejudice;
 		}
 
 		$totalWeekData = array();
@@ -259,6 +264,7 @@ class GeneralProductionService
 				$totalWeekData,
 				$grandMeta,
 				$grandReal,
+				$grandPrejudice,
 				$grandPercent,
 				$this->metricFormatter->percentIcon($grandPercent)
 			),

@@ -19,7 +19,7 @@
 			<td align="center" colspan="3" class="cls_sema">{{ $week['label'] }}</td>
 		@endforeach
 		<td class="report-cell--gap"></td>
-		<td align="center" colspan="3" rowspan="1" class="cls_sema cls_vals">{{ __('Total') }}</td>
+		<td align="center" colspan="4" rowspan="1" class="cls_sema cls_vals">{{ __('Total') }}</td>
 	</tr>
 	<tr>
 		@foreach ($weeks as $week)
@@ -30,6 +30,7 @@
 		<td class=""></td>
 		<td align="center" class="cls_dados cls_bk2">{{ __('Goal') }}</td>
 		<td align="center" class="cls_dados cls_bk2">{{ __('Realized') }}</td>
+		<td align="center" class="cls_dados report-cell--prejudice">{{ __('Losses') }}</td>
 		<td align="center" class="cls_dados cls_bk2 report-cell--status">{{ __('Status Light') }}</td>
 	</tr>
 	@foreach ($rows as $row)
@@ -43,6 +44,7 @@
 		<td class="">&nbsp;</td>
 		<td class="cls_body cls_bk report-cell--total-meta" align="center"><b>{{ number_format($row['totalMeta'], 2, ',', '.') }}</b></td>
 		<td class="cls_body cls_bk report-cell--black-text" align="center"><b>{{ number_format($row['totalReal'], 2, ',', '.') }}</b></td>
+		<td class="cls_body report-cell--prejudice" align="center"><b>{{ number_format($row['totalPrejudice'], 2, ',', '.') }}</b></td>
 		<td class="cls_body cls_bk report-cell--black-text report-cell--status" align="center"><img src="{{ $metricIconUrl($row['totalIcon']) }}" class="box" />{{ number_format($row['totalPercent'], 0, ',', '') }} %</td>
 	</tr>
 	@endforeach
@@ -57,6 +59,7 @@
 		<td class="">&nbsp;</td>
 		<td align="center" class="cls_vals2 cls_bk report-cell--total-meta"><b>{{ number_format($totals['meta'], 2, ',', '.') }}</b></td>
 		<td align="center" class="cls_vals2 cls_bk"><b>{{ number_format($totals['real'], 2, ',', '.') }}</b></td>
+		<td align="center" class="cls_vals2 report-cell--prejudice"><b>{{ number_format($totals['prejudice'], 2, ',', '.') }}</b></td>
 		<td align="center" class="cls_vals2 cls_bk report-cell--status"><img src="{{ $metricIconUrl($totals['icon']) }}" class="box" /><b>{{ number_format($totals['percent'], 0, ',', '') }} %</b></td>
 	</tr>
 	<input type="hidden" name="startSetor" value="{{ e($startSector) }}"/>

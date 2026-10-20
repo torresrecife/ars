@@ -16,16 +16,20 @@ class MonthlyProductionTotals
 	private $real;
 
 	/** @var float */
+	private $prejudice;
+
+	/** @var float */
 	private $percent;
 
 	/** @var string */
 	private $icon;
 
-	public function __construct(array $weeks, $meta, $real, $percent, $icon)
+	public function __construct(array $weeks, $meta, $real, $prejudice, $percent, $icon)
 	{
 		$this->weeks = $weeks;
 		$this->meta = (float) $meta;
 		$this->real = (float) $real;
+		$this->prejudice = (float) $prejudice;
 		$this->percent = (float) $percent;
 		$this->icon = (string) $icon;
 	}
@@ -36,6 +40,7 @@ class MonthlyProductionTotals
 			'weeks' => $this->normalizeList($this->weeks),
 			'meta' => $this->meta,
 			'real' => $this->real,
+			'prejudice' => $this->prejudice,
 			'percent' => $this->percent,
 			'icon' => $this->icon,
 		);
