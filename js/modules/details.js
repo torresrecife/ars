@@ -3,12 +3,12 @@ $(document).ready(function () {
 		carregarFiltros('tbf1');
 	}
 
-	$('tr').dblclick(function () {
-		$(this).css('background', '#ffffff');
+	$('#tbf1 tr:not(.detail-table__header)').dblclick(function () {
+		$(this).removeClass('detail-row--selected');
 	});
 
-	$('tr').click(function () {
-		$(this).css('background', 'yellow');
+	$('#tbf1 tr:not(.detail-table__header)').click(function () {
+		$(this).addClass('detail-row--selected');
 	});
 });
 

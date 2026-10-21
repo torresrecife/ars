@@ -82,6 +82,66 @@
   width: 70%;
 }
 
+.detail-table,
+.detail-summary {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #d7e1e8;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 7px rgba(31, 55, 74, .08);
+}
+
+.detail-table th,
+.detail-table td,
+.detail-summary td {
+  border: 0;
+  border-bottom: 1px solid #e1e9ee;
+  padding: 7px 9px;
+}
+
+.detail-table__header {
+  background: #29465f;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.detail-table__row--interactive:hover {
+  background: #eef6fb;
+}
+
+.detail-table td {
+  white-space: nowrap;
+  font-size: 8.5pt;
+}
+
+.detail-table tr:nth-child(even) td {
+  background: #f8fafb;
+}
+
+.detail-table tr:hover td {
+  background: #eef6fb;
+}
+
+.detail-table tr.detail-row--selected td {
+  background: #fff94d !important;
+  color: #1f2933;
+}
+
+.detail-table .cls_real {
+  color: #2f80c8;
+  font-weight: 700;
+}
+
+.detail-summary {
+  background: #ffffff;
+}
+
+.detail-summary td {
+  color: #29465f;
+  font-size: 9pt;
+}
+
 @media (max-width: 960px) {
   .detail-actions--andamento,
   .detail-actions--financial,

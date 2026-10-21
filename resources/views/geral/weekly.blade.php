@@ -8,9 +8,9 @@
 <div class="responsive-table responsive-table--report" role="region" aria-label="{{ __('Weekly') }}" tabindex="0">
 <table align="center" height="50%" border="0" cellspacing="3" cellpadding="3" class="report-table report-table--weekly">
 	<tr>
-		<td align="center" colspan="6" class="cls_indic">{{ __('Production') }} - BVAA</td>
+		<td align="center" colspan="6" class="cls_indic report-header-group">{{ __('Production') }} - BVAA</td>
 		<td align="center" colspan="0"></td>
-		<td align="center" colspan="1" class="cls_indic2">{{ __('Total') }}</td>
+		<td align="center" colspan="1" class="cls_indic2 report-header-group report-header-group--total">{{ __('Total') }}</td>
 	</tr>
 	<tr>
 		<td align="center" class="cls_dados cls_vals">{{ __('Client') }}</td>
