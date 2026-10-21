@@ -14,24 +14,24 @@
 <div class="responsive-table responsive-table--report" role="region" aria-label="{{ __('Monthly') }}" tabindex="0">
 <table align="center" height="50%" border="0" cellspacing="3" cellpadding="3" class="report-table report-table--monthly {{ $weekCountClass }}">
 	<tr>
-		<td align="center" rowspan="2" class="cls_sema cls_indic">{{ __('Clients') }}</td>
+		<td align="center" rowspan="2" class="cls_sema cls_indic report-header-main">{{ __('Clients') }}</td>
 		@foreach ($weeks as $week)
-			<td align="center" colspan="3" class="cls_sema">{{ $week['label'] }}</td>
+			<td align="center" colspan="3" class="cls_sema report-header-week">{{ $week['label'] }}</td>
 		@endforeach
 		<td class="report-cell--gap"></td>
-		<td align="center" colspan="4" rowspan="1" class="cls_sema cls_vals">{{ __('Total') }}</td>
+		<td align="center" colspan="4" rowspan="1" class="cls_sema cls_vals report-header-total">{{ __('Total') }}</td>
 	</tr>
 	<tr>
 		@foreach ($weeks as $week)
-			<td align="center" class="cls_dados cls_vals">{{ __('Goal') }}</td>
-			<td align="center" class="cls_dados cls_vals">{{ __('Realized') }}</td>
-			<td align="center" class="cls_dados cls_vals">{{ __('Percent') }}</td>
+			<td align="center" class="cls_dados cls_vals report-header-sub">{{ __('Goal') }}</td>
+			<td align="center" class="cls_dados cls_vals report-header-sub">{{ __('Realized') }}</td>
+			<td align="center" class="cls_dados cls_vals report-header-sub">{{ __('Percent') }}</td>
 		@endforeach
 		<td class=""></td>
-		<td align="center" class="cls_dados cls_bk2">{{ __('Goal') }}</td>
-		<td align="center" class="cls_dados cls_bk2">{{ __('Realized') }}</td>
-		<td align="center" class="cls_dados report-cell--prejudice">{{ __('Losses') }}</td>
-		<td align="center" class="cls_dados cls_bk2 report-cell--status">{{ __('Status Light') }}</td>
+		<td align="center" class="cls_dados cls_bk2 report-header-sub report-header-total-sub">{{ __('Goal') }}</td>
+		<td align="center" class="cls_dados cls_bk2 report-header-sub report-header-total-sub">{{ __('Realized') }}</td>
+		<td align="center" class="cls_dados report-cell--prejudice report-header-sub">{{ __('Losses') }}</td>
+		<td align="center" class="cls_dados cls_bk2 report-header-sub report-header-total-sub report-cell--status">{{ __('Status Light') }}</td>
 	</tr>
 	@foreach ($rows as $row)
 	<tr class="report-row">
@@ -49,7 +49,7 @@
 	</tr>
 	@endforeach
 	<tr height="5px"></tr>
-	<tr>
+	<tr class="report-total-row">
 		<td class="cls_bk"><b>{{ __('Total') }}</b></td>
 		@foreach ($totals['weeks'] as $weekTotal)
 			<td align="center" class="cls_vals2 cls_bk report-cell--total-meta"><b>{{ number_format($weekTotal['meta'], 2, ',', '.') }}</b></td>
