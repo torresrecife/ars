@@ -40,6 +40,26 @@
   font-size: 10pt;
 }
 
+.dashboard-filter-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dashboard-filter-row .dashboard-region-tabs,
+.dashboard-filter-row .dashboard-person-tabs {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.dashboard-filter-row .dashboard-person-tabs {
+  margin-left: auto;
+  margin-right: 40px;
+  white-space: nowrap;
+  text-align: right;
+}
+
 .dashboard-table {
   font-family: $font-ui;
   font-size: 8pt;
@@ -172,8 +192,15 @@
 
 @media (max-width: 960px) {
   .dashboard-title,
-  .dashboard-region-tabs {
+  .dashboard-region-tabs,
+  .dashboard-person-tabs {
     margin-left: 0;
+  }
+
+  .dashboard-filter-row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0;
   }
 
   .dashboard-region-tabs {
@@ -181,6 +208,13 @@
     gap: 8px;
     overflow-x: auto;
     padding-bottom: 6px;
+  }
+
+  .dashboard-filter-row .dashboard-person-tabs {
+    margin-right: 0;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    text-align: left;
   }
 
   .dashboard-region-tab {

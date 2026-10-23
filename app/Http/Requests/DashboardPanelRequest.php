@@ -21,6 +21,7 @@ class DashboardPanelRequest extends FormRequest
 			'mes' => array('nullable', 'integer', 'between:1,12'),
 			'ano' => array('nullable', 'integer', 'min:2000', 'max:2100'),
 			'regiao_id' => array('nullable', 'integer', 'min:0'),
+			'pessoa_tipo' => array('nullable', 'in:todos,fisica,juridica'),
 		);
 	}
 }

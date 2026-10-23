@@ -29,8 +29,9 @@ class DashboardPanelContext
 
 	/** @var int */
 	private $selectedRegionId;
+	private $personType;
 
-	public function __construct($bankId, $areaId, $month, $year, $userId, $userLevel, $userRegionMode, $selectedRegionId)
+	public function __construct($bankId, $areaId, $month, $year, $userId, $userLevel, $userRegionMode, $selectedRegionId, $personType = 'todos')
 	{
 		$this->bankId = (int) $bankId;
 		$this->areaId = (string) $areaId;
@@ -40,6 +41,7 @@ class DashboardPanelContext
 		$this->userLevel = (string) $userLevel;
 		$this->userRegionMode = (string) $userRegionMode;
 		$this->selectedRegionId = (int) $selectedRegionId;
+		$this->personType = in_array((string) $personType, array('fisica', 'juridica'), true) ? (string) $personType : 'todos';
 	}
 
 	public function bankId()
@@ -80,5 +82,25 @@ class DashboardPanelContext
 	public function selectedRegionId()
 	{
 		return $this->selectedRegionId;
+	}
+
+	public function personType()
+	{
+		return $this->personType;
+	}
+
+	public function withPersonType($personType)
+	{
+		return new self(
+			$this->bankId,
+			$this->areaId,
+			$this->month,
+			$this->year,
+			$this->userId,
+			$this->userLevel,
+			$this->userRegionMode,
+			$this->selectedRegionId,
+			$personType
+		);
 	}
 }

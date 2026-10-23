@@ -22,6 +22,7 @@ class DashboardPanelInput
 			'mes' => isset($payload['mes']) ? $payload['mes'] : date('m'),
 			'ano' => isset($payload['ano']) ? $payload['ano'] : date('Y'),
 			'regiao_id' => isset($payload['regiao_id']) ? $payload['regiao_id'] : 0,
+			'pessoa_tipo' => isset($payload['pessoa_tipo']) ? $payload['pessoa_tipo'] : 'todos',
 		));
 	}
 

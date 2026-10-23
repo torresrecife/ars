@@ -24,7 +24,19 @@ function painelNavegarMes(bankId,direcao){
 		area_id: $('#panel_area_id').val() || '',
 		regiao_id: $('#regiao_id').val() || (window.arsPanelConfig ? window.arsPanelConfig.regionId : 0),
 		mes: $('#mes').val(),
-		ano: $('#ano').val()
+		ano: $('#ano').val(),
+		pessoa_tipo: $('#pessoa_tipo').val() || 'todos'
+	});
+}
+
+function painelNavegarPessoa(bankId, pessoaTipo){
+	NavegarModulo('painel', {
+		bank_id: bankId,
+		area_id: $('#panel_area_id').val() || '',
+		regiao_id: $('#regiao_id').val() || (window.arsPanelConfig ? window.arsPanelConfig.regionId : 0),
+		mes: $('#mes').val(),
+		ano: $('#ano').val(),
+		pessoa_tipo: pessoaTipo || 'todos'
 	});
 }
 
@@ -34,7 +46,8 @@ function painelNavegarRegiao(bankId,regiaoId){
 		area_id: $('#panel_area_id').val() || '',
 		regiao_id: regiaoId,
 		mes: $('#mes').val(),
-		ano: $('#ano').val()
+		ano: $('#ano').val(),
+		pessoa_tipo: $('#pessoa_tipo').val() || 'todos'
 	});
 }
 

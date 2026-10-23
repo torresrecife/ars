@@ -98,6 +98,17 @@ abstract class NeoSqlsrvRepository
 		return ' AND ' . $field . ' IN (' . $quoted . ')';
 	}
 
+	protected function buildPersonTypeCondition($personType, $processField = 'p.CodigoProcesso')
+	{
+		$personType = (string) $personType;
+		if ($personType === 'todos') {
+			return '';
+		}
+
+		$tipoJuridica = $personType === 'juridica' ? '1' : '0';
+		return " AND EXISTS (SELECT 1 FROM v_Parte_Processo AS pp WITH (NOLOCK) WHERE pp.CodigoProcesso = " . $processField . " AND pp.TipoPessoa = N'Réu' AND ISNULL(pp.TipoJuridica, 0) = " . $tipoJuridica . ")";
+	}
+
 	protected function buildMonthYearCondition($field, $month, $year)
 	{
 		$range = $this->monthDateRange((int) $month, (int) $year);

@@ -31,7 +31,7 @@ class NeoPanelRepository extends NeoSqlsrvRepository
 		);
 	}
 
-	public function listProductionEventsByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
+	public function listProductionEventsByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array(), $personType = 'todos')
 	{
 		if (!$this->isAvailable()) {
 			return array();
@@ -46,7 +46,7 @@ class NeoPanelRepository extends NeoSqlsrvRepository
 			SELECT a.TipoAndamentoProcesso as type_name, a.CodigoAndamento as code
 			' . $this->productionFromJoin()
 			. ' WHERE a.TipoAndamentoProcesso IN (' . $typeList . ')';
-		$query .= $this->buildProductionBaseConditions($carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		$query .= $this->buildProductionBaseConditions($carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes, $personType);
 		$query .= ' GROUP BY a.TipoAndamentoProcesso, a.CodigoAndamento';
 
 		return $this->fetchAll($query);
@@ -78,13 +78,13 @@ class NeoPanelRepository extends NeoSqlsrvRepository
 		);
 	}
 
-	public function listFinancialEventsByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
+	public function listFinancialEventsByWeek(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array(), $personType = 'todos')
 	{
 		if (!$this->isAvailable()) {
 			return array();
 		}
 
-		$where = $this->buildFinancialWhere($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		$where = $this->buildFinancialWhere($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes, $personType);
 		if ($where === '') {
 			return array();
 		}
@@ -113,7 +113,7 @@ class NeoPanelRepository extends NeoSqlsrvRepository
 		return $query;
 	}
 
-	private function buildFinancialWhere(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
+	private function buildFinancialWhere(array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array(), $personType = 'todos')
 	{
 		$typeList = $this->buildQuotedList($typeNames);
 		if ($typeList === '') {
@@ -122,6 +122,7 @@ class NeoPanelRepository extends NeoSqlsrvRepository
 
 		$query = ' WHERE l.TipoLancamento IN (' . $typeList . ')';
 		$query .= $this->buildFinancialBaseConditions($carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		$query .= $this->buildPersonTypeCondition($personType);
 
 		return $query;
 	}
@@ -142,13 +143,14 @@ class NeoPanelRepository extends NeoSqlsrvRepository
 		";
 	}
 
-	private function buildProductionBaseConditions(array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
+	private function buildProductionBaseConditions(array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array(), $personType = 'todos')
 	{
 		$query = " AND p.TipoProcesso NOT IN (N'CARTA PRECATÓRIA')";
 		$query .= $this->buildCarteiraCondition($carteiraCodes, $carteiraMode);
 		$query .= $this->buildUfCondition($ufCodes);
 		$query .= $this->buildWeekCondition('a.DataHoraEvento', $month, $year, $week);
 		$query .= " AND p.TipoDesdobramento IS NULL AND a.Invalido = 'False'";
+		$query .= $this->buildPersonTypeCondition($personType);
 
 		return $query;
 	}

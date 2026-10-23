@@ -56,6 +56,10 @@ class DashboardPanelService
 		if (!$bank) {
 			return new PanelViewData(array('error' => __('Client not found.')));
 		}
+		$personTypeEnabled = $this->isPersonTypeFilterEnabled($bank);
+		if (!$personTypeEnabled && $context->personType() !== 'todos') {
+			$context = $context->withPersonType('todos');
+		}
 		if (!$this->neoRepository->isAvailable()) {
 			return new PanelViewData(array('error' => __('The NEO connection is not available in this environment.')));
 		}
@@ -96,9 +100,9 @@ class DashboardPanelService
 		$visibleRegionIds = $this->resolveVisibleRegionIds($context);
 		$regionFilter = $this->resolveRegionFilter($context, $visibleRegionIds);
 		$regionTabs = $this->resolveRegionTabs($context, $regionFilter->selectedRegionId(), $visibleRegionIds);
-		$productionRows = $this->buildProductionRows($context->bankId(), $context->month(), $context->year(), $weeks, $carteiraCodes, $carteiraMode, $regionFilter->ufs(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds());
-		$financialRows = $this->buildFinancialRows($context->bankId(), $context->month(), $context->year(), $weeks, $carteiraCodes, $carteiraMode, $regionFilter->ufs(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds());
-		$prejudiceRows = $this->buildPrejudiceRows($context->bankId(), $context->month(), $context->year(), $weeks, $carteiraCodes, $carteiraMode, $regionFilter->ufs(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds());
+		$productionRows = $this->buildProductionRows($context->bankId(), $context->month(), $context->year(), $weeks, $carteiraCodes, $carteiraMode, $regionFilter->ufs(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds(), $context->personType());
+		$financialRows = $this->buildFinancialRows($context->bankId(), $context->month(), $context->year(), $weeks, $carteiraCodes, $carteiraMode, $regionFilter->ufs(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds(), $context->personType());
+		$prejudiceRows = $this->buildPrejudiceRows($context->bankId(), $context->month(), $context->year(), $weeks, $carteiraCodes, $carteiraMode, $regionFilter->ufs(), $regionFilter->selectedRegionId(), $regionFilter->metaRegionIds(), $context->personType());
 		$summary = $this->buildFinancialSummary($financialRows, $prejudiceRows, $weeks);
 
 		return array(
@@ -111,6 +115,8 @@ class DashboardPanelService
 			'showRegionTabs' => $regionTabs['show'],
 			'regionTabs' => $regionTabs['tabs'],
 			'regionId' => $regionFilter->selectedRegionId(),
+			'personType' => $context->personType(),
+			'showPersonTypeTabs' => $this->isPersonTypeFilterEnabled($bank),
 			'regionLabel' => $regionFilter->label(),
 			'startDate' => $this->months[$context->month()] . ' / ' . $context->year(),
 			'weeks' => $weeks,
@@ -123,6 +129,16 @@ class DashboardPanelService
 		);
 	}
 
+	private function isPersonTypeFilterEnabled(array $bank)
+	{
+		$class = mb_strtolower(trim((string) (isset($bank['banco_class']) ? $bank['banco_class'] : '')));
+		$name = mb_strtolower(trim((string) (isset($bank['banco_name']) ? $bank['banco_name'] : '')));
+		$code = mb_strtolower(trim((string) (isset($bank['banco_cod']) ? $bank['banco_cod'] : '')));
+
+		return $class === 'ativas'
+			&& ($name === 'safra' || $name === 'volkswagen' || $code === 'safra' || $code === 'volks');
+	}
+
 	private function cacheKey(DashboardPanelContext $context)
 	{
 		return 'dashboard_panel:' . md5(json_encode(array(
@@ -130,6 +146,7 @@ class DashboardPanelService
 			'area_id' => $context->areaId(),
 			'month' => $context->month(),
 			'year' => $context->year(),
+			'person_type' => $context->personType(),
 			'user_id' => $context->userId(),
 			'user_level' => $context->userLevel(),
 			'user_region_mode' => $context->userRegionMode(),
@@ -154,7 +171,7 @@ class DashboardPanelService
 		) + $metrics);
 	}
 
-	private function buildProductionRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0, array $metaRegionIds = array())
+	private function buildProductionRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0, array $metaRegionIds = array(), $personType = 'todos')
 	{
 		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 1, array(), array(), $regionId, $metaRegionIds);
 		$rows = $this->groupMetaRowsByAnda($rows, $weeks);
@@ -171,7 +188,7 @@ class DashboardPanelService
 				$week,
 				$month,
 				$year,
-				$ufCodes
+				$ufCodes, $personType
 			);
 			$weekLookups[$index] = $this->buildProductionLookup($events);
 		}
@@ -213,7 +230,7 @@ class DashboardPanelService
 		return $built;
 	}
 
-	private function buildFinancialRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0, array $metaRegionIds = array())
+	private function buildFinancialRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0, array $metaRegionIds = array(), $personType = 'todos')
 	{
 		$exclude = array('CUSTAS POR FALHA OPERACIONAL');
 		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, $exclude, array(), $regionId, $metaRegionIds);
@@ -231,7 +248,7 @@ class DashboardPanelService
 				$week,
 				$month,
 				$year,
-				$ufCodes
+				$ufCodes, $personType
 			);
 			$weekLookups[$index] = $this->buildFinancialLookup($events);
 		}
@@ -273,7 +290,7 @@ class DashboardPanelService
 		return $built;
 	}
 
-	private function buildPrejudiceRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0, array $metaRegionIds = array())
+	private function buildPrejudiceRows($bankId, $month, $year, array $weeks, array $carteiraCodes, $carteiraMode, array $ufCodes = array(), $regionId = 0, array $metaRegionIds = array(), $personType = 'todos')
 	{
 		$include = array('CUSTAS POR FALHA OPERACIONAL');
 		$rows = $this->dashboardRepository->listMetaRowsByBankMonthYearAndSpecies($bankId, $month, $year, 2, array(), $include, $regionId, $metaRegionIds);
@@ -291,7 +308,7 @@ class DashboardPanelService
 				$week,
 				$month,
 				$year,
-				$ufCodes
+				$ufCodes, $personType
 			);
 			$weekLookups[$index] = $this->buildFinancialLookup($events);
 		}
@@ -388,7 +405,8 @@ class DashboardPanelService
 			isset($session['usuarioID']) ? $session['usuarioID'] : 0,
 			isset($session['usuarioNivel']) ? $session['usuarioNivel'] : '',
 			isset($session['usuarioRegiaoModo']) ? $session['usuarioRegiaoModo'] : 'N',
-			isset($payload['regiao_id']) ? $payload['regiao_id'] : 0
+			isset($payload['regiao_id']) ? $payload['regiao_id'] : 0,
+			isset($payload['pessoa_tipo']) ? $payload['pessoa_tipo'] : 'todos'
 		);
 	}
 
@@ -779,35 +797,35 @@ class DashboardPanelService
 		);
 	}
 
-	private function loadProductionWeekEvents($bankId, array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
+	private function loadProductionWeekEvents($bankId, array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array(), $personType = 'todos')
 	{
 		$ttl = max(0, (int) config('app.performance.neo_result_cache_ttl_seconds', 900));
 		if ($ttl <= 0) {
-			return $this->neoRepository->listProductionEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+			return $this->neoRepository->listProductionEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes, $personType);
 		}
 
-		$key = $this->neoCacheKey('panel_production_week', $bankId, $typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes, $week);
+		$key = $this->neoCacheKey('panel_production_week', $bankId, $typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes, $week, $personType);
 
-		return Cache::remember($key, now()->addSeconds($ttl), function () use ($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes) {
-			return $this->neoRepository->listProductionEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		return Cache::remember($key, now()->addSeconds($ttl), function () use ($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes, $personType) {
+			return $this->neoRepository->listProductionEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes, $personType);
 		});
 	}
 
-	private function loadFinancialWeekEvents($bankId, array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array())
+	private function loadFinancialWeekEvents($bankId, array $typeNames, array $carteiraCodes, $carteiraMode, array $week, $month, $year, array $ufCodes = array(), $personType = 'todos')
 	{
 		$ttl = max(0, (int) config('app.performance.neo_result_cache_ttl_seconds', 900));
 		if ($ttl <= 0) {
-			return $this->neoRepository->listFinancialEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+			return $this->neoRepository->listFinancialEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes, $personType);
 		}
 
-		$key = $this->neoCacheKey('panel_financial_week', $bankId, $typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes, $week);
+		$key = $this->neoCacheKey('panel_financial_week', $bankId, $typeNames, $carteiraCodes, $carteiraMode, $month, $year, $ufCodes, $week, $personType);
 
-		return Cache::remember($key, now()->addSeconds($ttl), function () use ($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes) {
-			return $this->neoRepository->listFinancialEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes);
+		return Cache::remember($key, now()->addSeconds($ttl), function () use ($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes, $personType) {
+			return $this->neoRepository->listFinancialEventsByWeek($typeNames, $carteiraCodes, $carteiraMode, $week, $month, $year, $ufCodes, $personType);
 		});
 	}
 
-	private function neoCacheKey($prefix, $bankId, array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $ufCodes = array(), array $week = array())
+	private function neoCacheKey($prefix, $bankId, array $typeNames, array $carteiraCodes, $carteiraMode, $month, $year, array $ufCodes = array(), array $week = array(), $personType = 'todos')
 	{
 		sort($typeNames);
 		sort($carteiraCodes);
@@ -820,6 +838,7 @@ class DashboardPanelService
 			'carteira_mode' => (string) $carteiraMode,
 			'month' => (int) $month,
 			'year' => (int) $year,
+			'person_type' => (string) $personType,
 			'ufs' => array_values($ufCodes),
 			'week' => array(
 				'start' => isset($week['start']) ? (int) $week['start'] : 0,

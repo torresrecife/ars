@@ -15,6 +15,8 @@
 	$startDate = $viewData['startDate'];
 	$regionLabel = isset($viewData['regionLabel']) ? $viewData['regionLabel'] : '';
 	$regionId = isset($viewData['regionId']) ? (int) $viewData['regionId'] : 0;
+	$personType = isset($viewData['personType']) ? (string) $viewData['personType'] : 'todos';
+	$showPersonTypeTabs = !empty($viewData['showPersonTypeTabs']);
 	$areaId = isset($viewData['areaId']) ? (string) $viewData['areaId'] : '';
 	$bankId = isset($viewData['bankId']) ? (int) $viewData['bankId'] : 0;
 	$showRegionTabs = !empty($viewData['showRegionTabs']);
@@ -27,6 +29,7 @@
 	};
 @endphp
 <br><div class="dashboard-title">{{ __('Client') }}: <b>{{ $bank['banco_cod'] }}</b>{!! $showRegionTabs ? '' : $regionLabel !!} | {{ __('Month/Year') }}: <b>{{ $startDate }}</b> <a href="#" onclick="painelNavegarMes('{{ $bankId }}','p'); return false;">&lt;</a> <a href="#" onclick="painelNavegarMes('{{ $bankId }}','n'); return false;">&gt;</a></div>
+<div class="dashboard-filter-row">
 @if ($showRegionTabs)
 <div class="dashboard-region-tabs">
 	@foreach ($regionTabs as $tab)
@@ -36,9 +39,18 @@
 @else
 <br>
 @endif
+@if ($showPersonTypeTabs)
+<div class="dashboard-person-tabs" aria-label="{{ __('Person type') }}">
+	@foreach (array('todos' => __('All persons'), 'fisica' => __('Individuals'), 'juridica' => __('Companies')) as $type => $label)
+		<a href="#" onclick="painelNavegarPessoa('{{ $bankId }}','{{ $type }}'); return false;" class="dashboard-region-tab {{ $personType === $type ? 'dashboard-region-tab--active' : 'dashboard-region-tab--inactive' }}">{{ $label }}</a>
+	@endforeach
+</div>
+@endif
+</div>
 <input type="hidden" name="mes" id="mes" value="{{ $month }}"/>
 <input type="hidden" name="ano" id="ano" value="{{ $year }}"/>
 <input type="hidden" name="regiao_id" id="regiao_id" value="{{ $regionId }}"/>
+<input type="hidden" name="pessoa_tipo" id="pessoa_tipo" value="{{ e($personType) }}"/>
 <input type="hidden" name="area_id" id="panel_area_id" value="{{ e($areaId) }}"/>
 <input type="hidden" name="bank_id" id="panel_bank_id" value="{{ $bankId }}"/>
 <script>
