@@ -207,7 +207,7 @@ class GeneralProductionService
 				$meta = $this->resolveMonthlyWeekMeta($aggregate, $index, $weeks);
 				$regularReal = isset($weeksLookup[$index]) ? $weeksLookup[$index] : array('total' => 0.0, 'codes' => array());
 				$prejudiceReal = isset($prejudiceWeeksLookup[$index]) ? $prejudiceWeeksLookup[$index] : array('total' => 0.0, 'codes' => array());
-				$realValue = $regularReal['total'] - $prejudiceReal['total'];
+				$realValue = $regularReal['total'];
 				$percent = $this->metricFormatter->percent($realValue, $meta, 0);
 				$weekData[] = new DashboardMetricCell(
 					$meta,
@@ -222,13 +222,15 @@ class GeneralProductionService
 				$totalPrejudice += $prejudiceReal['total'];
 			}
 
-			$totalPercent = $this->metricFormatter->percent($totalReal, $aggregate['metaTotal'], 0);
+			$totalFinal = $totalReal - $totalPrejudice;
+			$totalPercent = $this->metricFormatter->percent($totalFinal, $aggregate['metaTotal'], 0);
 			$rows[] = new MonthlyProductionRow(
 				$bank['banco_name'] . ($bank['banco_class'] ? ' (' . $bank['banco_class'] . ')' : ''),
 				$weekData,
 				$aggregate['metaTotal'],
 				$totalReal,
 				$totalPrejudice,
+				$totalFinal,
 				$totalPercent,
 				$this->metricFormatter->percentIcon($totalPercent)
 			);
@@ -248,7 +250,8 @@ class GeneralProductionService
 			);
 		}
 
-		$grandPercent = $this->metricFormatter->percent($grandReal, $grandMeta, 0);
+		$grandFinal = $grandReal - $grandPrejudice;
+		$grandPercent = $this->metricFormatter->percent($grandFinal, $grandMeta, 0);
 
 		return array(
 			'titleArea' => $this->resolveAreaTitle($context->userSectorId(), $context->startSector()),
@@ -265,6 +268,7 @@ class GeneralProductionService
 				$grandMeta,
 				$grandReal,
 				$grandPrejudice,
+				$grandFinal,
 				$grandPercent,
 				$this->metricFormatter->percentIcon($grandPercent)
 			),

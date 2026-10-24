@@ -20,6 +20,7 @@ class MonthlyProductionRow
 
 	/** @var float */
 	private $totalPrejudice;
+	private $totalFinal;
 
 	/** @var float */
 	private $totalPercent;
@@ -27,13 +28,14 @@ class MonthlyProductionRow
 	/** @var string */
 	private $totalIcon;
 
-	public function __construct($name, array $weekData, $totalMeta, $totalReal, $totalPrejudice, $totalPercent, $totalIcon)
+	public function __construct($name, array $weekData, $totalMeta, $totalReal, $totalPrejudice, $totalFinal, $totalPercent, $totalIcon)
 	{
 		$this->name = (string) $name;
 		$this->weekData = $weekData;
 		$this->totalMeta = (float) $totalMeta;
 		$this->totalReal = (float) $totalReal;
 		$this->totalPrejudice = (float) $totalPrejudice;
+		$this->totalFinal = (float) $totalFinal;
 		$this->totalPercent = (float) $totalPercent;
 		$this->totalIcon = (string) $totalIcon;
 	}
@@ -46,6 +48,7 @@ class MonthlyProductionRow
 			'totalMeta' => $this->totalMeta,
 			'totalReal' => $this->totalReal,
 			'totalPrejudice' => $this->totalPrejudice,
+			'totalFinal' => $this->totalFinal,
 			'totalPercent' => $this->totalPercent,
 			'totalIcon' => $this->totalIcon,
 		);

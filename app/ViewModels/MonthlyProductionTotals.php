@@ -17,6 +17,7 @@ class MonthlyProductionTotals
 
 	/** @var float */
 	private $prejudice;
+	private $final;
 
 	/** @var float */
 	private $percent;
@@ -24,12 +25,13 @@ class MonthlyProductionTotals
 	/** @var string */
 	private $icon;
 
-	public function __construct(array $weeks, $meta, $real, $prejudice, $percent, $icon)
+	public function __construct(array $weeks, $meta, $real, $prejudice, $final, $percent, $icon)
 	{
 		$this->weeks = $weeks;
 		$this->meta = (float) $meta;
 		$this->real = (float) $real;
 		$this->prejudice = (float) $prejudice;
+		$this->final = (float) $final;
 		$this->percent = (float) $percent;
 		$this->icon = (string) $icon;
 	}
@@ -41,6 +43,7 @@ class MonthlyProductionTotals
 			'meta' => $this->meta,
 			'real' => $this->real,
 			'prejudice' => $this->prejudice,
+			'final' => $this->final,
 			'percent' => $this->percent,
 			'icon' => $this->icon,
 		);
