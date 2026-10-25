@@ -18,6 +18,7 @@ class MainPageServiceTest extends TestCase
             ->once()
             ->with(3, '1,2')
             ->andReturn(array(array('id_bco' => 10, 'nome_bco' => 'Banco X')));
+        $repository->shouldReceive('listAreas')->never();
 
         $regionService = Mockery::mock(RegionService::class);
         $regionService->shouldReceive('listUserRegions')

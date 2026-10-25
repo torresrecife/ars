@@ -27,7 +27,7 @@ class MetaController extends Controller
 	/** @var AuthService */
 	private $authService;
 
-	public function __construct(MetaService $metaService, View $view, MainPageService $mainPageService, AuthService $authService)
+	public function __construct(MetaService $metaService, View $view, MainPageService $mainPageService = null, AuthService $authService = null)
 	{
 		$this->metaService = $metaService;
 		$this->view = $view;

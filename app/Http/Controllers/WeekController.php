@@ -27,7 +27,7 @@ class WeekController extends Controller
 	/** @var AuthService */
 	private $authService;
 
-	public function __construct(WeekService $weekService, View $view, MainPageService $mainPageService, AuthService $authService)
+	public function __construct(WeekService $weekService, View $view, MainPageService $mainPageService = null, AuthService $authService = null)
 	{
 		$this->weekService = $weekService;
 		$this->view = $view;

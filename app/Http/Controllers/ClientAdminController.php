@@ -26,7 +26,7 @@ class ClientAdminController extends Controller
 	/** @var AuthService */
 	private $authService;
 
-	public function __construct(ClientAdminService $service, View $view, MainPageService $mainPageService, AuthService $authService)
+	public function __construct(ClientAdminService $service, View $view, MainPageService $mainPageService = null, AuthService $authService = null)
 	{
 		$this->service = $service;
 		$this->view = $view;

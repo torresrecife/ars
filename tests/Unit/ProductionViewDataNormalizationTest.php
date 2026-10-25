@@ -78,6 +78,8 @@ class ProductionViewDataNormalizationTest extends TestCase
                     100,
                     90,
                     90,
+                    0,
+                    90,
                     'circle_yellow.png'
                 ),
             ),
@@ -85,6 +87,8 @@ class ProductionViewDataNormalizationTest extends TestCase
                 array(new DashboardMetricCell(100, 90, 90, 'circle_yellow.png')),
                 100,
                 90,
+                90,
+                0,
                 90,
                 'circle_yellow.png'
             ),

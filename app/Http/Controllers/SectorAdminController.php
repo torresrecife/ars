@@ -24,7 +24,7 @@ class SectorAdminController extends Controller
 	/** @var AuthService */
 	private $authService;
 
-	public function __construct(SectorAdminService $service, View $view, MainPageService $mainPageService, AuthService $authService)
+	public function __construct(SectorAdminService $service, View $view, MainPageService $mainPageService = null, AuthService $authService = null)
 	{
 		$this->service = $service;
 		$this->view = $view;
