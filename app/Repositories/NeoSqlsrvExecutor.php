@@ -16,6 +16,8 @@ class NeoSqlsrvExecutor
 		'time_ms' => 0.0,
 		'max_time_ms' => 0.0,
 		'slow_queries' => 0,
+		'last_errors' => array(),
+		'last_query_preview' => '',
 	);
 
 	public function __construct($connection)
@@ -31,6 +33,8 @@ class NeoSqlsrvExecutor
 			'time_ms' => 0.0,
 			'max_time_ms' => 0.0,
 			'slow_queries' => 0,
+			'last_errors' => array(),
+			'last_query_preview' => '',
 		);
 	}
 
@@ -112,6 +116,7 @@ class NeoSqlsrvExecutor
 	{
 		$startedAt = microtime(true);
 		$result = sqlsrv_query($this->connection, $query);
+		self::$stats['last_query_preview'] = preg_replace('/\s+/', ' ', substr((string) $query, 0, 500));
 		$elapsedMs = (microtime(true) - $startedAt) * 1000;
 
 		self::$stats['queries']++;
@@ -123,6 +128,15 @@ class NeoSqlsrvExecutor
 		}
 		if ($result === false) {
 			self::$stats['errors']++;
+			$errors = function_exists('sqlsrv_errors') ? sqlsrv_errors(SQLSRV_ERR_ALL) : array();
+			foreach ((array) $errors as $error) {
+				self::$stats['last_errors'][] = array(
+					'code' => isset($error['code']) ? $error['code'] : null,
+					'sql_state' => isset($error['SQLSTATE']) ? $error['SQLSTATE'] : null,
+					'message' => isset($error['message']) ? $error['message'] : null,
+				);
+			}
+			self::$stats['last_errors'] = array_slice(self::$stats['last_errors'], -10);
 		}
 
 		return $result;

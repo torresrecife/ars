@@ -95,8 +95,8 @@ class GeneralProductionNeoRepository extends NeoSqlsrvRepository
 	private function financialMonthFromJoin()
 	{
 		return "
-			FROM Processo AS p WITH (NOLOCK)
-			JOIN Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
+			FROM v_Processo AS p WITH (NOLOCK)
+			JOIN v_Lancamento_Processo AS l WITH (NOLOCK) ON l.CodigoProcesso = p.CodigoProcesso
 		";
 	}
 
