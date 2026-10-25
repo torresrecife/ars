@@ -14,6 +14,8 @@ class NeoSqlsrvExecutor
 		'queries' => 0,
 		'errors' => 0,
 		'time_ms' => 0.0,
+		'max_time_ms' => 0.0,
+		'slow_queries' => 0,
 	);
 
 	public function __construct($connection)
@@ -27,6 +29,8 @@ class NeoSqlsrvExecutor
 			'queries' => 0,
 			'errors' => 0,
 			'time_ms' => 0.0,
+			'max_time_ms' => 0.0,
+			'slow_queries' => 0,
 		);
 	}
 
@@ -112,6 +116,11 @@ class NeoSqlsrvExecutor
 
 		self::$stats['queries']++;
 		self::$stats['time_ms'] += $elapsedMs;
+		self::$stats['max_time_ms'] = max(self::$stats['max_time_ms'], $elapsedMs);
+		$slowQueryThreshold = (float) config('app.performance.neo_slow_query_ms', 1000);
+		if ($slowQueryThreshold > 0 && $elapsedMs >= $slowQueryThreshold) {
+			self::$stats['slow_queries']++;
+		}
 		if ($result === false) {
 			self::$stats['errors']++;
 		}

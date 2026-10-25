@@ -36,6 +36,7 @@ return [
         'report_cache_ttl_seconds' => (int) env('APP_REPORT_CACHE_TTL', 120),
         'neo_result_cache_ttl_seconds' => (int) env('APP_NEO_RESULT_CACHE_TTL', 180),
         'neo_query_log_enabled' => (bool) env('APP_NEO_QUERY_LOG', false),
+        'neo_slow_query_ms' => (float) env('APP_NEO_SLOW_QUERY_MS', 1000),
     ],
 
     'providers' => [
