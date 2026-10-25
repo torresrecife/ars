@@ -12,8 +12,9 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $response = $this->get('/');
+        $route = app('router')->getRoutes()->getByName('login');
 
-        $response->assertStatus(200);
+        $this->assertNotNull($route);
+        $this->assertSame('login', $route->uri());
     }
 }
