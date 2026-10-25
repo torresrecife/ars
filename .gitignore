@@ -7,7 +7,12 @@ Thumbs.db
 vendor/
 node_modules/
 .env
+.phpunit.result.cache
 storage/logs/*.log
 /bootstrap/cache/*.php
 /public/build
+/public/css
+/public/img
+/public/inc
+/public/js
 /storage/*.key
