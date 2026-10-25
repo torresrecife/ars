@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class AdminAuthorizationTest extends TestCase
 {
-    public function test_manager_cannot_manage_system_***REMOVED***_resources()
+    public function test_manager_cannot_manage_system_admin_resources()
     {
         $user = new Usuario(array(
             'id_usu' => 2,
@@ -46,7 +46,7 @@ class AdminAuthorizationTest extends TestCase
         $this->assertTrue(Gate::forUser($user)->allows('delete', MetaAndamento::class));
     }
 
-    public function test_common_user_cannot_access_***REMOVED***_gate()
+    public function test_common_user_cannot_access_admin_gate()
     {
         $user = new Usuario(array(
             'id_usu' => 4,
@@ -55,20 +55,20 @@ class AdminAuthorizationTest extends TestCase
             'nivel_usu' => 'USU',
         ));
 
-        $this->assertFalse(Gate::forUser($user)->allows('access-***REMOVED***'));
+        $this->assertFalse(Gate::forUser($user)->allows('access-admin'));
         $this->assertFalse(Gate::forUser($user)->allows('viewAny', MetaAndamento::class));
     }
 
-    public function test_***REMOVED***_can_manage_all_***REMOVED***_resources()
+    public function test_admin_can_manage_all_admin_resources()
     {
         $user = new Usuario(array(
             'id_usu' => 1,
             'nome_usu' => 'Admin',
-            'login_usu' => '***REMOVED***',
+            'login_usu' => 'admin',
             'nivel_usu' => 'ADM',
         ));
 
-        $this->assertTrue(Gate::forUser($user)->allows('access-***REMOVED***'));
+        $this->assertTrue(Gate::forUser($user)->allows('access-admin'));
         $this->assertTrue(Gate::forUser($user)->allows('viewAny', Usuario::class));
         $this->assertTrue(Gate::forUser($user)->allows('create', Banco::class));
         $this->assertTrue(Gate::forUser($user)->allows('update', Regiao::class));

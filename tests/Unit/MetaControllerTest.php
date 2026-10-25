@@ -42,7 +42,7 @@ class MetaControllerTest extends TestCase
         $service->shouldReceive('createManyFromRequest')->once()->andReturn(WriteResult::success());
 
         $controller = new MetaController($service, app(View::class));
-        $request = MetaStoreRequest::create('/***REMOVED***/metas', 'POST', array(
+        $request = MetaStoreRequest::create('/admin/metas', 'POST', array(
             'banco_id' => 4,
             'meta_mes' => 7,
             'meta_ano' => 2026,
@@ -75,7 +75,7 @@ class MetaControllerTest extends TestCase
             ->andReturn(WriteResult::success());
 
         $controller = new MetaController($service, app(View::class));
-        $request = MetaUpdateRequest::create('/***REMOVED***/metas/11', 'PUT', array(
+        $request = MetaUpdateRequest::create('/admin/metas/11', 'PUT', array(
             'banco_id' => 4,
             'meta_mes' => 7,
             'meta_ano' => 2026,

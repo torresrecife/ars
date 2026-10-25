@@ -40,7 +40,7 @@ class RegionAdminControllerTest extends TestCase
         $service->shouldReceive('create')->once()->andReturn(WriteResult::success());
 
         $controller = new RegionAdminController($service, app(View::class));
-        $request = RegionStoreRequest::create('/***REMOVED***/regioes', 'POST', array(
+        $request = RegionStoreRequest::create('/admin/regioes', 'POST', array(
             'regiao_nome' => 'Sul',
             'regiao_slug' => 'sul',
             'regiao_status' => 'Y',
@@ -64,7 +64,7 @@ class RegionAdminControllerTest extends TestCase
             ->andReturn(WriteResult::success());
 
         $controller = new RegionAdminController($service, app(View::class));
-        $request = RegionUpdateRequest::create('/***REMOVED***/regioes/4', 'PUT', array(
+        $request = RegionUpdateRequest::create('/admin/regioes/4', 'PUT', array(
             'regiao_nome' => 'Sul',
             'regiao_slug' => 'sul',
             'regiao_status' => 'Y',

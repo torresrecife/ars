@@ -23,7 +23,7 @@ class ClientAdminControllerTest extends TestCase
                 'banco_id' => 5,
                 'banco_name' => 'Cliente XP',
                 'banco_cod' => 'XP01',
-                'banco_creator' => '***REMOVED***',
+                'banco_creator' => 'admin',
                 'banco_area' => 2,
                 'banco_status' => 'Y',
                 'banco_class' => 'A',
@@ -46,7 +46,7 @@ class ClientAdminControllerTest extends TestCase
         $service->shouldReceive('create')->once()->andReturn(WriteResult::success());
 
         $controller = new ClientAdminController($service, app(View::class));
-        $request = ClientStoreRequest::create('/***REMOVED***/clientes', 'POST', array(
+        $request = ClientStoreRequest::create('/admin/clientes', 'POST', array(
             'banco_name' => 'Cliente XP',
             'banco_cod' => 'XP01',
             'banco_area' => 2,
@@ -73,7 +73,7 @@ class ClientAdminControllerTest extends TestCase
             ->andReturn(WriteResult::success());
 
         $controller = new ClientAdminController($service, app(View::class));
-        $request = ClientUpdateRequest::create('/***REMOVED***/clientes/5', 'PUT', array(
+        $request = ClientUpdateRequest::create('/admin/clientes/5', 'PUT', array(
             'banco_name' => 'Cliente XP',
             'banco_cod' => 'XP01',
             'banco_area' => 2,

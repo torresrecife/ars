@@ -35,7 +35,7 @@ class SectorAdminControllerTest extends TestCase
         $service->shouldReceive('create')->once()->andReturn(WriteResult::success());
 
         $controller = new SectorAdminController($service, app(View::class));
-        $request = Request::create('/***REMOVED***/setores', 'POST', array('area_nome' => 'Operacional'));
+        $request = Request::create('/admin/setores', 'POST', array('area_nome' => 'Operacional'));
 
         $response = $controller->store($request);
 
@@ -54,7 +54,7 @@ class SectorAdminControllerTest extends TestCase
             ->andReturn(WriteResult::success());
 
         $controller = new SectorAdminController($service, app(View::class));
-        $request = Request::create('/***REMOVED***/setores/3', 'PUT', array('area_nome' => 'Operacional'));
+        $request = Request::create('/admin/setores/3', 'PUT', array('area_nome' => 'Operacional'));
 
         $response = $controller->update($request, 3);
 

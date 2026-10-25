@@ -27,6 +27,7 @@ class ProductionRequestDtoTest extends TestCase
                 'mes' => 7,
                 'ano' => 2026,
                 'regiao_id' => 2,
+                'pessoa_tipo' => 'todos',
             ),
             $dto->toArray()
         );

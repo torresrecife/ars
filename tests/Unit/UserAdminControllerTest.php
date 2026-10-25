@@ -57,7 +57,7 @@ class UserAdminControllerTest extends TestCase
             ->andReturn(WriteResult::success());
 
         $controller = new UserAdminController($service, app(View::class));
-        $request = UserStoreRequest::create('/***REMOVED***/usuarios', 'POST', array(
+        $request = UserStoreRequest::create('/admin/usuarios', 'POST', array(
             'nome_usu' => 'Maria',
             'login_usu' => 'maria',
             'email_usu' => 'maria@example.com',
@@ -88,7 +88,7 @@ class UserAdminControllerTest extends TestCase
             ->andReturn(WriteResult::success());
 
         $controller = new UserAdminController($service, app(View::class));
-        $request = UserUpdateRequest::create('/***REMOVED***/usuarios/9', 'PUT', array(
+        $request = UserUpdateRequest::create('/admin/usuarios/9', 'PUT', array(
             'nome_usu' => 'Maria',
             'login_usu' => 'maria',
             'email_usu' => 'maria@example.com',

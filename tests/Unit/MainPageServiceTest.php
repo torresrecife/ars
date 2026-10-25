@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class MainPageServiceTest extends TestCase
 {
-    public function test_build_returns_typed_view_data_for_***REMOVED***_section()
+    public function test_build_returns_typed_view_data_for_admin_section()
     {
         $repository = Mockery::mock(MainPageRepository::class);
         $repository->shouldReceive('listAdminBanks')
@@ -30,7 +30,7 @@ class MainPageServiceTest extends TestCase
         ));
 
         $result = $service->build(array(
-            'section' => '***REMOVED***',
+            'section' => 'admin',
             'mes' => 7,
             'ano' => 2026,
         ), array(
@@ -42,11 +42,11 @@ class MainPageServiceTest extends TestCase
         ));
 
         $this->assertInstanceOf(MainPageViewData::class, $result);
-        $this->assertSame('***REMOVED***', $result->currentSection());
+        $this->assertSame('admin', $result->currentSection());
         $this->assertTrue($result->canAdmin());
         $this->assertNull($result->topAction());
         $this->assertSame('view', $result->content()->type());
-        $this->assertSame('***REMOVED***/index', $result->content()->view());
+        $this->assertSame('admin/index', $result->content()->view());
         $this->assertSame(__('July') . ' / 2026', $result->monthYearLabel());
         $this->assertSame('Maria Admin', $result->user()->name());
     }
@@ -82,6 +82,6 @@ class MainPageServiceTest extends TestCase
         $this->assertSame('', $result->topAction()->javascript());
         $this->assertSame(route('usuarios.create'), $result->topAction()->href());
         $this->assertSame('controller', $result->content()->type());
-        $this->assertSame('user-***REMOVED***', $result->content()->controller());
+        $this->assertSame('user-admin', $result->content()->controller());
     }
 }

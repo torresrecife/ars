@@ -40,7 +40,7 @@ class AndamentoAdminControllerTest extends TestCase
         $service->shouldReceive('create')->once()->andReturn(WriteResult::success());
 
         $controller = new AndamentoAdminController($service, app(View::class));
-        $request = AndamentoStoreRequest::create('/***REMOVED***/andamentos', 'POST', array(
+        $request = AndamentoStoreRequest::create('/admin/andamentos', 'POST', array(
             'nome' => 'Ajuizamento',
             'chave' => 'AJUI',
             'painel' => 'Y',
@@ -66,7 +66,7 @@ class AndamentoAdminControllerTest extends TestCase
             ->andReturn(WriteResult::success());
 
         $controller = new AndamentoAdminController($service, app(View::class));
-        $request = AndamentoUpdateRequest::create('/***REMOVED***/andamentos/6', 'PUT', array(
+        $request = AndamentoUpdateRequest::create('/admin/andamentos/6', 'PUT', array(
             'nome' => 'Ajuizamento',
             'chave' => 'AJUI',
             'painel' => 'Y',

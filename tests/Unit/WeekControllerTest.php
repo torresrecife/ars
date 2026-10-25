@@ -36,7 +36,7 @@ class WeekControllerTest extends TestCase
         $service->shouldReceive('createFromRequest')->once()->andReturn(WriteResult::success());
 
         $controller = new WeekController($service, app(View::class));
-        $request = WeekStoreRequest::create('/***REMOVED***/semanas', 'POST', array(
+        $request = WeekStoreRequest::create('/admin/semanas', 'POST', array(
             'mes_sem' => 7,
             'ano_sem' => 2026,
             'ini1_sem' => 1,
@@ -66,7 +66,7 @@ class WeekControllerTest extends TestCase
             ->andReturn(WriteResult::success());
 
         $controller = new WeekController($service, app(View::class));
-        $request = WeekUpdateRequest::create('/***REMOVED***/semanas/8', 'PUT', array(
+        $request = WeekUpdateRequest::create('/admin/semanas/8', 'PUT', array(
             'mes_sem' => 7,
             'ano_sem' => 2026,
             'ini1_sem' => 1,
