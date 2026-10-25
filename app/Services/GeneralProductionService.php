@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Domain\Metrics\PerformanceMetricFormatter;
+use App\Domain\Metrics\FinancialResultCalculator;
 use App\Repositories\GeneralProductionNeoRepository;
 use App\Repositories\GeneralProductionRepository;
 use App\Repositories\NeoSqlsrvExecutor;
@@ -34,13 +35,15 @@ class GeneralProductionService
 
 	/** @var PerformanceMetricFormatter */
 	private $metricFormatter;
+	private $financialResultCalculator;
 
-	public function __construct(GeneralProductionRepository $repository, GeneralProductionNeoRepository $neoRepository, RegionService $regionService, PerformanceMetricFormatter $metricFormatter)
+	public function __construct(GeneralProductionRepository $repository, GeneralProductionNeoRepository $neoRepository, RegionService $regionService, PerformanceMetricFormatter $metricFormatter, FinancialResultCalculator $financialResultCalculator = null)
 	{
 		$this->repository = $repository;
 		$this->neoRepository = $neoRepository;
 		$this->regionService = $regionService;
 		$this->metricFormatter = $metricFormatter;
+		$this->financialResultCalculator = $financialResultCalculator ?: new FinancialResultCalculator($metricFormatter);
 	}
 
 	public function buildWeekly($input, array $session)
@@ -222,17 +225,16 @@ class GeneralProductionService
 				$totalPrejudice += $prejudiceReal['total'];
 			}
 
-			$totalFinal = $totalReal - $totalPrejudice;
-			$totalPercent = $this->metricFormatter->percent($totalFinal, $aggregate['metaTotal'], 0);
+			$financialResult = $this->financialResultCalculator->calculate($aggregate['metaTotal'], $totalReal, $totalPrejudice, 0);
 			$rows[] = new MonthlyProductionRow(
 				$bank['banco_name'] . ($bank['banco_class'] ? ' (' . $bank['banco_class'] . ')' : ''),
 				$weekData,
 				$aggregate['metaTotal'],
 				$totalReal,
 				$totalPrejudice,
-				$totalFinal,
-				$totalPercent,
-				$this->metricFormatter->percentIcon($totalPercent)
+				$financialResult['final'],
+				$financialResult['percent'],
+				$financialResult['icon']
 			);
 			$grandMeta += $aggregate['metaTotal'];
 			$grandReal += $totalReal;
@@ -250,8 +252,7 @@ class GeneralProductionService
 			);
 		}
 
-		$grandFinal = $grandReal - $grandPrejudice;
-		$grandPercent = $this->metricFormatter->percent($grandFinal, $grandMeta, 0);
+		$grandFinancialResult = $this->financialResultCalculator->calculate($grandMeta, $grandReal, $grandPrejudice, 0);
 
 		return array(
 			'titleArea' => $this->resolveAreaTitle($context->userSectorId(), $context->startSector()),
@@ -268,9 +269,9 @@ class GeneralProductionService
 				$grandMeta,
 				$grandReal,
 				$grandPrejudice,
-				$grandFinal,
-				$grandPercent,
-				$this->metricFormatter->percentIcon($grandPercent)
+				$grandFinancialResult['final'],
+				$grandFinancialResult['percent'],
+				$grandFinancialResult['icon']
 			),
 			'contentHeight' => (count($rows) * 30) + 360,
 		);

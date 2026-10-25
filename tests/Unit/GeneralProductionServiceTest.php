@@ -145,8 +145,11 @@ class GeneralProductionServiceTest extends TestCase
 
         $this->assertCount(1, $payload['rows']);
         $row = $payload['rows'][0]->toArray();
-        $this->assertSame(40.0, $row['totalReal']);
-        $this->assertSame(20.0, $row['weekData'][0]['real']);
+		$this->assertSame(50.0, $row['totalReal']);
+		$this->assertSame(10.0, $row['totalPrejudice']);
+		$this->assertSame(40.0, $row['totalFinal']);
+		$this->assertSame(40.0, $row['totalPercent']);
+		$this->assertSame(30.0, $row['weekData'][0]['real']);
         $this->assertSame(20.0, $row['weekData'][1]['real']);
     }
 

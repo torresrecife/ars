@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Domain\Metrics\PerformanceMetricFormatter;
+use App\Domain\Metrics\FinancialResultCalculator;
 use App\Repositories\DashboardRepository;
 use App\Repositories\NeoPanelRepository;
 use App\Repositories\NeoSqlsrvExecutor;
@@ -35,14 +36,16 @@ class DashboardPanelService
 
 	/** @var PerformanceMetricFormatter */
 	private $metricFormatter;
+	private $financialResultCalculator;
 
-	public function __construct(DashboardRepository $dashboardRepository, NeoPanelRepository $neoRepository, RegionService $regionService, array $months, PerformanceMetricFormatter $metricFormatter)
+	public function __construct(DashboardRepository $dashboardRepository, NeoPanelRepository $neoRepository, RegionService $regionService, array $months, PerformanceMetricFormatter $metricFormatter, FinancialResultCalculator $financialResultCalculator = null)
 	{
 		$this->dashboardRepository = $dashboardRepository;
 		$this->neoRepository = $neoRepository;
 		$this->regionService = $regionService;
 		$this->months = $months;
 		$this->metricFormatter = $metricFormatter;
+		$this->financialResultCalculator = $financialResultCalculator ?: new FinancialResultCalculator($metricFormatter);
 	}
 
 	public function build($input, array $session = array())
@@ -379,7 +382,7 @@ class DashboardPanelService
 			$prejudiceTotal += (float) $rowData['totalReal'];
 		}
 
-		$netRealTotal = $realTotal - $prejudiceTotal;
+		$financialResult = $this->financialResultCalculator->calculate($metaTotal, $realTotal, $prejudiceTotal, 1);
 
 		return new DashboardFinancialSummary(
 			$weekTotals,
@@ -387,9 +390,9 @@ class DashboardPanelService
 			$realTotal,
 			$this->metricFormatter->percent($realTotal, $metaTotal, 1),
 			$this->metricFormatter->percentIcon($realTotal, $metaTotal),
-			$netRealTotal,
-			$this->metricFormatter->percent($netRealTotal, $metaTotal, 1),
-			$this->metricFormatter->percentIcon($netRealTotal, $metaTotal)
+			$financialResult['final'],
+			$financialResult['percent'],
+			$financialResult['icon']
 		);
 	}
 
