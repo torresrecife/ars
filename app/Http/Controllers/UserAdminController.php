@@ -26,7 +26,7 @@ class UserAdminController extends Controller
 	/** @var AuthService */
 	private $authService;
 
-	public function __construct(UserAdminService $service, View $view, MainPageService $mainPageService = null, AuthService $authService = null)
+	public function __construct(UserAdminService $service, View $view, ?MainPageService $mainPageService = null, ?AuthService $authService = null)
 	{
 		$this->service = $service;
 		$this->view = $view;
