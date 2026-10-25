@@ -51,6 +51,9 @@ class SqlsrvConnectionFactory
 			'Database' => (string) ($this->config['database'] ?? ''),
 			'CharacterSet' => (string) ($this->config['charset'] ?? 'UTF-8'),
 		);
+		if (filter_var($this->config['trust_server_certificate'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+			$connectionInfo['TrustServerCertificate'] = true;
+		}
 
 		$this->connection = sqlsrv_connect($serverName, $connectionInfo);
 		if ($this->connection === false) {

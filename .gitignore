@@ -2,6 +2,8 @@ Thumbs.db
 .DS_Store
 .vscode/
 .idea/
+.ddev/
+.playwright-mcp/
 vendor/
 node_modules/
 .env

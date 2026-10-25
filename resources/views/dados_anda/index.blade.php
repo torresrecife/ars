@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="{{ asset('css/ars-modern.css') }}">
 <script type="text/javascript" src="{{ asset('js/jquery-1.8.0.min.js') }}"></script>
 @if (is_file(public_path('mix-manifest.json')) && is_file(public_path('build/js/ars-details.js')))
-<script type="text/javascript" src="{{ asset('public/' . ltrim(mix('/build/js/ars-details.js'), '/')) }}"></script>
+<script type="text/javascript" src="{{ asset(env('DDEV_PROJECT') ? ltrim(mix('/build/js/ars-details.js'), '/') : 'public/' . ltrim(mix('/build/js/ars-details.js'), '/')) }}"></script>
 @else
 <script type="text/javascript" src="{{ asset('js/jFilterXCel2003.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/modules/details.js') }}"></script>

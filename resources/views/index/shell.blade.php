@@ -231,7 +231,7 @@
 	<link rel="stylesheet" href="{{ asset('css/template.css') }}" type="text/css" />
 	<link rel="stylesheet" href="{{ asset('css/custom-theme/jquery-ui.css') }}">
 	@if (is_file(public_path('mix-manifest.json')) && is_file(public_path('build/css/app.css')))
-		<link rel="stylesheet" href="{{ asset('public/' . ltrim(mix('/build/css/app.css'), '/')) }}">
+		<link rel="stylesheet" href="{{ asset(env('DDEV_PROJECT') ? ltrim(mix('/build/css/app.css'), '/') : 'public/' . ltrim(mix('/build/css/app.css'), '/')) }}">
 	@else
 		<link rel="stylesheet" href="{{ asset('css/ars-modern.css') }}">
 	@endif
@@ -242,7 +242,7 @@
 	window.arsTranslations = {!! json_encode($arsTranslations, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!};
 	</script>
 	@if ($compiledModulesAvailable)
-		<script type="text/javascript" src="{{ asset('public/' . ltrim(mix('/build/js/ars-modules.js'), '/')) }}"></script>
+		<script type="text/javascript" src="{{ asset(env('DDEV_PROJECT') ? ltrim(mix('/build/js/ars-modules.js'), '/') : 'public/' . ltrim(mix('/build/js/ars-modules.js'), '/')) }}"></script>
 	@else
 		<script type="text/javascript" src="{{ asset('js/modules/helpers.js') }}?v={{ $helpersJsVersion }}"></script>
 		<script type="text/javascript" src="{{ asset('js/modules/setores.js') }}?v={{ $setoresJsVersion }}"></script>

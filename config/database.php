@@ -60,6 +60,7 @@ return [
             'username' => env('SQLSRV_DB_USERNAME', env('DB_SQLSRV_USER', 'forge')),
             'password' => env('SQLSRV_DB_PASSWORD', env('DB_SQLSRV_PASS', '')),
             'charset' => env('SQLSRV_DB_CHARSET', env('DB_SQLSRV_CHARSET', 'utf8')),
+            'trust_server_certificate' => env('SQLSRV_DB_TRUST_SERVER_CERTIFICATE', false),
             'prefix' => '',
             'prefix_indexes' => true,
         ],
