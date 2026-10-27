@@ -13,9 +13,22 @@ class UserAdminRepository
 	/** @var int */
 	private $lastInsertId = 0;
 
-	public function paginate($perPage = 20, $search = '')
+	public function paginate($perPage = 20, $search = '', array $scope = array())
 	{
 		$query = Usuario::query();
+		if (($scope['level'] ?? '') === 'GER') {
+			$query->where('nivel_usu', 'USU')->where('id_setor', (int) ($scope['sector_id'] ?? 0));
+			$clientIds = isset($scope['client_ids']) && is_array($scope['client_ids']) ? $scope['client_ids'] : array();
+			if (empty($clientIds)) {
+				$query->whereRaw('1 = 0');
+			} else {
+				$query->where(function ($query) use ($clientIds) {
+					foreach ($clientIds as $clientId) {
+						$query->orWhereRaw('FIND_IN_SET(?, id_cliente) > 0', array((int) $clientId));
+					}
+				});
+			}
+		}
 
 		$search = trim((string) $search);
 		if ($search !== '') {

@@ -25,8 +25,18 @@ class UserAdminService
 	{
 		$search = trim((string) request()->query('q', ''));
 
+		$current = auth()->user();
+		$scope = array();
+		if ($current && (string) $current->nivel_usu === 'GER') {
+			$scope = array(
+				'level' => 'GER',
+				'sector_id' => (int) $current->id_setor,
+				'client_ids' => $this->parseIdList((string) $current->id_cliente),
+			);
+		}
+
 		return array(
-			'users' => $this->repository->paginate(20, $search),
+			'users' => $this->repository->paginate(20, $search, $scope),
 			'search' => $search,
 			'areas' => $this->repository->listAreas(),
 			'regions' => $this->regionService->listActive(),

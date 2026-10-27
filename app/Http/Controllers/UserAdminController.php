@@ -55,6 +55,7 @@ class UserAdminController extends Controller
 
 	public function editPage(Request $request, $id)
 	{
+		$this->assertCanManageUser((int) $id);
 		$payload = $this->service->editPayload((int) $id);
 		if (!is_array($payload) || empty($payload['id_usu'])) {
 			abort(404, __('User not found.'));
@@ -92,6 +93,7 @@ class UserAdminController extends Controller
 
 	public function updatePage(UserUpdateRequest $request, $id)
 	{
+		$this->assertCanManageUser((int) $id);
 		$input = $request->all();
 		$input['id_usu'] = (int) $id;
 		if ($request->boolean('reset_password')) {
@@ -132,14 +134,47 @@ class UserAdminController extends Controller
 
 	private function assertCanResetPassword($id)
 	{
+		$this->assertCanManageUser($id);
+	}
+
+	private function assertCanManageUser($id)
+	{
 		$current = $this->authService->currentUser();
 		$target = $this->service->editPayload((int) $id);
-		if (empty($current) || empty($target)
-			|| !in_array((string) $current['nivel_usu'], array('ADM', 'GER'), true)
-			|| (string) $target['nivel_usu'] !== 'USU'
-			|| ((string) $current['nivel_usu'] === 'GER' && (int) $current['id_setor'] !== (int) $target['id_setor'])) {
+		if (empty($current) || empty($target)) {
 			abort(403);
 		}
+		if ((string) $current['nivel_usu'] === 'ADM') {
+			return;
+		}
+		if ((string) $current['nivel_usu'] !== 'GER'
+			|| (string) $target['nivel_usu'] !== 'USU'
+			|| (int) $current['id_setor'] !== (int) $target['id_setor']) {
+			abort(403);
+		}
+
+		$managed = array_flip($this->parseIdList((string) $current['id_cliente']));
+		$targetClients = $this->parseIdList((string) $target['id_cliente']);
+		foreach ($targetClients as $clientId) {
+			if (isset($managed[(int) $clientId])) {
+				return;
+			}
+		}
+
+		abort(403);
+	}
+
+	private function parseIdList($value)
+	{
+		$ids = array();
+		foreach (explode(',', (string) $value) as $item) {
+			$item = trim($item);
+			if ($item !== '' && ctype_digit($item) && (int) $item > 0) {
+				$ids[(int) $item] = (int) $item;
+			}
+		}
+
+		return array_values($ids);
 	}
 
 	public function destroyPage($id)
