@@ -198,6 +198,7 @@
 		$adminLinks = [
 			['key' => 'admin', 'label' => __('Admin'), 'url' => url('admin'), 'active' => $currentSection === 'admin'],
 			['key' => 'metas', 'label' => __('Goals'), 'url' => url('metas'), 'active' => $isGoalsActive],
+			['key' => 'usuarios', 'label' => __('Users'), 'url' => url('usuarios'), 'active' => $currentSection === 'usuarios'],
 		];
 	}
 	$shellIcons = [
