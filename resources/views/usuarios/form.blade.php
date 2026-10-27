@@ -121,7 +121,12 @@ window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 					</div>
 				</div>
 				<div class="admin-form-group admin-form-group--full">
-					<div class="admin-form-subgrid">
+					<div class="usuario-password-section">
+						<div class="usuario-password-section__heading">
+							<strong>Senha de acesso</strong>
+							<span>Preencha somente se quiser definir uma senha manualmente.</span>
+						</div>
+						<div class="admin-form-subgrid">
 						<div class="admin-form-group">
 							<label for="senha_usu1">{{ __('Password') }}</label>
 							<input type="password" class="admin-form-input" name="senha_usu1" id="senha_usu1" value="" />
@@ -130,17 +135,22 @@ window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 							<label for="senha_usu2">{{ __('Repeat Password') }}</label>
 							<input type="password" class="admin-form-input" name="senha_usu2" id="senha_usu2" value="" />
 						</div>
+						</div>
 					</div>
 				</div>
 			</div>
 
-			<div class="admin-form-actions">
+			<div class="usuario-form-footer">
 				@if ((int) $user['id_usu'] > 0 && in_array((string) auth()->user()->nivel_usu, array('ADM', 'GER'), true))
-					<label class="admin-form-checkbox"><input type="checkbox" name="reset_password" value="1" /> Emitir nova senha temporária</label>
-					<p class="admin-form-help">A senha anterior será invalidada. A nova senha será válida por 24 horas e exigirá troca no próximo acesso.</p>
+					<div class="usuario-temporary-password-card">
+						<label class="usuario-temporary-password-card__option"><input type="checkbox" name="reset_password" value="1" /> <span>Emitir nova senha temporária</span></label>
+						<p>A senha anterior será invalidada. A nova senha será válida por 24 horas e exigirá troca no próximo acesso.</p>
+					</div>
 				@endif
-				<button type="submit" class="admin-button admin-button--primary">{{ $submitLabel }}</button>
-				<a href="{{ $backUrl }}" class="admin-button admin-button--secondary">{{ __('Exit') }}</a>
+				<div class="admin-form-actions">
+					<button type="submit" class="admin-button admin-button--primary">{{ $submitLabel }}</button>
+					<a href="{{ $backUrl }}" class="admin-button admin-button--secondary">{{ __('Exit') }}</a>
+				</div>
 			</div>
 		</form>
 	</div>

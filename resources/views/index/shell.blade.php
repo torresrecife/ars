@@ -233,7 +233,7 @@
 	@if (is_file(public_path('mix-manifest.json')) && is_file(public_path('build/css/app.css')))
 		<link rel="stylesheet" href="{{ asset(env('DDEV_PROJECT') ? ltrim(mix('/build/css/app.css'), '/') : 'public/' . ltrim(mix('/build/css/app.css'), '/')) }}">
 	@else
-		<link rel="stylesheet" href="{{ asset('css/ars-modern.css') }}">
+		<link rel="stylesheet" href="{{ asset('css/ars-modern.css') }}?v={{ is_file(base_path('css/ars-modern.css')) ? filemtime(base_path('css/ars-modern.css')) : time() }}">
 	@endif
 	<script type="text/javascript" src="{{ asset('js/jquery-1.8.0.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('js/jquery-ui-1.8.23.custom.min.js') }}"></script>

@@ -108,7 +108,7 @@ class UserAdminController extends Controller
 		if ($request->boolean('reset_password')) {
 			$temporary = $this->service->issueTemporaryPassword((int) $id);
 			if (is_array($temporary)) {
-				return response()->view('usuarios/temporary-password', array(
+				return $this->renderShellPage($request, 'usuarios/temporary-password', array(
 					'user' => $this->service->editPayload((int) $id),
 					'temporaryPassword' => $temporary['temporary_password'],
 					'expiresAt' => $temporary['expires_at'],
