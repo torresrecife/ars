@@ -13,11 +13,11 @@
             <div class="auth-layout__hero-inner">
                 <div class="auth-layout__brand">
                     <span class="auth-layout__brand-mark">
-                        <img src="{{ asset('css/images/ars-logo-icon.png') }}" alt="{{ __('ARS - NEO Legal') }}" />
+                        <img src="{{ asset('css/images/ars-logo-icon.png') }}" alt="{{ __('ARS - Legal') }}" />
                     </span>
                     <div class="auth-layout__brand-text">
                         <strong>ARS</strong>
-                        <span>{{ __('ARS - NEO Legal') }}</span>
+                        <span>{{ __('ARS - Legal') }}</span>
                     </div>
                 </div>
                 <div class="auth-layout__hero-copy">

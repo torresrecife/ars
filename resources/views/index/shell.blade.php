@@ -267,11 +267,11 @@
 				</button>
 				<a href="{{ url('index') }}" class="ars-shell__brand">
 {{--					<span class="ars-shell__brand-mark">--}}
-{{--						<img src="{{ asset('css/images/logo.png') }}" alt="{{ __('ARS - NEO Legal') }}" />--}}
+{{--						<img src="{{ asset('css/images/logo.png') }}" alt="{{ __('ARS - Legal') }}" />--}}
 {{--					</span>--}}
 					<span class="ars-shell__brand-text">
 						<strong>ARS</strong>
-						<small>{{ __('ARS - NEO Legal') }}</small>
+						<small>{{ __('ARS - Legal') }}</small>
 					</span>
 				</a>
 			</div>

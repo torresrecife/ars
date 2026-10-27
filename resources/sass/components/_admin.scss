@@ -1566,6 +1566,34 @@ label.filter-published-lbl {
   white-space: nowrap;
 }
 
+.admin-table-actions .admin-icon-button {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0;
+  border-radius: 12px;
+}
+
+.admin-icon-button svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.admin-icon-button--danger {
+  border-color: #f1caca;
+  background: #fff6f6;
+  color: #b13b3b;
+}
+
+.admin-icon-button--danger:hover,
+.admin-icon-button--danger:focus {
+  border-color: #e9a7a7;
+  background: #fff0f0;
+  color: #922d2d;
+}
+
 .admin-card {
   background: #ffffff;
   border: 1px solid #dce5ec;

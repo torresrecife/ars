@@ -24,6 +24,8 @@
 				<col class="admin-col admin-col--name" />
 				<col class="admin-col admin-col--login" />
 				<col class="admin-col admin-col--level" />
+				<col class="admin-col admin-col--sector" />
+				<col class="admin-col admin-col--clients" />
 				<col class="admin-col admin-col--datetime" />
 				<col class="admin-col admin-col--datetime" />
 				<col class="admin-col admin-col--email" />
@@ -36,6 +38,8 @@
 					<th class="order">{{ __('Name') }}</th>
 					<th class="order">{{ __('User') }}</th>
 					<th class="order">{{ __('Level') }}</th>
+					<th class="order">{{ __('Sector') }}</th>
+					<th class="order">{{ __('Clients') }}</th>
 					<th class="order">{{ __('Last Access') }}</th>
 					<th class="order">{{ __('Created At') }}</th>
 					<th class="order">{{ __('E-mail') }}</th>
@@ -53,14 +57,20 @@
 						<td class="order">{{ e($user['nome_usu']) }}</td>
 						<td class="order">{{ e($user['login_usu']) }}</td>
 						<td class="order">{{ e($user['nivel_usu']) }}</td>
+						<td class="order">{{ e($user['setor_nome'] ?: '—') }}</td>
+						<td class="order admin-cell--wrap">{{ e(!empty($user['clientes_nomes']) ? implode(', ', $user['clientes_nomes']) : '—') }}</td>
 						<td class="order">{{ $acesso }}</td>
 						<td class="order">{{ strftime('%d/%m/%Y %H:%M:%S', strtotime($user['data_cad'])) }}</td>
 						<td class="order">{{ e($user['email_usu']) }}</td>
 						<td class="order">{{ e($user['status_usu']) }}</td>
 						<td class="order">
 							<div class="admin-table-actions">
-								<a href="{{ route('usuarios.edit', (int) $user['id_usu']) }}" class="admin-link-button">{{ __('Edit') }}</a>
-								<a href="{{ route('usuarios.confirm-delete', (int) $user['id_usu']) }}" class="admin-link-button admin-link-button--danger">{{ __('Delete') }}</a>
+								<a href="{{ route('usuarios.edit', (int) $user['id_usu']) }}" class="admin-link-button admin-icon-button" title="{{ __('Edit') }}" aria-label="{{ __('Edit') }}">
+									<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="m4 16.5-.8 3.8 3.8-.8L18.5 8a2.1 2.1 0 0 0-3-3L4 16.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m14.5 6.5 3 3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+								</a>
+								<a href="{{ route('usuarios.confirm-delete', (int) $user['id_usu']) }}" class="admin-link-button admin-icon-button admin-icon-button--danger" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}">
+									<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M5 7h14M10 4h4l1 3H9l1-3ZM8 7l.7 13h6.6L16 7M10 10v7M14 10v7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+								</a>
 							</div>
 						</td>
 					</tr>

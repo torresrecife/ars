@@ -40,12 +40,39 @@ class UserAdminRepository
 		}
 
 		$paginator = $query
+			->with('setor')
 			->orderBy('id_usu')
 			->paginate((int) $perPage);
 
-		$paginator->setCollection($paginator->getCollection()->map(function (Usuario $user) {
-				return $user->toArray();
-			})->values());
+		$clientIds = array();
+		foreach ($paginator->getCollection() as $user) {
+			foreach (explode(',', (string) $user->id_cliente) as $clientId) {
+				$clientId = (int) trim($clientId);
+				if ($clientId > 0) {
+					$clientIds[$clientId] = $clientId;
+				}
+			}
+		}
+
+		$clientsById = array();
+		foreach ($this->listClientsByIds(array_values($clientIds)) as $client) {
+			$clientsById[(int) $client['banco_id']] = (string) $client['banco_name'];
+		}
+
+		$paginator->setCollection($paginator->getCollection()->map(function (Usuario $user) use ($clientsById) {
+			$data = $user->toArray();
+			$data['setor_nome'] = $user->setor ? (string) $user->setor->area_nome : '';
+			$clientNames = array();
+			foreach (explode(',', (string) $user->id_cliente) as $clientId) {
+				$clientId = (int) trim($clientId);
+				if ($clientId > 0 && isset($clientsById[$clientId])) {
+					$clientNames[] = $clientsById[$clientId];
+				}
+			}
+			$data['clientes_nomes'] = $clientNames;
+
+			return $data;
+		})->values());
 
 		return $paginator;
 	}
