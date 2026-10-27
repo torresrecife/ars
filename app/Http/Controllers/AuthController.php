@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Services\AuthService;
+use App\Services\MainPageService;
 use App\Support\WriteResult;
+use App\Support\View;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -13,9 +15,15 @@ class AuthController extends Controller
      */
     protected $authService;
 
-    public function __construct(AuthService $authService)
+    protected $mainPageService;
+
+    protected $view;
+
+    public function __construct(AuthService $authService, ?MainPageService $mainPageService = null, ?View $view = null)
     {
         $this->authService = $authService;
+        $this->mainPageService = $mainPageService;
+        $this->view = $view;
     }
 
     public function showLogin(Request $request)
@@ -42,15 +50,30 @@ class AuthController extends Controller
 		}
 
         if ($this->authService->requiresPasswordChange($user)) {
-            return response()->view('auth.force-password', [
-                'userId' => (int) $user['id_usu'],
-            ] + $this->legacyViewUrls());
+			return $this->forcePasswordPage($request, (int) $user['id_usu']);
         }
 
         $this->authService->refreshUserAccess($user['id_usu']);
 
         return redirect(url('index'));
     }
+
+	private function forcePasswordPage(Request $request, $userId)
+	{
+		if ($this->mainPageService === null || $this->view === null) {
+			return response()->view('auth.force-password', array('userId' => (int) $userId));
+		}
+
+		$user = $this->authService->currentUser();
+		$pageData = $this->mainPageService->build(array('section' => 'usuarios'), $request->session()->all());
+
+		return response($this->view->render('index/shell', array(
+			'pageData' => $pageData,
+			'contentHtml' => $this->view->render('auth.force-password', array('userId' => (int) $userId)),
+			'exportPath' => dirname(dirname(dirname(__DIR__))) . '/php2/exportar.php',
+			'entryUrl' => url('index'),
+		)));
+	}
 
     public function logout(Request $request)
     {
