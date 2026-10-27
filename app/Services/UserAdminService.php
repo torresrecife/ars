@@ -164,6 +164,19 @@ class UserAdminService
 			: WriteResult::error();
 	}
 
+	public function issueTemporaryPassword($id)
+	{
+		$password = bin2hex(random_bytes(12));
+		$hash = $this->hashPassword($password);
+		$expiresAt = date('Y-m-d H:i:s', time() + 86400);
+
+		if (!$this->repository->issueTemporaryPassword((int) $id, $hash, $expiresAt)) {
+			return WriteResult::error();
+		}
+
+		return array('temporary_password' => $password, 'expires_at' => $expiresAt);
+	}
+
 	public function delete($id)
 	{
 		return $this->repository->delete($id) ? WriteResult::success() : WriteResult::error();

@@ -139,6 +139,21 @@ class UserAdminRepository
 		return $model->save();
 	}
 
+	public function issueTemporaryPassword($id, $hash, $expiresAt)
+	{
+		$model = Usuario::query()->find((int) $id);
+		if (!$model) {
+			return false;
+		}
+
+		$model->senha_usu = (string) $hash;
+		$model->acesso_usu = null;
+		$model->must_change_password = true;
+		$model->temporary_password_expires_at = $expiresAt;
+
+		return $model->save();
+	}
+
 	public function lastInsertId()
 	{
 		return $this->lastInsertId;

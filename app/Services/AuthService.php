@@ -194,6 +194,9 @@ class AuthService
 
 	public function requiresPasswordChange(array $user)
 	{
+		if (!empty($user['must_change_password'])) {
+			return true;
+		}
 		if (!array_key_exists('acesso_usu', $user)) {
 			return true;
 		}
@@ -203,6 +206,13 @@ class AuthService
 		return $lastAccess === null
 			|| $lastAccess === ''
 			|| $lastAccess === '0000-00-00 00:00:00';
+	}
+
+	public function temporaryPasswordIsExpired(array $user)
+	{
+		$expiresAt = isset($user['temporary_password_expires_at']) ? $user['temporary_password_expires_at'] : null;
+
+		return $expiresAt !== null && $expiresAt !== '' && strtotime((string) $expiresAt) < time();
 	}
 
 	public function updatePasswordAndAccess($id, $password)

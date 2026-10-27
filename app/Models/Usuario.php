@@ -18,6 +18,8 @@ class Usuario extends Authenticatable
         'email_usu',
         'nivel_usu',
         'acesso_usu',
+        'must_change_password',
+        'temporary_password_expires_at',
         'data_cad',
         'id_setor',
         'id_cliente',
@@ -32,6 +34,8 @@ class Usuario extends Authenticatable
         'id_neo' => 'int',
         'id_setor' => 'int',
         'acesso_usu' => 'datetime',
+        'must_change_password' => 'boolean',
+        'temporary_password_expires_at' => 'datetime',
         'data_cad' => 'datetime',
     );
 

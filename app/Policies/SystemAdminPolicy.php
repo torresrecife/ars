@@ -10,12 +10,12 @@ class SystemAdminPolicy
 {
 	public function viewAny(Usuario $user, $resource = null)
 	{
-		return (string) $user->nivel_usu === 'ADM';
+		return in_array((string) $user->nivel_usu, array('ADM', 'GER'), true);
 	}
 
 	public function view(Usuario $user, $resource = null)
 	{
-		return (string) $user->nivel_usu === 'ADM';
+		return in_array((string) $user->nivel_usu, array('ADM', 'GER'), true);
 	}
 
 	public function create(Usuario $user, $resource = null)
@@ -25,7 +25,7 @@ class SystemAdminPolicy
 
 	public function update(Usuario $user, $resource = null)
 	{
-		return (string) $user->nivel_usu === 'ADM';
+		return in_array((string) $user->nivel_usu, array('ADM', 'GER'), true);
 	}
 
 	public function delete(Usuario $user, $resource = null)

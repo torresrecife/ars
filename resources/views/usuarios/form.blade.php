@@ -135,6 +135,10 @@ window.arsSelectAjaxUrl = "{{ url('ajax/select') }}";
 			</div>
 
 			<div class="admin-form-actions">
+				@if ((int) $user['id_usu'] > 0 && in_array((string) auth()->user()->nivel_usu, array('ADM', 'GER'), true))
+					<label class="admin-form-checkbox"><input type="checkbox" name="reset_password" value="1" /> Emitir nova senha temporária</label>
+					<p class="admin-form-help">A senha anterior será invalidada. A nova senha será válida por 24 horas e exigirá troca no próximo acesso.</p>
+				@endif
 				<button type="submit" class="admin-button admin-button--primary">{{ $submitLabel }}</button>
 				<a href="{{ $backUrl }}" class="admin-button admin-button--secondary">{{ __('Exit') }}</a>
 			</div>

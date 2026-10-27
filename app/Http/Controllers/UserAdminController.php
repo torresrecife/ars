@@ -94,7 +94,27 @@ class UserAdminController extends Controller
 	{
 		$input = $request->all();
 		$input['id_usu'] = (int) $id;
+		if ($request->boolean('reset_password')) {
+			$this->assertCanResetPassword((int) $id);
+		}
 		$result = $this->service->update($input);
+		if (!$result->isSuccess()) {
+			if ($result->isDuplicate()) {
+				return redirect()->back()->withInput()->withErrors(array('login_usu' => __('Duplicate record.')));
+			}
+			return redirect()->back()->withInput()->withErrors(array('form' => __('Operation failed.')));
+		}
+
+		if ($request->boolean('reset_password')) {
+			$temporary = $this->service->issueTemporaryPassword((int) $id);
+			if (is_array($temporary)) {
+				return response()->view('usuarios/temporary-password', array(
+					'user' => $this->service->editPayload((int) $id),
+					'temporaryPassword' => $temporary['temporary_password'],
+					'expiresAt' => $temporary['expires_at'],
+				));
+			}
+		}
 		if ($result->isDuplicate()) {
 			return redirect()->back()->withInput()->withErrors(array(
 				'login_usu' => __('Duplicate record.'),
@@ -108,6 +128,18 @@ class UserAdminController extends Controller
 		}
 
 		return redirect()->route('usuarios')->with('status', __('User updated successfully.'));
+	}
+
+	private function assertCanResetPassword($id)
+	{
+		$current = $this->authService->currentUser();
+		$target = $this->service->editPayload((int) $id);
+		if (empty($current) || empty($target)
+			|| !in_array((string) $current['nivel_usu'], array('ADM', 'GER'), true)
+			|| (string) $target['nivel_usu'] !== 'USU'
+			|| ((string) $current['nivel_usu'] === 'GER' && (int) $current['id_setor'] !== (int) $target['id_setor'])) {
+			abort(403);
+		}
 	}
 
 	public function destroyPage($id)

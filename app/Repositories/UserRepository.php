@@ -98,7 +98,7 @@ class UserRepository
 
 		if ($this->connection instanceof mysqli) {
 			$id = (int) $id;
-			$sql = "UPDATE `" . $this->table . "` SET `senha_usu` = ?, `acesso_usu` = ? WHERE `id_usu` = ? LIMIT 1";
+			$sql = "UPDATE `" . $this->table . "` SET `senha_usu` = ?, `acesso_usu` = ?, `must_change_password` = 0, `temporary_password_expires_at` = NULL WHERE `id_usu` = ? LIMIT 1";
 			$stmt = mysqli_prepare($this->connection, $sql);
 			if (!$stmt) {
 				return false;
@@ -116,6 +116,8 @@ class UserRepository
 			->update(array(
 				'senha_usu' => (string) $hash,
 				'acesso_usu' => $accessTime,
+				'must_change_password' => false,
+				'temporary_password_expires_at' => null,
 			));
 	}
 

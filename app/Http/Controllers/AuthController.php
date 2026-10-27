@@ -36,6 +36,11 @@ class AuthController extends Controller
             return redirect()->to(url('login') . '?alerta=1');
         }
 
+		if ($this->authService->temporaryPasswordIsExpired($user)) {
+			$this->authService->clearUserSession();
+			return redirect()->to(url('login') . '?alerta=1');
+		}
+
         if ($this->authService->requiresPasswordChange($user)) {
             return response()->view('auth.force-password', [
                 'userId' => (int) $user['id_usu'],
