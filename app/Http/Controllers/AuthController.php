@@ -84,6 +84,22 @@ class AuthController extends Controller
         return redirect(url('login'));
     }
 
+    public function showProfile(Request $request)
+    {
+		$currentUser = $this->authService->currentUser();
+		if (empty($currentUser)) {
+			return redirect()->route('login');
+		}
+
+		$pageData = $this->mainPageService->build(array('section' => 'profile'), $request->session()->all());
+		return response($this->view->render('index/shell', array(
+			'pageData' => $pageData,
+			'contentHtml' => $this->view->render('auth/profile', array('user' => $currentUser)),
+			'exportPath' => dirname(dirname(dirname(__DIR__))) . '/php2/exportar.php',
+			'entryUrl' => url('index'),
+		)));
+	}
+
     public function updateOwnPassword(Request $request)
     {
         $currentUser = $this->authService->currentUser();

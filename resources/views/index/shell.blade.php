@@ -139,6 +139,7 @@
 		'relatorio-mensal' => __('Monthly'),
 		'admin' => __('Admin'),
 		'usuarios' => __('Users'),
+		'profile' => 'Meu perfil',
 		'setores' => __('Sectors'),
 		'clientes' => __('Clients'),
 		'andamentos' => __('Progress'),
@@ -309,6 +310,7 @@
 					</div>
 				</div>
 				<div class="ars-shell__topbar-actions">
+					<a href="{{ route('profile') }}" class="ars-shell__action-button ars-shell__action-link">Meu perfil</a>
 					@if ($currentUser->name() !== '')
 						<div class="ars-shell__meta-chip">{{ __('User') }}: {{ e($currentUser->name()) }}</div>
 					@endif

@@ -1,8 +1,9 @@
+@php($isForced = isset($isForced) ? (bool) $isForced : true)
 <div class="admin-page admin-page--flat force-password-page">
     <div class="admin-page__toolbar admin-page__toolbar--between">
         <div>
-            <h1 class="admin-page__title">Crie sua nova senha</h1>
-            <p class="admin-page__subtitle">Por segurança, a senha temporária precisa ser substituída antes de continuar.</p>
+            <h1 class="admin-page__title">{{ $isForced ? 'Crie sua nova senha' : 'Alterar minha senha' }}</h1>
+            <p class="admin-page__subtitle">{{ $isForced ? 'Por segurança, a senha temporária precisa ser substituída antes de continuar.' : 'Atualize sua senha de acesso à ARS.' }}</p>
         </div>
         <a href="{{ url('logout') }}" class="admin-button admin-button--secondary">Sair</a>
     </div>
@@ -11,8 +12,8 @@
         <div class="force-password-card__intro">
             <span class="force-password-card__icon" aria-hidden="true">✓</span>
             <div>
-                <h2>Alteração de senha obrigatória</h2>
-                <p>Escolha uma senha pessoal para acessar a ARS. A senha temporária não poderá ser usada novamente.</p>
+                <h2>{{ $isForced ? 'Alteração de senha obrigatória' : 'Senha de acesso' }}</h2>
+                <p>{{ $isForced ? 'Escolha uma senha pessoal para acessar a ARS. A senha temporária não poderá ser usada novamente.' : 'Escolha uma senha pessoal e não compartilhe sua credencial.' }}</p>
             </div>
         </div>
 

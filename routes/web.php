@@ -12,6 +12,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/index', 'HomeController@webIndex')->name('legacy.home');
     Route::get('/logout', 'AuthController@logout')->name('logout');
     Route::post('/ajax/newpass', 'AuthController@updateOwnPassword')->name('ajax.newpass');
+    Route::get('/meu-perfil', 'AuthController@showProfile')->name('profile');
+    Route::get('/minha-senha', 'AuthController@showProfile')->name('password.edit');
     Route::post('/ajax/select', 'SelectController@webAjax')->name('ajax.select');
     Route::match(['get', 'post'], '/detalhes/andamentos', 'AndamentoDetailController@webIndex')->name('detalhes.andamentos');
     Route::match(['get', 'post'], '/detalhes/faturamento', 'FinancialDetailController@webIndex')->name('detalhes.faturamento');
