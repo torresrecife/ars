@@ -108,10 +108,16 @@ gunzip -c ~/ars-utf8mb4.sql.gz | sudo mysql ars && rm ~/ars-utf8mb4.sql.gz
 **No EUROPA-HD**, em `/var/www/ars`: `php artisan ars:converter-utf8mb4` (deve dizer que não há
 nada a converter), `php artisan migrate --force` e `php artisan optimize`.
 
-Se o banco antigo tiver datas `0000-00-00`, o comando de conversão tira o modo estrito só na
-sessão dele. Ensaio feito no DDEV com a cópia local de 10/2026: 10 tabelas, acentos preservados.
+**Ensaio de 14/11/2026 (DDEV, dados reais do 10.81.11.202, MySQL 5.6.51):** dump em latin1 sem
+perda (as colunas utf8mb4 do banco antigo não têm caractere fora do latin1); 14 tabelas e 4.806
+linhas, contagens iguais às do servidor antigo; 10 tabelas convertidas, todo o texto em latin1 de
+verdade, as 49 linhas com acento idênticas antes e depois; as 16 migrations já estavam aplicadas
+(nada a migrar); 84 testes, 21 telas e consultas ao NEO sem erro. Uma data `0000-00-00`
+(`usuarios.acesso_usu`, usuário que nunca entrou): a tela mostra vazio, e editar o usuário e
+registrar o acesso funcionam no modo estrito do MySQL 8.4. O comando de conversão tira o modo
+estrito só na sessão dele.
 
-**Senhas:** 15 contas da cópia local ainda tinham senha MD5 do legado. O login continua aceitando e,
+**Senhas:** 16 das 33 contas da produção antiga ainda têm senha MD5 do legado. O login continua aceitando e,
 na primeira entrada, regrava a senha em bcrypt (`Usuario::getAuthPasswordName()` = `senha_usu`).
 
 **Servidor antigo:** depois da virada, redirecionar `/ars/...` do Apache antigo para
