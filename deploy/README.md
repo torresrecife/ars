@@ -74,35 +74,29 @@ conferir no DDEV do PC e só então mandar para o REIA-HD.
 **No PC (WSL, em `~/projetos/ars`), com o sistema antigo parado para ninguém gravar no meio:**
 
 ```bash
-# 1. Dump do banco antigo pelo cliente do container do banco (MySQL 8.4)
-read -rsp "Senha do admin no 10.81.11.202: " MYSQL_PWD; echo
-ddev exec -s db "MYSQL_PWD='$MYSQL_PWD' mysqldump -h 10.81.11.202 -P 3306 -u admin \
-  --single-transaction --quick --no-tablespaces --skip-triggers --column-statistics=0 \
-  --set-gtid-purged=OFF --default-character-set=latin1 ars_laravel" | gzip > .ddev/db_dumps/ars-antigo.sql.gz
-unset MYSQL_PWD
-gzip -dc .ddev/db_dumps/ars-antigo.sql.gz | tail -n 1      # tem que terminar em "Dump completed"
-
-# 2. Importar no DDEV (snapshot antes), converter e conferir
-ddev snapshot --name antes-ars-antigo
-ddev import-db --file=.ddev/db_dumps/ars-antigo.sql.gz
-ddev artisan ars:converter-utf8mb4            # relatório: conferir as colunas listadas
-ddev artisan ars:converter-utf8mb4 --apply
-ddev artisan migrate --force
-ddev testes && echo "abrir http://ars.ddev.site:8080 e conferir acentos, painel e relatório"
-
-# 3. Dump do banco convertido, para o REIA-HD
-ddev exec -s db "mysqldump --single-transaction --quick --no-tablespaces --set-gtid-purged=OFF \
-  --default-character-set=utf8mb4 db" | gzip > .ddev/db_dumps/ars-utf8mb4.sql.gz
-scp .ddev/db_dumps/ars-utf8mb4.sql.gz fabio.ferreira@172.31.20.62:~
+ddev virada-banco
 ```
 
-Se o `mysqldump` não alcançar o `10.81.11.202` de dentro do DDEV, fazer o dump pelo HeidiSQL
-(conexão latin1) e seguir do passo 2.
+O comando (`.ddev/commands/host/virada-banco`) usa `~/.config/bvaa/mysql-ars-antigo.cnf`
+(permissão 600; na primeira vez ele cria o arquivo para preencher a senha) e faz: snapshot do banco
+local → leitura do servidor antigo (versão, tabelas, contagens; confere que as colunas utf8mb4 não
+têm texto fora do latin1) → dump em latin1 → import no DDEV e contagens iguais às do servidor antigo
+→ `ars:converter-utf8mb4 --apply` → checksum do texto de todas as tabelas igual antes e depois, os
+acentos iguais e tudo em utf8mb4 → migrations e `ddev testes` → dump final em utf8mb4 com
+`sha256`. Para no primeiro problema, sem gerar o dump final. Tudo fica em
+`.ddev/db_dumps/virada-AAAAMMDD-HHMMSS/` (fora do Git); no fim ele mostra os comandos seguintes.
+Depois, abrir `http://ars.ddev.site:8080` e conferir painel e relatório.
+
+Se o DDEV não alcançar o `10.81.11.202`, fazer o dump pelo HeidiSQL (conexão latin1), importar com
+`ddev import-db`, rodar `ddev artisan ars:converter-utf8mb4 --apply` e gerar o dump em utf8mb4 com
+`ddev export-db`.
 
 **No REIA-HD** (banco `ars` já criado na seção 1):
 
 ```bash
-gunzip -c ~/ars-utf8mb4.sql.gz | sudo mysql ars && rm ~/ars-utf8mb4.sql.gz
+scp .ddev/db_dumps/virada-AAAAMMDD-HHMMSS/ars-utf8mb4.sql.gz* fabio.ferreira@172.31.20.62:~   # do PC
+sha256sum -c ars-utf8mb4.sql.gz.sha256 && gunzip -c ars-utf8mb4.sql.gz | sudo mysql ars        # no REIA-HD
+rm ~/ars-utf8mb4.sql.gz ~/ars-utf8mb4.sql.gz.sha256
 ```
 
 **No EUROPA-HD**, em `/var/www/ars`: `php artisan ars:converter-utf8mb4` (deve dizer que não há
@@ -115,7 +109,9 @@ verdade, as 49 linhas com acento idênticas antes e depois; as 16 migrations já
 (nada a migrar); 84 testes, 21 telas e consultas ao NEO sem erro. Uma data `0000-00-00`
 (`usuarios.acesso_usu`, usuário que nunca entrou): a tela mostra vazio, e editar o usuário e
 registrar o acesso funcionam no modo estrito do MySQL 8.4. O comando de conversão tira o modo
-estrito só na sessão dele.
+estrito só na sessão dele. O `ddev virada-banco` foi rodado com sucesso no mesmo dia (mesmos números),
+sua conferência por checksum foi testada alterando um acento (detectou), e o dump final importado num
+banco vazio do MySQL 8.4 ficou igual ao convertido.
 
 **Senhas:** 16 das 33 contas da produção antiga ainda têm senha MD5 do legado. O login continua aceitando e,
 na primeira entrada, regrava a senha em bcrypt (`Usuario::getAuthPasswordName()` = `senha_usu`).

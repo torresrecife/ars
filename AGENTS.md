@@ -35,7 +35,8 @@ README para estrutura, rotas e traduções.
   servidor antigo `10.81.11.202` (banco `ars_laravel`, latin1; cópia e conversão na seção 2 do
   `deploy/README.md`). Comandos nos servidores ficam com o Fabio (Bitdefender intercepta o SSH).
 - Conversão latin1 → utf8mb4: `php artisan ars:converter-utf8mb4` (relatório; `--apply` converte),
-  o mesmo comando do Petição Fácil. Aplicado no banco local em 14/11.
+  o mesmo comando do Petição Fácil. Aplicado no banco local em 14/11. Virada do banco antigo:
+  `ddev virada-banco` (cópia, conversão, conferências e dump para o REIA-HD; ensaiado em 14/11).
 - Número do processo do NEO: `App\Support\ProcessNumber::format` (CNJ e formato antigo).
 - Login único (BVAcesso): a ARS entra depois desta migração (ver `~/projetos/bvacesso/AGENTS.md`).
 

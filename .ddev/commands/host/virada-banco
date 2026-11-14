@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+
+## Description: Virada da ARS: copia o banco antigo (10.81.11.202), converte para utf8mb4 no DDEV, confere tudo e gera o dump para o REIA-HD.
+## Usage: virada-banco [-y]
+## Example: "ddev virada-banco" ou "ddev virada-banco -y" (sem pedir confirmação)
+
+# O servidor antigo só é LIDO. O banco local do DDEV é substituído (snapshot antes).
+# Para no primeiro problema, sem gerar o dump final:
+#  - texto fora do latin1 em coluna utf8mb4 do banco antigo (o dump em latin1 perderia);
+#  - dump incompleto;
+#  - contagem de linhas diferente do servidor antigo;
+#  - texto de qualquer tabela diferente antes/depois da conversão (checksum por tabela);
+#  - coluna que não ficou em utf8mb4; testes falhando.
+# Credenciais: ~/.config/bvaa/mysql-ars-antigo.cnf (permissão 600; host, port, user, password).
+# Roteiro completo: seção 2 do deploy/README.md.
+
+set -euo pipefail
+
+BANCO_ANTIGO="ars_laravel"
+CNF="$HOME/.config/bvaa/mysql-ars-antigo.cnf"
+AGORA="$(date +%Y%m%d-%H%M%S)"
+DIR="$DDEV_APPROOT/.ddev/db_dumps/virada-$AGORA"   # dentro do DB: /mnt/ddev_config/db_dumps/virada-$AGORA
+DIR_DB="/mnt/ddev_config/db_dumps/virada-$AGORA"
+DUMP_ANTIGO="$DIR/ars-antigo-latin1.sql.gz"
+DUMP_FINAL="$DIR/ars-utf8mb4.sql.gz"
+
+falha() { echo; echo "PAROU: $*"; echo "Arquivos da tentativa: $DIR"; echo "Banco local de antes: ddev snapshot restore antes-virada-$AGORA"; exit 1; }
+antigo() { ddev exec -s db "mysql --defaults-file=/dev/stdin -N $*" < "$CNF"; }
+antigo_sql() { ddev exec -s db "mysql --defaults-file=/dev/stdin -N -e 'source $DIR_DB/$1'" < "$CNF"; }
+local_sql() { ddev exec -s db "mysql -N db -e 'source $DIR_DB/$1'"; }
+
+if [[ ! -f "$CNF" ]]; then
+  mkdir -p "$(dirname "$CNF")" && chmod 700 "$(dirname "$CNF")"
+  printf '[client]\nhost=10.81.11.202\nport=3306\nuser=admin\npassword=\n' > "$CNF"
+  chmod 600 "$CNF"
+  echo "Criei $CNF. Preencha password= com a senha do admin do servidor antigo e rode de novo."
+  exit 1
+fi
+
+if [[ "${1:-}" != "-y" ]]; then
+  echo "Virada do banco da ARS: lê o $BANCO_ANTIGO do servidor antigo e SUBSTITUI o banco local do DDEV."
+  echo "No dia da virada, o sistema antigo deve estar parado (ninguém gravando)."
+  read -r -p "Continuar? [s/N] " resposta
+  [[ "$resposta" =~ ^[sS]$ ]] || { echo "Cancelado."; exit 0; }
+fi
+
+mkdir -p "$DIR"
+
+echo "1/9 Snapshot do banco local..."
+ddev snapshot --name "antes-virada-$AGORA" >/dev/null
+echo "    volta com: ddev snapshot restore antes-virada-$AGORA"
+
+echo "2/9 Servidor antigo (só leitura): versão, tabelas, linhas..."
+antigo "-e \"select version()\"" | sed 's/^/    MySQL /'
+antigo "-e \"select table_name from information_schema.tables where table_schema='$BANCO_ANTIGO' and table_type='BASE TABLE' order by 1\"" > "$DIR/tabelas.txt"
+[[ -s "$DIR/tabelas.txt" ]] || falha "nenhuma tabela em $BANCO_ANTIGO (senha, permissão ou nome do banco)."
+awk -v b="$BANCO_ANTIGO" '{printf "%sselect \"%s\", count(*) from `%s`.`%s`\n", (NR>1?"union all ":""), $1, b, $1} END{print ";"}' "$DIR/tabelas.txt" > "$DIR/contagem-antigo.sql"
+antigo_sql contagem-antigo.sql > "$DIR/contagem-antigo.txt"
+echo "    $(wc -l < "$DIR/tabelas.txt") tabelas, $(awk '{s+=$2} END{print s}' "$DIR/contagem-antigo.txt") linhas"
+
+echo "3/9 Colunas utf8mb4 do banco antigo sem texto fora do latin1 (o dump é em latin1)..."
+antigo "-e \"select table_name, column_name from information_schema.columns where table_schema='$BANCO_ANTIGO' and character_set_name='utf8mb4'\"" > "$DIR/colunas-utf8mb4.txt"
+if [[ -s "$DIR/colunas-utf8mb4.txt" ]]; then
+  awk -v b="$BANCO_ANTIGO" '{printf "%sselect \"%s.%s\", count(*) from `%s`.`%s` where binary `%s` <> binary convert(convert(`%s` using latin1) using utf8mb4)\n", (NR>1?"union all ":""), $1, $2, b, $1, $2, $2} END{print ";"}' "$DIR/colunas-utf8mb4.txt" > "$DIR/fora-latin1.sql"
+  FORA="$(antigo_sql fora-latin1.sql | awk '$2>0')"
+  [[ -z "$FORA" ]] || falha "texto fora do latin1 em colunas utf8mb4 (o dump em latin1 perderia):"$'\n'"$FORA"
+fi
+echo "    ok"
+
+echo "4/9 Dump do servidor antigo (latin1, sem travar as tabelas)..."
+ddev exec -s db "mysqldump --defaults-file=/dev/stdin --single-transaction --quick --no-tablespaces --skip-triggers \
+  --column-statistics=0 --set-gtid-purged=OFF --default-character-set=latin1 $BANCO_ANTIGO" < "$CNF" | gzip > "$DUMP_ANTIGO"
+gzip -dc "$DUMP_ANTIGO" | tail -n 1 | grep -q "Dump completed" || falha "o dump não terminou (rede, senha ou permissão)."
+echo "    $(du -h "$DUMP_ANTIGO" | cut -f1)"
+
+echo "5/9 Import no DDEV e contagem de linhas..."
+ddev import-db --file="$DUMP_ANTIGO" >/dev/null
+awk '{printf "%sselect \"%s\", count(*) from `%s`\n", (NR>1?"union all ":""), $1, $1} END{print ";"}' "$DIR/tabelas.txt" > "$DIR/contagem-ddev.sql"
+local_sql contagem-ddev.sql > "$DIR/contagem-ddev.txt"
+diff "$DIR/contagem-antigo.txt" "$DIR/contagem-ddev.txt" > "$DIR/contagem-diferencas.txt" || falha "contagens diferentes do servidor antigo (ver contagem-diferencas.txt)."
+echo "    iguais ao servidor antigo"
+
+# Texto de cada tabela como a aplicação vai ler: UTF-8 válido fica como está, o resto é lido
+# como latin1 (a mesma regra do ars:converter-utf8mb4). Antes e depois tem que dar igual.
+ddev exec -s db "mysql -N db -e \"select table_name, column_name from information_schema.columns where table_schema='db' and character_set_name is not null order by table_name, ordinal_position\"" > "$DIR/colunas-texto.txt"
+awk '
+  { cols[$1] = cols[$1] (cols[$1] == "" ? "" : ", ") "coalesce(if(convert(binary `" $2 "` using utf8mb4) is not null, convert(binary `" $2 "` using utf8mb4), convert(`" $2 "` using utf8mb4)), \"<null>\")"; if (!($1 in seen)) { seen[$1] = 1; order[++n] = $1 } }
+  END { for (i = 1; i <= n; i++) printf "%sselect \"%s\", count(*), coalesce(sum(crc32(concat_ws(0x1f, %s))), 0) from `%s`\n", (i > 1 ? "union all " : ""), order[i], cols[order[i]], order[i]; print ";" }
+' "$DIR/colunas-texto.txt" > "$DIR/checksum.sql"
+cat > "$DIR/acentos.sql" <<'SQL'
+select 'andamentos', anda_id, concat_ws(' | ', nome, chave, titulo, anda_neo) from andamentos where concat_ws('', nome, chave, titulo, anda_neo) regexp '[^ -~]'
+union all select 'bancos', banco_id, concat_ws(' | ', banco_name, banco_curto) from bancos where concat_ws('', banco_name, banco_curto) regexp '[^ -~]'
+union all select 'dados', dados_id, dados_cod from dados where dados_cod regexp '[^ -~]'
+union all select 'usuarios', id_usu, nome_usu from usuarios where nome_usu regexp '[^ -~]'
+order by 1, 2;
+SQL
+
+echo "6/9 Conversão para utf8mb4..."
+local_sql checksum.sql > "$DIR/checksum-antes.txt"
+ddev exec -s db "mysql -N --default-character-set=utf8mb4 db -e 'source $DIR_DB/acentos.sql'" > "$DIR/acentos-antes.txt"
+ddev artisan ars:converter-utf8mb4 --no-interaction > "$DIR/conversao-relatorio.txt"
+ddev artisan ars:converter-utf8mb4 --apply --no-interaction > "$DIR/conversao.txt" || falha "a conversão falhou (ver conversao.txt)."
+grep -q "Conversao concluida\|Nada a converter" "$DIR/conversao.txt" || falha "a conversão não terminou (ver conversao.txt)."
+sed -n 's/^\([0-9]* tabela(s).*\)/    \1/p' "$DIR/conversao-relatorio.txt"
+
+echo "7/9 Conferência do texto (checksum de todas as tabelas, acentos e charset)..."
+local_sql checksum.sql > "$DIR/checksum-depois.txt"
+diff "$DIR/checksum-antes.txt" "$DIR/checksum-depois.txt" > "$DIR/checksum-diferencas.txt" || falha "texto diferente depois da conversão (ver checksum-diferencas.txt)."
+ddev exec -s db "mysql -N --default-character-set=utf8mb4 db -e 'source $DIR_DB/acentos.sql'" > "$DIR/acentos-depois.txt"
+diff "$DIR/acentos-antes.txt" "$DIR/acentos-depois.txt" > /dev/null || falha "acentos diferentes depois da conversão (ver acentos-antes/depois.txt)."
+FORA_UTF8="$(ddev exec -s db "mysql -N db -e \"select count(*) from information_schema.columns where table_schema='db' and character_set_name is not null and character_set_name <> 'utf8mb4'\"")"
+[[ "$FORA_UTF8" == "0" ]] || falha "$FORA_UTF8 coluna(s) fora do utf8mb4."
+echo "    texto igual em $(wc -l < "$DIR/checksum-depois.txt") tabelas; $(wc -l < "$DIR/acentos-depois.txt") linhas com acento iguais; tudo em utf8mb4"
+
+echo "8/9 Migrations e testes..."
+ddev artisan migrate --force --no-interaction | sed -n 's/^ *\(INFO\|DONE\)/    &/p' | tail -n 3
+ddev artisan optimize:clear >/dev/null
+ddev testes > "$DIR/testes.txt" 2>&1 || falha "testes falhando (ver testes.txt)."
+echo "    $(grep -o 'OK (.*)' "$DIR/testes.txt")"
+
+echo "9/9 Dump final em utf8mb4 (para o REIA-HD)..."
+ddev exec -s db "mysqldump --single-transaction --quick --no-tablespaces --set-gtid-purged=OFF \
+  --default-character-set=utf8mb4 db" | gzip > "$DUMP_FINAL"
+gzip -dc "$DUMP_FINAL" | tail -n 1 | grep -q "Dump completed" || falha "o dump final não terminou."
+(cd "$DIR" && sha256sum "$(basename "$DUMP_FINAL")" > "$(basename "$DUMP_FINAL").sha256")
+
+ZERADAS="$(ddev exec -s db "mysql -N db -e \"select count(*) from usuarios where cast(acesso_usu as char) like '0000%'\"")"
+MD5="$(ddev exec -s db "mysql -N db -e \"select count(*) from usuarios where senha_usu regexp '^[a-f0-9]{32}\$'\"")"
+
+echo
+echo "Pronto. Dump para o REIA-HD: $DUMP_FINAL ($(du -h "$DUMP_FINAL" | cut -f1))"
+echo " - Avisos: $ZERADAS usuário(s) com acesso 0000-00-00 (a tela mostra vazio); $MD5 conta(s) com senha MD5 (viram bcrypt no primeiro login)."
+echo " - O banco local do DDEV agora é esta cópia; abra http://ars.ddev.site:8080 e confira painel e relatório."
+echo
+echo "Próximos passos (seção 2 do deploy/README.md):"
+echo "  scp \"$DUMP_FINAL\" \"$DUMP_FINAL.sha256\" fabio.ferreira@172.31.20.62:~"
+echo "  # no REIA-HD (banco ars vazio, criado na seção 1):"
+echo "  sha256sum -c ars-utf8mb4.sql.gz.sha256 && gunzip -c ars-utf8mb4.sql.gz | sudo mysql ars"
+echo "  # no EUROPA-HD, em /var/www/ars:"
+echo "  php artisan ars:converter-utf8mb4 && php artisan migrate --force && php artisan optimize"
