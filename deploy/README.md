@@ -44,9 +44,11 @@ cat ~/.ssh/deploy_ars.pub          # colar na Deploy key do GitHub
 sudo install -d -o "$USER" -g www-data -m 2775 /var/www/ars /var/backups/ars
 git clone -b ars_php8 github-ars:torresrecife/ars.git /var/www/ars
 cd /var/www/ars
-cp deploy/env.producao.example .env && nano .env      # preencher os "<...>"
+cp deploy/env.producao.example .env && chmod 640 .env
+nano .env                                             # preencher os 4 "<...>" (NEO: os mesmos do Petição Fácil)
+grep -n '<' .env                                      # não deve mostrar nada
+composer install --no-dev --optimize-autoloader       # antes do artisan: cria o vendor/
 php artisan key:generate
-composer install --no-dev --optimize-autoloader
 npm ci && npm run build                               # public/build (lê ASSET_URL=/ars do .env)
 sudo setfacl -R -m g:www-data:rwX -m d:g:www-data:rwX storage bootstrap/cache
 ```
