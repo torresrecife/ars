@@ -1,3 +1,5 @@
+@use '../tokens' as *;
+
 .invalid {
   color: red;
   font-weight: bold;
@@ -202,7 +204,7 @@ div.configuration {
   padding-left: 30px;
   margin-left: 10px;
   padding-top: 4px;
-  background: url("../../../css/images/menu/icon-16-config.png") 0 6px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-config.png") 0 6px no-repeat;
 }
 
 div.toolbar-list {

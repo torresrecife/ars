@@ -15,7 +15,7 @@ class RegionRepository
 	/** @var mysqli|null */
 	private $connection;
 
-	public function __construct(mysqli $connection = null)
+	public function __construct(?mysqli $connection = null)
 	{
 		$this->connection = $connection;
 	}

@@ -2,12 +2,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="{{ asset('css/ars-modern.css') }}">
 <script type="text/javascript" src="{{ asset('js/jquery-1.8.0.min.js') }}"></script>
-@if (is_file(public_path('mix-manifest.json')) && is_file(public_path('build/js/ars-details.js')))
-<script type="text/javascript" src="{{ asset(env('DDEV_PROJECT') ? ltrim(mix('/build/js/ars-details.js'), '/') : 'public/' . ltrim(mix('/build/js/ars-details.js'), '/')) }}"></script>
-@else
-<script type="text/javascript" src="{{ asset('js/jFilterXCel2003.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/modules/details.js') }}"></script>
-@endif
 <body>
 @php $index = 1; @endphp
 <div class="responsive-table responsive-table--detail" role="region" aria-label="{{ __('Progress') }}" tabindex="0">

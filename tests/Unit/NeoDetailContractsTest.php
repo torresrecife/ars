@@ -83,7 +83,7 @@ class NeoDetailContractsTest extends TestCase
         $this->assertSame(120.5, $financial->toArray()['totalValue']);
     }
 
-    public function test_service_formats_cnj_number_when_helper_is_unavailable()
+    public function test_service_formats_cnj_number()
     {
         $service = new NeoDetailService(
             Mockery::mock(NeoDetailRepository::class),
@@ -93,7 +93,6 @@ class NeoDetailContractsTest extends TestCase
 
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('formatProcesso');
-        $method->setAccessible(true);
 
         $this->assertSame(
             '0005734-19.2025.8.17.2810',

@@ -68,7 +68,6 @@ class GeneralProductionServiceTest extends TestCase
         $context = $this->buildContext($service);
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('buildWeeklyPayload');
-        $method->setAccessible(true);
 
         $payload = $method->invoke($service, $context);
 
@@ -139,7 +138,6 @@ class GeneralProductionServiceTest extends TestCase
         $context = $this->buildContext($service);
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('buildMonthlyPayload');
-        $method->setAccessible(true);
 
         $payload = $method->invoke($service, $context);
 
@@ -171,7 +169,6 @@ class GeneralProductionServiceTest extends TestCase
         $context = $this->buildContext($service);
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('resolveRegionFilter');
-        $method->setAccessible(true);
 
         $filter = $method->invoke($service, $context);
 
@@ -191,9 +188,7 @@ class GeneralProductionServiceTest extends TestCase
 
         $reflection = new ReflectionClass($service);
         $metaMethod = $reflection->getMethod('aggregateFinancialMetas');
-        $metaMethod->setAccessible(true);
         $eventMethod = $reflection->getMethod('aggregateFinancialEvents');
-        $eventMethod->setAccessible(true);
 
         $aggregate = $metaMethod->invoke($service, array(array(
             'meta_valor' => 500000.0,
@@ -217,7 +212,6 @@ class GeneralProductionServiceTest extends TestCase
     {
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('buildContext');
-        $method->setAccessible(true);
 
         return $method->invoke($service, array(
             'startDate' => 'July / 2026',

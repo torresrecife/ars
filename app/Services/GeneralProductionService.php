@@ -37,7 +37,7 @@ class GeneralProductionService
 	private $metricFormatter;
 	private $financialResultCalculator;
 
-	public function __construct(GeneralProductionRepository $repository, GeneralProductionNeoRepository $neoRepository, RegionService $regionService, PerformanceMetricFormatter $metricFormatter, FinancialResultCalculator $financialResultCalculator = null)
+	public function __construct(GeneralProductionRepository $repository, GeneralProductionNeoRepository $neoRepository, RegionService $regionService, PerformanceMetricFormatter $metricFormatter, ?FinancialResultCalculator $financialResultCalculator = null)
 	{
 		$this->repository = $repository;
 		$this->neoRepository = $neoRepository;

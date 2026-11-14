@@ -61,7 +61,6 @@ class DashboardPanelServiceTest extends TestCase
 
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('buildProductionRows');
-        $method->setAccessible(true);
 
         $rows = $method->invoke($service, 3, 7, 2026, array(array('start' => 1, 'end' => 7)), array('C1'), '=', array(), 0, array());
 
@@ -107,7 +106,6 @@ class DashboardPanelServiceTest extends TestCase
 
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('buildFinancialRows');
-        $method->setAccessible(true);
 
         $rows = $method->invoke($service, 3, 7, 2026, array(array('start' => 1, 'end' => 7)), array('C1'), '=', array(), 0, array());
 
@@ -151,7 +149,6 @@ class DashboardPanelServiceTest extends TestCase
 
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('buildFinancialRows');
-        $method->setAccessible(true);
 
         $rows = $method->invoke($service, 3, 7, 2026, array(array('start' => 1, 'end' => 7)), array('C1'), '=', array(), 0, array());
 
@@ -196,7 +193,6 @@ class DashboardPanelServiceTest extends TestCase
 
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('buildFinancialSummary');
-        $method->setAccessible(true);
 
         $summary = $method->invoke($service, $rows, array(), array(array('start' => 1, 'end' => 7)));
         $payload = $summary->toArray();
@@ -227,7 +223,6 @@ class DashboardPanelServiceTest extends TestCase
 
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('resolveRegionTabs');
-        $method->setAccessible(true);
 
         $tabs = $method->invoke(
             $service,
@@ -267,7 +262,6 @@ class DashboardPanelServiceTest extends TestCase
 
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('resolveRegionTabs');
-        $method->setAccessible(true);
 
         $tabs = $method->invoke(
             $service,
@@ -312,7 +306,6 @@ class DashboardPanelServiceTest extends TestCase
 
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('resolveRegionFilter');
-        $method->setAccessible(true);
 
         $filter = $method->invoke(
             $service,

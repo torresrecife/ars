@@ -1,3 +1,5 @@
+@use '../tokens' as *;
+
 html {
   overflow-y: scroll;
   height: 100%;
@@ -141,7 +143,7 @@ textarea:focus {
 }
 
 #border-top.h_blue {
-  background: url("../../../css/images/j_header_middle.png") repeat-x;
+  background: url("../../../public/css/images/j_header_middle.png") repeat-x;
   height: 54px;
   border-top-right-radius: 8px;
   border-top-left-radius: 8px;
@@ -213,48 +215,48 @@ textarea:focus {
 }
 
 #module-status .viewsite {
-  background: url("../../../css/images/menu/icon-16-viewsite.png") 3px 4px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-viewsite.png") 3px 4px no-repeat;
 }
 
 #module-status .viewconfig {
-  background: url("../../../css/images/menu/icon-16-config.png") 3px 4px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-config.png") 3px 4px no-repeat;
 }
 
 #module-status .newuser {
-  background: url("../../../css/images/menu/icon-16-newuser.png") 3px 4px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-newuser.png") 3px 4px no-repeat;
 }
 
 #module-status .newsetor {
-  background: url("../../../css/images/menu/icon-16-move.png") 3px 4px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-move.png") 3px 4px no-repeat;
 }
 
 #module-status .relatory {
-  background: url("../../../css/images/menu/icon-16-levels.png") 3px 3px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-levels.png") 3px 3px no-repeat;
 }
 
 #module-status .logout {
-  background: url("../../../css/images/menu/icon-16-logout.png") 3px 3px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-logout.png") 3px 3px no-repeat;
 }
 
 #module-status .voltar {
-  background: url("../../../css/images/menu/icon-16-voltar.png") 3px 3px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-voltar.png") 3px 3px no-repeat;
 }
 
 #module-status .novo {
-  background: url("../../../css/images/menu/icon-16-article.png") 3px 3px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-article.png") 3px 3px no-repeat;
 }
 
 #module-status .editar {
-  background: url("../../../css/images/menu/icon-16-maintenance.png") 3px 3px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-maintenance.png") 3px 3px no-repeat;
 }
 
 #module-status .new_list {
-  background: url("../../../css/images/menu/icon-16-new.png") 3px 3px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-new.png") 3px 3px no-repeat;
 }
 
 #module-status .excluir {
   margin-right: 20px;
-  background: url("../../../css/images/menu/icon-16-delete.png") 3px 3px no-repeat;
+  background: url("../../../public/css/images/menu/icon-16-delete.png") 3px 3px no-repeat;
 }
 
 .submenu-box,

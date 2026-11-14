@@ -14,8 +14,6 @@ class CreateAndamentosTable extends Migration
 
         Schema::create('andamentos', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->charset = 'latin1';
-            $table->collation = 'latin1_swedish_ci';
 
             $table->increments('anda_id');
             $table->string('nome', 50)->nullable();

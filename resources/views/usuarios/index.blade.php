@@ -50,7 +50,7 @@
 			<tbody>
 				@foreach ($users as $user)
 					@php
-						$acesso = empty($user['acesso_usu']) || $user['acesso_usu'] === '0000-00-00 00:00:00' ? '' : strftime('%d/%m/%Y %H:%M:%S', strtotime($user['acesso_usu']));
+						$acesso = empty($user['acesso_usu']) || $user['acesso_usu'] === '0000-00-00 00:00:00' ? '' : date('d/m/Y H:i:s', strtotime($user['acesso_usu']));
 					@endphp
 					<tr>
 						<td class="order">{{ (int) $user['id_usu'] }}</td>
@@ -60,7 +60,7 @@
 						<td class="order">{{ e($user['setor_nome'] ?: '—') }}</td>
 						<td class="order admin-cell--wrap">{{ e(!empty($user['clientes_nomes']) ? implode(', ', $user['clientes_nomes']) : '—') }}</td>
 						<td class="order">{{ $acesso }}</td>
-						<td class="order">{{ strftime('%d/%m/%Y %H:%M:%S', strtotime($user['data_cad'])) }}</td>
+						<td class="order">{{ date('d/m/Y H:i:s', strtotime($user['data_cad'])) }}</td>
 						<td class="order">{{ e($user['email_usu']) }}</td>
 						<td class="order">{{ e($user['status_usu']) }}</td>
 						<td class="order">

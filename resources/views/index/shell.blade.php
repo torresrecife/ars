@@ -1,15 +1,14 @@
 @php
-	$setoresJsVersion = is_file(base_path('js/modules/setores.js')) ? filemtime(base_path('js/modules/setores.js')) : time();
-	$usuariosJsVersion = is_file(base_path('js/modules/usuarios.js')) ? filemtime(base_path('js/modules/usuarios.js')) : time();
-	$semanasJsVersion = is_file(base_path('js/modules/semanas.js')) ? filemtime(base_path('js/modules/semanas.js')) : time();
-	$regioesJsVersion = is_file(base_path('js/modules/regioes.js')) ? filemtime(base_path('js/modules/regioes.js')) : time();
-	$clientesJsVersion = is_file(base_path('js/modules/clientes.js')) ? filemtime(base_path('js/modules/clientes.js')) : time();
-	$andamentosJsVersion = is_file(base_path('js/modules/andamentos.js')) ? filemtime(base_path('js/modules/andamentos.js')) : time();
-	$metasJsVersion = is_file(base_path('js/modules/metas.js')) ? filemtime(base_path('js/modules/metas.js')) : time();
-	$helpersJsVersion = is_file(base_path('js/modules/helpers.js')) ? filemtime(base_path('js/modules/helpers.js')) : time();
-	$painelJsVersion = is_file(base_path('js/modules/painel.js')) ? filemtime(base_path('js/modules/painel.js')) : time();
-	$relatorioJsVersion = is_file(base_path('js/modules/relatorio.js')) ? filemtime(base_path('js/modules/relatorio.js')) : time();
-	$compiledModulesAvailable = is_file(public_path('mix-manifest.json')) && is_file(public_path('build/js/ars-modules.js'));
+	$setoresJsVersion = is_file(public_path('js/modules/setores.js')) ? filemtime(public_path('js/modules/setores.js')) : time();
+	$usuariosJsVersion = is_file(public_path('js/modules/usuarios.js')) ? filemtime(public_path('js/modules/usuarios.js')) : time();
+	$semanasJsVersion = is_file(public_path('js/modules/semanas.js')) ? filemtime(public_path('js/modules/semanas.js')) : time();
+	$regioesJsVersion = is_file(public_path('js/modules/regioes.js')) ? filemtime(public_path('js/modules/regioes.js')) : time();
+	$clientesJsVersion = is_file(public_path('js/modules/clientes.js')) ? filemtime(public_path('js/modules/clientes.js')) : time();
+	$andamentosJsVersion = is_file(public_path('js/modules/andamentos.js')) ? filemtime(public_path('js/modules/andamentos.js')) : time();
+	$metasJsVersion = is_file(public_path('js/modules/metas.js')) ? filemtime(public_path('js/modules/metas.js')) : time();
+	$helpersJsVersion = is_file(public_path('js/modules/helpers.js')) ? filemtime(public_path('js/modules/helpers.js')) : time();
+	$painelJsVersion = is_file(public_path('js/modules/painel.js')) ? filemtime(public_path('js/modules/painel.js')) : time();
+	$relatorioJsVersion = is_file(public_path('js/modules/relatorio.js')) ? filemtime(public_path('js/modules/relatorio.js')) : time();
 	$entryUrl = isset($entryUrl) ? (string) $entryUrl : url('index');
 	$arsTranslations = [
 		'Error in operation.' => __('Error in operation.'),
@@ -232,10 +231,10 @@
 	<link href="{{ asset('css/images/favicon.ico') }}" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 	<link rel="stylesheet" href="{{ asset('css/template.css') }}" type="text/css" />
 	<link rel="stylesheet" href="{{ asset('css/custom-theme/jquery-ui.css') }}">
-	@if (is_file(public_path('mix-manifest.json')) && is_file(public_path('build/css/app.css')))
-		<link rel="stylesheet" href="{{ asset(env('DDEV_PROJECT') ? ltrim(mix('/build/css/app.css'), '/') : 'public/' . ltrim(mix('/build/css/app.css'), '/')) }}">
+	@if (is_file(public_path('build/manifest.json')))
+		@vite('resources/sass/app.scss')
 	@else
-		<link rel="stylesheet" href="{{ asset('css/ars-modern.css') }}?v={{ is_file(base_path('css/ars-modern.css')) ? filemtime(base_path('css/ars-modern.css')) : time() }}">
+		<link rel="stylesheet" href="{{ asset('css/ars-modern.css') }}?v={{ is_file(public_path('css/ars-modern.css')) ? filemtime(public_path('css/ars-modern.css')) : time() }}">
 	@endif
 	<script type="text/javascript" src="{{ asset('js/jquery-1.8.0.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('js/jquery-ui-1.8.23.custom.min.js') }}"></script>
@@ -243,20 +242,16 @@
 	<script type="text/javascript">
 	window.arsTranslations = {!! json_encode($arsTranslations, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!};
 	</script>
-	@if ($compiledModulesAvailable)
-		<script type="text/javascript" src="{{ asset(env('DDEV_PROJECT') ? ltrim(mix('/build/js/ars-modules.js'), '/') : 'public/' . ltrim(mix('/build/js/ars-modules.js'), '/')) }}"></script>
-	@else
-		<script type="text/javascript" src="{{ asset('js/modules/helpers.js') }}?v={{ $helpersJsVersion }}"></script>
-		<script type="text/javascript" src="{{ asset('js/modules/setores.js') }}?v={{ $setoresJsVersion }}"></script>
-		<script type="text/javascript" src="{{ asset('js/modules/usuarios.js') }}?v={{ $usuariosJsVersion }}"></script>
-		<script type="text/javascript" src="{{ asset('js/modules/semanas.js') }}?v={{ $semanasJsVersion }}"></script>
-		<script type="text/javascript" src="{{ asset('js/modules/regioes.js') }}?v={{ $regioesJsVersion }}"></script>
-		<script type="text/javascript" src="{{ asset('js/modules/clientes.js') }}?v={{ $clientesJsVersion }}"></script>
-		<script type="text/javascript" src="{{ asset('js/modules/andamentos.js') }}?v={{ $andamentosJsVersion }}"></script>
-		<script type="text/javascript" src="{{ asset('js/modules/metas.js') }}?v={{ $metasJsVersion }}"></script>
-		<script type="text/javascript" src="{{ asset('js/modules/painel.js') }}?v={{ $painelJsVersion }}"></script>
-		<script type="text/javascript" src="{{ asset('js/modules/relatorio.js') }}?v={{ $relatorioJsVersion }}"></script>
-	@endif
+	<script type="text/javascript" src="{{ asset('js/modules/helpers.js') }}?v={{ $helpersJsVersion }}"></script>
+	<script type="text/javascript" src="{{ asset('js/modules/setores.js') }}?v={{ $setoresJsVersion }}"></script>
+	<script type="text/javascript" src="{{ asset('js/modules/usuarios.js') }}?v={{ $usuariosJsVersion }}"></script>
+	<script type="text/javascript" src="{{ asset('js/modules/semanas.js') }}?v={{ $semanasJsVersion }}"></script>
+	<script type="text/javascript" src="{{ asset('js/modules/regioes.js') }}?v={{ $regioesJsVersion }}"></script>
+	<script type="text/javascript" src="{{ asset('js/modules/clientes.js') }}?v={{ $clientesJsVersion }}"></script>
+	<script type="text/javascript" src="{{ asset('js/modules/andamentos.js') }}?v={{ $andamentosJsVersion }}"></script>
+	<script type="text/javascript" src="{{ asset('js/modules/metas.js') }}?v={{ $metasJsVersion }}"></script>
+	<script type="text/javascript" src="{{ asset('js/modules/painel.js') }}?v={{ $painelJsVersion }}"></script>
+	<script type="text/javascript" src="{{ asset('js/modules/relatorio.js') }}?v={{ $relatorioJsVersion }}"></script>
 </head>
 <body id="minwidth-body">
 	<div class="ars-shell" id="ars-shell">

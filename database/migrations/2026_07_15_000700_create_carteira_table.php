@@ -14,8 +14,6 @@ class CreateCarteiraTable extends Migration
 
         Schema::create('carteira', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->charset = 'latin1';
-            $table->collation = 'latin1_swedish_ci';
 
             $table->increments('carteira_id');
             $table->integer('banco_id')->nullable();

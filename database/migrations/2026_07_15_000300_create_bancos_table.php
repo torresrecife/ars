@@ -14,8 +14,6 @@ class CreateBancosTable extends Migration
 
         Schema::create('bancos', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->charset = 'latin1';
-            $table->collation = 'latin1_swedish_ci';
 
             $table->increments('banco_id');
             $table->string('banco_name', 500)->nullable();

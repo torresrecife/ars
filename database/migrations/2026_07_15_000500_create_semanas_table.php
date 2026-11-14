@@ -14,8 +14,6 @@ class CreateSemanasTable extends Migration
 
         Schema::create('semanas', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->charset = 'latin1';
-            $table->collation = 'latin1_swedish_ci';
 
             $table->increments('semanas_id');
             $table->integer('mes')->nullable();

@@ -14,8 +14,6 @@ class CreateMetasAndamentosTable extends Migration
 
         Schema::create('metas_andamentos', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->charset = 'latin1';
-            $table->collation = 'latin1_swedish_ci';
 
             $table->increments('meta_id');
             $table->integer('banco_id')->nullable();

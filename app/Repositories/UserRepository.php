@@ -15,7 +15,7 @@ class UserRepository
 	/** @var string */
 	private $table;
 
-	public function __construct(mysqli $connection = null, $table = 'usuarios')
+	public function __construct(?mysqli $connection = null, $table = 'usuarios')
 	{
 		$this->connection = $connection;
 		$this->table = (string) $table;

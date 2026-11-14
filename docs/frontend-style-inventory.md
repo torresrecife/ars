@@ -2,14 +2,14 @@
 
 ## Legacy CSS still active
 
-- `css/template.css`
+- `public/css/template.css`
 - `css/system.css`
 - `css/texto.css`
 - `css/custom-theme/jquery-ui.css`
 
 These files are still the active runtime source for the application shell and old Joomla-era ***REMOVED*** layout.
 
-`resources/sass/components/_legacy-shell.scss` now contains the first migrated block from `css/template.css`: document base, shell header, status bar, content frame, control panel icons, and core panel layout. Keep `css/template.css` loaded until these blocks are verified in the compiled build and removed from the legacy file in smaller follow-up cuts.
+`resources/sass/components/_legacy-shell.scss` now contains the first migrated block from `public/css/template.css`: document base, shell header, status bar, content frame, control panel icons, and core panel layout. Keep `public/css/template.css` loaded until these blocks are verified in the compiled build and removed from the legacy file in smaller follow-up cuts.
 
 ## Inline style hotspots
 
@@ -35,14 +35,14 @@ These files are still the active runtime source for the application shell and ol
 ## Modern pipeline target
 
 - source Sass: `resources/sass`
-- source JS: `resources/js`
+- legacy JS modules (served as-is): `public/js/modules`
 - build output: `public/build`
-- build tool: `laravel-mix`
-- runtime bridge while builds are not published: `css/ars-modern.css`
+- build tool: Vite (`vite.config.js`)
+- runtime bridge while builds are not published: `public/css/ars-modern.css`
 
 ## Recommended migration order
 
-1. Verify the migrated `legacy-shell` Sass block after `npm run dev`.
-2. Remove the verified duplicated blocks from `css/template.css`.
+1. Verify the migrated `legacy-shell` Sass block after `npm run build`.
+2. Remove the verified duplicated blocks from `public/css/template.css`.
 3. Continue migrating remaining active `template.css` areas: login, ***REMOVED*** tables, form controls, and remaining toolbar/menu icons.
-4. Retire `css/ars-modern.css` after Mix is mandatory in every environment.
+4. Retire `public/css/ars-modern.css` after the Vite build is mandatory in every environment.

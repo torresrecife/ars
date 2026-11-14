@@ -1,8 +1,8 @@
-@import 'tokens';
-@import 'legacy/inventory';
-@import 'components/legacy-shell';
-@import 'components/shell-modern';
-@import 'components/admin';
-@import 'components/details';
-@import 'components/dashboard';
-@import 'components/reports';
+@use 'tokens';
+@use 'legacy/inventory';
+@use 'components/legacy-shell';
+@use 'components/shell-modern';
+@use 'components/admin';
+@use 'components/details';
+@use 'components/dashboard';
+@use 'components/reports';

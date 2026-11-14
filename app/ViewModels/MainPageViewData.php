@@ -26,7 +26,7 @@ class MainPageViewData
 		MainPageState $state,
 		$monthYearLabel,
 		MainPageContent $content,
-		MainPageTopAction $topAction = null
+		?MainPageTopAction $topAction = null
 	) {
 		$this->user = $user;
 		$this->state = $state;

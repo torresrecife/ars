@@ -1,0 +1,14 @@
+# Driver do SQL Server (NEO) para o PHP do DDEV: ODBC da Microsoft + extensoes sqlsrv/pdo_sqlsrv.
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
+ARG DDEV_PHP_VERSION
+RUN curl -fsSL https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb -o /tmp/packages-microsoft-prod.deb \
+    && dpkg -i /tmp/packages-microsoft-prod.deb && rm /tmp/packages-microsoft-prod.deb \
+    && apt-get update \
+    && ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confold" \
+        msodbcsql18 unixodbc-dev php${DDEV_PHP_VERSION}-dev build-essential \
+    && pecl install sqlsrv pdo_sqlsrv \
+    && printf 'extension=sqlsrv.so\n' > /etc/php/${DDEV_PHP_VERSION}/mods-available/sqlsrv.ini \
+    && printf 'extension=pdo_sqlsrv.so\n' > /etc/php/${DDEV_PHP_VERSION}/mods-available/pdo_sqlsrv.ini \
+    && phpenmod -v ${DDEV_PHP_VERSION} sqlsrv pdo_sqlsrv \
+    && apt-get purge -y build-essential && apt-get autoremove -y && rm -rf /var/lib/apt/lists/* /tmp/pear

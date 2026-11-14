@@ -38,7 +38,7 @@ class DashboardPanelService
 	private $metricFormatter;
 	private $financialResultCalculator;
 
-	public function __construct(DashboardRepository $dashboardRepository, NeoPanelRepository $neoRepository, RegionService $regionService, array $months, PerformanceMetricFormatter $metricFormatter, FinancialResultCalculator $financialResultCalculator = null)
+	public function __construct(DashboardRepository $dashboardRepository, NeoPanelRepository $neoRepository, RegionService $regionService, array $months, PerformanceMetricFormatter $metricFormatter, ?FinancialResultCalculator $financialResultCalculator = null)
 	{
 		$this->dashboardRepository = $dashboardRepository;
 		$this->neoRepository = $neoRepository;

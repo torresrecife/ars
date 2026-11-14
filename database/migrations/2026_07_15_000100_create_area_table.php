@@ -14,8 +14,6 @@ class CreateAreaTable extends Migration
 
         Schema::create('area', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->charset = 'latin1';
-            $table->collation = 'latin1_swedish_ci';
 
             $table->increments('area_id');
             $table->string('area_nome', 500)->nullable();

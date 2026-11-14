@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+## Description: Substitui o banco local pelos dados de produção da ARS (REIA-HD), com segurança para desenvolvimento.
+## Usage: importar-producao [-y]
+## Example: "ddev importar-producao" ou "ddev importar-producao -y" (sem pedir confirmação)
+
+# Passos: snapshot do banco local -> download do banco "ars" com o usuário
+# somente leitura -> import no DDEV -> conversão para utf8mb4 (se ainda houver
+# tabela em latin1) -> migrations do código local.
+# Credenciais: ~/.config/bvaa/mysql-producao.cnf (fora do projeto, compartilhado
+# pelos apps; permissão 600). Rede: 172.31.20.62:3306 liberado para o IP do PC.
+# Só vale depois da migração para o REIA-HD; antes disso o banco está no servidor antigo.
+
+set -euo pipefail
+
+BANCO="ars"
+CNF="$HOME/.config/bvaa/mysql-producao.cnf"
+DOWNLOADS="$DDEV_APPROOT/.ddev/.downloads"
+AGORA="$(date +%Y%m%d-%H%M%S)"
+DUMP="$DOWNLOADS/producao-$AGORA.sql.gz"
+
+if [[ ! -f "$CNF" ]]; then
+  mkdir -p "$(dirname "$CNF")" && chmod 700 "$(dirname "$CNF")"
+  printf '[client]\nhost=172.31.20.62\nport=3306\nuser=fabio\npassword=\n' > "$CNF"
+  chmod 600 "$CNF"
+  echo "Criei $CNF. Preencha password= com a senha do seu usuário MySQL (o do HeidiSQL) e rode de novo."
+  exit 1
+fi
+
+if [[ "${1:-}" != "-y" ]]; then
+  echo "Isto SUBSTITUI o banco local da ARS pelos dados de produção."
+  read -r -p "Continuar? [s/N] " resposta
+  [[ "$resposta" =~ ^[sS]$ ]] || { echo "Cancelado."; exit 0; }
+fi
+
+mkdir -p "$DOWNLOADS"
+
+echo "1/5 Snapshot do banco local..."
+ddev snapshot --name "antes-producao-$AGORA" >/dev/null
+echo "    volta com: ddev snapshot restore antes-producao-$AGORA"
+
+echo "2/5 Baixando o banco de produção (somente leitura)..."
+ddev exec -s db "mysqldump --defaults-file=/dev/stdin \
+  --single-transaction --quick --no-tablespaces --skip-triggers --set-gtid-purged=OFF --column-statistics=0 \
+  --default-character-set=utf8mb4 $BANCO" < "$CNF" | gzip > "$DUMP"
+if ! gzip -dc "$DUMP" | tail -n 1 | grep -q "Dump completed"; then
+  echo "O download não terminou direito (rede, senha ou permissão no banco $BANCO). Banco local intacto."
+  rm -f "$DUMP"
+  exit 1
+fi
+echo "    $(du -h "$DUMP" | cut -f1) baixados"
+
+echo "3/5 Importando no DDEV..."
+ddev import-db --file="$DUMP" >/dev/null
+
+echo "4/5 Conversão para utf8mb4 (nada a fazer se já estiver convertido)..."
+ddev artisan ars:converter-utf8mb4 --apply --no-interaction | tail -n 1
+
+echo "5/5 Migrations do código local e caches..."
+ddev artisan migrate --force --no-interaction >/dev/null
+ddev artisan optimize:clear >/dev/null
+
+ls -1t "$DOWNLOADS"/producao-*.sql.gz 2>/dev/null | tail -n +4 | xargs -r rm -f
+
+echo
+echo "Pronto: banco local da ARS = produção de $(date '+%d/%m/%Y %H:%M')."
+echo " - Usuários e senhas agora são os de produção."

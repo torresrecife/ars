@@ -14,8 +14,6 @@ class CreateUsuariosTable extends Migration
 
         Schema::create('usuarios', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->charset = 'latin1';
-            $table->collation = 'latin1_swedish_ci';
 
             $table->increments('id_usu');
             $table->integer('id_neo')->default(0);

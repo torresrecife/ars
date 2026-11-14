@@ -12,9 +12,9 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
-    'timezone' => env('APP_TIMEZONE', 'America/Sao_Paulo'),
+    'timezone' => env('APP_TIMEZONE', 'America/Recife'),
 
-    'locale' => env('APP_LOCALE', 'en_CA'),
+    'locale' => env('APP_LOCALE', 'pt_BR'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en_CA'),
 

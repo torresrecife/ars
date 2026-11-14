@@ -2,7 +2,13 @@ Thumbs.db
 .DS_Store
 .vscode/
 .idea/
-.ddev/
+# DDEV: config.yaml, web-build e comandos vão para o Git; o resto é local.
+.ddev/db_dumps/
+.ddev/.downloads/
+.ddev/sync-db.env
+.ddev/sync-db.env.example
+.ddev/commands/host/sync
+.ddev/commands/host/git
 .playwright-mcp/
 vendor/
 node_modules/
@@ -11,8 +17,9 @@ node_modules/
 storage/logs/*.log
 /bootstrap/cache/*.php
 /public/build
-/public/css
-/public/img
-/public/inc
-/public/js
+/public/hot
 /storage/*.key
+.env.backup
+.env.production
+/.phpunit.cache
+/storage/app/tmp

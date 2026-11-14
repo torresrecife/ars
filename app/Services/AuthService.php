@@ -17,7 +17,7 @@ class AuthService
 	/** @var RegionRepository|null */
 	private $regions;
 
-	public function __construct(UserRepository $users, RegionRepository $regions = null)
+	public function __construct(UserRepository $users, ?RegionRepository $regions = null)
 	{
 		$this->users = $users;
 		$this->regions = $regions;

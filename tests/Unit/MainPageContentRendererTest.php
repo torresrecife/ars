@@ -38,23 +38,18 @@ class MainPageContentRendererTest extends TestCase
         $instance = $content->newInstanceWithoutConstructor();
 
         $typeProperty = $content->getProperty('type');
-        $typeProperty->setAccessible(true);
         $typeProperty->setValue($instance, 'unknown');
 
         $viewProperty = $content->getProperty('view');
-        $viewProperty->setAccessible(true);
         $viewProperty->setValue($instance, '');
 
         $dataProperty = $content->getProperty('data');
-        $dataProperty->setAccessible(true);
         $dataProperty->setValue($instance, array());
 
         $controllerProperty = $content->getProperty('controller');
-        $controllerProperty->setAccessible(true);
         $controllerProperty->setValue($instance, '');
 
         $spacerProperty = $content->getProperty('spacer');
-        $spacerProperty->setAccessible(true);
         $spacerProperty->setValue($instance, false);
 
         $this->assertSame('', $renderer->render($instance, array(), array()));

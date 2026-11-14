@@ -2,7 +2,7 @@
 
 ARS Online is an administrative and operational system currently being modernized into a cleaner Laravel application.
 
-The project includes authentication, dashboards, production views, reports, goals, and administrative modules for users, clients, sectors, regions, weeks, progress items, and operational targets. Some compatibility points from the legacy PHP application still exist, but the intended architecture is Laravel-first: routes, controllers, policies, Form Requests, Eloquent/Query Builder, Blade, Sass, Laravel Mix, JSON endpoints, and named service/view-model contracts.
+The project includes authentication, dashboards, production views, reports, goals, and administrative modules for users, clients, sectors, regions, weeks, progress items, and operational targets. Some compatibility points from the legacy PHP application still exist, but the intended architecture is Laravel-first: routes, controllers, policies, Form Requests, Eloquent/Query Builder, Blade, Sass, Vite, JSON endpoints, and named service/view-model contracts.
 
 ## Overview
 
@@ -19,25 +19,13 @@ Main areas:
 
 ## Stack
 
-- PHP `^7.2.5|^8.0`
-- Laravel `6.20`
-- MySQL for local ARS data
-- SQL Server for NEO Legal integration
-- PHPUnit `8/9`
-- Node `16.x` recommended for the current environment
-- npm `8.x`
-- Laravel Mix `5`
-- Sass
-
-Known working Node/npm versions:
-
-```bash
-node -v
-# v16.20.2
-
-npm -v
-# 8.19.4
-```
+- PHP `8.5` (composer `platform.php` 8.5.0; minimum `^8.4`)
+- Laravel `13`
+- MySQL `8.4` (utf8mb4) for local ARS data
+- SQL Server (NEO Legal) through `sqlsrv` + Microsoft ODBC Driver 18
+- PHPUnit `12`
+- Node `22`, Vite `8`, Sass (`sass-embedded`)
+- Local environment: DDEV (nginx-fpm), same versions as production
 
 ## Project Structure
 
@@ -49,62 +37,37 @@ npm -v
 - `app/ViewModels`: named output contracts for screens and reports.
 - `app/Domain`: small domain helpers, formatters, and support objects.
 - `resources/views`: Blade views.
-- `resources/lang`: JSON translation files.
+- `lang`: JSON translation files.
 - `resources/sass`: modular Sass source.
-- `resources/js`: Laravel Mix JavaScript entrypoint.
-- `js/modules`: modularized legacy JavaScript by screen/module.
+- `public/js/modules`: modularized legacy JavaScript by screen/module.
+- `deploy`: production install/update/backup scripts (EUROPA-HD).
 - `routes/web.php`: Laravel web routes.
 - `database/migrations`: local database migrations.
 - `tests`: unit and HTTP tests.
 
-## Local Setup
-
-Install PHP dependencies:
+## Local Setup (DDEV)
 
 ```bash
-composer install
+ddev start
+cp .env.example .env          # DB_* already point to the DDEV database (db/db/db)
+ddev composer install
+ddev artisan key:generate
+ddev artisan migrate
+ddev npm install
+ddev npm run build
 ```
 
-Create the local `.env` file and application key:
+The app runs at `http://ars.ddev.site:8080`. Fill the `SQLSRV_DB_*` variables to reach NEO
+(`SQLSRV_DB_TRUST_SERVER_CERTIFICATE=true`: the SQL Server uses a self-signed certificate).
+
+After the production database moves to REIA-HD, `ddev importar-producao` replaces the local
+database with a production copy (snapshot first).
+
+Legacy latin1 databases are converted with:
 
 ```bash
-cp .env.example .env
-php artisan key:generate
-```
-
-Configure the application URL. In the current hybrid Apache setup, the app is usually served from a subdirectory:
-
-```env
-APP_URL=http://bvaa.test/ars
-```
-
-Configure the local MySQL database:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=ars_laravel
-DB_USERNAME=your_user
-DB_PASSWORD=your_password
-DB_CHARSET=utf8mb4
-```
-
-Configure the SQL Server integration used by the external NEO Legal system:
-
-```env
-SQLSRV_DB_HOST=
-SQLSRV_DB_PORT=1433
-SQLSRV_DB_DATABASE=
-SQLSRV_DB_USERNAME=
-SQLSRV_DB_PASSWORD=
-SQLSRV_DB_CHARSET=UTF-8
-```
-
-Run migrations when needed:
-
-```bash
-php artisan migrate
+ddev artisan ars:converter-utf8mb4          # report only
+ddev artisan ars:converter-utf8mb4 --apply  # convert
 ```
 
 ## Localization
@@ -114,21 +77,21 @@ The system language is configured through `.env`. There is no runtime language s
 Default configuration:
 
 ```env
-APP_LOCALE=en_CA
+APP_LOCALE=pt_BR
 APP_FALLBACK_LOCALE=en_CA
 APP_FAKER_LOCALE=pt_BR
 ```
 
 Supported application locales:
 
-- `en_CA`: default English locale.
-- `pt_BR`: Brazilian Portuguese locale.
+- `pt_BR`: Brazilian Portuguese (default).
+- `en_CA`: English (fallback; the translation keys are in English).
 
 Translation files are JSON-based:
 
 ```text
-resources/lang/en_CA.json
-resources/lang/pt_BR.json
+lang/en_CA.json
+lang/pt_BR.json
 ```
 
 The project uses English strings as translation keys:
@@ -139,7 +102,7 @@ __('Create a new user')
 __('Error saving client.')
 ```
 
-For Portuguese output, add or update the corresponding key in `resources/lang/pt_BR.json`:
+For Portuguese output, add or update the corresponding key in `lang/pt_BR.json`:
 
 ```json
 {
@@ -202,8 +165,8 @@ Confirmation dialogs follow the same pattern:
 When adding a new JavaScript-facing string, add it in three places:
 
 1. The `$arsTranslations` array in `resources/views/index/shell.blade.php`.
-2. `resources/lang/en_CA.json`.
-3. `resources/lang/pt_BR.json`.
+2. `lang/en_CA.json`.
+3. `lang/pt_BR.json`.
 
 After changing locale configuration in production, clear cached configuration:
 
@@ -220,41 +183,19 @@ php artisan config:cache
 
 ## Frontend and Build
 
-Install JavaScript dependencies:
-
 ```bash
-npm install
+ddev npm install
+ddev npm run build   # or: ddev npm run dev
 ```
 
-Development build:
-
-```bash
-npm run dev
-```
-
-Production build:
-
-```bash
-npm run prod
-```
-
-Main Sass entrypoint:
-
-```text
-resources/sass/app.scss
-```
-
-Laravel Mix generates:
-
-```text
-public/build/css/app.css
-public/build/js/app.js
-public/build/js/ars-modules.js
-public/build/js/ars-details.js
-public/mix-manifest.json
-```
-
-Important current deployment note: some environments still serve the project directly from `/ars` instead of using `public` as the Apache `DocumentRoot`. Because of that, the layout currently loads compiled assets from `/ars/public/build/...`. When the web server is moved to the standard Laravel `public` document root, asset paths should be reviewed and normalized.
+- Vite compiles only the Sass entrypoint `resources/sass/app.scss` (loaded with `@vite` in
+  `resources/views/index/shell.blade.php`). Without a build, the shell falls back to
+  `public/css/ars-modern.css`.
+- The jQuery modules in `public/js/modules` share global functions, so they are served as plain
+  files (cache-busted by file modification time), not bundled.
+- Static assets live in `public/css`, `public/js` and `public/img`; the web server document root is
+  `public/`.
+- In a subfolder (production `/ars`), set `ASSET_URL=/ars` before `npm run build`.
 
 ## Main Routes
 
@@ -332,89 +273,16 @@ Avoid direct `sqlsrv_query(...)` calls outside the SQL Server integration layer.
 
 ## Tests
 
-Run the full test suite:
-
 ```bash
-php vendor/phpunit/phpunit/phpunit
-```
-
-Run filtered tests:
-
-```bash
-php vendor/phpunit/phpunit/phpunit --filter "MetaControllerTest|ClientAdminControllerTest"
-```
-
-Clear compiled views:
-
-```bash
-php artisan view:clear
-```
-
-Check PHP syntax for a file:
-
-```bash
-php -l app/Services/GeneralProductionService.php
-```
-
-Validate JavaScript syntax for a module:
-
-```bash
-node --check js/modules/usuarios.js
+ddev testes
+ddev testes --filter "MetaControllerTest|ClientAdminControllerTest"
 ```
 
 ## Deployment
 
-Recommended production flow:
-
-```bash
-composer install --no-dev --optimize-autoloader
-npm install
-npm run prod
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-php artisan cache:clear
-```
-
-If schema changes are included:
-
-```bash
-php artisan migrate --force
-```
-
-Required Laravel writable directories:
-
-```bash
-sudo chown -R www-data:www-data storage bootstrap/cache
-sudo chmod -R ug+rw storage bootstrap/cache
-```
-
-If `composer install` must be executed as the Apache user:
-
-```bash
-sudo -u www-data composer install --no-dev --optimize-autoloader
-```
-
-## Apache
-
-The ideal Laravel VirtualHost should point `DocumentRoot` to:
-
-```text
-/var/www/html/ars/public
-```
-
-Some current environments may still serve the project directly from:
-
-```text
-/var/www/html/ars
-```
-
-In the hybrid setup, make sure:
-
-- `mod_rewrite` is enabled.
-- `AllowOverride All` is configured for the project directory.
-- `.htaccess` routes requests to `index.php`.
-- `APP_URL` includes the correct subdirectory, for example `http://bvaa.test/ars`.
+Production: `http://172.31.20.60/ars` (EUROPA-HD, nginx + PHP-FPM 8.5, subfolder of the Petição
+Fácil site), database `ars` on REIA-HD (MySQL 8.4). Full guide in `deploy/README.md`; updates with
+`./deploy/atualizar.sh` on the server.
 
 ## Modernization Status
 
@@ -430,16 +298,15 @@ Already completed or partially completed:
 - Repositories migrated to Eloquent/Query Builder where practical.
 - SQL Server integration centralized in a NEO integration layer.
 - DTOs/view models introduced for dashboards, reports, and details.
-- Sass/Laravel Mix introduced incrementally.
+- Sass introduced incrementally (Vite since the Laravel 13 upgrade).
+- Laravel 13 / PHP 8.5 / MySQL 8.4 utf8mb4 (branch `ars_php8`).
 - JSON-based localization introduced with `.env` locale selection.
 
 Remaining compatibility areas:
 
-- Some physical legacy PHP files may still exist.
 - Some inherited visual and JavaScript helpers remain.
-- Part of the legacy CSS still exists in `css/template.css` and `css/system.css`.
+- Part of the legacy CSS still exists in `public/css/template.css` and `public/css/system.css`.
 - Some inline styles may still exist in older views.
-- Some environments still use a hybrid Apache document root.
 
 ## Evolution Guidelines
 
@@ -461,13 +328,10 @@ When continuing the migration, prefer:
 ## Useful Commands
 
 ```bash
-php artisan route:list
-php artisan config:clear
-php artisan view:clear
-php artisan cache:clear
-php artisan migrate
-npm run dev
-npm run prod
+ddev artisan route:list
+ddev artisan optimize:clear
+ddev artisan migrate
+ddev npm run build
 ```
 
 ## License

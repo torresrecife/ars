@@ -43,6 +43,15 @@ class Usuario extends Authenticatable
         'senha_usu',
     );
 
+    /**
+     * Coluna da senha. O Laravel 11+ regrava o hash no login (rehash_on_login) nesta
+     * coluna: senhas MD5 do legado e bcrypt de custo antigo passam ao bcrypt atual.
+     */
+    public function getAuthPasswordName()
+    {
+        return 'senha_usu';
+    }
+
     public function getAuthPassword()
     {
         return (string) $this->senha_usu;

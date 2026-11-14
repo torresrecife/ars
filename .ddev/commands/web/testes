@@ -1,0 +1,6 @@
+#!/bin/bash
+## Description: Roda a suíte de testes (PHPUnit; SQLite em memória, não toca no banco do DDEV).
+## Usage: testes [argumentos do phpunit]
+## Example: "ddev testes" ou "ddev testes --filter AuthControllerTest"
+set -e
+php vendor/bin/phpunit "$@"

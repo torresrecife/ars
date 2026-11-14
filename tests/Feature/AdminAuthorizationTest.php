@@ -14,7 +14,11 @@ use Tests\TestCase;
 
 class AdminAuthorizationTest extends TestCase
 {
-    public function test_manager_cannot_manage_system_admin_resources()
+    /**
+     * Desde 26/10/2026 o gerente lista e edita os cadastros do sistema;
+     * criar e excluir continuam so com o administrador.
+     */
+    public function test_manager_can_view_and_update_but_not_create_or_delete_system_admin_resources()
     {
         $user = new Usuario(array(
             'id_usu' => 2,
@@ -23,12 +27,12 @@ class AdminAuthorizationTest extends TestCase
             'nivel_usu' => 'GER',
         ));
 
-        $this->assertFalse(Gate::forUser($user)->allows('viewAny', Usuario::class));
-        $this->assertFalse(Gate::forUser($user)->allows('viewAny', Area::class));
-        $this->assertFalse(Gate::forUser($user)->allows('viewAny', Banco::class));
-        $this->assertFalse(Gate::forUser($user)->allows('viewAny', Andamento::class));
-        $this->assertFalse(Gate::forUser($user)->allows('viewAny', Semana::class));
-        $this->assertFalse(Gate::forUser($user)->allows('viewAny', Regiao::class));
+        foreach (array(Usuario::class, Area::class, Banco::class, Andamento::class, Semana::class, Regiao::class) as $resource) {
+            $this->assertTrue(Gate::forUser($user)->allows('viewAny', $resource), $resource . ' viewAny');
+            $this->assertTrue(Gate::forUser($user)->allows('update', $resource), $resource . ' update');
+            $this->assertFalse(Gate::forUser($user)->allows('create', $resource), $resource . ' create');
+            $this->assertFalse(Gate::forUser($user)->allows('delete', $resource), $resource . ' delete');
+        }
     }
 
     public function test_manager_can_manage_meta_resource()

@@ -14,8 +14,6 @@ class CreateDadosTable extends Migration
 
         Schema::create('dados', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->charset = 'latin1';
-            $table->collation = 'latin1_swedish_ci';
 
             $table->increments('dados_id');
             $table->integer('carteira_id')->nullable();
