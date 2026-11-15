@@ -42,7 +42,14 @@ README para estrutura, rotas e traduções.
   o mesmo comando do Petição Fácil. Aplicado no banco local em 14/11. Virada do banco antigo:
   `ddev virada-banco` (cópia, conversão, conferências e dump para o REIA-HD; ensaiado em 14/11).
 - Número do processo do NEO: `App\Support\ProcessNumber::format` (CNJ e formato antigo).
-- Login único (BVAcesso): a ARS entra depois desta migração (ver `~/projetos/bvacesso/AGENTS.md`).
+- **Login único (BVAcesso, desde 15/11/2026):** mesmo cliente do Petição Fácil (`config/bvacesso.php`,
+  `app/Support/BVAcesso/BVAcessoClient.php` igual em todos os sistemas, `UserSync` próprio,
+  `Auth\BVAcessoController` em `/auth/bvacesso` e `/callback`, middleware `bvacesso.check` no grupo
+  `auth`, coluna `usuarios.bvacesso_id`, exportação `ars:exportar-bvacesso`). **Não cria conta**: só
+  liga quem já existe na ARS (pelo `bvacesso_id`, `login_usu` ou `email_usu`), porque usuário sem
+  setor e sem cliente vê tudo. O perfil (`nivel_usu`) vem do BVAcesso; setor, clientes e regiões
+  ficam na ARS. O login entra pelo `AuthService::storeUserSession` (mesma sessão do login próprio).
+  Roteiro na seção 5 do `deploy/README.md`; contexto do BVAcesso em `~/projetos/bvacesso/AGENTS.md`.
 
 ## Como rodar
 - Testes: `ddev testes` (PHPUnit 12, SQLite em memória; aceita `--filter X`).

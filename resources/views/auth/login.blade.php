@@ -33,6 +33,16 @@
                     <p>{{ __('Administrative workspace') }}</p>
                 </div>
                 <div id="system-message-container"></div>
+                @if ($errors->any())
+                    <div class="login-alert">{{ $errors->first() }}</div>
+                @endif
+                @if ($sso)
+                    <a href="{{ route('bvacesso.redirect') }}" class="auth-form__submit auth-form__sso">{{ __('Sign in with BVAcesso') }}</a>
+                @endif
+                @if ($localLogin)
+                    @if ($sso)
+                        <p class="auth-form__divider">{{ __('or use your ARS username and password') }}</p>
+                    @endif
                 <form action="{{ url('login') }}" method="post" id="form-login" class="auth-form">
                     @csrf
                     <div class="auth-form__field">
@@ -47,6 +57,7 @@
                     <button type="submit" class="auth-form__submit">{{ __('Sign in') }}</button>
                     <input type="submit" class="hidebtn" value="{{ __('Sign in') }}" />
                 </form>
+                @endif
                 <noscript class="auth-card__noscript">
                     {{ __('Warning! JavaScript must be enabled for the administration backend to work properly.') }}
                 </noscript>

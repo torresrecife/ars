@@ -6,9 +6,12 @@ Route::middleware('guest')->group(function () {
     Route::get('/', 'AuthController@showLogin');
     Route::get('/login', 'AuthController@showLogin')->name('login');
     Route::post('/login', 'AuthController@login')->name('login.submit');
+    // Login único (BVAcesso).
+    Route::get('/auth/bvacesso', 'Auth\BVAcessoController@redirect')->name('bvacesso.redirect');
+    Route::get('/auth/bvacesso/callback', 'Auth\BVAcessoController@callback')->middleware('throttle:30,1')->name('bvacesso.callback');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'bvacesso.check'])->group(function () {
     Route::get('/index', 'HomeController@webIndex')->name('legacy.home');
     Route::get('/logout', 'AuthController@logout')->name('logout');
     Route::post('/ajax/newpass', 'AuthController@updateOwnPassword')->name('ajax.newpass');

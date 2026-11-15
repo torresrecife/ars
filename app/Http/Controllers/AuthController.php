@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\AuthService;
 use App\Services\MainPageService;
+use App\Support\BVAcesso\BVAcessoClient;
 use App\Support\WriteResult;
 use App\Support\View;
 use Illuminate\Http\Request;
@@ -28,13 +29,22 @@ class AuthController extends Controller
 
     public function showLogin(Request $request)
     {
+        // Com o login único ligado e sem o login próprio, a tela de login é a do BVAcesso.
+        if (BVAcessoClient::enabled() && !config('bvacesso.local_login') && !$request->boolean('local')) {
+            return redirect()->route('bvacesso.redirect');
+        }
+
         return response()->view('auth.login', [
             'alerta' => (int) $request->query('alerta', 0),
+            'sso' => BVAcessoClient::enabled(),
+            'localLogin' => !BVAcessoClient::enabled() || config('bvacesso.local_login'),
         ] + $this->legacyViewUrls());
     }
 
     public function login(Request $request)
     {
+        abort_if(BVAcessoClient::enabled() && !config('bvacesso.local_login'), 404);
+
         $user = $this->authService->attempt(
             (string) $request->input('username', ''),
             (string) $request->input('passwd', '')
@@ -77,9 +87,15 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        $viaSso = $request->session()->has('bvacesso.session');
         $this->authService->clearUserSession();
         session()->invalidate();
         session()->regenerateToken();
+
+        // Entrou pelo BVAcesso: sai de lá também (e, com isso, dos outros sistemas).
+        if ($viaSso && BVAcessoClient::enabled()) {
+            return redirect()->away(app(BVAcessoClient::class)->logoutUrl(url('login')));
+        }
 
         return redirect(url('login'));
     }

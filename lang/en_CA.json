@@ -293,5 +293,15 @@
     "Weeks": "Weeks",
     "Workspace": "Workspace",
     "Year": "Year",
-    "Yes": "Yes"
+    "Yes": "Yes",
+    "Sign in with BVAcesso": "Sign in with BVAcesso",
+    "or use your ARS username and password": "or use your ARS username and password",
+    "The sign-in expired. Please try again.": "The sign-in expired. Please try again.",
+    "BVAcesso did not authorize the sign-in.": "BVAcesso did not authorize the sign-in.",
+    "Unable to reach BVAcesso. Please try again shortly.": "Unable to reach BVAcesso. Please try again shortly.",
+    "Your account does not have access to ARS. Ask the administrator.": "Your account does not have access to ARS. Ask the administrator.",
+    "BVAcesso did not confirm your account. Please try again.": "BVAcesso did not confirm your account. Please try again.",
+    "Your account is not registered in ARS. Ask the administrator.": "Your account is not registered in ARS. Ask the administrator.",
+    "Your ARS account is inactive. Contact the administrator.": "Your ARS account is inactive. Contact the administrator.",
+    "Your session was ended in BVAcesso. Please sign in again.": "Your session was ended in BVAcesso. Please sign in again."
 }

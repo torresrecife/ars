@@ -786,6 +786,29 @@ div.cpanel-right-sub {
   border-color: #aac6de;
   background: linear-gradient(180deg, #ffffff 0%, #e4eef6 100%);
 }
+/* Login único (BVAcesso): botão principal, acima do formulário próprio. */
+.auth-form__sso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  text-decoration: none;
+  border-color: #1f567d;
+  background: linear-gradient(180deg, #2a6a97 0%, #1f567d 100%);
+  color: #ffffff;
+}
+.auth-form__sso:hover,
+.auth-form__sso:focus {
+  border-color: #17435f;
+  background: linear-gradient(180deg, #23608a 0%, #17435f 100%);
+  color: #ffffff;
+}
+.auth-form__divider {
+  margin: 22px 0 0;
+  color: #6b7c8c;
+  font-size: 13px;
+  text-align: center;
+}
 .foundation-page {
   font-family: Arial, sans-serif;
   margin: 40px;

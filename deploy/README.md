@@ -161,7 +161,40 @@ No `crontab` do `fabio.ferreira` no EUROPA-HD:
 50 2 * * * /var/www/ars/deploy/backup.sh >> /var/backups/ars/backup.log 2>&1
 ```
 
-## 5. Onde olhar quando algo falha
+## 5. Login único (BVAcesso)
+
+Mesmo cliente do Petição Fácil e do BVTarefas (`app/Support/BVAcesso`). Diferença da ARS: **só entra
+quem já tem conta aqui** (ligada pelo login curto ou pelo e-mail). Um usuário sem setor e sem
+cliente veria os dados de todos, então a ARS não cria conta no primeiro login (decisão de 15/11):
+quem não existe vê "A sua conta não está cadastrada na ARS" e o administrador a cria, com setor e
+clientes. O perfil (`ADM`, `GER`, `USU`) vem do BVAcesso; setor, clientes e regiões continuam na ARS.
+
+1. **No BVAcesso** (`http://172.31.20.60/bvacesso`): Administração → Sistemas → Novo sistema.
+   Nome `ARS`, identificador `ars`, endereço `http://172.31.20.60/ars`, retorno
+   `http://172.31.20.60/ars/auth/bvacesso/callback`, perfis `ADM, GER, USU`. Copiar o bloco
+   "Ligação com o sistema" (o segredo só aparece nessa hora).
+2. **No EUROPA-HD**, em `/var/www/ars`: colar `BVACESSO_CLIENT_ID` e `BVACESSO_CLIENT_SECRET` no
+   `.env` (com `BVACESSO_URL=http://172.31.20.60/bvacesso` e `BVACESSO_LOCAL_LOGIN=true`) e rodar
+   `php artisan optimize`. A tela de login ganha o botão "Entrar com o BVAcesso" ao lado do formulário.
+3. **Contas** (só as ativas que entraram em 2026, decisão de 15/11). Cada pessoa entra no BVAcesso
+   com o mesmo login e a mesma senha de hoje; quem tem senha MD5 cria uma nova na hora. Quem já está
+   no BVAcesso (pelo Petição Fácil) só ganha o acesso à ARS. Contas com e-mail repetido ou inválido
+   ficam de fora e aparecem no relatório: corrigir o e-mail na ARS e rodar de novo (repetir é seguro).
+
+```bash
+cd /var/www/ars && php artisan ars:exportar-bvacesso --desde=2026-01-01
+cd /var/www/bvacesso && php artisan bvacesso:importar-usuarios /var/www/ars/storage/app/bvacesso-usuarios.json ars          # só relatório
+cd /var/www/bvacesso && php artisan bvacesso:importar-usuarios /var/www/ars/storage/app/bvacesso-usuarios.json ars --apply  # grava
+rm /var/www/ars/storage/app/bvacesso-usuarios.json /var/www/bvacesso/storage/app/importacao-*.csv
+```
+
+O arquivo exportado tem os hashes das senhas e o relatório tem nomes e e-mails: apague os dois depois.
+
+4. Depois que todos estiverem entrando pelo BVAcesso: `BVACESSO_LOCAL_LOGIN=false` e
+   `php artisan optimize` (a tela de login vai direto para o BVAcesso; `/login?local=1` mostra só as
+   mensagens). Voltar ao login próprio: apagar `BVACESSO_CLIENT_ID` e `php artisan optimize`.
+
+## 6. Onde olhar quando algo falha
 
 - Log da aplicação: `/var/www/ars/storage/logs/laravel-AAAA-MM-DD.log`.
 - NEO lento ou fora: `APP_NEO_QUERY_LOG=true` no `.env` + `php artisan optimize` registra tempo e
