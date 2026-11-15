@@ -20,9 +20,10 @@ dentro do seu `server`, então a porta 443 atende com as mesmas regras da 80, se
 imitar outros sites (bancos, Google…). A chave fica no PC do Fabio, protegida por senha, nunca nos
 servidores.
 
-## 0. Antes (TI)
+## 0. Antes
 
-- Liberar a **porta 443** da rede dos usuários até o `172.31.20.60` (hoje só passam a 22 e a 80).
+- Porta 443: a rede da empresa já deixa passar até o `172.31.20.60` (conferido em 15/11); o
+  bloqueio era só o `ufw` do servidor (seção 2).
 - Se houver **Active Directory**: distribuir a raiz por GPO (seção 3). Sem AD, a raiz é
   instalada à mão em cada computador.
 
@@ -63,10 +64,12 @@ sudo install -m 600 ~/europa-hd.key /etc/ssl/bvaa/private/europa-hd.key
 sudo install -m 644 ~/bvaa-ca.crt /usr/local/share/ca-certificates/bvaa-ca.crt && sudo update-ca-certificates
 rm ~/europa-hd.crt ~/europa-hd.key ~/bvaa-ca.crt
 
+# Só depois do certificado instalado acima: sem ele, o nginx -t falha e, se o arquivo ficar lá,
+# qualquer reload ou reinício do nginx derruba os quatro sistemas.
 cd /var/www/ars && ./deploy/atualizar.sh        # traz o deploy/https/ do GitHub
 sudo cp deploy/https/nginx-https.conf /etc/nginx/snippets/peticaofacil-extra/00-https.conf
 sudo nginx -t && sudo systemctl reload nginx
-sudo ufw status | grep -q 'Status: active' && sudo ufw allow 443/tcp   # só se o firewall do Ubuntu estiver ligado
+sudo ufw status | grep -q 'Status: active' && sudo ufw allow 443/tcp   # o ufw do EUROPA-HD está ligado (só a 80 tinha regra)
 
 curl -sS -o /dev/null -w '%{http_code} verificacao=%{ssl_verify_result}\n' https://172.31.20.60/ars/login   # 200 verificacao=0
 ```

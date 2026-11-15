@@ -55,8 +55,15 @@ CNF
 
 echo "Senha da chave da CA (forte, guardada fora do PC; sera pedida a cada certificado emitido):"
 openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-384 -aes-256-cbc "${PASS_ARGS[@]}" -out "$CA_DIR/bvaa-ca.key"
-openssl req -x509 -new -config "$CNF" -key "$CA_DIR/bvaa-ca.key" ${CA_PASS_FILE:+-passin "file:$CA_PASS_FILE"} \
-    -sha384 -days "$CA_DIAS" -set_serial "0x$(openssl rand -hex 16)" -out "$CA_DIR/bvaa-ca.crt"
+echo "Agora a mesma senha mais uma vez (para assinar a CA):"
+if ! openssl req -x509 -new -config "$CNF" -key "$CA_DIR/bvaa-ca.key" ${CA_PASS_FILE:+-passin "file:$CA_PASS_FILE"} \
+    -sha384 -days "$CA_DIAS" -set_serial "0x$(openssl rand -hex 16)" -out "$CA_DIR/bvaa-ca.crt"; then
+    # Senha diferente na terceira vez: a chave sozinha nao serve para nada; apaga para recomecar.
+    rm -f "$CA_DIR/bvaa-ca.key" "$CA_DIR/bvaa-ca.crt"
+    echo >&2
+    echo "A senha nao bateu com a digitada antes. Nada foi criado: rode de novo $0" >&2
+    exit 1
+fi
 chmod 644 "$CA_DIR/bvaa-ca.crt"
 
 echo
