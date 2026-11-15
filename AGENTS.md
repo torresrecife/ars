@@ -28,12 +28,16 @@ README para estrutura, rotas e traduções.
 - **Local: DDEV** no WSL (`~/projetos/ars`), `http://ars.ddev.site:8080`, nginx-fpm, banco `db`.
   Driver do SQL Server no `.ddev/web-build/Dockerfile.sqlsrv`. Comandos via `ddev artisan …`,
   `ddev composer …`, `ddev npm …`. Banco local = cópia de 10/2026 (MariaDB → MySQL 8.4 em 14/11,
-  dump em `.ddev/db_dumps/`, fora do Git). `ddev importar-producao` só depois da migração (REIA-HD).
-- **Produção (planejada):** EUROPA-HD `http://172.31.20.60/ars`, subpasta do site do Petição Fácil
-  (`ASSET_URL`/`SESSION_PATH=/ars`), código em `/var/www/ars`; banco `ars` no REIA-HD `172.31.20.62`
-  (MySQL 8.4). Roteiro em `deploy/README.md`; atualizar com `./deploy/atualizar.sh`. Hoje roda no
-  servidor antigo `10.81.11.202` (banco `ars_laravel`, latin1; cópia e conversão na seção 2 do
-  `deploy/README.md`). Comandos nos servidores ficam com o Fabio (Bitdefender intercepta o SSH).
+  dump em `.ddev/db_dumps/`, fora do Git). `ddev importar-producao` traz a produção do REIA-HD (o usuário só leitura do PC ainda precisa de `SELECT` no banco `ars`).
+- **Produção (desde 15/11/2026):** EUROPA-HD `http://172.31.20.60/ars`, subpasta do site do Petição
+  Fácil (`ASSET_URL`/`SESSION_PATH=/ars`), código em `/var/www/ars` (branch `ars_php8`); banco `ars`
+  no REIA-HD `172.31.20.62` (MySQL 8.4). Roteiro em `deploy/README.md`; atualizar com
+  `./deploy/atualizar.sh`; backup diário pelo `crontab` do `fabio.ferreira` (`/var/backups/ars`).
+  Comandos nos servidores ficam com o Fabio (Bitdefender intercepta o SSH).
+- **Servidor antigo `10.81.11.202`:** `/ars/...` redireciona (301) para o EUROPA-HD pela regra
+  `deploy/apache-servidor-antigo.conf` (`/etc/apache2/conf-available/ars-redirect.conf`). Banco
+  `ars_laravel` (latin1) intacto, só leitura; a cópia e a conversão estão na seção 2 do `deploy/README.md`.
+- No Git deste WSL `core.fileMode=false`: script novo precisa de `git update-index --chmod=+x`.
 - Conversão latin1 → utf8mb4: `php artisan ars:converter-utf8mb4` (relatório; `--apply` converte),
   o mesmo comando do Petição Fácil. Aplicado no banco local em 14/11. Virada do banco antigo:
   `ddev virada-banco` (cópia, conversão, conferências e dump para o REIA-HD; ensaiado em 14/11).

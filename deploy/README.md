@@ -15,6 +15,7 @@ Petição Fácil (ver `deploy/README.md` do Petição Fácil).
 | `env.producao.example` | modelo do `/var/www/ars/.env` (senhas só no servidor) |
 | `atualizar.sh` | atualização a partir do GitHub (backup, código, dependências, build, migrations, caches) |
 | `backup.sh` | banco, 14 dias |
+| `apache-servidor-antigo.conf` | `/etc/apache2/conf-available/ars-redirect.conf` no servidor antigo 10.81.11.202 (seção 2) |
 
 Desde 09/11 o Bitdefender intercepta o SSH dos servidores (só entra com senha): os comandos
 abaixo são rodados pelo Fabio, numa sessão SSH própria. O GitHub é buscado por
@@ -118,8 +119,22 @@ banco vazio do MySQL 8.4 ficou igual ao convertido.
 **Senhas:** 16 das 33 contas da produção antiga ainda têm senha MD5 do legado. O login continua aceitando e,
 na primeira entrada, regrava a senha em bcrypt (`Usuario::getAuthPasswordName()` = `senha_usu`).
 
-**Servidor antigo:** depois da virada, redirecionar `/ars/...` do Apache antigo para
-`http://172.31.20.60/ars/...` (como foi feito com o `/peticaofacil2`), ou desligar o sistema antigo.
+**Virada feita em 14–15/11/2026:** dump do `ddev virada-banco` de 14/11 15:42 importado no REIA-HD,
+login (inclusive senha MD5), painéis do NEO e relatório mensal conferidos em `http://172.31.20.60/ars`.
+
+**Servidor antigo:** `http://10.81.11.202/ars/...` redireciona (301) para o mesmo caminho em
+`http://172.31.20.60/ars/...`, como o `/peticaofacil2`; os nomes antigos em `.php` (`painel.php`,
+`usu.php`, `dados_anda.php`…) vão para as rotas novas. Regra em `deploy/apache-servidor-antigo.conf`,
+instalada no 10.81.11.202 (Apache 2.4) como `/etc/apache2/conf-available/ars-redirect.conf`:
+
+```bash
+sudo nano /etc/apache2/conf-available/ars-redirect.conf     # colar o conteúdo do arquivo
+sudo a2enconf ars-redirect && sudo apache2ctl configtest && sudo systemctl reload apache2
+curl -sI http://10.81.11.202/ars/painel.php | grep -i location   # http://172.31.20.60/ars/painel
+```
+
+Código e banco `ars_laravel` antigos ficam intactos. Voltar atrás: `sudo a2disconf ars-redirect &&
+sudo systemctl reload apache2`.
 
 ## 3. Atualizar
 
