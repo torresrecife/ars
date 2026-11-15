@@ -37,6 +37,11 @@ README para estrutura, rotas e traduções.
 - **Servidor antigo `10.81.11.202`:** `/ars/...` redireciona (301) para o EUROPA-HD pela regra
   `deploy/apache-servidor-antigo.conf` (`/etc/apache2/conf-available/ars-redirect.conf`). Banco
   `ars_laravel` (latin1) intacto, só leitura; a cópia e a conversão estão na seção 2 do `deploy/README.md`.
+- **HTTPS (CA interna, decisão de 15/11/2026):** IP privado não tem certificado público, então
+  usamos uma CA própria (`deploy/https/`: `criar-ca.sh` e `emitir-certificado.sh` rodam no PC; chave
+  da CA em `~/.config/bvaa/ca`, nunca nos servidores; `nameConstraints` só para rede interna e
+  domínios do BVAA). O `nginx-https.conf` vira `peticaofacil-extra/00-https.conf` e liga a 443 no
+  site inteiro do EUROPA-HD (os quatro sistemas). Fases e virada em `deploy/https/README.md`.
 - No Git deste WSL `core.fileMode=false`: script novo precisa de `git update-index --chmod=+x`.
 - Conversão latin1 → utf8mb4: `php artisan ars:converter-utf8mb4` (relatório; `--apply` converte),
   o mesmo comando do Petição Fácil. Aplicado no banco local em 14/11. Virada do banco antigo:

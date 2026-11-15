@@ -15,6 +15,7 @@ Petição Fácil (ver `deploy/README.md` do Petição Fácil).
 | `env.producao.example` | modelo do `/var/www/ars/.env` (senhas só no servidor) |
 | `atualizar.sh` | atualização a partir do GitHub (backup, código, dependências, build, migrations, caches) |
 | `backup.sh` | banco, 14 dias |
+| `https/` | HTTPS com a CA interna para o site inteiro do EUROPA-HD (roteiro em `https/README.md`) |
 | `apache-servidor-antigo.conf` | `/etc/apache2/conf-available/ars-redirect.conf` no servidor antigo 10.81.11.202 (seção 2) |
 
 Desde 09/11 o Bitdefender intercepta o SSH dos servidores (só entra com senha): os comandos
