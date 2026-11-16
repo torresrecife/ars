@@ -195,7 +195,22 @@ O arquivo exportado tem os hashes das senhas e o relatório tem nomes e e-mails:
    `php artisan optimize` (a tela de login vai direto para o BVAcesso; `/login?local=1` mostra só as
    mensagens). Voltar ao login próprio: apagar `BVACESSO_CLIENT_ID` e `php artisan optimize`.
 
-## 6. Onde olhar quando algo falha
+## 6. Botão "Reportar bug" (BVTarefas)
+
+O mesmo widget do Petição Fácil: botão flutuante nas telas de quem está logado, que fotografa a tela,
+deixa marcar e escrever o que aconteceu e cria a tarefa no projeto da ARS no BVTarefas (com nome,
+login e perfil de quem reportou). No BVTarefas (`http://172.31.20.60/bvtarefas`): criar o projeto
+da ARS e, em Configurações → Widget de bugs, ativar e copiar o token. No `.env` da ARS:
+
+```bash
+BUG_REPORTER_SCRIPT=http://172.31.20.60/bvtarefas/widget/bug-reporter.js
+BUG_REPORTER_TOKEN=<token do projeto da ARS>
+```
+
+e `php artisan optimize`. Vazio = sem botão. Gerar outro token no BVTarefas invalida o do `.env`. Os
+prints podem ter dados de clientes e processos: orientar o uso da tarja do próprio widget.
+
+## 7. Onde olhar quando algo falha
 
 - Log da aplicação: `/var/www/ars/storage/logs/laravel-AAAA-MM-DD.log`.
 - NEO lento ou fora: `APP_NEO_QUERY_LOG=true` no `.env` + `php artisan optimize` registra tempo e

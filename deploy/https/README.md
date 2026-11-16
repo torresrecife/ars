@@ -117,6 +117,8 @@ Só depois de a raiz estar nos computadores. Fazer tudo de uma vez, num horário
    grep -E '^(APP_URL|BVACESSO_URL|SESSION_SECURE_COOKIE)=' .env && php artisan optimize
    ```
 
+   No `.env` do **BVTarefas**, o widget "Reportar bug" (Petição Fácil e ARS) só aceita as origens
+   listadas: `WIDGET_ALLOWED_ORIGINS=https://172.31.20.60,http://172.31.20.60` (e `php artisan optimize`).
 4. **Redirecionar o HTTP:** em `/etc/nginx/snippets/peticaofacil-extra/00-https.conf`, descomentar o
    bloco `if ($scheme = http)` (308, mantém o POST), depois `sudo nginx -t && sudo systemctl reload nginx`.
 5. **Servidor antigo (10.81.11.202):** nas regras `ars-redirect.conf` e `peticaofacil2-redirect.conf`,

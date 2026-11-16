@@ -56,6 +56,12 @@ README para estrutura, rotas e traduções.
   ficam na ARS. O login entra pelo `AuthService::storeUserSession` (mesma sessão do login próprio).
   Roteiro na seção 5 do `deploy/README.md`; contexto do BVAcesso em `~/projetos/bvacesso/AGENTS.md`.
 
+- **Botão "Reportar bug" (15/11/2026):** widget do BVTarefas (`~/projetos/bvtarefas`, o mesmo do
+  Petição Fácil) em `partials/bug-reporter.blade.php`, incluído no `index/shell` e nas telas de
+  detalhe (`dados_anda`, `dados_fatur`) para quem está logado. Liga com `BUG_REPORTER_SCRIPT` +
+  `BUG_REPORTER_TOKEN` (token do projeto da ARS no BVTarefas; vazio = sem botão). Envia nome, login
+  e perfil. Roteiro na seção 6 do `deploy/README.md`.
+
 ## Como rodar
 - Testes: `ddev testes` (PHPUnit 12, SQLite em memória; aceita `--filter X`).
 - Front: `ddev npm run build` (ou `ddev npm run dev`).

@@ -420,5 +420,6 @@
 	});
 }());
 </script>
+@include('partials.bug-reporter')
 </body>
 </html>

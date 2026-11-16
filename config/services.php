@@ -30,4 +30,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // Botao "Reportar bug" (widget do BVTarefas): captura a tela e cria a tarefa no BVTarefas.
+    // Vazio = botao desligado. O token fica em BVTarefas > Configuracoes do projeto > Widget de bugs.
+    'bug_reporter' => [
+        'script' => env('BUG_REPORTER_SCRIPT'),
+        'token' => env('BUG_REPORTER_TOKEN'),
+    ],
+
 ];
