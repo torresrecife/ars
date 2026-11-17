@@ -2,6 +2,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="{{ asset('css/ars-modern.css') }}">
 <script type="text/javascript" src="{{ asset('js/jquery-1.8.0.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/jFilterXCel2003.js') }}?v={{ @filemtime(public_path('js/jFilterXCel2003.js')) }}"></script>
+<script type="text/javascript" src="{{ asset('js/modules/details.js') }}?v={{ @filemtime(public_path('js/modules/details.js')) }}"></script>
 <body>
 @php $index = 1; @endphp
 <div class="responsive-table responsive-table--detail" role="region" aria-label="{{ __('Financial') }}" tabindex="0">
